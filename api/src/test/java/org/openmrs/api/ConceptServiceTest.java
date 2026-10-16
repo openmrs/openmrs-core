@@ -487,9 +487,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void saveConcept_shouldSaveChangesBetweenConceptNumericAndComplex() {
 		executeDataSet(INITIAL_CONCEPTS_XML);
+		// each conversion keeps the uuid of the existing concept, since a saved uuid cannot change
+		String uuid = conceptService.getConcept(1).getUuid();
 
 		//save a concept numeric
 		ConceptNumeric cn = new ConceptNumeric(1);
+		cn.setUuid(uuid);
 		cn.setDatatype(new ConceptDatatype(1));
 		cn.setConceptClass(new ConceptClass(1));
 		cn.addName(new ConceptName("a new conceptnumeric", Locale.US));
@@ -506,6 +509,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		//change to concept complex
 		ConceptComplex cn2 = new ConceptComplex(1);
+		cn2.setUuid(uuid);
 		cn2.setDatatype(new ConceptDatatype(13));
 		cn2.setConceptClass(new ConceptClass(1));
 		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));
@@ -522,6 +526,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		//change to concept numeric
 		cn = new ConceptNumeric(1);
+		cn.setUuid(uuid);
 		ConceptDatatype dt = new ConceptDatatype(1);
 		dt.setName("Numeric");
 		cn.setDatatype(dt);
@@ -540,6 +545,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		//change to concept complex
 		cn2 = new ConceptComplex(1);
+		cn2.setUuid(uuid);
 		cn2.setDatatype(new ConceptDatatype(13));
 		cn2.setConceptClass(new ConceptClass(1));
 		cn2.addName(new ConceptName("a new conceptComplex", Locale.US));

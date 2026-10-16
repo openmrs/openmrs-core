@@ -18,6 +18,7 @@
 	<class name="Concept" table="concept" batch-size="25">
 		
 		<cache usage="read-write"/>
+		<natural-id-cache region="org.openmrs.Concept##NaturalId"/>
 		
 		<id name="conceptId" type="java.lang.Integer"
 			column="concept_id"
@@ -27,8 +28,10 @@
 			</generator>
 		</id>
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+		<natural-id>
+			<property name="uuid" type="java.lang.String"
+				column="uuid" length="38" unique="true" />
+		</natural-id>
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" not-null="true"/>

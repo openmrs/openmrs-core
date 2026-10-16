@@ -37,6 +37,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.OrderAttribute;
 import org.openmrs.OrderAttributeType;
@@ -388,8 +389,13 @@ public class HibernateOrderDAO implements OrderDAO {
 	@Override
 	public void deleteObsThatReference(Order order) {
 		if (order != null) {
-			sessionFactory.getCurrentSession().createQuery("delete Obs where order = :order").setParameter("order", order)
-			        .executeUpdate();
+			Session session = sessionFactory.getCurrentSession();
+			session.createMutationQuery("delete Obs where order = :order").setParameter("order", order).executeUpdate();
+			// the bulk delete bypasses the session, so detach the deleted obs it holds to keep lookups from returning them
+			List<Obs> deletedObs = session.getManagedEntities(Obs.class).stream()
+			        .filter(obs -> obs.getOrder() != null && order.getOrderId().equals(obs.getOrder().getOrderId()))
+			        .toList();
+			deletedObs.forEach(session::detach);
 		}
 	}
 

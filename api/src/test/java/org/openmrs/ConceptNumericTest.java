@@ -122,6 +122,8 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldSaveAConceptNumericWithAllowDecimalValue() {
 		ConceptNumeric cn = new ConceptNumeric(22);
+		// keep the uuid of the existing concept, since a saved uuid cannot change
+		cn.setUuid(Context.getConceptService().getConcept(22).getUuid());
 		cn.addName(new ConceptName("cn", Locale.ENGLISH));
 		cn.setDatatype(new ConceptDatatype(1));
 		cn.setConceptClass(new ConceptClass(1));
@@ -138,6 +140,8 @@ public class ConceptNumericTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldRemoveReferenceRangeFromConceptNumeric() {
 		ConceptNumeric cn = new ConceptNumeric(22);
+		// keep the uuid of the existing concept, since a saved uuid cannot change
+		cn.setUuid(Context.getConceptService().getConcept(22).getUuid());
 		cn.addName(new ConceptName("cn", Locale.ENGLISH));
 		cn.setDatatype(new ConceptDatatype(1));
 		cn.setConceptClass(new ConceptClass(1));

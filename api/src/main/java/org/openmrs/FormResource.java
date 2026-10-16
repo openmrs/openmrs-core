@@ -25,6 +25,7 @@ import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
@@ -45,6 +46,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "form_resource")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@NaturalIdCache
 @AttributeOverride(name = "uuid", column = @Column(name = "uuid", unique = true, nullable = false, length = 38))
 @Audited
 public class FormResource extends BaseOpenmrsObject implements CustomValueDescriptor, SingleCustomValue<FormResource> {
