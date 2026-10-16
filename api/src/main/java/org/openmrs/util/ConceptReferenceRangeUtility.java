@@ -20,9 +20,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 import org.joda.time.LocalTime;
+import org.jspecify.annotations.NonNull;
 import org.openmrs.Concept;
 import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
@@ -33,10 +37,27 @@ import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.expression.AccessException;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.MethodExecutor;
+import org.springframework.expression.MethodResolver;
+import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
+import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.Assign;
+import org.springframework.expression.spel.ast.BeanReference;
+import org.springframework.expression.spel.ast.CompoundExpression;
+import org.springframework.expression.spel.ast.ConstructorReference;
+import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.ast.OpDec;
+import org.springframework.expression.spel.ast.OpInc;
+import org.springframework.expression.spel.ast.PropertyOrFieldReference;
+import org.springframework.expression.spel.ast.TypeReference;
+import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
@@ -47,7 +68,17 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 /**
- * A utility class that evaluates the concept ranges
+ * A utility class that evaluates the concept ranges.
+ * <p>
+ * Criteria are SpEL expressions authored by users with the Manage Concepts privilege and evaluated
+ * inside the transaction of whoever saves an obs. To keep them read-only, expressions are evaluated
+ * in a restricted context: assignment is disabled, and the only methods that may be invoked are
+ * <ul>
+ * <li>zero-argument {@code get*}, {@code is*} and {@code has*} methods on any object, and</li>
+ * <li>any method on the {@code $fn} helper ({@link CriteriaFunctions}).</li>
+ * </ul>
+ * Everything else, including {@code set*}, {@code add}, {@code clear}, {@code remove} and getters
+ * that take arguments, fails to resolve and the evaluation throws an {@link APIException}.
  *
  * @since 2.7.0
  */
@@ -67,13 +98,19 @@ public class ConceptReferenceRangeUtility {
 	 */
 	private static final ExpressionParser PARSER = new SpelExpressionParser();
 
+	private static final Pattern ACCESSOR_NAME = Pattern.compile("^(get|is|has)[A-Z]\\w*$");
+
 	/**
 	 * Static {@link org.springframework.expression.EvaluationContext} which is used to run evaluations.
 	 * This class is thread-safe, so shareable.
+	 * <p>
+	 * Assignment is disabled explicitly: the SpEL indexer writes to maps and lists directly without
+	 * consulting property accessors or method resolvers, so a read-only property accessor alone would
+	 * still let {@code $encounter.creator.userProperties['x'] = 'y'} through.
 	 */
 	private static final SimpleEvaluationContext EVAL_CONTEXT = SimpleEvaluationContext
 	        .forPropertyAccessors(new MapAccessor(), DataBindingPropertyAccessor.forReadOnlyAccess())
-	        .withMethodResolvers(DataBindingMethodResolver.forInstanceMethodInvocation()).build();
+	        .withMethodResolvers(new RestrictedMethodResolver()).withAssignmentDisabled().build();
 
 	private final CriteriaFunctions functions = new CriteriaFunctions();
 
@@ -149,6 +186,89 @@ public class ConceptReferenceRangeUtility {
 			throw new APIException("An error occurred while evaluating criteria: " + criteria, e);
 		} catch (Exception e) {
 			throw new APIException("An error occurred while evaluating criteria: " + criteria, e);
+		}
+	}
+
+	/**
+	 * Finds everything in a criteria expression that the evaluation context refuses, so that criteria
+	 * can be checked before they are stored. Reported are method calls outside the resolver's rule (any
+	 * method may be called on {@code $fn}; only zero-argument {@code get*}, {@code is*} and
+	 * {@code has*} methods may be called on anything else), assignments, increments and decrements,
+	 * type references, constructor calls and bean references. Method calls are judged by name and
+	 * argument count, so a call that passes here can still fail at evaluation time if the method does
+	 * not exist on the actual target.
+	 *
+	 * @param criteria the criteria expression, already HTML-unescaped
+	 * @return the disallowed constructs rendered from the parsed expression, in source order
+	 * @throws ParseException if the criteria is not a valid expression
+	 * @since 3.0.0
+	 */
+	public static List<String> findDisallowedConstructs(String criteria) throws ParseException {
+		SpelNode ast;
+		try {
+			ast = ((SpelExpression) PARSER.parseExpression(criteria)).getAST();
+		} catch (SpelEvaluationException e) {
+			throw new ParseException(e.getPosition(), e.getSimpleMessage(), e);
+		}
+		List<String> disallowed = new ArrayList<>();
+		collectDisallowedConstructs(ast, false, disallowed);
+		return disallowed;
+	}
+
+	private static void collectDisallowedConstructs(SpelNode node, boolean onFunctions, List<String> disallowed) {
+		if (node instanceof MethodReference method) {
+			if (isDisallowedMethodCall(method.getName(), method.getChildCount(), onFunctions)) {
+				disallowed.add(method.toStringAST());
+			}
+		} else if (node instanceof Assign || node instanceof OpInc || node instanceof OpDec || node instanceof TypeReference
+		        || node instanceof ConstructorReference || node instanceof BeanReference) {
+			disallowed.add(node.toStringAST());
+		}
+		for (int i = 0; i < node.getChildCount(); i++) {
+			boolean childOnFunctions = i == 1 && node instanceof CompoundExpression
+			        && node.getChild(0) instanceof PropertyOrFieldReference reference && "$fn".equals(reference.getName());
+			collectDisallowedConstructs(node.getChild(i), childOnFunctions, disallowed);
+		}
+	}
+
+	private static boolean isDisallowedMethodCall(String name, int argumentCount, boolean onFunctions) {
+		return !onFunctions && (argumentCount != 0 || !ACCESSOR_NAME.matcher(name).matches());
+	}
+
+	/**
+	 * {@link MethodResolver} that restricts which methods a criteria expression may invoke.
+	 * <p>
+	 * A method call resolves only when either
+	 * <ul>
+	 * <li>the target is the {@code $fn} helper ({@link CriteriaFunctions}), or</li>
+	 * <li>the method takes no arguments and is named {@code get*}, {@code is*} or {@code has*}.</li>
+	 * </ul>
+	 * {@code getHibernateLazyInitializer()} on a Hibernate proxy, and every method on a
+	 * {@link LazyInitializer}, are refused as well, since they would otherwise open a getter-only path
+	 * to the session. Ordinary getters on proxies still resolve. Resolution itself is delegated to
+	 * {@link DataBindingMethodResolver#forInstanceMethodInvocation()}, which additionally refuses
+	 * static methods and methods declared on {@link Object} and {@link Class}. Refused calls throw an
+	 * {@link AccessException}, which SpEL surfaces as a {@link SpelEvaluationException} before the
+	 * method is ever invoked.
+	 */
+	private static final class RestrictedMethodResolver implements MethodResolver {
+
+		private final MethodResolver delegate = DataBindingMethodResolver.forInstanceMethodInvocation();
+
+		@Override
+		public MethodExecutor resolve(@NonNull EvaluationContext context, @NonNull Object targetObject, @NonNull String name,
+		        @NonNull List<TypeDescriptor> argumentTypes) throws AccessException {
+			if (targetObject instanceof LazyInitializer
+			        || (targetObject instanceof HibernateProxy && "getHibernateLazyInitializer".equals(name))) {
+				throw new AccessException("Method '" + name + "' may not be called on a Hibernate proxy in criteria");
+			}
+
+			if (isDisallowedMethodCall(name, argumentTypes.size(), targetObject instanceof CriteriaFunctions)) {
+				throw new AccessException("Method '" + name + "' is not allowed in criteria; only zero-argument "
+				        + "get*, is* and has* methods and $fn helper methods may be called");
+			}
+
+			return delegate.resolve(context, targetObject, name, argumentTypes);
 		}
 	}
 
