@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -764,6 +765,16 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {
 		saveLoginCredential(credentials);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredentialForUpdate(org.openmrs.User)
+	 */
+	@Override
+	public LoginCredential getLoginCredentialForUpdate(User user) {
+		LoginCredential credentials = getLoginCredential(user);
+		sessionFactory.getCurrentSession().refresh(credentials, LockModeType.PESSIMISTIC_WRITE);
+		return credentials;
 	}
 
 	/**
