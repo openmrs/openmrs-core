@@ -1,21 +1,21 @@
 # Releases a maintenance version of openmrs-core from a maintenance branch (N.N.x).
 #
-# This duplicates the manual "Release" stage (and the "Release image variants" stage that
-# follows it automatically) of the Bamboo plan defined in bamboo-specs/bamboo.yml
-# (e.g. TRUNK-OC28 "OpenMRS Core 2.8.x").
-# For example, dispatching it on 2.8.x with releaseVersion=2.8.8 will:
-#   1. set the maven version to 2.8.8 and commit "[skip-ci] [skip actions] Releasing 2.8.8"
+# This replaces the manual "Release" stage (and the "Release image variants" stage that
+# followed it automatically) of the Bamboo plans used for earlier release lines.
+# For example, dispatching it on 2.9.x with releaseVersion=2.9.0 will:
+#   1. set the maven version to 2.9.0 and commit "[skip-ci] [skip actions] Releasing 2.9.0"
 #      as openmrs-bot ([skip-ci] is Bamboo's skip marker; [skip actions] is the one GitHub
 #      recognizes, so the release commit does not trigger a redundant CI run)
-#   2. build and push openmrs/openmrs-core:2.8.8-dev and :2.8.8 (linux/amd64 + linux/arm64)
+#   2. build and push openmrs/openmrs-core:2.9.0-dev and :2.9.0 (linux/amd64 + linux/arm64);
+#      these default images are built on JDK 8, the baseline for the Core 2.x series
 #   3. deploy the release artifacts to the OpenMRS Nexus releases repository by running
-#      mvn deploy inside the :2.8.8-dev image, exactly as Bamboo does
-#   4. tag 2.8.8 and push the tag
-#   5. push the release commit to 2.8.x, then set the next development version
-#      (auto-incremented to 2.8.9-SNAPSHOT, or the developmentVersion input if given)
+#      mvn deploy inside the :2.9.0-dev image, exactly as Bamboo does
+#   4. tag 2.9.0 and push the tag
+#   5. push the release commit to 2.9.x, then set the next development version
+#      (auto-incremented to 2.9.1-SNAPSHOT, or the developmentVersion input if given)
 #      and push "Setting new SNAPSHOT version" (non-fatal, as in Bamboo)
 #   6. build and push the per-JDK image variants from the tag:
-#      openmrs/openmrs-core:2.8.8[-dev]-amazoncorretto-{8,11,17,21}
+#      openmrs/openmrs-core:2.9.0[-dev]-amazoncorretto-{11,17,21}
 #
 # Required secrets:
 #   OMRS_RELEASE_BOT_APP_ID / OMRS_RELEASE_BOT_PRIVATE_KEY
@@ -65,8 +65,8 @@
 # step rejects non-N.N.x branches) but Dependabot only scans the default branch, so the
 # master copy is what keeps the action SHA pins below from rotting; pin bumps then reach
 # maintenance branches through the normal backport flow. Run it with:
-#   gh workflow run release.yaml --ref 2.8.x -f releaseVersion=2.8.8 \
-#     [-f developmentVersion=2.8.9-SNAPSHOT]
+#   gh workflow run release.yaml --ref 2.9.x -f releaseVersion=2.9.0 \
+#     [-f developmentVersion=2.9.1-SNAPSHOT]
 #
 # On forks: the image pushes still target openmrs/openmrs-core itself, so set the
 # repository variable DOCKER_IMAGE_NAME to a registry namespace the fork's Docker Hub
@@ -87,10 +87,10 @@ on:
   workflow_dispatch:
     inputs:
       releaseVersion:
-        description: 'Version to release (e.g. 2.8.8); the branch must be at this SNAPSHOT version'
+        description: 'Version to release (e.g. 2.9.0); the branch must be at this SNAPSHOT version'
         required: true
       developmentVersion:
-        description: 'Next development version (e.g. 2.8.9-SNAPSHOT); leave empty to auto-increment'
+        description: 'Next development version (e.g. 2.9.1-SNAPSHOT); leave empty to auto-increment'
         required: false
         default: ''
 
@@ -112,6 +112,10 @@ env:
   # passed to every image build; the production builds reuse the dev builds' compile
   # stages only while this value is byte-identical across the invocations
   MVN_ARGS: clean install -DskipTests
+  # the unsuffixed release images stay on JDK 8, the baseline for the Core 2.x series;
+  # the Dockerfile's own defaults track a newer JDK for local development
+  DEFAULT_DEV_JDK: amazoncorretto-8
+  DEFAULT_RUNTIME_JDK: jdk8-corretto
 
 jobs:
   release:
@@ -197,7 +201,7 @@ jobs:
             exit 1
           fi
           if [[ ! "${OMRS_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::releaseVersion must look like 2.8.8, got '${OMRS_VERSION}'"
+            echo "::error::releaseVersion must look like 2.9.0, got '${OMRS_VERSION}'"
             exit 1
           fi
           BRANCH_PREFIX="${GITHUB_REF_NAME%.x}"
@@ -207,7 +211,7 @@ jobs:
           fi
           if [[ -n "${OMRS_DEV_VERSION}" ]]; then
             if [[ ! "${OMRS_DEV_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$ ]]; then
-              echo "::error::developmentVersion must look like 2.8.9-SNAPSHOT, got '${OMRS_DEV_VERSION}'"
+              echo "::error::developmentVersion must look like 2.9.1-SNAPSHOT, got '${OMRS_DEV_VERSION}'"
               exit 1
             fi
             if [[ "${OMRS_DEV_VERSION}" == "${OMRS_VERSION}-SNAPSHOT" ]]; then
@@ -267,6 +271,8 @@ jobs:
             --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
             --target dev \
             --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEFAULT_DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${DEFAULT_RUNTIME_JDK}" \
             -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" .
 
       - name: Build and push the production image
@@ -276,6 +282,8 @@ jobs:
           docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
             --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
             --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEFAULT_DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${DEFAULT_RUNTIME_JDK}" \
             -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}" .
 
       - name: Release to maven
@@ -366,19 +374,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # JDK 8 is published under the unsuffixed tags by the release job
         include:
-          - jdk: 8
-            dev_jdk: amazoncorretto-8
-            runtime_jdk: jdk8-corretto
           - jdk: 11
             dev_jdk: amazoncorretto-11
             runtime_jdk: jdk11-corretto
           - jdk: 17
             dev_jdk: amazoncorretto-17
             runtime_jdk: jdk17-corretto
-          # bamboo.yml's "Release JDK 21 image" job omits the -dev suffix from its dev
-          # tag (a typo: no Bamboo release has a -dev-amazoncorretto-21 tag on Docker
-          # Hub); this workflow does not copy the typo and publishes the dev variant
           - jdk: 21
             dev_jdk: amazoncorretto-21
             runtime_jdk: jdk21-corretto
@@ -403,9 +406,8 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      # Bamboo's Deploy stage (bamboo-specs/bamboo.yml) pushes per-JDK caches for
-      # 11/17/21 but not for 8 (it publishes the JDK 8 build under the unsuffixed
-      # tags), so the plain branch dev cache is a fallback; missing refs are non-fatal
+      # the per-JDK and plain branch dev caches are used when present; missing refs are
+      # non-fatal
       - name: Build and push the dev image variant
         run: |
           docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \

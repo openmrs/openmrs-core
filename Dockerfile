@@ -9,8 +9,8 @@
 #	graphic logo is a trademark of OpenMRS Inc.
 
 ARG BUILDPLATFORM
-ARG DEV_JDK=amazoncorretto-17
-ARG RUNTIME_JDK=jdk17-corretto
+ARG DEV_JDK=amazoncorretto-21
+ARG RUNTIME_JDK=jdk21-corretto
 
 ### Compile Stage (platform-agnostic)
 FROM --platform=$BUILDPLATFORM maven:3.9-$DEV_JDK AS compile
