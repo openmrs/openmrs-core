@@ -66,7 +66,9 @@ public final class WebDaemon {
 
 		try {
 			startup.get();
-		} catch (InterruptedException ignored) {} catch (ExecutionException e) {
+		} catch (InterruptedException ignored) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof DatabaseUpdateException) {
 				throw (DatabaseUpdateException) cause;
