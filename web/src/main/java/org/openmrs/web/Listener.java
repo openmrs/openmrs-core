@@ -380,6 +380,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private void loadConstants(ServletContext servletContext) {
 		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
 		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
+		OpenmrsUtil.setApplicationName(WebConstants.WEBAPP_NAME);
 		WebConstants.MODULE_REPOSITORY_URL = servletContext.getInitParameter("module.repository.url");
 
 		if (!"openmrs".equalsIgnoreCase(WebConstants.WEBAPP_NAME)) {

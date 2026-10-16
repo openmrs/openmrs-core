@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.orm.jpa.hibernate.HibernateTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -108,9 +110,11 @@ public class OpenmrsApplicationContextConfig {
 	}
 
 	/**
-	 * Provides a PropertySourcesPlaceholderConfigurer that uses
-	 * OpenmrsUtil.getApplicationDataDirectory() to resolve the runtime properties file location,
-	 * ensuring the property is always set.
+	 * Provides a PropertySourcesPlaceholderConfigurer that loads the runtime properties file
+	 * resolved by {@link OpenmrsUtil#getRuntimePropertiesFilePathName(String)}, the same file
+	 * that Context loads the runtime properties from. This makes placeholder values available
+	 * from runtime properties files in every supported location, and not only from
+	 * openmrs-runtime.properties in the application data directory.
 	 *
 	 * @return configurer
 	 */
@@ -122,11 +126,35 @@ public class OpenmrsApplicationContextConfig {
 		props.setProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY, appDataDir);
 		configurer.setProperties(props);
 		configurer.setLocations(new ClassPathResource("hibernate.default.properties"),
-		    new ClassPathResource("application.properties"),
-		    new FileSystemResource(appDataDir + "/openmrs-runtime.properties"));
+		    new ClassPathResource("application.properties"), runtimePropertiesResource(appDataDir));
 		configurer.setIgnoreResourceNotFound(true);
 		configurer.setLocalOverride(true);
 		return configurer;
+	}
+
+	/**
+	 * Resolves the runtime properties file for the running application. The file that the
+	 * runtime properties were loaded from at startup takes precedence, because it cannot
+	 * reliably be found by looking it up again: the runtime properties themselves may set the
+	 * application data directory that the lookup searches in. If no file was loaded and none
+	 * exists in any of the supported locations yet, e.g. before the initial setup has run, this
+	 * falls back to the file for the application in the application data directory, which the
+	 * configurer simply ignores as long as it does not exist.
+	 *
+	 * @param appDataDir the application data directory
+	 * @return the runtime properties file to load placeholder values from
+	 */
+	static Resource runtimePropertiesResource(String appDataDir) {
+		String loadedPathName = OpenmrsUtil.getLoadedRuntimePropertiesFilePathName();
+		if (loadedPathName != null) {
+			return new FileSystemResource(loadedPathName);
+		}
+		String applicationName = OpenmrsUtil.getApplicationName();
+		String pathName = OpenmrsUtil.getRuntimePropertiesFilePathName(applicationName);
+		if (pathName != null) {
+			return new FileSystemResource(pathName);
+		}
+		return new FileSystemResource(new File(appDataDir, applicationName + "-runtime.properties"));
 	}
 
 	/**

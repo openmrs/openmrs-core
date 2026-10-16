@@ -128,6 +128,12 @@ public class OpenmrsUtil {
 
 	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
 
+	private static final String DEFAULT_APPLICATION_NAME = "openmrs";
+
+	private static String applicationName;
+
+	private static String loadedRuntimePropertiesFilePathName;
+
 	/**
 	 * Compares origList to newList returning map of differences
 	 *
@@ -1935,6 +1941,59 @@ public class OpenmrsUtil {
 	}
 
 	/**
+	 * Gets the name of the running OpenMRS application, e.g. the name under which OpenMRS was
+	 * deployed as a web application. The name is needed to find the runtime properties file of
+	 * the application, see {@link #getRuntimePropertiesFilePathName(String)}.
+	 *
+	 * @return the name of the running OpenMRS application, "openmrs" if it has not been set
+	 * @since 3.0.0
+	 */
+	public static String getApplicationName() {
+		if (applicationName == null) {
+			return DEFAULT_APPLICATION_NAME;
+		}
+		return applicationName;
+	}
+
+	/**
+	 * Sets the name of the running OpenMRS application. The web layer calls this at startup with
+	 * the name of the deployed web application, so that code which only has access to this module
+	 * can find the same runtime properties file that the web layer uses.
+	 *
+	 * @param applicationName the name of the running OpenMRS application
+	 * @since 3.0.0
+	 */
+	public static void setApplicationName(String applicationName) {
+		OpenmrsUtil.applicationName = applicationName;
+	}
+
+	/**
+	 * Gets the path of the runtime properties file that {@link #getRuntimeProperties(String)}
+	 * loaded, which is the file that the runtime properties in use were read from. The file
+	 * cannot reliably be found by looking it up again after it has been loaded, because the
+	 * runtime properties themselves may set the application data directory that the lookup
+	 * searches in.
+	 *
+	 * @return the path of the loaded runtime properties file, or null if none has been loaded
+	 * @since 3.0.0
+	 */
+	public static String getLoadedRuntimePropertiesFilePathName() {
+		return loadedRuntimePropertiesFilePathName;
+	}
+
+	/**
+	 * Sets the path of the runtime properties file that was loaded, see
+	 * {@link #getLoadedRuntimePropertiesFilePathName()}. Called by
+	 * {@link #getRuntimeProperties(String)} whenever it loads a runtime properties file.
+	 *
+	 * @param loadedRuntimePropertiesFilePathName the path of the loaded runtime properties file
+	 * @since 3.0.0
+	 */
+	public static void setLoadedRuntimePropertiesFilePathName(String loadedRuntimePropertiesFilePathName) {
+		OpenmrsUtil.loadedRuntimePropertiesFilePathName = loadedRuntimePropertiesFilePathName;
+	}
+
+	/**
 	 * <pre>
 	 * Finds and loads the runtime properties file for a specific OpenMRS application.
 	 * Searches for the file in this order:
@@ -1952,10 +2011,13 @@ public class OpenmrsUtil {
 	 */
 	public static Properties getRuntimeProperties(String applicationName) {
 		if (applicationName == null) {
-			applicationName = "openmrs";
+			applicationName = DEFAULT_APPLICATION_NAME;
 		}
 		String pathName;
 		pathName = getRuntimePropertiesFilePathName(applicationName);
+		if (pathName != null) {
+			setLoadedRuntimePropertiesFilePathName(pathName);
+		}
 		FileInputStream propertyStream = null;
 		try {
 			if (pathName != null) {
@@ -2005,7 +2067,7 @@ public class OpenmrsUtil {
 	 */
 	public static String getRuntimePropertiesFilePathName(String applicationName) {
 		if (applicationName == null) {
-			applicationName = "openmrs";
+			applicationName = DEFAULT_APPLICATION_NAME;
 		}
 
 		String defaultFileName = applicationName + "-runtime.properties";
@@ -2066,7 +2128,7 @@ public class OpenmrsUtil {
 	 * @return String openmrs version number
 	 */
 	public static String getOpenMRSVersionInTestMode() {
-		return System.getProperty("OPENMRS_VERSION", "openmrs");
+		return System.getProperty("OPENMRS_VERSION", DEFAULT_APPLICATION_NAME);
 	}
 
 	/**
