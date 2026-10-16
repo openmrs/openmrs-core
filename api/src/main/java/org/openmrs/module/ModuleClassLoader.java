@@ -231,41 +231,41 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.error("Failed to add development folder to the classpath", ex);
 		}
 		
+		// Whether the module's previously expanded cache is still up to date. This is read before
+		// getLibCacheFolderForModule() below because that method rewrites the .moduleLastModified
+		// marker it relies on. When the cache is up to date we skip re-copying the module jar and
+		// re-expanding its /lib folder, which otherwise happens on every restart (TRUNK-6509).
+		// getLibCacheFolderForModule() still deletes the folder when the module actually changed
+		// (TRUNK-6675), so work is only skipped for genuinely unchanged modules.
+		boolean cacheUpToDate = isModuleCacheUpToDate(module);
 		File tmpModuleDir = getLibCacheFolderForModule(module);
-		
+
 		//add module jar to classpath only if we are not in dev mode
 		if (devDir == null) {
 			File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
 			
-			if (!tmpModuleJar.exists()) {
+			// copy the module jar into that temporary folder, unless an up-to-date copy is already there
+			if (!(cacheUpToDate && tmpModuleJar.exists())) {
+				FileInputStream in = null;
+				FileOutputStream out = null;
 				try {
-					tmpModuleJar.createNewFile();
+					in = new FileInputStream(module.getFile());
+					out = new FileOutputStream(tmpModuleJar);
+					OpenmrsUtil.copyFile(in, out);
 				}
 				catch (IOException io) {
-					log.warn("Unable to create tmpModuleFile", io);
+					log.warn("Unable to copy tmpModuleFile", io);
 				}
-			}
-			
-			// copy the module jar into that temporary folder
-			FileInputStream in = null;
-			FileOutputStream out = null;
-			try {
-				in = new FileInputStream(module.getFile());
-				out = new FileOutputStream(tmpModuleJar);
-				OpenmrsUtil.copyFile(in, out);
-			}
-			catch (IOException io) {
-				log.warn("Unable to copy tmpModuleFile", io);
-			}
-			finally {
-				try {
-					in.close();
+				finally {
+					try {
+						in.close();
+					}
+					catch (Exception e) { /* pass */}
+					try {
+						out.close();
+					}
+					catch (Exception e) { /* pass */}
 				}
-				catch (Exception e) { /* pass */}
-				try {
-					out.close();
-				}
-				catch (Exception e) { /* pass */}
 			}
 			
 			// add the module jar as a url in the classpath of the classloader
@@ -281,11 +281,14 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			log.debug("Expanding /lib folder in module");
-			
-			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
-			
+
+			// expand the module's /lib folder, unless it was already expanded for this version of the module
+			if (!(cacheUpToDate && libdir.exists())) {
+				log.debug("Expanding /lib folder in module");
+				ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
+			}
+
 			if (libdir != null && libdir.exists()) {
 				Map<String, String> startedRelatedModules = new HashMap<>();
 				for (Module requiredModule : collectRequiredModuleImports(module)) {
@@ -513,6 +516,39 @@ public class ModuleClassLoader extends URLClassLoader {
 			return true;
 		} catch (IOException e) {
 			log.warn("Failed to delete lib cache dir {} for module {}", dir, moduleId, e);
+			return false;
+		}
+	}
+
+	/**
+	 * Checks whether the lib cache folder for the given module already holds an expansion that matches
+	 * the current module file, i.e. the module has not changed since the cache was last written. When it
+	 * has not, re-copying the module jar and re-expanding its <code>/lib</code> folder on startup can be
+	 * skipped (see <a href="https://issues.openmrs.org/browse/TRUNK-6509">TRUNK-6509</a>).
+	 * <p>
+	 * This reads the same <code>.moduleLastModified</code> marker that
+	 * {@link #getLibCacheFolderForModule(Module)} maintains, so it must be called <b>before</b> that
+	 * method on a given startup, since that method rewrites the marker.
+	 *
+	 * @param module the module whose cache to check
+	 * @return <code>true</code> only if optimized startup is enabled and the cached expansion is current
+	 */
+	private static boolean isModuleCacheUpToDate(Module module) {
+		if (!Context.isOptimizedStartup()) {
+			return false;
+		}
+
+		File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		File moduleLastModifiedFile = new File(tmpModuleDir, ".moduleLastModified");
+		if (!moduleLastModifiedFile.exists()) {
+			return false;
+		}
+
+		try {
+			String savedLastModified = FileUtils.readFileToString(moduleLastModifiedFile, Charset.defaultCharset());
+			return Long.valueOf(savedLastModified).equals(module.getFile().lastModified());
+		}
+		catch (IOException | NumberFormatException e) {
 			return false;
 		}
 	}
