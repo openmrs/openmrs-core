@@ -182,6 +182,9 @@ public class ConditionServiceImpl extends BaseOpenmrsService implements Conditio
 	 */
 	@Override
 	public void purgeCondition(Condition condition) {
+		if (condition == null) {
+			return;
+		}
 		conditionDAO.deleteCondition(condition);
 	}
 
