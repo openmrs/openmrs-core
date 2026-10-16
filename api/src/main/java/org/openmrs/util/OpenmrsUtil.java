@@ -238,25 +238,9 @@ public class OpenmrsUtil {
 	 * @throws IOException
 	 */
 	public static byte[] getFileAsBytes(File file) throws IOException {
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(file);
-			byte[] b = new byte[fileInputStream.available()];
-			fileInputStream.read(b);
-			return b;
-		} catch (Exception e) {
-			log.error("Unable to get file as byte array", e);
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException io) {
-					log.warn("Couldn't close fileInputStream: " + io);
-				}
-			}
+		try (FileInputStream fileInputStream = new FileInputStream(file)) {
+			return IOUtils.toByteArray(fileInputStream);
 		}
-
-		return null;
 	}
 
 	/**
