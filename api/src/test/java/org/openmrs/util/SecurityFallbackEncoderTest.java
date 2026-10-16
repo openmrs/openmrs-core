@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -56,5 +57,14 @@ class SecurityFallbackEncoderTest {
 
 		assertTrue(Security.checkPassword(encoded, rawPassword));
 		assertFalse(Security.checkPassword(encoded,"wrong" + salt));
+	}
+
+	@Test
+	void checkPassword_verifiesArgon2PrefixedValue() {
+		String rawPassword = "password" + Security.getRandomToken();
+		String stored = "{argon2}" + Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8().encode(rawPassword);
+
+		assertTrue(Security.checkPassword(stored, rawPassword));
+		assertFalse(Security.checkPassword(stored, "wrong"));
 	}
 }

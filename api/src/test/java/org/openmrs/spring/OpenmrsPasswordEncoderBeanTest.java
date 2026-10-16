@@ -90,12 +90,13 @@ class OpenmrsPasswordEncoderBeanTest {
 	}
 
 	/**
-	 * {@link PasswordEncoders#supportedEncoders()} hard-codes the work factors the bean otherwise
-	 * takes from its property defaults, so the two have to be kept in step.
+	 * {@link NoContextPasswordEncoderFactory#supportedEncoders()} hard-codes the work factors the
+	 * bean otherwise takes from its property defaults, so the two have to be kept in step.
 	 */
 	@Test
 	void shouldDefaultToTheSameWorkFactorsAsTheNoContextEncoder() {
-		PasswordEncoder noContext = PasswordEncoders.supportedEncoders().get(PasswordEncoders.ARGON2_ID);
+		PasswordEncoder noContext = NoContextPasswordEncoderFactory.supportedEncoders()
+			.get(NoContextPasswordEncoderFactory.ARGON2_ID);
 
 		assertEquals(workFactorsOf(noContext.encode(PASSWORD)), workFactorsOf(encoderBean(argon2OptIn()).encode(PASSWORD)));
 	}
@@ -110,7 +111,7 @@ class OpenmrsPasswordEncoderBeanTest {
 
 	private static Properties argon2OptIn() {
 		Properties properties = new Properties();
-		properties.setProperty("security.passwordEncoder", PasswordEncoders.ARGON2_ID);
+		properties.setProperty("security.passwordEncoder", NoContextPasswordEncoderFactory.ARGON2_ID);
 		return properties;
 	}
 
@@ -131,7 +132,7 @@ class OpenmrsPasswordEncoderBeanTest {
 	}
 
 	/**
-	 * @return the parameter segment of a PHC string, e.g. {@code m=16384,t=2,p=1}
+	 * @return the parameter segment of a PHC string, e.g. {@code m=19456,t=2,p=1}
 	 */
 	private static String workFactorsOf(String phcHash) {
 		int start = phcHash.indexOf("v=19$") + "v=19$".length();

@@ -9,65 +9,60 @@
  */
 package org.openmrs.spring;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Builds the fallback password encoder OpenMRS uses when no Spring context exists yet, for
- * example while the database upgrade wizard authenticates a superuser.
- * <p>
- * The {@code workFactor} methods are referenced from the {@code argon2PasswordEncoder} bean
- * definition, so the range a configured work factor has to fall in lives alongside the rest of the
- * Argon2 policy rather than being spread between the properties file and a comment.
+ * The Argon2id hashing policy: fixed salt and hash lengths, default work factors, and the
+ * validators the {@code argon2PasswordEncoder} bean definition uses to read the
+ * {@code security.argon2.*} runtime properties.
  *
  * @since 2.8.11
  */
-public final class PasswordEncoders {
-
-	/**
-	 * Prefix identifying an Argon2 hash, as in <code>{argon2}$argon2id$...</code>.
-	 */
-	public static final String ARGON2_ID = "argon2";
-
+public final class Argon2WorkFactors {
+	
 	/**
 	 * Salt and hash lengths are fixed at the OWASP-recommended minimums rather than being
 	 * configurable: they are not work factors, and a length short enough to be worth tuning is a
 	 * length that should not be tuned.
 	 */
-	private static final int ARGON2_SALT_LENGTH = 16;
-	private static final int ARGON2_HASH_LENGTH = 32;
-
+	static final int SALT_LENGTH = 16;
+	
+	static final int HASH_LENGTH = 32;
+	
 	/**
 	 * Defaults for the three tunable work factors. The {@code openmrsPasswordEncoder} bean takes
 	 * these from {@code security.argon2.*} in {@code openmrs-runtime.properties}, so an
 	 * administrator can raise them without a rebuild.
+	 * <p>
+	 * The values are the minimum Argon2id configuration recommended by the OWASP Password Storage
+	 * Cheat Sheet: 19 MiB of memory, 2 iterations and 1 degree of parallelism.
 	 */
-	private static final int DEFAULT_PARALLELISM = 1;
-	private static final int DEFAULT_MEMORY = 1 << 14;
-	private static final int DEFAULT_ITERATIONS = 2;
-
+	static final int DEFAULT_PARALLELISM = 1;
+	
+	static final int DEFAULT_MEMORY = 19456;
+	
+	static final int DEFAULT_ITERATIONS = 2;
+	
 	/**
 	 * Bounds the {@code security.argon2.parallelism} property.
 	 */
 	private static final int MIN_PARALLELISM = 1;
+	
 	private static final int MAX_PARALLELISM = 16777215;
-
+	
 	/**
 	 * Lower bound for {@code security.argon2.memory}. Argon2 requires at least 8 blocks (RFC 9106).
 	 */
 	private static final int MIN_MEMORY = 8;
-
+	
 	/**
 	 * Lower bound for {@code security.argon2.iterations}.
 	 */
 	private static final int MIN_ITERATIONS = 1;
-
-	private PasswordEncoders() {
+	
+	private Argon2WorkFactors() {
 	}
-
+	
 	/**
 	 * Validates one Argon2 work factor read from {@code openmrs-runtime.properties} and returns it
 	 * for use as a {@link Argon2PasswordEncoder} constructor argument.
@@ -93,55 +88,32 @@ public final class PasswordEncoders {
 		catch (NumberFormatException e) {
 			throw new IllegalArgumentException(name + " must be a whole number, but was '" + value + "'", e);
 		}
-
+		
 		if (parsed < min || parsed > max) {
 			throw new IllegalArgumentException(name + " must be between " + min + " and " + max + ", but was " + parsed);
 		}
-
+		
 		return parsed;
 	}
-
+	
 	/**
 	 * @return the number of lanes to hash with, from {@code security.argon2.parallelism}
 	 */
-	public static int parallelismWorkFactor(String value) {
+	public static int parallelism(String value) {
 		return workFactor("security.argon2.parallelism", value, MIN_PARALLELISM, MAX_PARALLELISM);
 	}
-
+	
 	/**
 	 * @return the memory cost in KiB, from {@code security.argon2.memory}
 	 */
-	public static int memoryWorkFactor(String value) {
+	public static int memory(String value) {
 		return workFactor("security.argon2.memory", value, MIN_MEMORY, Integer.MAX_VALUE);
 	}
-
+	
 	/**
 	 * @return the number of passes to hash with, from {@code security.argon2.iterations}
 	 */
-	public static int iterationsWorkFactor(String value) {
+	public static int iterations(String value) {
 		return workFactor("security.argon2.iterations", value, MIN_ITERATIONS, Integer.MAX_VALUE);
-	}
-
-	/**
-	 * @return the named encoders, keyed by the prefix each one writes. An empty id for encode
-	 *         selects the legacy encoder instead, so newly written values stay unprefixed.
-	 */
-	public static Map<String, PasswordEncoder> supportedEncoders() {
-		return Collections.singletonMap(ARGON2_ID, argon2());
-	}
-
-	/**
-	 * @return the encoder to use before a Spring context exists, for example while the database
-	 *         upgrade wizard authenticates a superuser. It verifies every encoder in
-	 *         {@link #supportedEncoders()} as well as the unprefixed legacy hashes, so a password
-	 *         written after the {@code openmrsPasswordEncoder} opt-in still authenticates.
-	 */
-	public static PasswordEncoder noContextEncoder() {
-		return new OpenmrsDelegatingPasswordEncoder("", supportedEncoders(), new LegacyOpenmrsPasswordEncoder());
-	}
-
-	private static PasswordEncoder argon2() {
-		return new Argon2PasswordEncoder(ARGON2_SALT_LENGTH, ARGON2_HASH_LENGTH, DEFAULT_PARALLELISM,
-			DEFAULT_MEMORY, DEFAULT_ITERATIONS);
 	}
 }

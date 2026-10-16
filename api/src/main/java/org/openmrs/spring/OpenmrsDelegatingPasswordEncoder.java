@@ -67,18 +67,13 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		}
 		
 		String id = extractId(prefixedPassword);
-		String encodedPassword = prefixedPassword;
-		// if we have an id
-		if (id != null && !id.isEmpty()) {
-			encodedPassword = encodedPassword.substring(encodedPassword.indexOf("}") + 1);
-		}
-		
 		// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
 		// passwords are written with cannot parse, so verify it against the fallback.
 		if (id == null) {
-			return fallbackEncoder.matches(rawPassword, encodedPassword);
+			return fallbackEncoder.matches(rawPassword, prefixedPassword);
 		}
-		
+
+		String encodedPassword = prefixedPassword.substring(prefixedPassword.indexOf("}") + 1);
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
 			return defaultEncoder.matches(rawPassword, encodedPassword);

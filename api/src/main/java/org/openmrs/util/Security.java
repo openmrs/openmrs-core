@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
-import org.openmrs.spring.PasswordEncoders;
+import org.openmrs.spring.NoContextPasswordEncoderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,8 +48,8 @@ public class Security {
 
 	// required so we can hash passwords at startup when no Spring context is available, for
 	// example while the database upgrade wizard authenticates a superuser. Which encoders that
-	// supports is PasswordEncoders' business, not this class's.
-	private static final PasswordEncoder FALLBACK_ENCODER = PasswordEncoders.noContextEncoder();
+	// supports is NoContextPasswordEncoderFactory's business, not this class's.
+	private static final PasswordEncoder FALLBACK_ENCODER = NoContextPasswordEncoderFactory.create();
 	
 	private Security() {
 	}
