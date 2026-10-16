@@ -11,6 +11,7 @@ package org.openmrs.util;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openmrs.api.APIAuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
 
 /**
  * Utility methods for dealing with exceptions
@@ -38,12 +39,17 @@ public class ExceptionUtil {
 	}
 
 	/**
-	 * If any cause in the given exception chain is an APIAuthenticationException, rethrow that
+	 * If any cause in the given exception chain is an authorization failure, rethrow that. Any Spring
+	 * Security {@link AccessDeniedException} counts, and the deprecated
+	 * {@link APIAuthenticationException} is one; where a chain holds more than one, an
+	 * {@code APIAuthenticationException} is preferred. The name is kept for compatibility, though it
+	 * now reads narrower than it behaves.
 	 *
 	 * @param thrown
 	 */
 	public static void rethrowAPIAuthenticationException(Throwable thrown) {
 		rethrowIfCause(thrown, APIAuthenticationException.class);
+		rethrowIfCause(thrown, AccessDeniedException.class);
 	}
 
 }

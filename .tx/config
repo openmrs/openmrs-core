@@ -5,6 +5,6 @@ host = https://www.transifex.com
 file_filter            = api/src/main/resources/messages_<lang>.properties
 source_file            = api/src/main/resources/messages.properties
 source_lang            = en
-type                   = KEYVALUEJSON
+type                   = UNICODEPROPERTIES
 replace_edited_strings = false
 keep_translations      = false

@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,7 +40,7 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	@Column(name = "concept_description_id", nullable = false)
 	private Integer conceptDescriptionId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
@@ -49,14 +50,14 @@ public class ConceptDescription extends BaseOpenmrsObject implements Auditable, 
 	@Column(name = "locale", nullable = false, length = 50)
 	private Locale locale;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 

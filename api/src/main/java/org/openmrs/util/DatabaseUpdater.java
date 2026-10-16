@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -214,9 +215,6 @@ public class DatabaseUpdater {
 		log.debug("Setting up liquibase object to run changelog: {}", changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 
-		int numChangeSetsToRun = new StatusCommandStep().listUnrunChangeSets(contexts, new LabelExpression(),
-		    liquibase.getDatabaseChangeLog(), liquibase.getDatabase()).size();
-
 		Database database = null;
 		LockService lockHandler = null;
 
@@ -230,6 +228,13 @@ public class DatabaseUpdater {
 			String scopeId = null;
 			try {
 				scopeId = Scope.enter(scopeValues);
+
+				// counted inside the scope: for already-run runOnChange changesets the status check recomputes
+				// checksums, which reads files such as <sqlFile> through the scope's resource accessor
+				int numChangeSetsToRun = new StatusCommandStep()
+				        .listUnrunChangeSets(contexts, new LabelExpression(), liquibase.getDatabaseChangeLog(), database)
+				        .size();
+
 				DatabaseChangeLog changeLog = liquibase.getDatabaseChangeLog();
 				changeLog.setChangeLogParameters(liquibase.getChangeLogParameters());
 				changeLog.validate(database);
@@ -706,8 +711,11 @@ public class DatabaseUpdater {
 				Liquibase liquibase = getLiquibase(changelogFile, null);
 				database = liquibase.getDatabase();
 
-				List<ChangeSet> changeSets = new StatusCommandStep().listUnrunChangeSets(new Contexts(CONTEXT),
-				    new LabelExpression(), liquibase.getDatabaseChangeLog(), liquibase.getDatabase());
+				// same resource accessor as executeChangelog, so files read for checksums resolve the same way
+				List<ChangeSet> changeSets = Scope.child(
+				    Collections.singletonMap(Scope.Attr.resourceAccessor.name(), getCompositeResourceAccessor(null)),
+				    () -> new StatusCommandStep().listUnrunChangeSets(new Contexts(CONTEXT), new LabelExpression(),
+				        liquibase.getDatabaseChangeLog(), liquibase.getDatabase()));
 
 				for (ChangeSet changeSet : changeSets) {
 					OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);

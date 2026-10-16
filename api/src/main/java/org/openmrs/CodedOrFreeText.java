@@ -10,6 +10,7 @@
 package org.openmrs;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 
 /**
@@ -26,10 +27,10 @@ import jakarta.persistence.ManyToOne;
 @Embeddable
 public class CodedOrFreeText {
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	Concept coded;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	ConceptName specificName;
 
 	String nonCoded;

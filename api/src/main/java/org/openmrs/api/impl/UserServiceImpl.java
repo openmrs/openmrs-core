@@ -33,7 +33,6 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -41,6 +40,7 @@ import org.openmrs.api.CannotDeleteRoleWithChildrenException;
 import org.openmrs.api.InvalidActivationKeyException;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
+import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
@@ -77,6 +77,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Autowired
 	protected UserDAO dao;
 
+	@Autowired
+	private RolePrivilegeCache rolePrivilegeCache;
+
 	private static final int MAX_VALID_TIME = 12 * 60 * 60 * 1000; //Period of 12 hours
 
 	private static final int MIN_VALID_TIME = 60 * 1000; //Period of 1 minute
@@ -88,6 +91,95 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	public void setUserDAO(UserDAO dao) {
 		this.dao = dao;
+	}
+
+	/**
+	 * Thread-scoped permit that marks the current thread as executing inside the user service. The
+	 * {@link UserDAO} implementation consults {@link #isPermitted()} before mutating a user's password
+	 * or login credential, so that those mutations can only happen on a code path that went through
+	 * {@link UserService} rather than straight to the DAO.
+	 * <p>
+	 * The permit is raised and lowered by {@code UserServiceImpl} alone: {@code enter()} and
+	 * {@code exit()} are private, and only a nestmate of {@code UserServiceImpl} can reach them. It is
+	 * re-entrant, so a service call nested inside another one leaves the permit raised until the
+	 * outermost call returns.
+	 * <p>
+	 * Reflection can still forge a permit. That is acceptable: this guards against accidentally routing
+	 * credential changes around the service layer, not against hostile code sharing the JVM, which
+	 * could already reach the DAO by other means.
+	 *
+	 * @since 2.8.10
+	 */
+	public static final class UserPasswordGuard {
+
+		private static final ThreadLocal<Integer> DEPTH = new ThreadLocal<>();
+
+		private UserPasswordGuard() {
+		}
+
+		private static void enter() {
+			Integer depth = DEPTH.get();
+			DEPTH.set(depth == null ? 1 : depth + 1);
+		}
+
+		private static void exit() {
+			Integer depth = DEPTH.get();
+			if (depth == null || depth <= 1) {
+				DEPTH.remove();
+			} else {
+				DEPTH.set(depth - 1);
+			}
+		}
+
+		/**
+		 * @return true if the calling thread is currently executing inside the user service
+		 */
+		public static boolean isPermitted() {
+			return DEPTH.get() != null;
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#saveUser(User, String)}, raising the permit
+	 * that the DAO requires of anything that can change a password.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private User daoSaveUser(User user, String password) {
+		UserPasswordGuard.enter();
+		try {
+			return dao.saveUser(user, password);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#changePassword(User, String)}.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private void daoChangePassword(User user, String newPassword) {
+		UserPasswordGuard.enter();
+		try {
+			dao.changePassword(user, newPassword);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#changeHashedPassword(User, String, String)}.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private void daoChangeHashedPassword(User user, String hashedPassword, String salt) {
+		UserPasswordGuard.enter();
+		try {
+			dao.changeHashedPassword(user, hashedPassword, salt);
+		} finally {
+			UserPasswordGuard.exit();
+		}
 	}
 
 	/**
@@ -127,7 +219,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		// TODO Check required fields for user!!
 		OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 
-		return dao.saveUser(user, password);
+		return daoSaveUser(user, password);
 	}
 
 	/**
@@ -188,7 +280,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			        "Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		}
 
-		return dao.saveUser(user, null);
+		return daoSaveUser(user, null);
 	}
 
 	public User voidUser(User user, String reason) throws APIException {
@@ -256,22 +348,23 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public void purgePrivilege(Privilege privilege) throws APIException {
 		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 
 		dao.deletePrivilege(privilege);
+		rolePrivilegeCache.clear();
 	}
 
 	/**
 	 * @see org.openmrs.api.UserService#savePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public Privilege savePrivilege(Privilege privilege) throws APIException {
-		return dao.savePrivilege(privilege);
+		Privilege saved = dao.savePrivilege(privilege);
+		rolePrivilegeCache.clear();
+		return saved;
 	}
 
 	/**
@@ -296,7 +389,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public void purgeRole(Role role) throws APIException {
 		if (role == null || role.getRole() == null) {
 			return;
@@ -311,13 +403,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		}
 
 		dao.deleteRole(role);
+		rolePrivilegeCache.clear();
 	}
 
 	/**
 	 * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
 	 */
 	@Override
-	@CacheEvict(value = "rolePrivileges", allEntries = true)
 	public Role saveRole(Role role) throws APIException {
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
@@ -327,7 +419,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		checkPrivileges(role);
 
-		return dao.saveRole(role);
+		Role saved = dao.saveRole(role);
+		rolePrivilegeCache.clear();
+		return saved;
 	}
 
 	/**
@@ -344,7 +438,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
-		dao.changeHashedPassword(user, hashedPassword, salt);
+		daoChangeHashedPassword(user, hashedPassword, salt);
 	}
 
 	/**
@@ -416,8 +510,14 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		}
 	}
 
+	/**
+	 * Case-insensitive on the role name, like every other role comparison: a role differing from
+	 * {@link RoleConstants#SUPERUSER} only in case still confers superuser status (see
+	 * {@code RolePrivilegeCache}'s own check), so comparing exactly here would let it be assigned
+	 * without {@code ASSIGN_SYSTEM_DEVELOPER_ROLE}.
+	 */
 	private void checkSuperUserPrivilege(Role r) {
-		if (r.getRole().equals(RoleConstants.SUPERUSER)
+		if (RoleConstants.SUPERUSER.equalsIgnoreCase(r.getRole())
 		        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
 			throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
 		}
@@ -626,7 +726,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
 		user.setUserProperty(key, value);
-		return dao.saveUser(user, null);
+		return daoSaveUser(user, null);
 	}
 
 	@Override
@@ -639,14 +739,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		for (Map.Entry<String, String> entry : properties.entrySet()) {
 			user.setUserProperty(entry.getKey(), entry.getValue());
 		}
-		return dao.saveUser(user, null);
+		return daoSaveUser(user, null);
 	}
 
 	/**
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see UserService#changePassword(User, String, String)
 	 */
 	@Override
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changePassword(User user, String oldPassword, String newPassword) throws APIException {
 		if (user.getUserId() == null) {
@@ -692,7 +793,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	private void updatePassword(User user, String newPassword) {
 		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
-		dao.changePassword(user, newPassword);
+		daoChangePassword(user, newPassword);
 	}
 
 	@Override
@@ -854,7 +955,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.GET_LOCATIONS)
 	public Set<Location> getAllowedLocationsByTag(User user, LocationTag tag) {
 		User persisted = (user == null || user.getUserId() == null) ? null : dao.getUser(user.getUserId());
 		if (tag == null || persisted == null) {

@@ -50,8 +50,10 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -1126,7 +1128,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		Context.logout();
 
-		assertThrows(APIException.class, () -> userService.removeUserProperty(user, "some key"));
+		assertThrows(AccessDeniedException.class, () -> userService.removeUserProperty(user, "some key"));
 	}
 
 	/**
@@ -1195,7 +1197,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(502);
 
 		Context.logout();
-		assertThrows(APIException.class, () -> userService.setUserProperty(user, "some key", "some value"));
+		assertThrows(AccessDeniedException.class, () -> userService.setUserProperty(user, "some key", "some value"));
 	}
 
 	/**
@@ -1481,7 +1483,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user6001, wrongPassword, newPassword));
 		assertThat(exception.getMessage(), is(
 		    messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USER_PASSWORDS }, null)));
@@ -1501,7 +1503,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user6001, oldPassword, newPassword));
 		assertThat(exception.getMessage(), is(
 		    messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USER_PASSWORDS }, null)));
@@ -1522,7 +1524,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 
-		APIException exception = assertThrows(APIException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user6001, oldPassword, newPassword));
 		assertThat(exception.getMessage(), is(
 		    messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USER_PASSWORDS }, null)));
@@ -1582,7 +1584,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user, "userServiceTest", "testTest123"));
 
 		assertThat(exception.getMessage(), is(
@@ -1661,7 +1663,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		assertEquals(createdUser, userService.getUserByActivationKey(key));
 	}
 
@@ -1675,7 +1677,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		assertNull(userService.getUserByActivationKey(key));
 	}
 
@@ -1689,7 +1691,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 
 		final String PASSWORD = "Admin123";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
@@ -1720,7 +1722,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 
 		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class,
@@ -1896,4 +1898,40 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		return userService.createUser(u, "Openmr5xy");
 	}
+
+	/**
+	 * Pins the superuser-assignment guard in {@code UserServiceImpl.checkSuperUserPrivilege}, which
+	 * compares the role name case-insensitively. It has to: a role differing from
+	 * {@link RoleConstants#SUPERUSER} only in case still confers superuser status, since
+	 * {@code RolePrivilegeCache} resolves that name with {@code equalsIgnoreCase}. Comparing exactly
+	 * here would let such a role be handed out without {@code ASSIGN_SYSTEM_DEVELOPER_ROLE}.
+	 */
+	@Test
+	public void saveUser_shouldRequireAssignSystemDeveloperRoleForADifferentlyCasedSuperuserRole() throws Exception {
+		// an already-valid user, because RequiredDataAdvice validates a save* call before the service
+		// method body runs - a hand-built User fails validation long before reaching the guard
+		User toSave = userService.getUser(1);
+		// drop admin's own exact-case System Developer role first, so the differently-cased one added
+		// below is the only thing that can trip the guard - otherwise the test passes either way
+		toSave.getRoles().clear();
+		toSave.addRole(new Role(RoleConstants.SUPERUSER.toUpperCase()));
+
+		// a principal with no roles, so it lacks ASSIGN_SYSTEM_DEVELOPER_ROLE. EDIT_USERS satisfies
+		// saveUser's own requirePrivilege and @Authorized; GET_GLOBAL_PROPERTIES is what the validator
+		// run by RequiredDataAdvice needs before the guard is reached.
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> withCurrentUserAs(new User(), () -> userService.saveUser(toSave)));
+
+			// the role guard, not the privileges one below it - the message arrives as its raw template
+			// here, since the test message source does not interpolate arguments
+			assertThat(exception.getMessage(), containsString("must have the role"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+
 }

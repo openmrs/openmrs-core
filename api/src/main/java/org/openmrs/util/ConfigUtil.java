@@ -9,35 +9,19 @@
  */
 package org.openmrs.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 
 /**
  * A utility class for working with configuration properties
  */
-public class ConfigUtil implements GlobalPropertyListener {
-
-	/**
-	 * Cache of global property key/value pairs to enable lookups that do not require accessing the
-	 * service each time
-	 */
-	private static final Map<String, String> globalPropertyCache = new HashMap<>();
+public class ConfigUtil {
 
 	/**
 	 * Gets the value of the given OpenMRS global property
 	 */
 	public static String getGlobalProperty(String propertyName) {
-		if (globalPropertyCache.containsKey(propertyName)) {
-			return globalPropertyCache.get(propertyName);
-		}
-		String value = Context.getAdministrationService().getGlobalProperty(propertyName);
-		globalPropertyCache.put(propertyName, value);
-		return value;
+		return Context.getAdministrationService().getGlobalProperty(propertyName);
 	}
 
 	/**
@@ -114,20 +98,5 @@ public class ConfigUtil implements GlobalPropertyListener {
 			return defaultValue;
 		}
 		return Boolean.parseBoolean(value);
-	}
-
-	@Override
-	public void globalPropertyChanged(GlobalProperty newValue) {
-		globalPropertyCache.put(newValue.getProperty(), newValue.getPropertyValue());
-	}
-
-	@Override
-	public void globalPropertyDeleted(String propertyName) {
-		globalPropertyCache.remove(propertyName);
-	}
-
-	@Override
-	public boolean supportsPropertyName(String propertyName) {
-		return true;
 	}
 }
