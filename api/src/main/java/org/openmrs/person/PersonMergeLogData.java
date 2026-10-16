@@ -38,13 +38,6 @@ public class PersonMergeLogData {
 	private List<String> movedEncounters;
 
 	/**
-	 * List of UUIDs of patient programs copied from non-preferred to preferred (Deprecated in 2.6.8 and
-	 * 2.7.0+, as we now move programs)
-	 */
-	@Deprecated
-	private List<String> createdPrograms;
-
-	/**
 	 * List of UUIDs of patient programs moved from non-preferred to preferred
 	 */
 	private List<String> movedPrograms;
@@ -160,19 +153,6 @@ public class PersonMergeLogData {
 			movedEncounters = new ArrayList<>();
 		}
 		movedEncounters.add(uuid);
-	}
-
-	@Deprecated
-	public List<String> getCreatedPrograms() {
-		return createdPrograms;
-	}
-
-	@Deprecated
-	public void addCreatedProgram(String uuid) {
-		if (createdPrograms == null) {
-			createdPrograms = new ArrayList<>();
-		}
-		createdPrograms.add(uuid);
 	}
 
 	public List<String> getMovedPrograms() {
@@ -405,9 +385,6 @@ public class PersonMergeLogData {
 		}
 		if (getCreatedOrders() != null) {
 			str += getCreatedOrders().toString();
-		}
-		if (getCreatedPrograms() != null) {
-			str += getCreatedPrograms().toString();
 		}
 		if (getMovedPrograms() != null) {
 			str += getMovedPrograms().toString();
