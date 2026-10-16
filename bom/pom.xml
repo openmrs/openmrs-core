@@ -78,7 +78,6 @@
 		<angusActivationVersion>2.0.3</angusActivationVersion>
 
 		<!-- Apache Commons -->
-		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
 		<commonsIoVersion>2.22.0</commonsIoVersion>
 		<commonsLang3Version>3.21.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
@@ -363,11 +362,6 @@
 			</dependency>
 
 			<!-- Apache Commons -->
-			<dependency>
-				<groupId>commons-collections</groupId>
-				<artifactId>commons-collections</artifactId>
-				<version>${commonsCollectionsVersion}</version>
-			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>

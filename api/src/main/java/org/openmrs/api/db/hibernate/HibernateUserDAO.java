@@ -25,7 +25,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -504,7 +503,7 @@ public class HibernateUserDAO implements UserDAO {
 
 		List<User> returnList = query.getResultList();
 
-		if (!CollectionUtils.isEmpty(returnList)) {
+		if (!returnList.isEmpty()) {
 			returnList.sort(new UserByNameComparator());
 		}
 
@@ -720,7 +719,7 @@ public class HibernateUserDAO implements UserDAO {
 		StringBuilder hql = new StringBuilder(hqlSelectStart);
 		boolean searchOnRoles = false;
 
-		if (CollectionUtils.isNotEmpty(roles)) {
+		if (roles != null && !roles.isEmpty()) {
 			hql.append("inner join user.roles as role ");
 			searchOnRoles = true;
 		}
