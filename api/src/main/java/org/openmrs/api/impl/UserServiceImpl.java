@@ -925,6 +925,12 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new InvalidActivationKeyException("activation.key.not.correct");
 		}
 
+		LoginCredential credentials = dao.getLoginCredentialForUpdate(user);
+		String storedKey = credentials.getActivationKey();
+		if (storedKey == null || !storedKey.startsWith(Security.encodeString(activationKey) + ":")) {
+			throw new InvalidActivationKeyException("activation.key.not.correct");
+		}
+
 		updatePassword(user, newPassword);
 	}
 
