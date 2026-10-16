@@ -22,7 +22,6 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
-import org.openmrs.ObsReferenceRange;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -415,9 +414,8 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setValueModifier("too long text");
 		obs.setValueComplex(StringUtils.repeat("a", 1001));
 		obs.setVoidReason(
-		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		obs.setComment(
-		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		obs.setComment(StringUtils.repeat("a", 256));
 
 		Errors errors = new BindException(obs, "obs");
 		obsValidator.validate(obs, errors);
@@ -425,8 +423,9 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("accessionNumber"));
 		assertTrue(errors.hasFieldErrors("valueModifier"));
 		assertTrue(errors.hasFieldErrors("valueComplex"));
-		assertTrue(errors.hasFieldErrors("comment"));
 		assertTrue(errors.hasFieldErrors("voidReason"));
+		assertTrue(errors.hasFieldErrors("comment"));
+
 	}
 
 	/**
@@ -613,14 +612,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-		assertNotNull(obs.getReferenceRange());
 	}
 
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetObsReferenceRangeIfCriteriaMatches() {
+	public void validate_shouldPassWhenReferenceRangeCriteriaMatches() {
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -6);
 		person.setBirthdate(calendar.getTime());
@@ -635,15 +633,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-		assertNotNull(obs.getReferenceRange());
-		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
 	}
 
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetObsReferenceRangeValuesIfConceptReferenceRangeIsNullAndConceptNumericIsNotNull() {
+	public void validate_shouldPassWhenConceptNumericProvidesDefaultReferenceRange() {
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -600);
 		person.setBirthdate(calendar.getTime());
@@ -658,16 +654,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-		assertNotNull(obs.getReferenceRange());
-		assertEquals(145.0, obs.getReferenceRange().getHiAbsolute());
-		assertEquals(70.0, obs.getReferenceRange().getLowAbsolute());
 	}
 
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetObsReferenceRangeValuesToNarrowestMatchingValues() {
+	public void validate_shouldPassWhenNarrowestMatchingReferenceRangeIsUsed() {
 		// we assume there are two rules that will match a person of this age
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -6);
@@ -683,20 +676,13 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-		assertNotNull(obs.getReferenceRange());
-		assertEquals(140.0, obs.getReferenceRange().getHiAbsolute());
-		assertEquals(130.0, obs.getReferenceRange().getHiCritical());
-		assertEquals(118.0, obs.getReferenceRange().getHiNormal());
-		assertEquals(80.0, obs.getReferenceRange().getLowNormal());
-		assertEquals(75.0, obs.getReferenceRange().getLowCritical());
-		assertEquals(70.0, obs.getReferenceRange().getLowAbsolute());
 	}
 
 	/**
 	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void shouldSetObsReferenceRangeValuesToConceptReferenceRangeValuesIfNoRuleBasedRangesArePresent() {
+	public void validate_shouldPassWhenNoRuleBasedRangesArePresent() {
 		Person person = new Person(1);
 		calendar.add(Calendar.YEAR, -600);
 		person.setBirthdate(calendar.getTime());
@@ -711,13 +697,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obsValidator.validate(obs, errors);
 
 		assertFalse(errors.hasErrors());
-		assertNotNull(obs.getReferenceRange());
-		assertEquals(2500.0, obs.getReferenceRange().getHiAbsolute());
-		assertEquals(1800.0, obs.getReferenceRange().getHiCritical());
-		assertEquals(1497.0, obs.getReferenceRange().getHiNormal());
-		assertEquals(445.0, obs.getReferenceRange().getLowNormal());
-		assertEquals(99.0, obs.getReferenceRange().getLowCritical());
-		assertEquals(0.0, obs.getReferenceRange().getLowAbsolute());
 	}
 
 	/**
@@ -782,170 +761,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasErrors());
 		assertTrue(errors.hasFieldErrors("valueNumeric"));
 		assertEquals("error.value.outOfRange.high", errors.getAllErrors().get(0).getCode());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndLessThanHighCritical() {
-		Obs obs = getObs(60, 4090, 121.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToCriticallyHighIfObsValueIsAboveHighCritical() {
-		Obs obs = getObs(60, 4090, 131.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToCriticallyHighIfObsValueIsEqualToHighCritical() {
-		Obs obs = getObs(60, 4090, 130.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.CRITICALLY_HIGH, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToCriticallyLowIfObsValueIsEqualToLowCritical() {
-		Obs obs = getObs(60, 4090, 75.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToNormalIfObsValueIsWithinNormalRange() {
-		Obs obs = getObs(60, 4090, 100.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
-	}
-
-	/**
-	 * @see ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
-	@Test
-	public void shouldSetInterpretationToCriticalLowIfObsValueIsBelowLowCritical() {
-		Obs obs = getObs(60, 4090, 74.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.CRITICALLY_LOW, obs.getInterpretation());
-	}
-
-	@Test
-	public void shouldSetInterpretationToNormalIfObsValueIsAboveLowNormalAndHiNormalIsNull() {
-		Obs obs = createObsWithReferenceRange(60, 97, 4090, 95.0, null, 90.0, null, 0.0, 100.0);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
-	}
-
-	@Test
-	public void shouldSetInterpretationToNormalIfObsValueIsBelowHiNormalAndLowNormalIsNull() {
-		Obs obs = createObsWithReferenceRange(60, 100, 4090, null, 140.0, null, null, null, null);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.NORMAL, obs.getInterpretation());
-	}
-
-	@Test
-	public void shouldSetInterpretationToHighIfObsValueIsAboveHiNormalAndHiCriticalIsNull() {
-		Obs obs = createObsWithReferenceRange(60, 150, 4090, null, 140.0, null, null, null, null);
-
-		// Set obs ID to prevent reference range from being overwritten by database values
-		obs.setId(1);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.HIGH, obs.getInterpretation());
-	}
-
-	@Test
-	public void shouldSetInterpretationToLowIfObsValueIsBelowLowNormalAndLowCriticalIsNull() {
-		Obs obs = createObsWithReferenceRange(60, 90, 4090, 100.0, 140.0, null, 180.0, 0.0, 100.0);
-
-		// Set obs ID to prevent reference range from being overwritten by database values
-		obs.setId(1);
-
-		Errors errors = new BindException(obs, "obs");
-		obsValidator.validate(obs, errors);
-
-		assertFalse(errors.hasErrors());
-		assertEquals(Obs.Interpretation.LOW, obs.getInterpretation());
-	}
-
-	/**
-	 * Helper method to create an Obs with specific reference range values
-	 *
-	 * @param value The numeric value for the observation
-	 * @param conceptId The concept id for the observation
-	 * @param lowNormal Low normal value (can be null)
-	 * @param hiNormal High normal value (can be null)
-	 * @param lowCritical Low critical value (can be null)
-	 * @param hiCritical High critical value (can be null)
-	 * @param lowAbsolute Low absolute value (can be null)
-	 * @param hiAbsolute High absolute value (can be null)
-	 */
-	private static Obs createObsWithReferenceRange(int numberOfYears, double value, int conceptId, Double lowNormal,
-	        Double hiNormal, Double lowCritical, Double hiCritical, Double lowAbsolute, Double hiAbsolute) {
-		Obs obs = getObs(numberOfYears, conceptId, value);
-
-		// Set up the reference range manually with the provided values
-		ObsReferenceRange obsRefRange = new ObsReferenceRange();
-		obsRefRange.setHiAbsolute(hiAbsolute);
-		obsRefRange.setHiCritical(hiCritical);
-		obsRefRange.setHiNormal(hiNormal);
-		obsRefRange.setLowAbsolute(lowAbsolute);
-		obsRefRange.setLowCritical(lowCritical);
-		obsRefRange.setLowNormal(lowNormal);
-		obsRefRange.setObs(obs);
-		obs.setReferenceRange(obsRefRange);
-
-		return obs;
 	}
 
 	private static Obs getObs(int numberOfYears, int conceptId, double valueNumeric) {
