@@ -2068,10 +2068,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
 	@Override
 	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept) {
+		return getConceptReferenceRange(person, concept, null);
+	}
+
+	@Override
+	public ConceptReferenceRange getConceptReferenceRange(Person person, Concept concept, Date date) {
 		if (person == null || concept == null) {
 			return null;
 		}
-		return Context.getConceptService().getConceptReferenceRange(new ConceptReferenceRangeContext(person, concept, null));
+
+		return Context.getConceptService().getConceptReferenceRange(new ConceptReferenceRangeContext(person, concept, date));
 	}
 
 	@Override
