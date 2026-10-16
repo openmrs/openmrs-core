@@ -7,7 +7,8 @@
 #   1. set the maven version to 2.8.8 and commit "[skip-ci] [skip actions] Releasing 2.8.8"
 #      as openmrs-bot ([skip-ci] is Bamboo's skip marker; [skip actions] is the one GitHub
 #      recognizes, so the release commit does not trigger a redundant CI run)
-#   2. build and push openmrs/openmrs-core:2.8.8-dev and :2.8.8 (linux/amd64 + linux/arm64)
+#   2. build and push openmrs/openmrs-core:2.8.8-dev and :2.8.8 (linux/amd64 + linux/arm64);
+#      these default images are built on JDK 8, the baseline for the Core 2.x series
 #   3. deploy the release artifacts to the OpenMRS Nexus releases repository by running
 #      mvn deploy inside the :2.8.8-dev image, exactly as Bamboo does
 #   4. tag 2.8.8 and push the tag
@@ -112,6 +113,10 @@ env:
   # passed to every image build; the production builds reuse the dev builds' compile
   # stages only while this value is byte-identical across the invocations
   MVN_ARGS: clean install -DskipTests
+  # the unsuffixed release images stay on JDK 8, the baseline for the Core 2.x series;
+  # the Dockerfile's own defaults track a newer JDK for local development
+  DEFAULT_DEV_JDK: amazoncorretto-8
+  DEFAULT_RUNTIME_JDK: jdk8-corretto
 
 jobs:
   release:
@@ -267,6 +272,8 @@ jobs:
             --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
             --target dev \
             --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEFAULT_DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${DEFAULT_RUNTIME_JDK}" \
             -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}-dev" .
 
       - name: Build and push the production image
@@ -276,6 +283,8 @@ jobs:
           docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
             --cache-from "${DOCKER_IMAGE_NAME}:${GITHUB_REF_NAME}-dev-cache" \
             --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEFAULT_DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${DEFAULT_RUNTIME_JDK}" \
             -t "${DOCKER_IMAGE_NAME}:${OMRS_VERSION}" .
 
       - name: Release to maven

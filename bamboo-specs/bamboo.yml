@@ -53,6 +53,10 @@ Build:
                       
                       set +x
                       
+                      # pinned: the Dockerfile default tracks a newer JDK for local development
+                      export JDK_IMAGE="amazoncorretto-17"
+                      export RUNTIME_JDK="jdk17-corretto"
+                      
                       export IMAGE_DEV=${bamboo.docker.image.name}:${bamboo.docker.image.tag}-dev
                       
                       docker login -u ${bamboo.dockerhub.username} -p ${bamboo.dockerhub.password}
@@ -60,6 +64,8 @@ Build:
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                           --cache-to=type=registry,mode=max,ref=${IMAGE_DEV}-cache --cache-from ${IMAGE_DEV}-cache \
                           --target dev \
+                          --build-arg DEV_JDK="${JDK_IMAGE}" \
+                          --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                           --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE_DEV} .
                       
                       sleep 10
@@ -317,6 +323,9 @@ Release:
                       export IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}
                       export DEV_IMAGE=${bamboo.docker.image.name}:${OMRS_VERSION}-dev
                       export BUILD_IMAGE=${bamboo.docker.image.id}
+                      # the unsuffixed release images stay on JDK 8, the baseline for the Core 2.x series
+                      export JDK_IMAGE="amazoncorretto-8"
+                      export RUNTIME_JDK="jdk8-corretto"
                       
                       # Set to be able to push
                       git remote set-url origin git@github.com:openmrs/openmrs-core.git
@@ -332,11 +341,13 @@ Release:
                       echo "Building the dev image"
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                       --cache-from ${BUILD_IMAGE} --target dev \
+                      --build-arg DEV_JDK="${JDK_IMAGE}" --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${DEV_IMAGE} .
                       
                       echo "Building the production image"
                       docker buildx build --pull --push --platform ${bamboo.docker.image.platforms} \
                       --cache-from ${BUILD_IMAGE}-cache \
+                      --build-arg DEV_JDK="${JDK_IMAGE}" --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
                       --build-arg MVN_ARGS="clean install -DskipTests" -t ${IMAGE} .
                       
                       echo "Releasing to maven"
