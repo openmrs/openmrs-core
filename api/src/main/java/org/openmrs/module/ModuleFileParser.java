@@ -193,6 +193,7 @@ public class ModuleFileParser {
 	 */
 	@Deprecated
 	ModuleFileParser() {
+		this.messageSourceService = Context.getMessageSourceService();
 	}
 
 	/**
@@ -349,7 +350,7 @@ public class ModuleFileParser {
 	private void validateModuleConfigVersion(String version, File moduleFile) {
 		if (!validConfigVersions.contains(version)) {
 			throw new ModuleException(
-			        Context.getMessageSourceService().getMessage("Module.error.invalidConfigVersion",
+			        messageSourceService.getMessage("Module.error.invalidConfigVersion",
 			            new Object[] { version, String.join(", ", validConfigVersions) }, Context.getLocale()),
 			        moduleFile.getName());
 		}
