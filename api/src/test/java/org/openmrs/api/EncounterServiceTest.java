@@ -3265,6 +3265,50 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#transferEncounter(Encounter,Patient)
 	 */
 	@Test
+	public void transferEncounter_shouldVoidEncounterProvidersOfGivenEncounterButNotTheirProviders() {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient targetPatient = Context.getPatientService().getPatient(201);
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(201);
+		// detach the visit so that voiding it (which cascades to its encounters via AOP) doesn't mask the
+		// internal voidEncounter call, which bypasses AOP
+		sourceEncounter.setVisit(null);
+		Context.getEncounterService().saveEncounter(sourceEncounter);
+		EncounterProvider sourceEncounterProvider = sourceEncounter.getEncounterProviders().iterator().next();
+		assertFalse(sourceEncounterProvider.getVoided());
+		String providerUuid = sourceEncounterProvider.getProvider().getUuid();
+
+		Encounter transferredEncounter = Context.getEncounterService().transferEncounter(sourceEncounter, targetPatient);
+		Context.flushSession();
+		Context.clearSession();
+
+		// the source encounter's encounter_provider is voided along with the encounter
+		sourceEncounter = Context.getEncounterService().getEncounter(201);
+		sourceEncounterProvider = getEncounterProvider(201, sourceEncounterProvider.getUuid());
+		assertTrue(sourceEncounter.getVoided());
+		assertTrue(sourceEncounterProvider.getVoided());
+		assertEquals(sourceEncounter.getVoidReason(), sourceEncounterProvider.getVoidReason());
+		assertNotNull(sourceEncounterProvider.getVoidedBy());
+		assertEquals(sourceEncounter.getDateVoided().getTime(), sourceEncounterProvider.getDateVoided().getTime());
+
+		// the transferred encounter has its own active copy of the encounter_provider
+		transferredEncounter = Context.getEncounterService().getEncounter(transferredEncounter.getId());
+		assertEquals(1, transferredEncounter.getActiveEncounterProviders().size());
+		assertEquals(providerUuid, transferredEncounter.getActiveEncounterProviders().iterator().next().getProvider().getUuid());
+
+		// the provider itself is untouched
+		Provider provider = Context.getProviderService().getProviderByUuid(providerUuid);
+		assertFalse(provider.getRetired());
+		assertFalse(provider.getPerson().getVoided());
+
+		// and the encounter_provider is restored if the source encounter is unvoided
+		Context.getEncounterService().unvoidEncounter(sourceEncounter);
+		assertFalse(getEncounterProvider(201, sourceEncounterProvider.getUuid()).getVoided());
+	}
+
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
 	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient anyPatient = new Patient(2);
