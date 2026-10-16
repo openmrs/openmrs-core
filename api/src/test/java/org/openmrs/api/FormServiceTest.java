@@ -64,66 +64,71 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	protected static final String FORM_SAMPLE_RESOURCE = "org/openmrs/api/include/FormServiceTest-sampleResource.xslt";
 
 	/**
-	 * Creates then updates a form FIXME Break this test case into separate tests
-	 *
-	 * @throws Exception
+	 * @see FormService#saveForm(Form)
 	 */
 	@Test
-	public void shouldFormCreateUpdateDelete() {
+	public void shouldCreateForm() {
 		FormService formService = Context.getFormService();
-
-		//testing Form creation
-
 		Form form1 = new Form();
-
-		String name1 = "form name1";
-		String version1 = "1.0";
-		String descript1 = "descript1";
-
-		form1.setName(name1);
-		form1.setVersion(version1);
-		form1.setDescription(descript1);
+		form1.setName("form name1");
+		form1.setVersion("1.0");
+		form1.setDescription("descript1");
 
 		formService.saveForm(form1);
 
-		//testing get form
+		assertNotNull(form1.getFormId());
+		Form savedForm = formService.getForm(form1.getFormId());
+		assertEquals("form name1", savedForm.getName());
+	}
 
-		Form form2 = formService.getForm(form1.getFormId());
+	/**
+	 * @see FormService#saveForm(Form)
+	 */
+	@Test
+	public void shouldUpdateForm() {
+		FormService formService = Context.getFormService();
+		Form form2 = formService.getForm(1);
 
-		String name2 = "form name2";
-		String version2 = "2.0";
-		String descript2 = "descript2";
-
-		form2.setName(name2);
-		form2.setVersion(version2);
-		form2.setDescription(descript2);
+		form2.setName("form name2");
+		form2.setVersion("2.0");
+		form2.setDescription("descript2");
 
 		formService.saveForm(form2);
 
-		//testing correct updation
+		Form form3 = formService.getForm(1);
+		assertEquals("form name2", form3.getName());
+		assertEquals("2.0", form3.getVersion());
+		assertEquals("descript2", form3.getDescription());
+	}
 
-		Form form3 = formService.getForm(form2.getFormId());
-
-		assertTrue(form1.equals(form3));
-
-		assertTrue(form3.getName().equals(name2));
-		assertTrue(form3.getVersion().equals(version2));
-		assertTrue(form3.getDescription().equals(descript2));
-
-		//testing (un)retiration
+	/**
+	 * @see FormService#retireForm(Form, String)
+	 * @see FormService#unretireForm(Form)
+	 */
+	@Test
+	public void shouldRetireAndUnretireForm() {
+		FormService formService = Context.getFormService();
+		Form form2 = formService.getForm(1);
 
 		formService.retireForm(form2, "reason");
 		assertTrue(form2.getRetired());
-		assertTrue(form2.getRetireReason().equals("reason"));
+		assertEquals("reason", form2.getRetireReason());
 
 		formService.unretireForm(form2);
 		assertFalse(form2.getRetired());
 		assertNull(form2.getRetireReason());
+	}
 
-		//testing deletion
+	/**
+	 * @see FormService#purgeForm(Form)
+	 */
+	@Test
+	public void shouldDeleteForm() {
+		FormService formService = Context.getFormService();
+		Form form2 = formService.getForm(1);
 
 		formService.purgeForm(form2);
-		//formService.deleteForm(form1); //deleting a deleted form
+		assertNull(formService.getForm(1));
 	}
 
 	/**
