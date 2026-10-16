@@ -207,4 +207,46 @@ class OpenmrsPropertyLookupTest {
 		contextMock.verify(() -> Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 		contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
 	}
+
+	// --- resilience when the service layer is unavailable / re-entrantly initializing ---
+
+	/**
+	 * Regression test for the re-entrant logging initialization that broke downstream modules: while
+	 * log4j2 is being configured, resolving {@code ${openmrs:logLayout}} reaches into the service
+	 * layer, which may be unavailable or mid-initialization and therefore throw. The lookup must
+	 * swallow that failure and fall back to the default rather than letting it abort logging
+	 * configuration (and, in turn, {@code ServiceContext} class initialization).
+	 */
+	@Test
+	void lookup_shouldFallBackToDefaultLayoutWhenReadingGlobalPropertyFails() {
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT))
+		        .thenThrow(new NullPointerException("ServiceContext not initialized"));
+
+		String result = lookup.lookup(null, "logLayout");
+
+		assertThat(result, equalTo("%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n"));
+	}
+
+	@Test
+	void lookup_shouldReturnNullForLogLocationWhenReadingGlobalPropertyFails() {
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LOCATION))
+		        .thenThrow(new NullPointerException("ServiceContext not initialized"));
+
+		String result = lookup.lookup(null, "logLocation");
+
+		assertThat(result, nullValue());
+	}
+
+	@Test
+	void lookup_shouldRemoveProxyPrivilegeWhenReadingGlobalPropertyFails() {
+		contextMock.when(Context::isSessionOpen).thenReturn(true);
+		configUtilMock.when(() -> ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_LOG_LAYOUT))
+		        .thenThrow(new RuntimeException("boom"));
+
+		lookup.lookup(null, "logLayout");
+
+		contextMock.verify(() -> Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+	}
 }
