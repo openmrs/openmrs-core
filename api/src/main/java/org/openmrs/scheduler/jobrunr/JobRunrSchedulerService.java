@@ -58,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -152,7 +153,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	}
 
 	@Override
-	public Task scheduleTask(TaskDefinition legacyTask) throws SchedulerException {
+	public Task scheduleTask(@P("task") TaskDefinition legacyTask) throws SchedulerException {
 		if (legacyTask != null) {
 			// Reload task from DB, to get a session attached version
 			final TaskDefinition task = schedulerDAO.getTask(legacyTask.getId());
