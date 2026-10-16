@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +20,6 @@ import java.util.Set;
 
 import org.openmrs.api.DomainService;
 import org.openmrs.api.OpenmrsService;
-import org.openmrs.api.RefByUuid;
 import org.openmrs.serialization.UuidReferenceModule;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,9 +162,8 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
 		/**
 		 * Fetches a domain object by its UUID.
 		 * <p>
-		 * If the service implements {@link RefByUuid}, delegates to
-		 * {@link RefByUuid#getRefByUuid(Class, String)}; otherwise, invokes the underlying method
-		 * reflectively.
+		 * Invokes the domain-specific getter on the service proxy so that authorization and other service
+		 * interceptors are applied.
 		 * </p>
 		 *
 		 * @param uuid the UUID of the object to fetch
@@ -173,12 +172,13 @@ public class DomainServiceImpl extends BaseOpenmrsService implements DomainServi
 		 */
 		public Object fetch(String uuid) {
 			try {
-				if (RefByUuid.class.isAssignableFrom(getService().getClass())) {
-					return ((RefByUuid) getService()).getRefByUuid(getReturnType(), uuid);
-				} else {
-					return getMethod().invoke(service, uuid);
+				return getMethod().invoke(getService(), uuid);
+			} catch (InvocationTargetException e) {
+				if (e.getCause() instanceof RuntimeException runtimeException) {
+					throw runtimeException;
 				}
-			} catch (Exception e) {
+				throw new RuntimeException("Failed to fetch " + returnType.getSimpleName() + " by UUID", e.getCause());
+			} catch (ReflectiveOperationException e) {
 				throw new RuntimeException("Failed to fetch " + returnType.getSimpleName() + " by UUID", e);
 			}
 		}
