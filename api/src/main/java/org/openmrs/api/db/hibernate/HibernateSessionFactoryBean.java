@@ -247,4 +247,5 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 			throw new APIException("An error occurred while initializing the Envers audit tables", e);
 		}
 	}
+
 }
