@@ -11,6 +11,7 @@ package org.openmrs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,11 +40,11 @@ public class ConceptReferenceTermMap extends BaseConceptMap {
 	@Column(name = "concept_reference_term_map_id", nullable = false)
 	private Integer conceptReferenceTermMapId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_a_id", nullable = false)
 	private ConceptReferenceTerm termA;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_b_id", nullable = false)
 	private ConceptReferenceTerm termB;
 

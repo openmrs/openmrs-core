@@ -25,7 +25,7 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class BaseConceptMap extends BaseOpenmrsObject implements Auditable {
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "a_is_to_b_id", nullable = false)
 	private ConceptMapType conceptMapType;
 

@@ -9,12 +9,14 @@
  */
 package org.openmrs.aop;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -31,11 +33,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Component;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
  * call.
+ * <p>
+ * Enforces the deprecated {@link org.openmrs.annotation.Authorized}, which Spring Security's
+ * {@code @PreAuthorize} family (wired in {@link org.openmrs.security.OpenmrsSecurityConfig}) now
+ * supersedes. The two advisors are independent and coexist while usages are converted; this one
+ * stays enforced for as long as any {@code @Authorized} method remains.
  */
 @Component("authorizationInterceptor")
 public class AuthorizationAdvice implements MethodBeforeAdvice {
@@ -46,6 +57,9 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
 
 	private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
+
+	private static final List<Class<? extends Annotation>> SPRING_SECURITY_ANNOTATIONS = List.of(PreAuthorize.class,
+	    PostAuthorize.class, PreFilter.class, PostFilter.class);
 
 	/**
 	 * Resolved {@link Authorized} metadata per advised method. Which privileges a method requires never
@@ -166,26 +180,43 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 
 	/**
 	 * Reports, once per method thanks to the cache, that nothing guards a proxied method. Plenty of
-	 * service methods are unannotated by design, so this flags something to look at rather than
+	 * service methods are deliberately unguarded, so this is a hint for a reviewer rather than
 	 * something necessarily wrong.
 	 * <p>
 	 * Bridge and synthetic methods are skipped because a bridge duplicates a declaration reported in
 	 * its own right; non-public methods and {@link Object}'s are not part of the service API a caller
-	 * reaches through the proxy.
+	 * reaches through the proxy. A method carrying a Spring Security annotation is skipped too: as of
+	 * 3.0.0 those guard a method instead of {@link Authorized} (see
+	 * {@link org.openmrs.security.OpenmrsSecurityConfig}), so reporting it as unchecked would be wrong.
 	 */
 	private static void warnMethodIsUnguarded(Method method) {
 		if (method.isBridge() || method.isSynthetic() || !Modifier.isPublic(method.getModifiers())
-		        || method.getDeclaringClass() == Object.class) {
+		        || method.getDeclaringClass() == Object.class || isGuardedBySpringSecurity(method)) {
 			return;
 		}
 
-		log.warn("No @Authorized annotation applies to {}.{}(), directly or through any method it overrides, "
+		log.warn("No authorization annotation applies to {}.{}(), directly or through any method it overrides, "
 		        + "so calls to it are not privilege checked",
 		    method.getDeclaringClass().getName(), method.getName());
 	}
 
 	/**
-	 * Throws an APIAuthorization exception stating why the user failed
+	 * @return true if Spring Security method security guards this method, in which case
+	 *         {@link Authorized} is not expected on it
+	 */
+	private static boolean isGuardedBySpringSecurity(Method method) {
+		for (Class<? extends Annotation> annotation : SPRING_SECURITY_ANNOTATIONS) {
+			if (AnnotationUtils.findAnnotation(method, annotation) != null
+			        || AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotation) != null) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -198,7 +229,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 
 	/**
-	 * Throws an APIAuthorization exception stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -211,7 +242,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 
 	/**
-	 * Throws an APIAuthorization exception stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method

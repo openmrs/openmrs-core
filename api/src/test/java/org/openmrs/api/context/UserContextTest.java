@@ -12,21 +12,30 @@ package org.openmrs.api.context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 public class UserContextTest extends BaseContextSensitiveTest {
 
@@ -57,6 +66,42 @@ public class UserContextTest extends BaseContextSensitiveTest {
 	void deleteUser() {
 		userService.purgeUser(testUser);
 		personService.purgePerson(testPerson);
+	}
+
+	@Test
+	public void hasPrivilege_shouldMatchAProxyPrivilegeCaseInsensitively() {
+		// proxy privileges were the one privilege comparison still using equals rather than
+		// equalsIgnoreCase; logged out, the proxy list is the only thing that can grant
+		Context.getUserContext().logout();
+		Context.addProxyPrivilege("Proxy Case Test Privilege");
+		try {
+			assertTrue(Context.hasPrivilege("PROXY CASE TEST PRIVILEGE"));
+			assertTrue(Context.hasPrivilege("proxy case test privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Proxy Case Test Privilege");
+			// other tests in this class need privileges, and nothing re-authenticates between methods
+			Context.authenticate("admin", "test");
+		}
+	}
+
+	@Test
+	public void removeProxyPrivilege_shouldMatchCaseInsensitivelyAndRemoveOnlyOneInstance() {
+		// AuthorizationAdvice brackets every service call with an add/remove pair, so nested calls
+		// stack the same privilege and one remove must undo exactly one add - even now that the match
+		// ignores case
+		Context.getUserContext().logout();
+		Context.addProxyPrivilege("Proxy Case Test Privilege");
+		Context.addProxyPrivilege("Proxy Case Test Privilege");
+		try {
+			Context.removeProxyPrivilege("PROXY CASE TEST PRIVILEGE");
+			assertTrue(Context.hasPrivilege("Proxy Case Test Privilege"), "one add should remain");
+
+			Context.removeProxyPrivilege("proxy case test privilege");
+			assertFalse(Context.hasPrivilege("Proxy Case Test Privilege"), "both adds should now be undone");
+		} finally {
+			Context.removeProxyPrivilege("Proxy Case Test Privilege");
+			Context.authenticate("admin", "test");
+		}
 	}
 
 	@Test
@@ -113,6 +158,37 @@ public class UserContextTest extends BaseContextSensitiveTest {
 
 		// assert
 		assertThat(locationId, nullValue());
+	}
+
+	@Test
+	void authenticate_shouldUseTheSchemeThisContextWasConstructedWith() {
+		// UserContext(AuthenticationScheme) is public API, and before 3.0.0 authenticate(...) invoked that
+		// instance directly. Routing through Spring Security's AuthenticationManager must not quietly
+		// swap it for the globally configured scheme - "test-scheme" is what BasicAuthenticated carries
+		// back only if TestUsernameAuthenticationScheme is the one that ran
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		Authenticated authenticated = userContext.authenticate(new TestUsernameCredentials("admin"));
+
+		assertThat(authenticated.getAuthenticationScheme(), is("test-scheme"));
+	}
+
+	@Test
+	void authenticate_shouldFailClosedWhenTheAuthenticationManagerAnswersWithAForeignToken() {
+		// the authenticationManager bean is a plain, overridable @Bean resolved by name, so a module can
+		// replace it or place its own provider first. The result must then be a ContextAuthenticationException
+		// - the exception authenticate(...) documents - rather than a ClassCastException
+		AuthenticationManager foreign = authentication -> new TestingAuthenticationToken("admin", "n/a");
+		try (MockedStatic<Context> context = mockStatic(Context.class, Mockito.CALLS_REAL_METHODS)) {
+			context.when(() -> Context.getRegisteredComponent("authenticationManager", AuthenticationManager.class))
+			        .thenReturn(foreign);
+			UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+			ContextAuthenticationException exception = assertThrows(ContextAuthenticationException.class,
+			    () -> userContext.authenticate(new TestUsernameCredentials("admin")));
+
+			assertThat(exception.getMessage(), containsString("AuthenticatedResultToken"));
+		}
 	}
 
 	@Test
@@ -224,5 +300,19 @@ public class UserContextTest extends BaseContextSensitiveTest {
 
 		// assert
 		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	@Test
+	void becomeUser_shouldDenyANonSuperuserWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		Context.becomeUser("3-4");
+		try {
+			APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+			    () -> Context.becomeUser("admin"));
+			assertThat(denial.getMessage(), is("You must be a superuser to assume another user's identity"));
+		} finally {
+			// deleteUser() purges as the superuser this test stopped being
+			authenticate();
+		}
 	}
 }

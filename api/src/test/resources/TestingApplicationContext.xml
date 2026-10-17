@@ -68,6 +68,29 @@
 		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
 	</bean>
 
+	<!-- Module services declared the legacy way whose targets reference core services, see ModuleFactoryBeanServiceAdvisorsTest -->
+	<bean id="test.FactoryBeanModuleInnerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target">
+			<bean class="org.openmrs.aop.ModuleFactoryBeanServiceAdvisorsTest$FactoryBeanModuleInnerServiceImpl"/>
+		</property>
+		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
+
+	<bean id="test.FactoryBeanModuleServiceImpl"
+	      class="org.openmrs.aop.ModuleFactoryBeanServiceAdvisorsTest$FactoryBeanModuleServiceImpl">
+		<property name="conceptService" ref="conceptService"/>
+		<property name="adminService" ref="adminService"/>
+	</bean>
+
+	<bean id="test.FactoryBeanModuleService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target" ref="test.FactoryBeanModuleServiceImpl"/>
+		<property name="preInterceptors" ref="serviceInterceptors"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
+
 	<jdbc:initialize-database data-source="dataSource" ignore-failures="DROPS">
 		<jdbc:script location="classpath:create_shedlock_table.sql"/>
 	</jdbc:initialize-database>

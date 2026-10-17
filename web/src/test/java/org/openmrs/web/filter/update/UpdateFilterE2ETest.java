@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -425,14 +426,53 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnFalseForAjaxProgressRequestEvenWhenNoUpdatesRequired() {
+	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
 		UpdateFilter.setUpdatesRequired(false);
 		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(req);
 
 		assertEquals(false, result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/openmrs");
+		req.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(req);
+
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+
+		boolean result = filter.skipFilter(req);
+
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldNotReadRequestParametersOnceUpdatesNoLongerRequired() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest() {
+
+			@Override
+			public String getParameter(String name) {
+				throw new AssertionError("skipFilter parsed request parameters once updates are no longer required");
+			}
+		};
+		req.setServletPath("/index.htm");
+
+		assertEquals(true, filter.skipFilter(req));
 	}
 
 	// ========== Helper Methods ==========

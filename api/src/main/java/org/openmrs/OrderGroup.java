@@ -52,27 +52,27 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	@Column(name = "order_group_id", nullable = false)
 	private Integer orderGroupId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_set_id")
 	private OrderSet orderSet;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_order_group")
 	private OrderGroup parentOrderGroup;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_group_reason")
 	private Concept orderGroupReason;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "previous_order_group")
 	private OrderGroup previousOrderGroup;
 
