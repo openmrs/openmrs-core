@@ -2265,7 +2265,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (Concept.class.equals(type)) {
 			return (T) getConceptByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override
