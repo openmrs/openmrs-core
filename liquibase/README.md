@@ -1,11 +1,11 @@
 # Creating Liquibase snapshots for OpenMRS
-This document explains why Liquibase snapshots are introduced to OpenMRS and how versioning of database changes is 
-affected by snapshots. It also contains instructions for creating new Liquibase snapshots, running them from the 
+This document explains why Liquibase snapshots are introduced to OpenMRS and how versioning of database changes is
+affected by snapshots. It also contains instructions for creating new Liquibase snapshots, running them from the
 console and adding them to the OpenMRS code base.
 
 ## Why Liquibase snapshots?
-OpenMRS uses [Liquibase](http://www.liquibase.org/index.html) to evolve its database model. The respective change sets 
-have grown in the course of time and contain unneeded changes. E.g. there are tables or columns that are created, 
+OpenMRS uses [Liquibase](http://www.liquibase.org/index.html) to evolve its database model. The respective change sets
+have grown in the course of time and contain unneeded changes. E.g. there are tables or columns that are created,
 modified and eventually deleted as they are no longer used.
 
 Large and partly outdated Liquibase change sets affect OpenMRS in two ways:
@@ -18,20 +18,20 @@ An alternative model is based on snapshots where historic change sets are consol
 ## Folder structure and naming conventions
 This section describes the folder structure and naming conventions used for Liquibase snapshots and updates.
 
-**Before** the introduction of snapshots, all Liquibase change log files were located in the resources folder 
+**Before** the introduction of snapshots, all Liquibase change log files were located in the resources folder
 of `openmrs-api`:
 
 * `openmrs-core/api/src/main/resources`
 
-**Since** the introduction of snapshots, the respective change log files are no longer stored in 
-`openmrs-core/api/src/main/resources` 
+**Since** the introduction of snapshots, the respective change log files are no longer stored in
+`openmrs-core/api/src/main/resources`
 but in the following subfolders:
 
 *  `openmrs-core/api/src/main/resources/org/openmrs/liquibase/snapshots` contains all Liquibase snapshot files.
 
 *  `openmrs-core/api/src/main/resources/org/openmrs/liquibase/updates` contains all Liquibase update files.
 
-Version numbers are part of the change log file name: 
+Version numbers are part of the change log file name:
 
 * `liquibase-update-to-latest-2.1.x.xml`.
 
@@ -39,60 +39,60 @@ Version numbers are part of the change log file name:
 This section compares Liquibase files before and after the introduction of Liquibase snapshots.
 
 ### Change sets in [OpenMRS 2.1.x](https://github.com/openmrs/openmrs-core/tree/2.1.x/api/src/main/resources)
-OpenMRS 2.1.x is the **last version that contains the full history** of database changes. The respective Liquibase 
+OpenMRS 2.1.x is the **last version that contains the full history** of database changes. The respective Liquibase
 files are:
 
 * `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-1.9.x.xml` defines the OpenMRS schema
 
 * `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.9.x.xml` defines core data for OpenMRS
 
-* `org/openmrs/liquibase/updates/liquibase-update-to-latest-1.9.x/.xml` is an empty change log that was added so that 
+* `org/openmrs/liquibase/updates/liquibase-update-to-latest-1.9.x/.xml` is an empty change log that was added so that
 change log version also comes with an update file
 
-* `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.0.x/.xml` contains all database changes introduced 
+* `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.0.x/.xml` contains all database changes introduced
 **until** OpenMRS 2.0, some changes go back to 2009
 
-* `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.1.x.xml` contains all database changes introduced 
+* `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.1.x.xml` contains all database changes introduced
 **since** OpenMRS 2.0
 
 ### Change sets in OpenMRS 2.2.x
-OpenMRS 2.2.x is the **first version using Liquibase snapshots**. Please note that this version did not exist at the 
+OpenMRS 2.2.x is the **first version using Liquibase snapshots**. Please note that this version did not exist at the
 time of writing this document.
 
-* `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-2.1.x.xml` defines the OpenMRS schema. This file 
+* `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-2.1.x.xml` defines the OpenMRS schema. This file
 is a **snapshot** generated from OpenMRS 2.1.x.
 
-* `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-2.1.x.xml` defines core data. Again, this file is 
+* `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-2.1.x.xml` defines core data. Again, this file is
 a **snapshot** generated from OpenMRS 2.1.x.
 
-* `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml` contains database changes introduced by 
+* `org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml` contains database changes introduced by
 OpenMRS 2.2.x
 
 ### Change sets in (hypothetic) OpenMRS 4.8.x
 Looking forward to a (hypothetic) version 4.8.x of OpenMRS, the respective change sets are:
 
-* `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-4.7.x.xml` defines the OpenMRS schema. This file 
+* `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-4.7.x.xml` defines the OpenMRS schema. This file
 is a **snapshot** generated from OpenMRS 4.7.x.
 
-* `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-4.7.x.xml` defines core data. Again, this file is 
+* `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-4.7.x.xml` defines core data. Again, this file is
 a **snapshot** generated from OpenMRS 4.7.x.
 
-* `org/openmrs/liquibase/updates/liquibase-update-to-latest-4.8.x.xml` contains database changes introduced by 
+* `org/openmrs/liquibase/updates/liquibase-update-to-latest-4.8.x.xml` contains database changes introduced by
 OpenMRS 4.8.x
 
 ### Further Liquibase files
-The folder `openmrs-core/api/src/main/resources` contains further Liquibase files: 
+The folder `openmrs-core/api/src/main/resources` contains further Liquibase files:
 
 * `liquibase-schema-only.xml` references the latest snapshot file for creating the OpenMRS schema and continues to
-be used by other OpenMRS projects, e.g. openmrs-standalone.   
+be used by other OpenMRS projects, e.g. openmrs-standalone.
 
 * `liquibase-core-data.xml` references the latest snapshot file for OpenMRS data and continues to
-be used by other OpenMRS projects, e.g. openmrs-standalone.   
+be used by other OpenMRS projects, e.g. openmrs-standalone.
 
 * `liquibase-update-to-latest.xml` references the latest update file for the OpenMRS database and continues to
-be used by other OpenMRS projects, e.g. openmrs-standalone.   
+be used by other OpenMRS projects, e.g. openmrs-standalone.
 
-* `liquibase-update-to-latest-from-1.9.x.xml` is used by integration tests and includes references to 
+* `liquibase-update-to-latest-from-1.9.x.xml` is used by integration tests and includes references to
 multiple `org/openmrs/liquibase/updates/liquibase-update-to-latest-a.b.x.xml` files.
 
 * `liquibase-empty-changelog.xml` is used as a default Liquibase file by the org.openmrs.util.DatabaseUpdater class.
@@ -102,27 +102,27 @@ multiple `org/openmrs/liquibase/updates/liquibase-update-to-latest-a.b.x.xml` fi
 ## When to generate Liquibase shapshots
 Liquibase snapshots need to be created...
 
-1. when a **new minor or major version** of OpenMRS is created (such as 2.3.x or 3.0.x), new snapshot files need to be 
+1. when a **new minor or major version** of OpenMRS is created (such as 2.3.x or 3.0.x), new snapshot files need to be
 generated for the **previous** versions. The new snapshot files are added to
- 
-    * `org/openmrs/liquibase/snapshots/schema-only` and 
-    * `org/openmrs/liquibase/snapshots/core-data` 
+
+    * `org/openmrs/liquibase/snapshots/schema-only` and
+    * `org/openmrs/liquibase/snapshots/core-data`
 
    in the OpenMRS **master branch**. Do not forget to include the version number in the change log filenames.
-  
-   Liquibase updates introduced with the new 
+
+   Liquibase updates introduced with the new
 version are added to
 
     * `org/openmrs/liquibase/updates`
-   
-   The examples for the (hypothetic) OpemMRS version 4.8.x further above illustrates the different version numbers to 
+
+   The examples for the (hypothetic) OpemMRS version 4.8.x further above illustrates the different version numbers to
    use for the new change log files.
 
-2. when a **database change is added to an existing minor or major version**, the snapshot files of later versions 
+2. when a **database change is added to an existing minor or major version**, the snapshot files of later versions
 need to be updated so that they include the change.
 
 ## Generating and applying Liquibase snapshots
-The pom file of the openmrs-liquibase module contains a template for generating Liquibase snapshots from an existing 
+The pom file of the openmrs-liquibase module contains a template for generating Liquibase snapshots from an existing
 database and applying snapshots to an OpenMRS database.
 
 ### How to generate Liquibase snapshots
@@ -130,7 +130,7 @@ database and applying snapshots to an OpenMRS database.
 E.g. by running the script `openmrs-core/liquibase/scripts/drop_openmrs_schema.sql`:
 
 	mysql -u root -p < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
-	
+
 Take care **NOT** to run this script on a production database.
 
 #### Step 2 - Build and initialise OpenMRS
@@ -140,7 +140,7 @@ Take care **NOT** to run this script on a production database.
 	rm -r ~/.OpenMRS
 	mvn jetty:run
 
-Open [http://localhost:8080/openmrs/initialsetup](http://localhost:8080/openmrs/initialsetup) and choose the following 
+Open [http://localhost:8080/openmrs/initialsetup](http://localhost:8080/openmrs/initialsetup) and choose the following
 options:
 
 * **simple installation** in step 2 of the installation wizard
@@ -153,7 +153,7 @@ Run the following commands to generate the Liquibase snapshots where `username` 
 
 	cd <some root folder>/openmrs-core/liquibase
 	. scripts/create_liquibase_snapshots.sh <username> <password>
-	
+
 The following snapshot files are created:
 
 * `openmrs-core/liquibase/snapshots/liquibase-schema-only-SNAPSHOT.xml`
@@ -162,20 +162,20 @@ The following snapshot files are created:
 As an alternative to using the shell script, the snapshots can be created as follows:
 
 	cd <some root folder>/openmrs-core/liquibase
-	
+
 	mvn \
 	  -DoutputChangelogfile=liquibase-schema-only-SNAPSHOT.xml \
 	  -Dusername=<database user> \
 	  -Dpassword=<database password> \
 	  liquibase:generateChangeLog
-	  
+
 	mvn \
 	  -DdiffTypes=data \
 	  -DoutputChangelogfile=liquibase-core-data-SNAPSHOT.xml \
 	  -Dusername=<database user> \
 	  -Dpassword=<database password> \
 	  liquibase:generateChangeLog
-	
+
 #### Step 4 - Apply corrections to generated snapshot files
 
 The generated Liquibase snapshot files need to be corrected. The appendix of this document contains a detailed description of the changes applied to the generated files.
@@ -191,7 +191,7 @@ Alternatively, the corrections can be applied by running these commands:
 
 	cd <some root folder>/openmrs-core/liquibase
 	java -jar ./target/openmrs-liquibase-2.4.0-SNAPSHOT-jar-with-dependencies.jar
-	
+
 Please note that the jar file needs to be created *before* generating the Liquibase snapshots as the build process will detect that the generated files do not (yet) contain the OpenMRS license header.
 
 #### Step 5 - Add the two PostgreSQL changesets to the liquibase-update-to-latest-version.xml file
@@ -199,7 +199,7 @@ Please note that the jar file needs to be created *before* generating the Liquib
     <comment> Soundex extension for PostgreSQL</comment>
     <sql> CREATE EXTENSION IF NOT EXISTS fuzzystrmatch SCHEMA public;</sql>
 </changeSet>`
-    
+
 `<changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
     <comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
     <sql>
@@ -233,17 +233,17 @@ As an alternative to using the utility script, apply the steps described below.
 E.g. by running the script `drop_openmrs_schema.sql`:
 
 	mysql -u root -p < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
-	
+
 Again, take care **NOT** to run this script on a production database.
 
 ##### Step 2 - Create an empty OpenMRS database
 E.g. by running the script `create_openmrs_database.sql`:
 
 	mysql -u root -p < openmrs-core/liquibase/scripts/create_openmrs_database.sql
-	
+
 The script creates the openmrs database and the tables `liquibasechangelog` and `liquibasechangeloglock`.
-	
-##### Step 3 - Use the snapshots to update the OpenMRS database 
+
+##### Step 3 - Use the snapshots to update the OpenMRS database
 
 Execute the following commands:
 
@@ -264,23 +264,23 @@ Execute the following commands:
 One more time, take care **NOT** to run these commands on a production database.
 
 ### How to add snapshots to OpenMRS master
-The new snapshots files are now ready to be added to the OpenMRS master branch. 
+The new snapshots files are now ready to be added to the OpenMRS master branch.
 
-#### Step 1 - Add the new snapshot files 
-Move the file `liquibase-schema-only-UPDATED-SNAPSHOT.xml` to `org/openmrs/liquibase/snapshots/schema-only` and 
+#### Step 1 - Add the new snapshot files
+Move the file `liquibase-schema-only-UPDATED-SNAPSHOT.xml` to `org/openmrs/liquibase/snapshots/schema-only` and
 rename it to `liquibase-schema-only-<major.minor>.x.xml`.
 
-Similarly. move the file `liquibase-core-data-UPDATED-SNAPSHOT.xml` to `org/openmrs/liquibase/snapshots/core-data` and 
+Similarly. move the file `liquibase-core-data-UPDATED-SNAPSHOT.xml` to `org/openmrs/liquibase/snapshots/core-data` and
 rename it to `liquibase-core-data-<major.minor>.x.xml`.
 
 For example, when creating snapshots for version 2.2.x of OpenMRS, the resulting files are:
 
 * `org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-2.2.x.xml`
 * `org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-2.2.x.xml`
-	
+
 #### Step 2 - Create a new liquibase update file
-In the folder `org/openmrs/liquibase/updates`, create an **empty** Liquibase change log file 
-called `liquibase-update-to-latest-<major.minor+1>.x.xml`. 
+In the folder `org/openmrs/liquibase/updates`, create an **empty** Liquibase change log file
+called `liquibase-update-to-latest-<major.minor+1>.x.xml`.
 
 Use `api/src/main/resources/liquibase-update-to-latest-template.xml` as a template for creating the new file.
 
@@ -288,10 +288,10 @@ For example, when adding snapshots from OpenMRS 2.2.x, the resulting file is:
 
 * `api/src/main/resources/org/openmrs/liquibase/updates/liquibase-update-to-latest-2.3.x.xml`
 
-The minor version number of the new update change log is increased by one as this file contains all Liquibase change 
-sets that are introduced 
+The minor version number of the new update change log is increased by one as this file contains all Liquibase change
+sets that are introduced
 
-* *after* OpenMRS version 2.2 was created 
+* *after* OpenMRS version 2.2 was created
 * and *before* OpenMRS version 2.3 will be created
 
 Include the new file in `resources/liquibase-update-to-latest-from-1.9.x.xml`, it is used by integration tests (as mentioned above).
@@ -300,44 +300,44 @@ Increment, by one, the changeset count constant `CHANGE_SET_COUNT_FOR_GREATER_TH
 This caters for the one empty changeset in the liquibase update file that you have just created.
 
 #### Step 3 - Update references in legacy Liquibase change log files
-The following files in `openmrs-core/api/src/main/resources` contain references to the latest Liquibase snapshot and 
+The following files in `openmrs-core/api/src/main/resources` contain references to the latest Liquibase snapshot and
 update change logs and need to be updated after the new change log files were added:
 * `liquibase-schema-only.xml`
 * `liquibase-core-data.xml`
 * `liquibase-update-to-latest.xml`
 
 #### Step 4 - Make OpenMRS aware of the new versions
-New snapshot and update versions need to be added to the `org.openmrs.liquibase.ChangeLogVersions` class. 
+New snapshot and update versions need to be added to the `org.openmrs.liquibase.ChangeLogVersions` class.
 
-After adding the new change log files and updating the `ChangeLogVersions` class, run the 
-test `org.openmrs.liquibase.ChangeLogVersionsTest` to ensure that the definition of change log versions and the actual 
-change log files are in sync. The test fails if either versions are missing in the `ChangeLogVersions` class or if 
+After adding the new change log files and updating the `ChangeLogVersions` class, run the
+test `org.openmrs.liquibase.ChangeLogVersionsTest` to ensure that the definition of change log versions and the actual
+change log files are in sync. The test fails if either versions are missing in the `ChangeLogVersions` class or if
 change log files are missing in the resource folder.
 
 #### Step 5 - Validate Hibernate mappings
 
-Run `org.openmrs.util.databasechange.ValidateHibernateMappingsDatabaseIT` to check whether the data types in the new 
-liquibase files are compatible with the data types specified in the Hibernate mappings. 
+Run `org.openmrs.util.databasechange.ValidateHibernateMappingsDatabaseIT` to check whether the data types in the new
+liquibase files are compatible with the data types specified in the Hibernate mappings.
 
 The test can be run in two ways:
 
 * By running `mvn clean test -Pskip-default-test -Pintegration-test -Dtest=ValidateHibernateMappingsDatabaseIT` in the console from the `api` subproject.
-* Alternatively, by running the test in IntelliJ or another IDE 
+* Alternatively, by running the test in IntelliJ or another IDE
 
 #### Step 6 - Build and initialise OpenMRS with the new snapshot and update files
-Drop your local OpenMRS database and build and initialise OpenMRS as described in the section "How to generate 
+Drop your local OpenMRS database and build and initialise OpenMRS as described in the section "How to generate
 Liquibase snapshots".
 
 ## How to run manual integration tests with older versions of OpenMRS
 
-When introducing Liquibase snapshots, the integration of snapshots with older versions of OpenMRS had to be tested. 
+When introducing Liquibase snapshots, the integration of snapshots with older versions of OpenMRS had to be tested.
 This section describes how these tests were conducted, so that they can be repeated as and when needed.
 
 #### Step 1 - Drop your local OpenMRS schema
 E.g. by running the script `drop_openmrs_schema.sql`:
 
 	mysql -u root -p < openmrs-core/liquibase/scripts/drop_openmrs_schema.sql
-	
+
 Take care **NOT** to run this script on a production database.
 
 #### Step 2 - Delete the OpenMRS folder in your profile
@@ -352,7 +352,7 @@ Take care **NOT** to do that on a production environment.
 	cd webapp
 	mvn jetty:run
 
-Open [http://localhost:8080/openmrs/initialsetup](http://localhost:8080/openmrs/initialsetup) and choose the following 
+Open [http://localhost:8080/openmrs/initialsetup](http://localhost:8080/openmrs/initialsetup) and choose the following
 options:
 
 * **simple installation** in step 2 of the installation wizard
@@ -374,7 +374,7 @@ Open [http://localhost:8080/openmrs](http://localhost:8080/openmrs) and do the f
 * review the list of Liquibase change sets that need to be run to update the OpenMRS database
 * run the pending change sets
 
-#### Step 6 - Check the OpenMRS log 
+#### Step 6 - Check the OpenMRS log
 The OpenMRS log file lists the change sets that were run. Validate that the expected change sets were executed.
 
 ## References
@@ -404,7 +404,7 @@ The attribute **`value`** of the table **`clob_datatype_storage `** must be of t
         </createTable>
     </changeSet>
 
-When creating snapshots, Liquibase version 3.x  uses the types `BIT` or `BIT(1)` for boolean attributes in a MySQL 
+When creating snapshots, Liquibase version 3.x  uses the types `BIT` or `BIT(1)` for boolean attributes in a MySQL
 database. These types need to be changed to `BOOLEAN`:
 
     <changeSet ...>
