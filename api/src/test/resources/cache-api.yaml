@@ -1,4 +1,4 @@
-caches: 
+caches:
     subscription:
         configuration: "entity"
         memory:
