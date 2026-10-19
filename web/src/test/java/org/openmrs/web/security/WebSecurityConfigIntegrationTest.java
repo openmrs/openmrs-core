@@ -24,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.web.filter.RepeatedSlashFilter;
+import org.openmrs.web.filter.TrailingSlashFilter;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -249,6 +250,29 @@ class WebSecurityConfigIntegrationTest {
 	}
 
 	@Test
+	void filterChain_shouldServeAWsRequestWithATrailingSlashFromTheHandlerForThePathWithoutIt() throws Exception {
+		// Spring 7 does not match "/public/x" to /public/x/, so without TrailingSlashFilter this
+		// request finds no handler
+		mockMvcBehind(new TrailingSlashFilter()).perform(wsGet("/openmrs/ws/public/x/")).andExpect(status().isOk());
+	}
+
+	@Test
+	void filterChain_shouldRejectAWsRequestWhoseUriEndsInTwoSlashes() throws Exception {
+		// Tomcat collapses // in the path info but keeps it in the request URI. Trimmed to one trailing
+		// slash ahead of the firewall, the URI would pass it and find no handler
+		mockMvcBehind(new TrailingSlashFilter()).perform(wsGet("/openmrs/ws/public/x//").pathInfo("/public/x/"))
+		        .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void filterChain_shouldChallengeAWsUrlGuardedByAnExactRuleWhenReachedWithATrailingSlash() throws Exception {
+		// "/secure/x" names no trailing slash, so openmrsAuthorizationFilter judges /ws/secure/x/ only
+		// because the slash is trimmed before it, as it is before the handler is chosen
+		mockMvcBehind(new TrailingSlashFilter()).perform(wsGet("/openmrs/ws/secure/x/"))
+		        .andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	void filterChain_shouldNotAddSecurityHeadersToTheResponse() throws Exception {
 		// headers(disable): left at their defaults, HeaderWriterFilter would add X-Frame-Options: DENY
 		// (breaking same-origin framing modules like htmlformentryui rely on) and a no-cache
@@ -335,11 +359,19 @@ class WebSecurityConfigIntegrationTest {
 		});
 	}
 
+	/**
+	 * A request the way the container hands it over for the {@code /ws/*} mapping of the openmrs
+	 * DispatcherServlet, under the {@code /openmrs} context path.
+	 */
+	private static MockHttpServletRequestBuilder wsGet(String requestUri) {
+		return get(URI.create(requestUri)).contextPath("/openmrs").servletPath("/ws");
+	}
+
 	static class TestUrlRulesConfig {
 
 		@Bean
 		AuthorizedUrlMatchers testUrlRules() {
-			return AuthorizedUrlMatchers.builder().requestMatchers("/admin/**").authenticated().build();
+			return AuthorizedUrlMatchers.builder().requestMatchers("/admin/**", "/secure/x").authenticated().build();
 		}
 	}
 
@@ -354,6 +386,11 @@ class WebSecurityConfigIntegrationTest {
 		@GetMapping("/public/x")
 		String publicEndpoint() {
 			return "public";
+		}
+
+		@GetMapping("/secure/x")
+		String secure() {
+			return "secure";
 		}
 
 		@GetMapping("/logout")
