@@ -457,15 +457,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		encounter.setVoidReason(reason);
 
-		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
-			if (!encounterProvider.getVoided()) {
-				encounterProvider.setVoided(true);
-				encounterProvider.setVoidedBy(encounter.getVoidedBy());
-				encounterProvider.setDateVoided(encounter.getDateVoided());
-				encounterProvider.setVoidReason(reason);
-			}
-		}
-
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
 	}
