@@ -187,7 +187,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> conceptReferenceRangeUtility.evaluateCriteria("", obs));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("", obs));
 
 		assertTrue(exception.getMessage().contains("criteria is empty"));
 	}
