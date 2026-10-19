@@ -1203,7 +1203,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertTrue(removedProvider.getVoided());
 		assertEquals("removed earlier", removedProvider.getVoidReason());
 	}
-	
+
 	private EncounterProvider getEncounterProvider(Integer encounterId, String uuid) {
 		return Context.getEncounterService().getEncounter(encounterId).getEncounterProviders().stream()
 		        .filter(ep -> ep.getUuid().equals(uuid)).findFirst().orElseThrow(AssertionError::new);
@@ -3294,7 +3294,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// the transferred encounter has its own active copy of the encounter_provider
 		transferredEncounter = Context.getEncounterService().getEncounter(transferredEncounter.getId());
 		assertEquals(1, transferredEncounter.getActiveEncounterProviders().size());
-		assertEquals(providerUuid, transferredEncounter.getActiveEncounterProviders().iterator().next().getProvider().getUuid());
+		assertEquals(providerUuid,
+		    transferredEncounter.getActiveEncounterProviders().iterator().next().getProvider().getUuid());
 
 		// the provider itself is untouched
 		Provider provider = Context.getProviderService().getProviderByUuid(providerUuid);
