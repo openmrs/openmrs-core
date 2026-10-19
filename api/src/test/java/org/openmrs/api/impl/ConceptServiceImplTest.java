@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.impl;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugReferenceMap;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -1184,5 +1187,44 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		conceptNumeric.setDatatype(new ConceptDatatype(1));
 		conceptNumeric.setConceptClass(new ConceptClass(1));
 		return (ConceptNumeric) Context.getConceptService().saveConcept(conceptNumeric);
+	}
+
+	/**
+	 * Guards against a new ConceptName property being silently dropped when saveConcept restores
+	 * unchanged names.
+	 *
+	 * @see ConceptServiceImpl#copyConceptName(ConceptName, ConceptName)
+	 */
+	@Test
+	public void copyConceptName_shouldCopyEveryReadableAndWritableProperty() throws Exception {
+		ConceptName source = new ConceptName();
+		source.setConceptNameId(1);
+		source.setConcept(new Concept(2));
+		source.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+		source.setName("name");
+		source.setLocale(Locale.FRENCH);
+		source.setLocalePreferred(true);
+		source.setTags(new HashSet<>(Collections.singleton(new ConceptNameTag("tag", "description"))));
+		source.setCreator(new User(3));
+		source.setDateCreated(new Date(1000));
+		source.setChangedBy(new User(4));
+		source.setDateChanged(new Date(2000));
+		source.setVoided(true);
+		source.setVoidedBy(new User(5));
+		source.setDateVoided(new Date(3000));
+		source.setVoidReason("reason");
+
+		ConceptName target = new ConceptName();
+		ConceptServiceImpl.copyConceptName(source, target);
+
+		for (PropertyDescriptor property : Introspector.getBeanInfo(ConceptName.class).getPropertyDescriptors()) {
+			if (property.getReadMethod() == null || property.getWriteMethod() == null) {
+				continue;
+			}
+			Object expected = property.getReadMethod().invoke(source);
+			assertNotNull(expected, "Test does not set ConceptName property " + property.getName());
+			assertEquals(expected, property.getReadMethod().invoke(target),
+			    "ConceptName property not copied: " + property.getName());
+		}
 	}
 }

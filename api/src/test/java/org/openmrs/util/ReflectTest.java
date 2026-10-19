@@ -10,11 +10,14 @@
 package org.openmrs.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.BaseOpenmrsObject;
@@ -237,6 +240,161 @@ public class ReflectTest {
 		assertFalse(reflect.isSuperClass(genericType));
 	}
 
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReturnTheValueOfTheProperty() throws Exception {
+		Bean bean = new Bean();
+		bean.setName("abc");
+
+		assertEquals("abc", Reflect.getPropertyValue(bean, "name"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReadABooleanPropertyThroughItsIsGetter() throws Exception {
+		Bean bean = new Bean();
+		bean.setActive(true);
+
+		assertEquals(true, Reflect.getPropertyValue(bean, "active"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReturnTheValueOfANestedProperty() throws Exception {
+		Bean child = new Bean();
+		child.setName("child");
+		Bean bean = new Bean();
+		bean.setChild(child);
+
+		assertEquals("child", Reflect.getPropertyValue(bean, "child.name"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldReadMapEntriesByKey() throws Exception {
+		Bean bean = new Bean();
+		bean.setAttributes(Collections.singletonMap("key", "value"));
+
+		assertEquals("value", Reflect.getPropertyValue(bean, "attributes.key"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfAPropertyInTheMiddleOfThePathIsNull() {
+		Bean bean = new Bean();
+
+		assertThrows(IllegalArgumentException.class, () -> Reflect.getPropertyValue(bean, "child.name"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfANestedPropertyDoesNotExist() {
+		Bean bean = new Bean();
+		bean.setChild(new Bean());
+
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(bean, "child.unknown"));
+	}
+
+	/**
+	 * JavaBeans only recognises the is prefix for primitive booleans, see TRUNK-6749.
+	 *
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldNotTreatAnIsGetterReturningABoxedBooleanAsAGetter() {
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(new Bean(), "boxed"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfThePropertyDoesNotExist() {
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(new Bean(), "unknown"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldFailIfThePropertyHasNoGetter() {
+		assertThrows(NoSuchMethodException.class, () -> Reflect.getPropertyValue(new Bean(), "writeOnly"));
+	}
+
+	/**
+	 * @see Reflect#getPropertyValue(Object,String)
+	 */
+	@Test
+	public void getPropertyValue_shouldWrapAnExceptionThrownByTheGetter() {
+		assertThrows(InvocationTargetException.class, () -> Reflect.getPropertyValue(new Bean(), "failing"));
+	}
+
+	public static class Bean {
+
+		private String name;
+
+		private boolean active;
+
+		private Bean child;
+
+		private Map<String, String> attributes;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public boolean isActive() {
+			return active;
+		}
+
+		public void setActive(boolean active) {
+			this.active = active;
+		}
+
+		public Bean getChild() {
+			return child;
+		}
+
+		public void setChild(Bean child) {
+			this.child = child;
+		}
+
+		public Map<String, String> getAttributes() {
+			return attributes;
+		}
+
+		public void setAttributes(Map<String, String> attributes) {
+			this.attributes = attributes;
+		}
+
+		public Boolean isBoxed() {
+			return Boolean.TRUE;
+		}
+
+		public void setWriteOnly(String value) {
+			// intentionally empty: fixture for a property that has a setter but no getter
+		}
+
+		public String getFailing() {
+			throw new IllegalStateException("getter failure");
+		}
+	}
 }
 
 class NormalClass {

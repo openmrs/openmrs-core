@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.annotation.Handler;
@@ -21,6 +20,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.layout.address.AddressSupport;
 import org.openmrs.layout.address.AddressTemplate;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.Reflect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
@@ -114,7 +114,7 @@ public class PersonAddressValidator implements Validator {
 		if (requiredElements != null) {
 			for (String fieldName : requiredElements) {
 				try {
-					Object value = PropertyUtils.getProperty(personAddress, fieldName);
+					Object value = Reflect.getPropertyValue(personAddress, fieldName);
 					if (StringUtils.isBlank((String) value)) {
 						//required field not found
 						errors.reject(

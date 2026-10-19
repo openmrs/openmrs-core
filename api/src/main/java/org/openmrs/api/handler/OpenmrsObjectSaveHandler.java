@@ -9,11 +9,12 @@
  */
 package org.openmrs.api.handler;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
@@ -67,7 +68,13 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 		//Set all empty string properties, that do not have the AllowEmptyStrings annotation, to null.
 		//And also trim leading and trailing white space for properties that do not have the
 		//AllowLeadingOrTrailingWhitespace annotation.
-		PropertyDescriptor[] properties = PropertyUtils.getPropertyDescriptors(openmrsObject);
+		PropertyDescriptor[] properties;
+		try {
+			properties = Introspector.getBeanInfo(openmrsObject.getClass()).getPropertyDescriptors();
+		} catch (IntrospectionException e) {
+			log.error("Unable to introspect " + openmrsObject.getClass().getName(), e);
+			return;
+		}
 		for (PropertyDescriptor property : properties) {
 
 			if (property.getPropertyType() == null) {
@@ -93,7 +100,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 			}
 
 			try {
-				Object value = PropertyUtils.getProperty(openmrsObject, property.getName());
+				Object value = property.getReadMethod().invoke(openmrsObject);
 				if (value == null) {
 					continue;
 				}
@@ -104,7 +111,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 
 					//If we have actually trimmed any space, set the trimmed value.
 					if (!valueBeforeTrim.equals(value)) {
-						PropertyUtils.setProperty(openmrsObject, property.getName(), value);
+						property.getWriteMethod().invoke(openmrsObject, value);
 					}
 				}
 
@@ -115,7 +122,7 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 
 				if ("".equals(value) && !(openmrsObject instanceof Voidable && ((Voidable) openmrsObject).getVoided())) {
 					//Set to null only if object is not already voided
-					PropertyUtils.setProperty(openmrsObject, property.getName(), null);
+					property.getWriteMethod().invoke(openmrsObject, (Object) null);
 				}
 			} catch (UnsupportedOperationException ex) {
 				// there is no need to log this. These should be (mostly) silently skipped over
