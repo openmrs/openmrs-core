@@ -441,6 +441,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			orderService.voidOrder(o, reason);
 		}
 
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			if (!encounterProvider.getVoided()) {
+				encounterProvider.setVoided(true);
+				encounterProvider.setVoidedBy(encounter.getVoidedBy());
+				encounterProvider.setDateVoided(encounter.getDateVoided());
+				encounterProvider.setVoidReason(reason);
+			}
+		}
+		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
 		//we expect the dateVoided to be already set by AOP logic at this point unless this method was called within the API,
@@ -451,9 +460,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		}
 		encounter.setVoidReason(reason);
 
-		// encounter providers are normally voided by the AOP void handlers, but this method can also be called
-		// from within the API (e.g. transferEncounter), which bypasses AOP. Uses the encounter's dateVoided so
-		// that the unvoid handler can match them up
 		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
 			if (!encounterProvider.getVoided()) {
 				encounterProvider.setVoided(true);
