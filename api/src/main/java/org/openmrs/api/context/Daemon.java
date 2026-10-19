@@ -22,6 +22,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
@@ -75,6 +76,7 @@ public final class Daemon {
 		ModuleFactory.setDaemonCallerKey(CALLER_KEY);
 		TimerSchedulerTask.setDaemonCallerKey(CALLER_KEY);
 		RolePrivilegeCache.setDaemonCallerKey(CALLER_KEY);
+		GlobalPropertyCache.setDaemonCallerKey(CALLER_KEY);
 		// WebDaemon lives in the web module, which the api module cannot reference at compile time, so
 		// hand it the key reflectively.
 		try {

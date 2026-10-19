@@ -323,6 +323,23 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * The password policy belongs to the system, not to the user being validated, so it has to be
+	 * readable even for someone holding no privilege to read global properties. The forgot-password and
+	 * activation-key flows validate a password with no one authenticated at all.
+	 *
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test
+	public void validatePassword_shouldReadThePolicyWithoutRequiringGlobalPropertyPrivileges() {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "12");
+		Context.logout();
+
+		// 12 characters is only in force if the property was really read; the built-in fallback is 8, so
+		// a 10-character password distinguishes the two
+		assertThrows(ShortPasswordException.class, () -> OpenmrsUtil.validatePassword("someuser", "H4tt3rsHat", "1-8"));
+	}
+
+	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
 	@Test

@@ -46,7 +46,7 @@ public interface LocationService extends OpenmrsService {
 	
 	/**
 	 * Save location to database (create if new or update if changed)
-	 * 
+	 * <p>
 	 * @param location is the location to be saved to the database
 	 * <strong>Should</strong> throw APIException if location has no name
 	 * <strong>Should</strong> overwrite transient tag if tag with same name exists

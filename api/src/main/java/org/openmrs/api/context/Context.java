@@ -866,6 +866,18 @@ public class Context {
 	}
 
 	/**
+	 * Used by {@link org.openmrs.aop.AuthorizationAdvice} to give access for unauthenticated users when
+	 * running initialization code with proxy privileges. See e.g.
+	 * {@link org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer#schedule()}.
+	 *
+	 * @return true if there are any proxy privileges
+	 * @since 2.8.10
+	 */
+	public static boolean hasProxyPrivileges() {
+		return getUserContext().hasProxyPrivileges();
+	}
+
+	/**
 	 * Convenience method. Passes through to {@link UserContext#setLocale(Locale)}
 	 */
 	public static void setLocale(Locale locale) {

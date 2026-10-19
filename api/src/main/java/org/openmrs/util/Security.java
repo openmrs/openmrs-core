@@ -31,7 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
-import org.openmrs.spring.LegacyOpenmrsPasswordEncoder;
+import org.openmrs.spring.NoContextPasswordEncoderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,8 +49,10 @@ public class Security {
 
 	private static final Random RANDOM = new SecureRandom();
 
-	// required so we can hash passwords at startup.
-	private static final PasswordEncoder FALLBACK_ENCODER = new LegacyOpenmrsPasswordEncoder();
+	// required so we can hash passwords at startup when no Spring context is available, for
+	// example while the database upgrade wizard authenticates a superuser. Which encoders that
+	// supports is NoContextPasswordEncoderFactory's business, not this class's.
+	private static final PasswordEncoder FALLBACK_ENCODER = NoContextPasswordEncoderFactory.create();
 	
 	private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256";
 	private static final int PBKDF2_DEFAULT_ITERATIONS = 600000;

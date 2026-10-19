@@ -15,6 +15,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +64,16 @@ import org.yaml.snakeyaml.Yaml;
 @Configuration
 public class CacheConfig {
 	private final static Logger log = LoggerFactory.getLogger(CacheConfig.class);
-	
+
+	/**
+	 * The caches that are only filled on a miss, by {@code @Cacheable} or by their owning component,
+	 * and never overwritten, so that a fill on one node can leave other nodes' entries in place. See
+	 * {@link ExternalReadSpringCacheManager}.
+	 */
+	static final Set<String> EXTERNAL_READ_CACHES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+	    "userSearchLocales", "conceptIdsByMapping", "serializerWhiteListTypes", RolePrivilegeCache.CACHE_NAME,
+	    GlobalPropertyCache.CACHE_NAME)));
+
 	@Value("${cache.type:local}")
 	private String cacheType;
 	
@@ -127,7 +139,7 @@ public class CacheConfig {
 		}
 		
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
-		return new SpringEmbeddedCacheManager(cacheManager);
+		return new ExternalReadSpringCacheManager(cacheManager, EXTERNAL_READ_CACHES);
 	}
 
 	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> templateNames, String cacheType) throws IOException {

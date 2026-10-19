@@ -142,14 +142,6 @@ public class GZIPFilter extends OncePerRequestFilter {
 	/**
 	 * Reads a global property the way a filter has to: without assuming there is a logged-in user, and
 	 * without a service call per request.
-	 * <p/>
-	 * {@link ConfigUtil} does the caching. It is registered as a
-	 * {@link org.openmrs.api.GlobalPropertyListener}, so it answers from its own cache once the
-	 * property has been read, and the value it holds is replaced when the property is edited through
-	 * the API — which is what lets a change take effect without a restart, where the field this filter
-	 * used to cache the accepted paths in never picked one up. Reading a global property is privileged
-	 * and this filter serves unauthenticated requests, so the read is proxied; the privilege needs an
-	 * open session to hang off, which is what the guard is for.
 	 *
 	 * @return the property value, or null if it is unset or could not be read
 	 */

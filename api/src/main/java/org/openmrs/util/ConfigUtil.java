@@ -10,63 +10,48 @@
 package org.openmrs.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.GlobalProperty;
-import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A utility class for working with configuration properties
  */
-public class ConfigUtil implements GlobalPropertyListener {
-
-	/**
-	 * Cache of global property key/value pairs to enable lookups that do not require accessing the service each time
-	 */
-	private static final Map<String, String> globalPropertyCache = new HashMap<>();
+public class ConfigUtil {
 	
 	/**
 	 * Gets the value of the given OpenMRS global property
 	 */
 	public static String getGlobalProperty(String propertyName) {
-		if (globalPropertyCache.containsKey(propertyName)) {
-			return globalPropertyCache.get(propertyName);
-		}
-		String value = Context.getAdministrationService().getGlobalProperty(propertyName);
-		globalPropertyCache.put(propertyName, value);
-		return value;
+		return Context.getAdministrationService().getGlobalProperty(propertyName);
 	}
-
-    /**
+	
+	/**
 	 * Returns the value of the given OpenMRS runtime property
 	 */
 	public static String getRuntimeProperty(String propertyName) {
 		return Context.getRuntimeProperties().getProperty(propertyName);
 	}
-
+	
 	/**
 	 * Returns true if a runtime property with the given name has been defined, even if the value is empty
 	 */
 	public static boolean hasRuntimeProperty(String propertyName) {
 		return Context.getRuntimeProperties().containsKey(propertyName);
 	}
-
+	
 	/**
 	 * Returns the value of the given OpenMRS system property
 	 */
 	public static String getSystemProperty(String propertyName) {
 		return System.getProperty(propertyName);
 	}
-
+	
 	/**
 	 * Returns true if a system property with the given name has been defined, even if the value is empty
 	 */
 	public static boolean hasSystemProperty(String propertyName) {
 		return System.getProperties().containsKey(propertyName);
 	}
-
+	
 	/**
 	 * Returns the value of the given configuration property.  This will check the OpenMRS global properties,
 	 * OpenMRS runtime properties, and any defined system properties.  In the event that a property is defined in 
@@ -81,7 +66,7 @@ public class ConfigUtil implements GlobalPropertyListener {
 		}
 		return getGlobalProperty(propertyName);
 	}
-
+	
 	/**
 	 * Returns the value of the given configuration property.  This will check the OpenMRS global properties,
 	 * OpenMRS runtime properties, and any defined system properties.  In the event that a property is defined in 
@@ -95,7 +80,7 @@ public class ConfigUtil implements GlobalPropertyListener {
 		}
 		return value;
 	}
-
+	
 	/**
 	 * Operates as above but returns the Boolean value of the property
 	 * 
@@ -109,20 +94,5 @@ public class ConfigUtil implements GlobalPropertyListener {
 			return defaultValue;
 		}
 		return Boolean.parseBoolean(value);
-	}
-	
-	@Override
-	public void globalPropertyChanged(GlobalProperty newValue) {
-		globalPropertyCache.put(newValue.getProperty(), newValue.getPropertyValue());
-	}
-	
-	@Override
-	public void globalPropertyDeleted(String propertyName) {
-		globalPropertyCache.remove(propertyName);
-	}
-	
-	@Override
-	public boolean supportsPropertyName(String propertyName) {
-		return true;
 	}
 }

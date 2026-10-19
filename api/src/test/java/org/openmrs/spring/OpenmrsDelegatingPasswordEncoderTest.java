@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -38,12 +39,15 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 
 	private PasswordEncoder bcryptEncoder;
 
+	private PasswordEncoder argon2Encoder;
+
 	private Map<String, PasswordEncoder> idToPasswordEncoder;
 
 	@BeforeEach
 	public void setUp() {
 		fallbackEncoder = mock(PasswordEncoder.class);
 		bcryptEncoder = mock(PasswordEncoder.class);
+		argon2Encoder = mock(PasswordEncoder.class);
 
 		// deliberately a mutable map with no null-key restrictions, matching what Spring builds for
 		// the <map/> element in applicationContext-service.xml
@@ -108,13 +112,15 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	@Test
-	public void matches_shouldUseTheEncoderNamedByTheIdForEncodeForAnUnprefixedPassword() {
-		when(bcryptEncoder.matches("password", "hashedPassword")).thenReturn(true);
+	public void matches_shouldSendAnUnprefixedPasswordToTheFallbackEncoderEvenWhenAnIdForEncodeIsConfigured() {
+		when(fallbackEncoder.matches("password", "hashedPassword")).thenReturn(true);
 		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("bcrypt",
 			idToPasswordEncoder, fallbackEncoder);
 
+		// an unprefixed value is a legacy hash that only the fallback (legacy) encoder can parse;
+		// routing it to the encoder named by the id would reject every pre-existing account after opt-in
 		assertTrue(encoder.matches("password", "hashedPassword"));
-		verify(fallbackEncoder, never()).matches(any(), anyString());
+		verify(bcryptEncoder, never()).matches(any(), anyString());
 	}
 
 	@Test
@@ -194,6 +200,44 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 	}
 
 	/**
+	 * A prefix naming a configured encoder has to reach that encoder's own upgradeEncoding, with
+	 * the prefix stripped first. A bare mock answers false by default, so asserting only on the
+	 * boolean would pass even if the delegation were dropped, which is what this pins.
+	 */
+	@Test
+	public void upgradeEncoding_shouldDelegateToTheEncoderNamedByThePrefix() {
+		when(argon2Encoder.upgradeEncoding("hashedPassword")).thenReturn(true);
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", argon2Encoder);
+		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("argon2", encoders,
+			fallbackEncoder);
+
+		assertTrue(encoder.upgradeEncoding("{argon2}hashedPassword"));
+		verify(argon2Encoder).upgradeEncoding("hashedPassword");
+		verify(fallbackEncoder, never()).upgradeEncoding(anyString());
+	}
+
+	/**
+	 * A prefixed value reaches the encoder named by the prefix, and a value that encoder cannot
+	 * parse is not an error the caller should have to handle. Spring's Argon2 encoder reports a
+	 * malformed hash from matches() by returning false but lets it out of upgradeEncoding, so a
+	 * single corrupt row would break whichever caller asks whether it needs re-hashing.
+	 */
+	@Test
+	public void upgradeEncoding_shouldReturnFalseForAMalformedArgon2Hash() {
+		Argon2PasswordEncoder realArgon2 = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", realArgon2);
+		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("argon2", encoders,
+			fallbackEncoder);
+
+		assertFalse(encoder.upgradeEncoding("{argon2}notAnArgon2Hash"));
+		// a well-formed hash for the configured work factors still delegates as before
+		String encoded = encoder.encode("password");
+		assertFalse(encoder.upgradeEncoding(encoded));
+	}
+
+	/**
 	 * The shape wired up in applicationContext-service.xml: no id to encode with, an empty map of
 	 * named encoders and the legacy encoder as the fallback. Existing rows must keep working and
 	 * newly written values must stay unprefixed.
@@ -210,5 +254,71 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		assertTrue(encoder.matches("password", encoded));
 		assertFalse(encoder.matches("wrongPassword", encoded));
 		assertFalse(encoder.upgradeEncoding(encoded));
+	}
+
+	/**
+	 * A site that runs on the default (legacy) config, then opts in to argon2. A password already
+	 * stored while on the default config is an unprefixed legacy hash; it must keep authenticating
+	 * after the opt-in even though the encoder now writes argon2-prefixed values. Routing that
+	 * unprefixed hash to the argon2 encoder would reject every pre-existing account.
+	 */
+	@Test
+	public void shouldAuthenticateAPasswordStoredBeforeAnArgon2OptIn() {
+		assertTrue(buildArgon2OptInEncoder(new LegacyOpenmrsPasswordEncoder())
+			.matches("password", legacyStoredHash("password")));
+	}
+
+	/**
+	 * The same legacy row, checked from the other side: the opt-in must not turn a pre-existing
+	 * account into one that accepts any password.
+	 */
+	@Test
+	public void shouldNotAuthenticateAWrongPasswordAgainstAHashStoredBeforeAnArgon2OptIn() {
+		assertFalse(buildArgon2OptInEncoder(new LegacyOpenmrsPasswordEncoder())
+			.matches("wrongPassword", legacyStoredHash("password")));
+	}
+
+	/**
+	 * A hash written by the pre-opt-in encoder, which is a legacy hash with no prefix.
+	 */
+	private String legacyStoredHash(String rawPassword) {
+		OpenmrsDelegatingPasswordEncoder preOptIn = new OpenmrsDelegatingPasswordEncoder("", new HashMap<>(),
+			new LegacyOpenmrsPasswordEncoder());
+		String storedHash = preOptIn.encode(rawPassword);
+		assertFalse(storedHash.startsWith("{"), "sanity: a pre-opt-in hash must be unprefixed");
+
+		return storedHash;
+	}
+
+	/**
+	 * After opting in to argon2, newly written passwords carry the argon2 prefix and the resulting
+	 * hash round-trips through the same encoder.
+	 */
+	@Test
+	public void encode_shouldWriteArgon2PrefixedHashesThatVerifyAfterAnOptIn() {
+		OpenmrsDelegatingPasswordEncoder postOptIn = buildArgon2OptInEncoder(new LegacyOpenmrsPasswordEncoder());
+
+		String newHash = postOptIn.encode("password");
+		assertTrue(newHash.startsWith("{argon2}"));
+		assertTrue(postOptIn.matches("password", newHash));
+		assertFalse(postOptIn.upgradeEncoding(newHash));
+	}
+
+	/**
+	 * An unprefixed hash written before the opt-in has to be re-encoded once the site is on argon2.
+	 */
+	@Test
+	public void upgradeEncoding_shouldFlagAnUnprefixedHashStoredBeforeAnOptIn() {
+		PasswordEncoder legacyEncoder = new LegacyOpenmrsPasswordEncoder();
+		String storedHash = new OpenmrsDelegatingPasswordEncoder("", new HashMap<>(), legacyEncoder)
+			.encode("password");
+
+		assertTrue(buildArgon2OptInEncoder(legacyEncoder).upgradeEncoding(storedHash));
+	}
+
+	private OpenmrsDelegatingPasswordEncoder buildArgon2OptInEncoder(PasswordEncoder legacyEncoder) {
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", new Argon2PasswordEncoder(16, 32, 1, 19456, 2));
+		return new OpenmrsDelegatingPasswordEncoder("argon2", encoders, legacyEncoder);
 	}
 }

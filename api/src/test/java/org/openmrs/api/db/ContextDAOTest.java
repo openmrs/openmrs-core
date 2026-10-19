@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -22,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,9 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
@@ -47,6 +51,9 @@ import org.springframework.stereotype.Component;
 public class ContextDAOTest extends BaseContextSensitiveTest {
 	
 	private ContextDAO dao = null;
+
+	@Autowired
+	private SessionFactory sessionFactory;
 	
 	@Resource(name = "testUserSessionListener")
 	TestUserSessionListener testUserSessionListener;
@@ -410,5 +417,18 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertThat(testUserSessionListener.logouts,
 				contains("admin:LOGOUT:SUCCESS"));
 		assertThat(testUserSessionListener.logins, empty());
+	}
+
+	@Test
+	public void closeSession_shouldNotReleaseAnExistingSessionAfterNestedParticipation() {
+		Object boundSession = TransactionSynchronizationManager.getResource(sessionFactory);
+		assertNotNull(boundSession);
+
+		dao.openSession();
+		dao.openSession();
+		dao.closeSession();
+		dao.closeSession();
+
+		assertSame(boundSession, TransactionSynchronizationManager.getResource(sessionFactory));
 	}
 }
