@@ -17,11 +17,13 @@ import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.parameter.LocationSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * API methods for managing Locations <br>
@@ -62,7 +64,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.MANAGE_LOCATIONS + "')")
 	public Location saveLocation(Location location) throws APIException;
 
 	/**
@@ -76,7 +78,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#locationId, 'Location', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getLocation(Integer locationId) throws APIException;
 
 	/**
@@ -90,7 +92,8 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getLocation(String name) throws APIException;
 
 	/**
@@ -104,7 +107,8 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getDefaultLocation() throws APIException;
 
 	/**
@@ -118,7 +122,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#uuid, 'Location', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getLocationByUuid(String uuid) throws APIException;
 
 	/**
@@ -132,7 +136,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#uuid, 'LocationTag', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public LocationTag getLocationTagByUuid(String uuid) throws APIException;
 
 	/**
@@ -145,7 +149,8 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getAllLocations() throws APIException;
 
 	/**
@@ -158,7 +163,8 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException;
 
 	/**
@@ -172,7 +178,8 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocations(String nameFragment) throws APIException;
 
 	/**
@@ -194,7 +201,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#parent, '" + PrivilegeConstants.GET_LOCATIONS + "')")
+	//TODO: DAO auth filter
 	public List<Location> getLocations(String nameFragment, Location parent,
 	        Map<LocationAttributeType, Object> attributeValues, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
@@ -210,7 +218,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException;
 
 	/**
@@ -224,7 +233,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException;
 
 	/**
@@ -239,7 +249,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException;
 
 	/**
@@ -252,7 +263,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.MANAGE_LOCATIONS + "')")
 	public Location retireLocation(Location location, String reason) throws APIException;
 
 	/**
@@ -267,7 +278,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.MANAGE_LOCATIONS + "')")
 	public Location unretireLocation(Location location) throws APIException;
 
 	/**
@@ -280,7 +291,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.PURGE_LOCATIONS + "')")
 	public void purgeLocation(Location location) throws APIException;
 
 	/**
@@ -297,7 +308,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.MANAGE_LOCATION_TAGS + "')")
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException;
 
 	/**
@@ -313,7 +324,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#locationTagId, 'LocationTag', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public LocationTag getLocationTag(Integer locationTagId) throws APIException;
 
 	/**
@@ -329,7 +340,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public LocationTag getLocationTagByName(String tag) throws APIException;
 
 	/**
@@ -343,7 +355,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<LocationTag> getAllLocationTags() throws APIException;
 
 	/**
@@ -357,7 +370,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) throws APIException;
 
 	/**
@@ -372,7 +386,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<LocationTag> getLocationTags(String search) throws APIException;
 
 	/**
@@ -387,7 +402,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.MANAGE_LOCATION_TAGS + "')")
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException;
 
 	/**
@@ -403,7 +418,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.MANAGE_LOCATION_TAGS + "')")
 	public LocationTag unretireLocationTag(LocationTag tag) throws APIException;
 
 	/**
@@ -416,7 +431,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.PURGE_LOCATION_TAGS + "')")
 	public void purgeLocationTag(LocationTag tag) throws APIException;
 
 	/**
@@ -430,7 +445,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	//TODO: DAO auth filter
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 
 	/**
@@ -446,7 +462,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getRootLocations(boolean includeRetired);
 
 	/**
@@ -459,7 +476,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.7
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	//TODO: DAO auth filter
 	List<Location> getLocations(LocationSearchCriteria criteria);
 
 	/**
@@ -473,7 +491,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.7
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	List<Location> getDescendantLocations(Location location, boolean includeRetired);
 
 	/**
@@ -503,7 +522,7 @@ public interface LocationService extends OpenmrsService {
 	 * @see OpenmrsConstants#DEFAULT_ADDRESS_TEMPLATE
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public String getAddressTemplate() throws APIException;
 
 	/**
@@ -518,7 +537,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ADDRESS_TEMPLATES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_ADDRESS_TEMPLATES + "')")
 	public void saveAddressTemplate(String xml) throws APIException;
 
 	/**
@@ -530,7 +549,8 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	List<LocationAttributeType> getAllLocationAttributeTypes();
 
 	/**
@@ -544,7 +564,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#id, 'LocationAttributeType', '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType getLocationAttributeType(Integer id);
 
 	/**
@@ -558,7 +578,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#uuid, 'LocationAttributeType', '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
 
 	/**
@@ -573,7 +593,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType);
 
 	/**
@@ -587,7 +607,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType retireLocationAttributeType(LocationAttributeType locationAttributeType, String reason);
 
 	/**
@@ -601,7 +621,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType unretireLocationAttributeType(LocationAttributeType locationAttributeType);
 
 	/**
@@ -614,7 +634,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.PURGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.PURGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	void purgeLocationAttributeType(LocationAttributeType locationAttributeType);
 
 	/**
@@ -628,7 +648,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATIONS)
+	@PreAuthorize("hasPermission(#uuid, 'LocationAttribute', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	LocationAttribute getLocationAttributeByUuid(String uuid);
 
 	/**
@@ -643,6 +663,7 @@ public interface LocationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10.0
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType getLocationAttributeTypeByName(String locationAttributeTypeName);
 }

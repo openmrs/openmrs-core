@@ -602,8 +602,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public ConceptClass getConceptClass(Integer i) {
-		return dao.getConceptClass(i);
+	public ConceptClass getConceptClass(Integer conceptClassId) {
+		return dao.getConceptClass(conceptClassId);
 	}
 
 	/**
@@ -705,10 +705,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Concept> getConceptsByConceptSet(Concept c) {
+	public List<Concept> getConceptsByConceptSet(Concept concept) {
 		Set<Integer> alreadySeen = new HashSet<>();
 		List<Concept> ret = new ArrayList<>();
-		explodeConceptSetHelper(c, ret, alreadySeen);
+		explodeConceptSetHelper(concept, ret, alreadySeen);
 		return ret;
 	}
 
@@ -871,8 +871,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Concept getPrevConcept(Concept c) {
-		return dao.getPrevConcept(c);
+	public Concept getPrevConcept(Concept concept) {
+		return dao.getPrevConcept(concept);
 	}
 
 	/**
@@ -880,8 +880,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Concept getNextConcept(Concept c) {
-		return dao.getNextConcept(c);
+	public Concept getNextConcept(Concept concept) {
+		return dao.getNextConcept(concept);
 	}
 
 	/**

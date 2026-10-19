@@ -19,7 +19,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.module.Module;
 import org.openmrs.util.DatabaseUpdateException;
@@ -27,6 +26,9 @@ import org.openmrs.util.HttpClient;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 
 /**
@@ -64,7 +66,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#uuid, 'GlobalProperty', '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public GlobalProperty getGlobalPropertyByUuid(String uuid);
 
 	/**
@@ -77,7 +79,7 @@ public interface AdministrationService extends OpenmrsService {
 	 *             permission
 	 */
 
-	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.VIEW_ADMIN_FUNCTIONS + "')")
 	public SortedMap<String, String> getSystemVariables();
 
 	/**
@@ -89,7 +91,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.VIEW_ADMIN_FUNCTIONS + "')")
 	public Map<String, Map<String, String>> getSystemInformation();
 
 	/**
@@ -108,7 +110,7 @@ public interface AdministrationService extends OpenmrsService {
 	 *             permission
 	 * @see #getGlobalProperty(String, String)
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#propertyName, 'GlobalProperty', '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public String getGlobalProperty(String propertyName);
 
 	/**
@@ -128,7 +130,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#propertyName, 'GlobalProperty', '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public String getGlobalProperty(String propertyName, String defaultValue);
 
 	/**
@@ -141,7 +143,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#propertyName, 'GlobalProperty', '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 
 	/**
@@ -155,7 +157,8 @@ public interface AdministrationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
 
 	/**
@@ -169,7 +172,8 @@ public interface AdministrationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.6
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix);
 
 	/**
@@ -181,7 +185,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public List<GlobalProperty> getAllGlobalProperties();
 
 	/**
@@ -197,7 +202,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#props, '" + PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES + "')")
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props);
 
 	/**
@@ -210,7 +215,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#globalProperty, '" + PrivilegeConstants.PURGE_GLOBAL_PROPERTIES + "')")
 	public void purgeGlobalProperty(GlobalProperty globalProperty);
 
 	/**
@@ -223,7 +228,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#globalProperties, '" + PrivilegeConstants.PURGE_GLOBAL_PROPERTIES + "')")
 	public void purgeGlobalProperties(List<GlobalProperty> globalProperties);
 
 	/**
@@ -239,7 +244,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#propertyName, 'GlobalProperty', '" + PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES + "')")
 	public void setGlobalProperty(String propertyName, String propertyValue);
 
 	/**
@@ -258,7 +263,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#propertyName, 'GlobalProperty', '" + PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES + "')")
 	public void updateGlobalProperty(String propertyName, String propertyValue);
 
 	/**
@@ -278,7 +283,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#gp, '" + PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES + "')")
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp);
 
 	/**
@@ -310,7 +315,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.SQL_LEVEL_ACCESS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.SQL_LEVEL_ACCESS + "')")
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly);
 
 	/**
@@ -323,7 +328,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_IMPLEMENTATION_ID + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.MANAGE_IMPLEMENTATION_ID + "')")
 	public ImplementationId getImplementationId();
 
 	/**
@@ -342,7 +348,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
+	@PreAuthorize("hasPermission(#implementationId, '" + PrivilegeConstants.MANAGE_IMPLEMENTATION_ID + "')")
 	public void setImplementationId(ImplementationId implementationId);
 
 	/**
@@ -392,7 +398,7 @@ public interface AdministrationService extends OpenmrsService {
 	 *             permission
 	 * @since 1.7
 	 */
-	@Authorized(PrivilegeConstants.GET_GLOBAL_PROPERTIES)
+	@PreAuthorize("hasPermission(#propertyName, 'GlobalProperty', '" + PrivilegeConstants.GET_GLOBAL_PROPERTIES + "')")
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue);
 
 	/**

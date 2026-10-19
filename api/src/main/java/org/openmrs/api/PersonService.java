@@ -21,13 +21,15 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.person.PersonMergeLog;
 import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to Persons in the system Use:<br>
@@ -93,7 +95,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	// TODO: make gender a (definable?) constant
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PERSONS + "')")
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender) throws APIException;
 
 	/**
@@ -108,10 +111,12 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PERSONS + "')")
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException;
 
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PERSONS + "')")
 	public List<Person> getPeople(String searchPhrase, Boolean dead, Boolean voided) throws APIException;
 
 	/**
@@ -132,7 +137,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#type, '" + PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES + "')")
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
 
 	/**
@@ -146,7 +151,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#type, '" + PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES + "')")
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException;
 
 	/**
@@ -157,7 +162,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasPermission(#type, '" + PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES + "')")
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
 
 	/**
@@ -168,7 +173,7 @@ public interface PersonService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasPermission(#relationshipType, '" + PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES + "')")
 	public RelationshipType unretireRelationshipType(RelationshipType relationshipType);
 
 	/**
@@ -183,7 +188,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#type, '" + PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES + "')")
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException;
 
 	/**
@@ -199,7 +204,7 @@ public interface PersonService extends OpenmrsService {
 	 *             permission
 	 */
 
-	@Authorized({ PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#type, '" + PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES + "')")
 	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException;
 
 	/**
@@ -215,7 +220,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public Person voidPerson(Person person, String reason) throws APIException;
 
 	/**
@@ -230,7 +235,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public Person unvoidPerson(Person person) throws APIException;
 
 	/**
@@ -243,7 +248,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public List<PersonAttributeType> getAllPersonAttributeTypes() throws APIException;
 
 	/**
@@ -260,7 +266,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public List<PersonAttributeType> getAllPersonAttributeTypes(boolean includeRetired) throws APIException;
 
 	/**
@@ -280,7 +287,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	        Boolean searchable) throws APIException;
 
@@ -294,7 +302,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#typeId, 'PersonAttributeType', '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public PersonAttributeType getPersonAttributeType(Integer typeId) throws APIException;
 
 	/**
@@ -308,7 +316,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#uuid, 'PersonAttributeType', '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
 
 	/**
@@ -323,7 +331,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasPermission(#id, 'PersonAttribute', '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public PersonAttribute getPersonAttribute(Integer id) throws APIException;
 
 	/**
@@ -337,7 +345,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PERSON_ATTRIBUTE_TYPES + "')")
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException;
 
 	/**
@@ -352,7 +361,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#relationshipId, 'Relationship', '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public Relationship getRelationship(Integer relationshipId) throws APIException;
 
 	/**
@@ -366,7 +375,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#uuid, 'Relationship', '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public Relationship getRelationshipByUuid(String uuid) throws APIException;
 
 	/**
@@ -380,7 +389,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getAllRelationships() throws APIException;
 
 	/**
@@ -396,7 +406,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws APIException;
 
 	/**
@@ -413,7 +424,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#p, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 
 	/**
@@ -435,7 +447,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#p, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException;
 
 	/**
@@ -454,7 +467,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#fromPerson, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
 	        throws APIException;
 
@@ -477,7 +491,9 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#fromPerson, '" + PrivilegeConstants.GET_RELATIONSHIPS + "') and "
+	        + "hasPermission(#toPerson, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
 	        Date effectiveDate) throws APIException;
 
@@ -503,7 +519,9 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#fromPerson, '" + PrivilegeConstants.GET_RELATIONSHIPS + "') and "
+	        + "hasPermission(#toPerson, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
 	        Date startEffectiveDate, Date endEffectiveDate) throws APIException;
 
@@ -517,7 +535,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException;
 
 	/**
@@ -529,7 +548,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException;
 
 	/**
@@ -544,7 +564,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasPermission(#relationshipTypeId, 'RelationshipType', '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES
+	        + "')")
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
 
 	/**
@@ -559,7 +580,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasPermission(#uuid, 'RelationshipType', '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
 	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException;
 
 	/**
@@ -573,7 +594,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
 	public RelationshipType getRelationshipTypeByName(String relationshipTypeName) throws APIException;
 
 	/**
@@ -591,7 +613,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
 	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws APIException;
 
 	/**
@@ -606,7 +629,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_RELATIONSHIP_TYPES + "')")
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException;
 
 	/**
@@ -622,7 +646,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_RELATIONSHIPS, PrivilegeConstants.EDIT_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#relationship, '" + PrivilegeConstants.ADD_RELATIONSHIPS
+	        + "') or hasPermission(#relationship, '" + PrivilegeConstants.EDIT_RELATIONSHIPS + "')")
 	public Relationship saveRelationship(Relationship relationship) throws APIException;
 
 	/**
@@ -635,7 +660,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#relationship, '" + PrivilegeConstants.PURGE_RELATIONSHIPS + "')")
 	public void purgeRelationship(Relationship relationship) throws APIException;
 
 	/**
@@ -650,7 +675,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#relationship, '" + PrivilegeConstants.DELETE_RELATIONSHIPS + "')")
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException;
 
 	/**
@@ -664,7 +689,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#relationship, '" + PrivilegeConstants.EDIT_RELATIONSHIPS + "')")
 	public Relationship unvoidRelationship(Relationship relationship) throws APIException;
 
 	/**
@@ -682,7 +707,8 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_PERSONS, PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.ADD_PERSONS + "') or hasPermission(#person, '"
+	        + PrivilegeConstants.EDIT_PERSONS + "')")
 	public Person savePerson(Person person) throws APIException;
 
 	/**
@@ -695,7 +721,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PERSONS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.PURGE_PERSONS + "')")
 	public void purgePerson(Person person) throws APIException;
 
 	/**
@@ -709,7 +735,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasPermission(#uuid, 'Person', '" + PrivilegeConstants.GET_PERSONS + "')")
 	public Person getPersonByUuid(String uuid) throws APIException;
 
 	/**
@@ -723,7 +749,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasPermission(#uuid, 'PersonAddress', '" + PrivilegeConstants.GET_PERSONS + "')")
 	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException;
 
 	/**
@@ -737,7 +763,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasPermission(#uuid, 'PersonAttribute', '" + PrivilegeConstants.GET_PERSONS + "')")
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
 
 	/**
@@ -751,7 +777,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasPermission(#personNameId, 'PersonName', '" + PrivilegeConstants.GET_PERSONS + "')")
 	PersonName getPersonName(Integer personNameId);
 
 	/**
@@ -765,7 +791,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasPermission(#uuid, 'PersonName', '" + PrivilegeConstants.GET_PERSONS + "')")
 	public PersonName getPersonNameByUuid(String uuid) throws APIException;
 
 	/**
@@ -779,7 +805,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PERSONS })
+	@PreAuthorize("hasPermission(#personId, 'Person', '" + PrivilegeConstants.GET_PERSONS + "')")
 	public Person getPerson(Integer personId) throws APIException;
 
 	/**
@@ -795,7 +821,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasPermission(#relationshipType, '" + PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES + "')")
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException;
 
 	/**
@@ -808,7 +834,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_RELATIONSHIP_TYPES })
+	@PreAuthorize("hasPermission(#relationshipType, '" + PrivilegeConstants.PURGE_RELATIONSHIP_TYPES + "')")
 	public void purgeRelationshipType(RelationshipType relationshipType) throws APIException;
 
 	/**
@@ -836,7 +862,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#personName, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public PersonName voidPersonName(PersonName personName, String voidReason);
 
 	/**
@@ -850,7 +876,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#personName, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public PersonName unvoidPersonName(PersonName personName) throws APIException;
 
 	/**
@@ -864,7 +890,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#personName, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public PersonName savePersonName(PersonName personName);
 
 	/**
@@ -893,7 +919,10 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_RELATIONSHIPS })
+	@PreAuthorize("hasPermission(#relationshipType, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
+	// filterObject is a Map.Entry here, so the target has to be its key to be the Person being filtered
+	@PostFilter("hasPermission(filterObject.key, '" + PrivilegeConstants.GET_RELATIONSHIPS + "') and "
+	        + "hasPermission(filterObject.value, '" + PrivilegeConstants.GET_RELATIONSHIPS + "')")
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relationshipType) throws APIException;
 
 	/**
@@ -980,7 +1009,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#personAddress, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason);
 
 	/**
@@ -994,7 +1023,7 @@ public interface PersonService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#personAddress, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public PersonAddress unvoidPersonAddress(PersonAddress personAddress) throws APIException;
 
 	/**
@@ -1006,7 +1035,7 @@ public interface PersonService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_PERSONS })
+	@PreAuthorize("hasPermission(#personAddress, '" + PrivilegeConstants.EDIT_PERSONS + "')")
 	public PersonAddress savePersonAddress(PersonAddress personAddress);
 
 	/**

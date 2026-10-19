@@ -19,10 +19,15 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -124,6 +129,41 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 
 		// verify
 		assertEquals("Moses Mujuzi", nameTemplate.format(personName));
+	}
+
+	@Test
+	public void shouldUseNameTemplateConfiguredViaGlobalPropertiesForAUserWithoutGetGlobalProperties() {
+		executeDataSet(NAME_TEMPLATE_GP_DATASET_PATH);
+		AdministrationService administrationService = Context.getAdministrationService();
+		administrationService.saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_FORMAT, "customXmlTemplate"));
+		// saved through the service, so this transaction reads it back rather than the global property cache
+		administrationService.saveGlobalProperty(
+		    administrationService.getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_LAYOUT_NAME_TEMPLATE));
+
+		PersonName personName = new PersonName();
+		personName.setGivenName("Moses");
+		personName.setMiddleName("Tusha");
+		personName.setFamilyName("Mujuzi");
+
+		authenticateAsUserWithoutPrivileges();
+		// NameSupport reads the template when it initializes, which then happens as this user too
+		administrationService.removeGlobalPropertyListener(nameSupport);
+		ReflectionTestUtils.setField(nameSupport, "initialized", false);
+
+		assertEquals("Moses Mujuzi", personName.getFullName());
+	}
+
+	private void authenticateAsUserWithoutPrivileges() {
+		Person person = new Person();
+		person.setGender("F");
+		person.addName(new PersonName("Name", null, "Reader"));
+		User user = new User(person);
+		user.setUsername("name-reader");
+		Context.getUserService().createUser(user, "NameReader123");
+
+		Context.logout();
+		Context.authenticate(new UsernamePasswordCredentials("name-reader", "NameReader123"));
 	}
 
 	@Test
