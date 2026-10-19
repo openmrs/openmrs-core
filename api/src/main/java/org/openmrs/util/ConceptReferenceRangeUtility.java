@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.LazyInitializer;
+import org.hibernate.collection.spi.PersistentCollection;
 import org.joda.time.LocalTime;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.openmrs.Concept;
 import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
@@ -45,6 +45,8 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.ParseException;
+import org.springframework.expression.PropertyAccessor;
+import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.SpelMessage;
 import org.springframework.expression.spel.SpelNode;
@@ -72,13 +74,15 @@ import com.github.benmanes.caffeine.cache.Caffeine;
  * <p>
  * Criteria are SpEL expressions authored by users with the Manage Concepts privilege and evaluated
  * inside the transaction of whoever saves an obs. To keep them read-only, expressions are evaluated
- * in a restricted context: assignment is disabled, and the only methods that may be invoked are
+ * in a restricted context: assignment is disabled, the only methods that may be invoked are
  * <ul>
- * <li>zero-argument {@code get*}, {@code is*} and {@code has*} methods on any object, and</li>
- * <li>any method on the {@code $fn} helper ({@link CriteriaFunctions}).</li>
+ * <li>{@code get*}, {@code is*} and {@code has*} methods on any object, and</li>
+ * <li>any method on the {@code $fn} helper ({@link CriteriaFunctions}),</li>
  * </ul>
- * Everything else, including {@code set*}, {@code add}, {@code clear}, {@code remove} and getters
- * that take arguments, fails to resolve and the evaluation throws an {@link APIException}.
+ * and no Hibernate internal object (session, proxy initializer and the like) may be read, whether
+ * through a method call or a property. Everything else, including {@code set*}, {@code add},
+ * {@code clear} and {@code remove}, fails to resolve and the evaluation throws an
+ * {@link APIException}.
  *
  * @since 2.7.0
  */
@@ -109,7 +113,7 @@ public class ConceptReferenceRangeUtility {
 	 * still let {@code $encounter.creator.userProperties['x'] = 'y'} through.
 	 */
 	private static final SimpleEvaluationContext EVAL_CONTEXT = SimpleEvaluationContext
-	        .forPropertyAccessors(new MapAccessor(), DataBindingPropertyAccessor.forReadOnlyAccess())
+	        .forPropertyAccessors(new MapAccessor(), new RestrictedPropertyAccessor())
 	        .withMethodResolvers(new RestrictedMethodResolver()).withAssignmentDisabled().build();
 
 	private final CriteriaFunctions functions = new CriteriaFunctions();
@@ -192,11 +196,11 @@ public class ConceptReferenceRangeUtility {
 	/**
 	 * Finds everything in a criteria expression that the evaluation context refuses, so that criteria
 	 * can be checked before they are stored. Reported are method calls outside the resolver's rule (any
-	 * method may be called on {@code $fn}; only zero-argument {@code get*}, {@code is*} and
-	 * {@code has*} methods may be called on anything else), assignments, increments and decrements,
-	 * type references, constructor calls and bean references. Method calls are judged by name and
-	 * argument count, so a call that passes here can still fail at evaluation time if the method does
-	 * not exist on the actual target.
+	 * method may be called on {@code $fn}; only {@code get*}, {@code is*} and {@code has*} methods may
+	 * be called on anything else), assignments, increments and decrements, type references, constructor
+	 * calls and bean references. Method calls are judged by name, so a call that passes here can still
+	 * fail at evaluation time if the method does not exist on the actual target or returns a Hibernate
+	 * internal object.
 	 *
 	 * @param criteria the criteria expression, already HTML-unescaped
 	 * @return the disallowed constructs rendered from the parsed expression, in source order
@@ -217,7 +221,7 @@ public class ConceptReferenceRangeUtility {
 
 	private static void collectDisallowedConstructs(SpelNode node, boolean onFunctions, List<String> disallowed) {
 		if (node instanceof MethodReference method) {
-			if (isDisallowedMethodCall(method.getName(), method.getChildCount(), onFunctions)) {
+			if (isDisallowedMethodCall(method.getName(), onFunctions)) {
 				disallowed.add(method.toStringAST());
 			}
 		} else if (node instanceof Assign || node instanceof OpInc || node instanceof OpDec || node instanceof TypeReference
@@ -231,25 +235,27 @@ public class ConceptReferenceRangeUtility {
 		}
 	}
 
-	private static boolean isDisallowedMethodCall(String name, int argumentCount, boolean onFunctions) {
-		return !onFunctions && (argumentCount != 0 || !ACCESSOR_NAME.matcher(name).matches());
+	private static boolean isDisallowedMethodCall(String name, boolean onFunctions) {
+		return !onFunctions && !ACCESSOR_NAME.matcher(name).matches();
+	}
+
+	private static TypedValue refuseHibernateInternals(TypedValue value) throws AccessException {
+		Object object = value.getValue();
+		if (object != null && object.getClass().getName().startsWith("org.hibernate.")
+		        && !(object instanceof PersistentCollection)) {
+			throw new AccessException("Hibernate internals may not be accessed in criteria");
+		}
+		return value;
 	}
 
 	/**
-	 * {@link MethodResolver} that restricts which methods a criteria expression may invoke.
-	 * <p>
-	 * A method call resolves only when either
-	 * <ul>
-	 * <li>the target is the {@code $fn} helper ({@link CriteriaFunctions}), or</li>
-	 * <li>the method takes no arguments and is named {@code get*}, {@code is*} or {@code has*}.</li>
-	 * </ul>
-	 * {@code getHibernateLazyInitializer()} on a Hibernate proxy, and every method on a
-	 * {@link LazyInitializer}, are refused as well, since they would otherwise open a getter-only path
-	 * to the session. Ordinary getters on proxies still resolve. Resolution itself is delegated to
-	 * {@link DataBindingMethodResolver#forInstanceMethodInvocation()}, which additionally refuses
-	 * static methods and methods declared on {@link Object} and {@link Class}. Refused calls throw an
-	 * {@link AccessException}, which SpEL surfaces as a {@link SpelEvaluationException} before the
-	 * method is ever invoked.
+	 * {@link MethodResolver} that restricts which methods a criteria expression may invoke. A method
+	 * call resolves only when the target is the {@code $fn} helper ({@link CriteriaFunctions}) or the
+	 * method is named {@code get*}, {@code is*} or {@code has*}, and its result is refused if it is a
+	 * Hibernate internal object such as a session or a proxy initializer. Resolution itself is
+	 * delegated to {@link DataBindingMethodResolver#forInstanceMethodInvocation()}, which additionally
+	 * refuses static methods and methods declared on {@link Object} and {@link Class}. Refused calls
+	 * throw an {@link AccessException}, which SpEL surfaces as a {@link SpelEvaluationException}.
 	 */
 	private static final class RestrictedMethodResolver implements MethodResolver {
 
@@ -258,17 +264,54 @@ public class ConceptReferenceRangeUtility {
 		@Override
 		public MethodExecutor resolve(@NonNull EvaluationContext context, @NonNull Object targetObject, @NonNull String name,
 		        @NonNull List<TypeDescriptor> argumentTypes) throws AccessException {
-			if (targetObject instanceof LazyInitializer
-			        || (targetObject instanceof HibernateProxy && "getHibernateLazyInitializer".equals(name))) {
-				throw new AccessException("Method '" + name + "' may not be called on a Hibernate proxy in criteria");
+			if (isDisallowedMethodCall(name, targetObject instanceof CriteriaFunctions)) {
+				throw new AccessException("Method '" + name + "' is not allowed in criteria; only get*, is* and has* "
+				        + "methods and $fn helper methods may be called");
 			}
 
-			if (isDisallowedMethodCall(name, argumentTypes.size(), targetObject instanceof CriteriaFunctions)) {
-				throw new AccessException("Method '" + name + "' is not allowed in criteria; only zero-argument "
-				        + "get*, is* and has* methods and $fn helper methods may be called");
+			MethodExecutor executor = delegate.resolve(context, targetObject, name, argumentTypes);
+			if (executor == null) {
+				return null;
 			}
+			return (evaluationContext, target,
+			        arguments) -> refuseHibernateInternals(executor.execute(evaluationContext, target, arguments));
+		}
+	}
 
-			return delegate.resolve(context, targetObject, name, argumentTypes);
+	/**
+	 * Read-only {@link PropertyAccessor} that refuses Hibernate internal objects, so that a proxy
+	 * initializer or a session cannot be reached as a property when the method form is refused.
+	 */
+	private static final class RestrictedPropertyAccessor implements PropertyAccessor {
+
+		private final PropertyAccessor delegate = DataBindingPropertyAccessor.forReadOnlyAccess();
+
+		@Override
+		public Class<?>[] getSpecificTargetClasses() {
+			return delegate.getSpecificTargetClasses();
+		}
+
+		@Override
+		public boolean canRead(@NonNull EvaluationContext context, @Nullable Object target, @NonNull String name)
+		        throws AccessException {
+			return delegate.canRead(context, target, name);
+		}
+
+		@Override
+		public TypedValue read(@NonNull EvaluationContext context, @Nullable Object target, @NonNull String name)
+		        throws AccessException {
+			return refuseHibernateInternals(delegate.read(context, target, name));
+		}
+
+		@Override
+		public boolean canWrite(@NonNull EvaluationContext context, @Nullable Object target, @NonNull String name) {
+			return false;
+		}
+
+		@Override
+		public void write(@NonNull EvaluationContext context, @Nullable Object target, @NonNull String name,
+		        @Nullable Object newValue) throws AccessException {
+			throw new AccessException("Criteria may not assign values");
 		}
 	}
 

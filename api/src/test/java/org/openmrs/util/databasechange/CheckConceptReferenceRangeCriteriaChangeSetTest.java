@@ -47,7 +47,7 @@ public class CheckConceptReferenceRangeCriteriaChangeSetTest extends BaseContext
 	public void describeProblem_shouldAskForARewriteWhenOnlyReadOnlyCallsAreDisallowed() {
 		String problem = CheckConceptReferenceRangeCriteriaChangeSet
 		        .describeProblem("$patient.getGender().equals('M') && $patient.getAttribute('Race') != null");
-		assertTrue(problem.contains("Rewrite it") && problem.contains("equals('M'), getAttribute('Race')"));
+		assertTrue(problem.contains("Rewrite it") && problem.contains("because it calls equals('M')."));
 	}
 
 	@Test

@@ -13,6 +13,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalTime;
@@ -39,6 +41,7 @@ import org.springframework.expression.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -366,7 +369,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void testSandbox_shouldBlockGettersThatTakeArguments() {
+	public void testSupported_shouldAllowGettersThatTakeArguments() {
 		PersonAttributeType personAttributeType = new PersonAttributeType();
 		personAttributeType.setName("Race");
 		personAttributeType.setSearchable(true);
@@ -380,8 +383,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
-		        .evaluateCriteria("$patient.getAttribute('Race').getValue() == 'Maasai'", obs));
+		assertTrue(
+		    conceptReferenceRangeUtility.evaluateCriteria("$patient.getAttribute('Race').getValue() == 'Maasai'", obs));
 	}
 
 	@Test
@@ -1131,7 +1134,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void testSandbox_shouldBlockGetAgeWithDateArgument() {
+	public void testSupported_shouldAllowGetAgeWithDateArgument() {
 		calendar = Calendar.getInstance();
 		calendar.add(Calendar.YEAR, -5);
 		person.setBirthdate(calendar.getTime());
@@ -1139,20 +1142,63 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertThrows(APIException.class,
-		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge($date) > 1", obs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge($date) > 1", obs));
 	}
 
 	@Test
 	public void testSandbox_shouldBlockHibernateProxyAccess() {
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertInstanceOf(HibernateProxy.class, encounter.getCreator());
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
 		obs.setEncounter(encounter);
 
-		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		APIException thrown = assertThrows(APIException.class, () -> conceptReferenceRangeUtility
 		        .evaluateCriteria("$encounter.creator.getHibernateLazyInitializer().getSession() != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockHibernateProxyAccessThroughPropertySyntax() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertInstanceOf(HibernateProxy.class, encounter.getCreator());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		APIException thrown = assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.hibernateLazyInitializer.session != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockSessionAccessThroughPersistentCollections() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		APIException thrown = assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.getSession() != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockSessionAccessThroughPersistentCollectionProperties() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		APIException thrown = assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.session != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSupported_shouldAllowPersistentCollectionAccessors() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.names.isEmpty() == false", obs));
 	}
 
 	@Test
@@ -1220,9 +1266,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportGettersWithArguments() throws Exception {
-		assertEquals(Collections.singletonList("getAttribute('Race')"),
-		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAttribute('Race') != null"));
+	public void findDisallowedConstructs_shouldNotReportGettersWithArguments() throws Exception {
+		assertTrue(ConceptReferenceRangeUtility
+		        .findDisallowedConstructs("$patient.getAttribute('Race') != null && $patient.getAge($date) > 1").isEmpty());
 	}
 
 	@Test

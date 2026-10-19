@@ -96,7 +96,7 @@ public class CheckConceptReferenceRangeCriteriaChangeSet implements CustomTaskCh
 		String constructs = String.join(", ", disallowed);
 		if (disallowed.stream().allMatch(construct -> READ_ONLY_CALL.matcher(construct).matches())) {
 			return "has criteria that can no longer be evaluated because it calls " + constructs
-			        + ". Rewrite it using only zero-argument get*, is* and has* methods and $fn helper methods "
+			        + ". Rewrite it using only get*, is* and has* methods and $fn helper methods "
 			        + "so observations for this concept can be saved: " + criteria;
 		}
 		return "has criteria that may modify data (" + constructs + "). Until this release, the "
