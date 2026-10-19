@@ -22,6 +22,9 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,14 +89,30 @@ public class OpenmrsPermissionEvaluatorCompositionTest extends BaseContextSensit
 	}
 
 	@Test
-	public void not_shouldDenyWhenThePrivilegeIsHeld() {
+	public void not_shouldDenyNamingTheExpressionWhenThePrivilegeIsHeld() {
 		Context.getUserContext().logout();
 		Context.addProxyPrivilege(FIRST);
 		try {
-			// nothing was missing, so there is no privilege to name and Spring Security's own generic
-			// denial stands
+			// nothing was missing, so there is no privilege to name - the expression is appended instead,
+			// since "Access Denied" alone would not say which guard refused
 			AccessDeniedException exception = assertThrows(AccessDeniedException.class, service::requireNotFirst);
-			assertEquals("Access Denied", exception.getMessage());
+			assertEquals("Access Denied: !hasPermission(null, '" + FIRST + "')", exception.getMessage());
+		} finally {
+			Context.removeProxyPrivilege(FIRST);
+		}
+	}
+
+	@Test
+	public void not_shouldDenyWithASerializableResultWhenThePrivilegeIsHeld() {
+		Context.getUserContext().logout();
+		Context.addProxyPrivilege(FIRST);
+		try {
+			AccessDeniedException exception = assertThrows(AccessDeniedException.class, service::requireNotFirst);
+
+			// the denial that names no privilege is the other half of what has to serialize: a controller
+			// with no handler of its own renders it as the response body, and the delegate's
+			// ExpressionAuthorizationDecision takes Jackson into the expression's evaluation context
+			assertDoesNotThrow(() -> new ObjectMapper().writeValueAsString(exception));
 		} finally {
 			Context.removeProxyPrivilege(FIRST);
 		}
