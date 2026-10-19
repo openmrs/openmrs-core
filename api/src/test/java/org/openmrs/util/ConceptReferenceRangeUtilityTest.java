@@ -187,9 +187,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-			conceptReferenceRangeUtility.evaluateCriteria("", obs);
-		});
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> conceptReferenceRangeUtility.evaluateCriteria("", obs));
 
 		assertTrue(exception.getMessage().contains("criteria is empty"));
 	}
@@ -1252,7 +1250,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReturnEmptyListForAllowedCriteria() throws Exception {
+	public void findDisallowedConstructs_shouldReturnEmptyListForAllowedCriteria() {
 		assertTrue(
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAge() > 1 && $patient.isDead() == false "
 		            + "&& $fn.getDays($fn.getLatestObsDate('CIEL:1234', $patient)) > 3 && $obs.hasGroupMembers() == false")
@@ -1260,73 +1258,73 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportSetters() throws Exception {
+	public void findDisallowedConstructs_shouldReportSetters() {
 		assertEquals(Collections.singletonList("setDead(true)"),
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.setDead(true) || true"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldNotReportGettersWithArguments() throws Exception {
+	public void findDisallowedConstructs_shouldNotReportGettersWithArguments() {
 		assertTrue(ConceptReferenceRangeUtility
 		        .findDisallowedConstructs("$patient.getAttribute('Race') != null && $patient.getAge($date) > 1").isEmpty());
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportCollectionMutatorsReachedThroughProperties() throws Exception {
+	public void findDisallowedConstructs_shouldReportCollectionMutatorsReachedThroughProperties() {
 		assertEquals(Collections.singletonList("clear()"),
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("$encounter.creator.roles.clear() == null"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportDisallowedCallsInsideHelperArguments() throws Exception {
+	public void findDisallowedConstructs_shouldReportDisallowedCallsInsideHelperArguments() {
 		assertEquals(Collections.singletonList("add(null)"), ConceptReferenceRangeUtility
 		        .findDisallowedConstructs("$fn.getDays($encounter.creator.getRoles().add(null)) > 1"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldNotReportMethodsCalledOnTheHelper() throws Exception {
+	public void findDisallowedConstructs_shouldNotReportMethodsCalledOnTheHelper() {
 		assertTrue(ConceptReferenceRangeUtility.findDisallowedConstructs("$fn.isEnrolledInProgram('uuid', $patient, $date)")
 		        .isEmpty());
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportMethodsChainedAfterAHelperCall() throws Exception {
+	public void findDisallowedConstructs_shouldReportMethodsChainedAfterAHelperCall() {
 		assertEquals(Collections.singletonList("setVoided(true)"), ConceptReferenceRangeUtility
 		        .findDisallowedConstructs("$fn.getLatestObs('CIEL:1234', $patient).setVoided(true) == null"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportAssignments() throws Exception {
+	public void findDisallowedConstructs_shouldReportAssignments() {
 		assertEquals(Collections.singletonList("$patient.dead=true"),
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("($patient.dead = true) == true"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportIndexedAssignments() throws Exception {
+	public void findDisallowedConstructs_shouldReportIndexedAssignments() {
 		assertEquals(1,
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("$encounter.creator.userProperties['x'] = 'y'").size());
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportIncrementsAndDecrements() throws Exception {
+	public void findDisallowedConstructs_shouldReportIncrementsAndDecrements() {
 		assertEquals(2,
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("$obs.valueNumeric++ > $obs.valueNumeric--").size());
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportTypeReferences() throws Exception {
+	public void findDisallowedConstructs_shouldReportTypeReferences() {
 		assertEquals(Collections.singletonList("T(java.lang.Runtime)"),
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("T(java.lang.Runtime).getRuntime() != null"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportConstructorCalls() throws Exception {
+	public void findDisallowedConstructs_shouldReportConstructorCalls() {
 		assertEquals(Collections.singletonList("new java.util.ArrayList()"),
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("new java.util.ArrayList().isEmpty()"));
 	}
 
 	@Test
-	public void findDisallowedConstructs_shouldReportBeanReferences() throws Exception {
+	public void findDisallowedConstructs_shouldReportBeanReferences() {
 		assertEquals(Collections.singletonList("@systemProperties"),
 		    ConceptReferenceRangeUtility.findDisallowedConstructs("@systemProperties != null"));
 	}
