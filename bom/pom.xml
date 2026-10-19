@@ -64,7 +64,7 @@
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
 		<owaspEncoderVersion>1.5.1</owaspEncoderVersion>
-		<bouncyCastleVersion>1.85</bouncyCastleVersion>
+		<bouncyCastleVersion>1.86</bouncyCastleVersion>
 		<graalJsVersion>25.4.4.1.1</graalJsVersion>
 		<nettyVersion>4.2.19.Final</nettyVersion>
 
