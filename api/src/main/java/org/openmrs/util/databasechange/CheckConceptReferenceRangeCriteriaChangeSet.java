@@ -44,7 +44,9 @@ public class CheckConceptReferenceRangeCriteriaChangeSet implements CustomTaskCh
 
 	private static final Logger log = LoggerFactory.getLogger(CheckConceptReferenceRangeCriteriaChangeSet.class);
 
-	private static final Pattern READ_ONLY_CALL = Pattern.compile("^(get|is|has)[A-Z]\\w*\\(.*|^equals\\(.*");
+	private static final Pattern READ_ONLY_CALL = Pattern.compile(
+	    "^(equals|equalsIgnoreCase|matches|contains|startsWith|endsWith|after|before|compareTo|size|length|toString"
+	            + "|toUpperCase|toLowerCase|trim)\\(.*");
 
 	@Override
 	public void execute(Database database) throws CustomChangeException {

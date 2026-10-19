@@ -51,6 +51,13 @@ public class CheckConceptReferenceRangeCriteriaChangeSetTest extends BaseContext
 	}
 
 	@Test
+	public void describeProblem_shouldAskForARewriteForReadOnlyComparisonsAndCollectionCalls() {
+		String problem = CheckConceptReferenceRangeCriteriaChangeSet.describeProblem(
+		    "$patient.getBirthdate().after($date) && $patient.getNames().size() > 0 && $patient.gender.toUpperCase() == 'M'");
+		assertTrue(problem.contains("Rewrite it") && !problem.contains("may modify data"));
+	}
+
+	@Test
 	public void describeProblem_shouldFlagCallsThatMayModifyData() {
 		String problem = CheckConceptReferenceRangeCriteriaChangeSet.describeProblem("$patient.setDead(true) || true");
 		assertTrue(problem.contains("may modify data (setDead(true))"));
