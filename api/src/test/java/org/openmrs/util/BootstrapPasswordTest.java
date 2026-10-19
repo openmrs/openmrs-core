@@ -71,6 +71,41 @@ class BootstrapPasswordTest {
 	}
 
 	@Test
+	void testGenerateDeterministicHash_shouldAlwaysContainAnUppercaseLetter() {
+		for (int i = 0; i < 100; i++) {
+			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
+			assertTrue(hash.chars().anyMatch(c -> c >= 'A' && c <= 'Z'),
+				"Hash must contain at least one upper-case letter but was: " + hash);
+		}
+	}
+
+	@Test
+	void testGenerateDeterministicHash_shouldAlwaysContainALowercaseLetter() {
+		for (int i = 0; i < 100; i++) {
+			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
+			assertTrue(hash.chars().anyMatch(c -> c >= 'a' && c <= 'z'),
+				"Hash must contain at least one lower-case letter but was: " + hash);
+		}
+	}
+
+	@Test
+	void testGenerateBootstrapPassword_shouldSatisfyTheDefaultPasswordPolicy() {
+		for (int i = 0; i < 100; i++) {
+			User u = new User();
+			u.setUuid("00000000-0000-1000-8000-" + String.format("%012d", i));
+			String password = Security.generateBootstrapPassword(u);
+			assertTrue(password.chars().anyMatch(c -> c >= '0' && c <= '9'),
+				"Password must contain at least one digit but was: " + password);
+			assertTrue(password.chars().anyMatch(c -> c >= 'A' && c <= 'Z'),
+				"Password must contain at least one upper-case letter but was: " + password);
+			assertTrue(password.chars().anyMatch(c -> c >= 'a' && c <= 'z'),
+				"Password must contain at least one lower-case letter but was: " + password);
+			assertFalse(password.chars().anyMatch(c -> "0OIl+/".indexOf(c) >= 0),
+				"Password must not contain 0, O, I, l, + or / but was: " + password);
+		}
+	}
+
+	@Test
 	void testGenerateBootstrapPassword_shouldReturnPassword() {
 		String password = Security.generateBootstrapPassword(user);
 		assertNotNull(password);

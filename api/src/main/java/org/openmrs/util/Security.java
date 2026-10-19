@@ -58,6 +58,13 @@ public class Security {
 	private static final int PBKDF2_DEFAULT_ITERATIONS = 600000;
 	private static final int PBKDF2_KEY_LENGTH = 256;
 	private static final int BOOTSTRAP_MAX_PASSWORD_LENGTH = 20;
+	
+	// character sets used to guarantee a bootstrap password satisfies OpenMRS's default
+	// password policy, without reintroducing the visually ambiguous characters stripped
+	// from the Base64 output
+	private static final String DIGIT_ALPHABET = "123456789";
+	private static final String UPPERCASE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // A-Z without O and I
+	private static final String LOWERCASE_ALPHABET = "abcdefghijkmnopqrstuvwxyz"; // a-z without l
 
 	private Security() {
 	}
@@ -129,14 +136,14 @@ public class Security {
 	 * The resulting password is Base64-encoded, stripped of visually ambiguous
 	 * or awkward-to-type characters ({@code 0}, {@code O}, {@code I}, {@code l},
 	 * {@code +}, {@code /}) and truncated to a user-friendly length of
-	 * {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters. A digit is always
-	 * included so the password also satisfies OpenMRS's own password policy
-	 * when {@code security.passwordRequiresDigit} is enabled.
+	 * {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters. A digit, an upper-case
+	 * letter and a lower-case letter are always included so the password also
+	 * satisfies OpenMRS's own default password policy.
 	 *
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password (a user-friendly string)
 	 * @throws APIException if user is null, has no UUID, or the pepper is not configured
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static String generateBootstrapPassword(org.openmrs.User user) {
 		if (user == null) {
@@ -169,8 +176,9 @@ public class Security {
 	 * @param input the input string to derive from (typically user UUID + system pepper)
 	 * @param salt  the per-user salt (typically the user's UUID)
 	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
+	 *         and guaranteed to contain a digit and upper- and lower-case letters
 	 * @throws APIException if input or salt is null
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static String generateDeterministicHash(String input, String salt) {
 		return generateDeterministicHash(input, salt, PBKDF2_DEFAULT_ITERATIONS);
@@ -191,8 +199,9 @@ public class Security {
 	 * @param salt       the per-user salt (typically the user's UUID) to make each derivation unique
 	 * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
 	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
+	 *         and guaranteed to contain a digit and upper- and lower-case letters
 	 * @throws APIException if input or salt is null
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static String generateDeterministicHash(String input, String salt, int iterations) {
 		if (input == null || salt == null) {
@@ -216,16 +225,52 @@ public class Security {
 			if (cleaned.length() > BOOTSTRAP_MAX_PASSWORD_LENGTH) {
 				cleaned = cleaned.substring(0, BOOTSTRAP_MAX_PASSWORD_LENGTH);
 			}
-			if (cleaned.chars().noneMatch(c -> c >= '0' && c <= '9')) {
-				char digit = (char) ('0' + (derived[0] & 0xFF) % 10);
-				cleaned = cleaned.substring(0, cleaned.length() - 1) + digit;
-			}
-			return cleaned;
+			return guaranteePolicyCharacters(cleaned, derived);
 
 		} catch (GeneralSecurityException e) {
 			log.error("Failed to generate deterministic hash", e);
 			throw new APIException("bootstrap.hash.generation.failed", null, e);
 		}
+	}
+	
+	/**
+	 * Guarantees the given password satisfies OpenMRS's default password policy, which requires
+	 * at least one digit and both an upper-case and a lower-case letter. One character per
+	 * missing class is appended, chosen deterministically from the given PBKDF2 output so the
+	 * result stays a pure function of the input. Characters are taken from the alphabets above
+	 * so no visually ambiguous character is reintroduced.
+	 *
+	 * @param password the password to check and complete
+	 * @param derived the PBKDF2 output the password was derived from
+	 * @return the password, with one character appended per missing character class
+	 */
+	private static String guaranteePolicyCharacters(String password, byte[] derived) {
+		int missing = countMissingPolicyClasses(password);
+		if (missing == 0) {
+			return password;
+		}
+		
+		// make room for the appended characters by dropping from the end, then re-check
+		// each class against the shortened password so a class whose only character sat
+		// in the dropped tail is guaranteed again
+		StringBuilder sb = new StringBuilder(password.substring(0, Math.max(0, password.length() - missing)));
+		if (sb.chars().noneMatch(c -> c >= '0' && c <= '9')) {
+			sb.append(DIGIT_ALPHABET.charAt((derived[0] & 0xFF) % DIGIT_ALPHABET.length()));
+		}
+		if (sb.chars().noneMatch(c -> c >= 'A' && c <= 'Z')) {
+			sb.append(UPPERCASE_ALPHABET.charAt((derived[1] & 0xFF) % UPPERCASE_ALPHABET.length()));
+		}
+		if (sb.chars().noneMatch(c -> c >= 'a' && c <= 'z')) {
+			sb.append(LOWERCASE_ALPHABET.charAt((derived[2] & 0xFF) % LOWERCASE_ALPHABET.length()));
+		}
+		return sb.toString();
+	}
+	
+	private static int countMissingPolicyClasses(String password) {
+		boolean needsDigit = password.chars().noneMatch(c -> c >= '0' && c <= '9');
+		boolean needsUpper = password.chars().noneMatch(c -> c >= 'A' && c <= 'Z');
+		boolean needsLower = password.chars().noneMatch(c -> c >= 'a' && c <= 'z');
+		return (needsDigit ? 1 : 0) + (needsUpper ? 1 : 0) + (needsLower ? 1 : 0);
 	}
 
 	/**
@@ -234,7 +279,7 @@ public class Security {
 	 * The pepper is read from the runtime property "openmrs.bootstrap.pepper".
 	 *
 	 * @return the pepper, or null if not configured
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static String getBootstrapPepper() {
 		return Context.getRuntimeProperties()
@@ -248,7 +293,7 @@ public class Security {
 	 * Falls back to default (600,000) if not configured or invalid.
 	 *
 	 * @return the number of iterations (always > 0)
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static int getBootstrapIterations() {
 		String value = Context.getRuntimeProperties().getProperty("openmrs.bootstrap.iterations");
@@ -274,7 +319,7 @@ public class Security {
 	 * @param user the user
 	 * @param password the password to validate
 	 * @return true if the password matches the user's bootstrap password and the bootstrap password has not expired
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
 		if (user == null || password == null) {
@@ -309,7 +354,7 @@ public class Security {
 	 *
 	 * @param user the user
 	 * @return true if the bootstrap password is expired
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static boolean isBootstrapPasswordExpired(org.openmrs.User user) {
 		if (user == null) {
@@ -327,7 +372,7 @@ public class Security {
 	 * been consumed cannot be used again.
 	 *
 	 * @param user the user whose password change should be forced
-	 * @since 2.8.10
+	 * @since 2.8.11
 	 */
 	public static void forcePasswordChange(org.openmrs.User user) {
 		if (user != null) {
