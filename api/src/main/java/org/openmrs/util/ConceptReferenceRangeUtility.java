@@ -9,6 +9,8 @@
  */
 package org.openmrs.util;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -64,6 +66,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
 import org.springframework.expression.spel.support.MapAccessor;
+import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -252,29 +255,42 @@ public class ConceptReferenceRangeUtility {
 	 * {@link MethodResolver} that restricts which methods a criteria expression may invoke. A method
 	 * call resolves only when the target is the {@code $fn} helper ({@link CriteriaFunctions}) or the
 	 * method is named {@code get*}, {@code is*} or {@code has*}, and its result is refused if it is a
-	 * Hibernate internal object such as a session or a proxy initializer. Resolution itself is
-	 * delegated to {@link DataBindingMethodResolver#forInstanceMethodInvocation()}, which additionally
-	 * refuses static methods and methods declared on {@link Object} and {@link Class}. Refused calls
-	 * throw an {@link AccessException}, which SpEL surfaces as a {@link SpelEvaluationException}.
+	 * Hibernate internal object such as a session or a proxy initializer. Like
+	 * {@link DataBindingMethodResolver}, it also refuses static methods, methods declared on
+	 * {@link Object} and {@link Class}, and {@link Class} or {@link ClassLoader} targets. It extends
+	 * {@link ReflectiveMethodResolver} so that SpEL can cache resolved methods between evaluations; the
+	 * returned executor therefore re-applies the checks that must hold on every call.
 	 */
-	private static final class RestrictedMethodResolver implements MethodResolver {
-
-		private final MethodResolver delegate = DataBindingMethodResolver.forInstanceMethodInvocation();
+	private static final class RestrictedMethodResolver extends ReflectiveMethodResolver {
 
 		@Override
-		public MethodExecutor resolve(@NonNull EvaluationContext context, @NonNull Object targetObject, @NonNull String name,
-		        @NonNull List<TypeDescriptor> argumentTypes) throws AccessException {
+		protected boolean isCandidateForInvocation(Method method, Class<?> targetClass) {
+			Class<?> declaringClass = method.getDeclaringClass();
+			return !Modifier.isStatic(method.getModifiers()) && declaringClass != Object.class
+			        && declaringClass != Class.class && !ClassLoader.class.isAssignableFrom(targetClass);
+		}
+
+		@Override
+		public @Nullable MethodExecutor resolve(@NonNull EvaluationContext context, @NonNull Object targetObject,
+		        @NonNull String name, @NonNull List<TypeDescriptor> argumentTypes) throws AccessException {
 			if (isDisallowedMethodCall(name, targetObject instanceof CriteriaFunctions)) {
 				throw new AccessException("Method '" + name + "' is not allowed in criteria; only get*, is* and has* "
 				        + "methods and $fn helper methods may be called");
 			}
+			if (targetObject instanceof Class) {
+				throw new AccessException("Class targets are not supported in criteria");
+			}
 
-			MethodExecutor executor = delegate.resolve(context, targetObject, name, argumentTypes);
+			MethodExecutor executor = super.resolve(context, targetObject, name, argumentTypes);
 			if (executor == null) {
 				return null;
 			}
-			return (evaluationContext, target,
-			        arguments) -> refuseHibernateInternals(executor.execute(evaluationContext, target, arguments));
+			return (evaluationContext, target, arguments) -> {
+				if (target instanceof Class || target instanceof ClassLoader) {
+					throw new AccessException("Class targets are not supported in criteria");
+				}
+				return refuseHibernateInternals(executor.execute(evaluationContext, target, arguments));
+			};
 		}
 	}
 

@@ -32,6 +32,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
@@ -1340,6 +1341,54 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void findDisallowedConstructs_shouldThrowParseExceptionForCriteriaOverTheParserLengthLimit() {
 		String criteria = "$patient.getAge() > 1" + " && $patient.getAge() > 1".repeat(500);
 		assertThrows(ParseException.class, () -> ConceptReferenceRangeUtility.findDisallowedConstructs(criteria));
+	}
+
+	@Test
+	public void evaluateCriteria_shouldReapplyRestrictionsWhenTheSameCriteriaIsEvaluatedAgain() {
+		String criteria = "$encounter.creator.hibernateLazyInitializer != null || $encounter.creator.getUsername() != null";
+		Obs plainObs = buildObs();
+		plainObs.setPerson(person);
+		plainObs.setEncounter(new Encounter());
+		plainObs.getEncounter().setCreator(new User());
+		plainObs.getEncounter().getCreator().setUsername("plain");
+
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertInstanceOf(HibernateProxy.class, encounter.getCreator());
+		Obs proxiedObs = buildObs();
+		proxiedObs.setPerson(person);
+		proxiedObs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, plainObs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, proxiedObs));
+	}
+
+	@Test
+	public void evaluateCriteria_shouldRefuseHibernateInternalsOnRepeatedEvaluationOfACachedMethodCall() {
+		String criteria = "$patient.names.getSession() != null";
+		Obs plainObs = buildObs();
+		plainObs.setPerson(person);
+		Obs persistedObs = buildObs();
+		persistedObs.setPerson(Context.getPatientService().getPatient(2));
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, plainObs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, persistedObs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, persistedObs));
+	}
+
+	@Test
+	public void evaluateCriteria_shouldStillEvaluateAllowedCallsOnRepeatedEvaluation() {
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		person.setBirthdate(calendar.getTime());
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		Obs patientObs = buildObs();
+		patientObs.setPerson(Context.getPatientService().getPatient(2));
+
+		String criteria = "$patient.getAge($date) > 1";
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(criteria, patientObs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
 	}
 
 	private Obs buildObs() {
