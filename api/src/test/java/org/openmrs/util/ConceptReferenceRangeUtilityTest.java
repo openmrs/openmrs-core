@@ -1338,6 +1338,12 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void findDisallowedConstructs_shouldThrowParseExceptionForCriteriaOverTheParserLengthLimit() {
+		String criteria = "$patient.getAge() > 1" + String.join("", Collections.nCopies(500, " && $patient.getAge() > 1"));
+		assertThrows(ParseException.class, () -> ConceptReferenceRangeUtility.findDisallowedConstructs(criteria));
+	}
+
+	@Test
 	public void evaluateCriteria_shouldReapplyRestrictionsWhenTheSameCriteriaIsEvaluatedAgain() {
 		String criteria = "$encounter.creator.hibernateLazyInitializer != null || $encounter.creator.getUsername() != null";
 		Obs plainObs = buildObs();
