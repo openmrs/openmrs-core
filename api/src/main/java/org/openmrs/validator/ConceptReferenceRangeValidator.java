@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
  * used at evaluation time so that unparseable criteria are rejected when the range is saved rather
  * than failing every subsequent obs save for the concept.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 @Handler(supports = { ConceptReferenceRange.class }, order = 50)
 public class ConceptReferenceRangeValidator implements Validator {

@@ -208,7 +208,7 @@ public class ConceptReferenceRangeUtility {
 	 * @param criteria the criteria expression, already HTML-unescaped
 	 * @return the disallowed constructs rendered from the parsed expression, in source order
 	 * @throws ParseException if the criteria is not a valid expression
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0
 	 */
 	public static List<String> findDisallowedConstructs(String criteria) throws ParseException {
 		SpelNode ast;

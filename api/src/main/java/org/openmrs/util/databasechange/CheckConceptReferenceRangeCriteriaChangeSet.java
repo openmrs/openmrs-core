@@ -38,7 +38,7 @@ import liquibase.resource.ResourceAccessor;
  * constructs the criteria sandbox refuses, or because they do not parse. Nothing is modified; each
  * offending range is registered as an update warning so it can be corrected after the upgrade.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 public class CheckConceptReferenceRangeCriteriaChangeSet implements CustomTaskChange {
 
