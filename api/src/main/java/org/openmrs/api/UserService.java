@@ -630,7 +630,7 @@ public interface UserService extends OpenmrsService {
 	 * @return true if the password matches the user's bootstrap password and the bootstrap password has not expired
 	 * @since 2.8.11
 	 */
-	@Authorized({ PrivilegeConstants.GET_USERS })
+	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	boolean validateBootstrapPassword(User user, String password);
 
