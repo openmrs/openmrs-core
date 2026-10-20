@@ -57,7 +57,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException if obs is null or is not persisted (has no database-assigned obsId)
 	 * @since 2.9.0, 3.0.0
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.GET_OBS + "')")
 	List<Obs> getObsVersionHistory(Obs obs);
 
 	/**
