@@ -1645,7 +1645,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		assertEquals(createdUser, userService.getUserByActivationKey(key));
 	}
 
@@ -1659,7 +1659,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		assertNull(userService.getUserByActivationKey(key));
 	}
 
@@ -1673,7 +1673,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 
 		final String PASSWORD = "Admin123";
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
@@ -1704,7 +1704,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		credentials.setActivationKey(
 		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
 		            + tokenTime);
-		dao.updateLoginCredential(credentials);
+		dao.setUserActivationKey(credentials);
 		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
 
 		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class,
