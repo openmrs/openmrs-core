@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -112,14 +111,13 @@ public class ConceptReferenceRangeUtility {
 	 * Static {@link org.springframework.expression.EvaluationContext} which is used to run evaluations.
 	 * This class is thread-safe, so shareable.
 	 * <p>
-	 * This Spring version cannot disable assignment, and the SpEL indexer writes to maps and lists
-	 * directly without consulting property accessors or method resolvers. Property writes are refused
-	 * by the accessor, and every map, list and set read from an expression is handed out as an
-	 * unmodifiable view so that {@code $encounter.creator.userProperties['x'] = 'y'} fails too.
+	 * Assignment is disabled explicitly: the SpEL indexer writes to maps and lists directly without
+	 * consulting property accessors or method resolvers, so a read-only property accessor alone would
+	 * still let {@code $encounter.creator.userProperties['x'] = 'y'} through.
 	 */
 	private static final SimpleEvaluationContext EVAL_CONTEXT = SimpleEvaluationContext
 	        .forPropertyAccessors(new MapAccessor(), new RestrictedPropertyAccessor())
-	        .withMethodResolvers(new RestrictedMethodResolver()).build();
+	        .withMethodResolvers(new RestrictedMethodResolver()).withAssignmentDisabled().build();
 
 	private final CriteriaFunctions functions = new CriteriaFunctions();
 
@@ -251,15 +249,6 @@ public class ConceptReferenceRangeUtility {
 		if (object != null && object.getClass().getName().startsWith("org.hibernate.")
 		        && !(object instanceof PersistentCollection)) {
 			throw new AccessException("Hibernate internals may not be accessed in criteria");
-		}
-		if (object instanceof Map) {
-			return new TypedValue(Collections.unmodifiableMap((Map<?, ?>) object));
-		}
-		if (object instanceof List) {
-			return new TypedValue(Collections.unmodifiableList((List<?>) object));
-		}
-		if (object instanceof Set) {
-			return new TypedValue(Collections.unmodifiableSet((Set<?>) object));
 		}
 		return value;
 	}

@@ -1178,7 +1178,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(Context.getPatientService().getPatient(2));
 
-		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.getSession() != null", obs));
+		APIException thrown = assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.getSession() != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
 	}
 
 	@Test
@@ -1186,7 +1188,9 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(Context.getPatientService().getPatient(2));
 
-		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.session != null", obs));
+		APIException thrown = assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.session != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
 	}
 
 	@Test
