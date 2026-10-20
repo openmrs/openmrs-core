@@ -644,7 +644,7 @@ public interface UserService extends OpenmrsService {
 	 * @param user the user whose password change should be forced
 	 * @since 2.8.11
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@Authorized({ PrivilegeConstants.EDIT_USERS })
 	void forcePasswordChange(User user);
 
 	/**

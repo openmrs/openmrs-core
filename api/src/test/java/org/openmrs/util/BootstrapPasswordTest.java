@@ -71,21 +71,10 @@ class BootstrapPasswordTest {
 	}
 
 	@Test
-	void testGenerateDeterministicHash_shouldAlwaysContainAnUppercaseLetter() {
-		for (int i = 0; i < 100; i++) {
-			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
-			assertTrue(hash.chars().anyMatch(c -> c >= 'A' && c <= 'Z'),
-				"Hash must contain at least one upper-case letter but was: " + hash);
-		}
-	}
-
-	@Test
-	void testGenerateDeterministicHash_shouldAlwaysContainALowercaseLetter() {
-		for (int i = 0; i < 100; i++) {
-			String hash = Security.generateDeterministicHash("input-" + i, "salt-" + i, 1000);
-			assertTrue(hash.chars().anyMatch(c -> c >= 'a' && c <= 'z'),
-				"Hash must contain at least one lower-case letter but was: " + hash);
-		}
+	void testGenerateDeterministicHash_shouldAddTheMissingLetterCase() {
+		// before the guarantee, these derive to strings with no upper-case and no lower-case letter respectively
+		assertEquals("o1oe4noay5kk1dhiyv9U", Security.generateDeterministicHash("rate-103847", "salt-103847", 1));
+		assertEquals("9W8WDXAG52TZHJK2EPEm", Security.generateDeterministicHash("rate-22687", "salt-22687", 1));
 	}
 
 	@Test
@@ -118,6 +107,11 @@ class BootstrapPasswordTest {
 		String password1 = Security.generateBootstrapPassword(user);
 		String password2 = Security.generateBootstrapPassword(user);
 		assertEquals(password1, password2, "Bootstrap password should be deterministic");
+	}
+
+	@Test
+	void testGenerateBootstrapPassword_shouldMatchTheKnownAnswer() {
+		assertEquals("ExxjUCbx8xbsRxQMW1xr", Security.generateBootstrapPassword(user));
 	}
 
 	@Test
@@ -175,6 +169,39 @@ class BootstrapPasswordTest {
 		} finally {
 			Context.setRuntimeProperties(originalProps);
 		}
+	}
+
+	@Test
+	void testGetBootstrapIterations_shouldReturnTheConfiguredValue() {
+		assertEquals(1000, Security.getBootstrapIterations());
+	}
+
+	@Test
+	void testGetBootstrapIterations_shouldFallBackToTheDefaultWhenNotConfigured() {
+		Context.setRuntimeProperties(runtimePropertiesWithPepperOnly());
+		assertEquals(600000, Security.getBootstrapIterations());
+	}
+
+	@Test
+	void testGetBootstrapIterations_shouldFallBackToTheDefaultWhenNotANumber() {
+		Properties props = runtimePropertiesWithPepperOnly();
+		props.setProperty("openmrs.bootstrap.iterations", "not-a-number");
+		Context.setRuntimeProperties(props);
+		assertEquals(600000, Security.getBootstrapIterations());
+	}
+
+	@Test
+	void testGetBootstrapIterations_shouldFallBackToTheDefaultWhenNotPositive() {
+		Properties props = runtimePropertiesWithPepperOnly();
+		props.setProperty("openmrs.bootstrap.iterations", "0");
+		Context.setRuntimeProperties(props);
+		assertEquals(600000, Security.getBootstrapIterations());
+	}
+
+	private Properties runtimePropertiesWithPepperOnly() {
+		Properties props = new Properties();
+		props.setProperty("openmrs.bootstrap.pepper", "test-pepper-123");
+		return props;
 	}
 
 	@Test

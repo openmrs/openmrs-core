@@ -937,17 +937,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#forcePasswordChange(User)
 	 */
 	@Override
-	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@Authorized({ PrivilegeConstants.EDIT_USERS })
 	public void forcePasswordChange(User user) {
 		if (user != null) {
 			Security.forcePasswordChange(user);
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
-			}
-			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			}
+			Context.getUserService().saveUser(user);
 		}
 	}
 
