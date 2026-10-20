@@ -11,6 +11,7 @@ package org.openmrs.notification;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -146,6 +147,19 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		assertThrows(AccessDeniedException.class, () -> as.getAlerts(superUser, true, true));
 		assertThrows(AccessDeniedException.class, () -> as.getAlertsByUser(superUser));
 		assertThrows(AccessDeniedException.class, () -> as.getAllActiveAlerts(superUser));
+	}
+
+	@Test
+	public void getAlerts_shouldDenyAnotherUsersAlertsWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+
+		Context.becomeUser("3-4");
+
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> as.getAlerts(superUser, true, true));
+		assertEquals("Privilege required: Get Alerts", denial.getMessage());
 	}
 
 	@Test

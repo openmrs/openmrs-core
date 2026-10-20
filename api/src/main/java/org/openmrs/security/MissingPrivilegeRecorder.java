@@ -14,18 +14,19 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Collects privilege names found missing while one method-security expression is evaluated, so
- * {@link PrivilegeNamingAuthorizationManager} can name them if the expression denies. The state
- * lives here because two classes record into it: {@link OpenmrsPermissionEvaluator} behind
+ * Collects what one method-security expression found missing while it is evaluated - privilege
+ * names, and authentication when {@code isAuthenticated()} denied - so
+ * {@link PrivilegeNamingAuthorizationManager} can name it if the expression denies. The state lives
+ * here because two classes record into it: {@link OpenmrsPermissionEvaluator} behind
  * {@code hasPermission(...)} and {@link OpenmrsAuthorizationManagerFactory} behind
- * {@code hasAuthority(...)}.
+ * {@code hasAuthority(...)} and {@code isAuthenticated()}.
  * <p>
  * Outside an open scope nothing is recorded - the {@code @PreFilter}/{@code @PostFilter} case,
  * where the expression runs per element and no denial message is produced to drain them.
  */
 final class MissingPrivilegeRecorder {
 
-	private static final ThreadLocal<Set<String>> missingPrivileges = new ThreadLocal<>();
+	private static final ThreadLocal<Recording> recording = new ThreadLocal<>();
 
 	private MissingPrivilegeRecorder() {
 	}
@@ -36,21 +37,31 @@ final class MissingPrivilegeRecorder {
 	 * @param privilege the privilege name that was checked
 	 */
 	static void record(String privilege) {
-		Set<String> recording = missingPrivileges.get();
-		if (recording != null) {
-			recording.add(privilege);
+		Recording current = recording.get();
+		if (current != null) {
+			current.missingPrivileges.add(privilege);
+		}
+	}
+
+	/**
+	 * Notes that {@code isAuthenticated()} was checked and denied. A no-op when no scope is open.
+	 */
+	static void recordMissingAuthentication() {
+		Recording current = recording.get();
+		if (current != null) {
+			current.authenticationMissing = true;
 		}
 	}
 
 	/**
 	 * Opens a scope on the current thread.
 	 *
-	 * @return whatever scope was open before this call, to be handed back to {@link #end(Set)} so that
-	 *         a nested scope restores its enclosing one instead of discarding it
+	 * @return whatever scope was open before this call, to be handed back to {@link #end(Recording)} so
+	 *         that a nested scope restores its enclosing one instead of discarding it
 	 */
-	static Set<String> begin() {
-		Set<String> enclosing = missingPrivileges.get();
-		missingPrivileges.set(new LinkedHashSet<>());
+	static Recording begin() {
+		Recording enclosing = recording.get();
+		recording.set(new Recording());
 		return enclosing;
 	}
 
@@ -58,17 +69,40 @@ final class MissingPrivilegeRecorder {
 	 * Closes the innermost scope, making <code>enclosing</code> the active one again.
 	 *
 	 * @param enclosing the value {@link #begin()} returned
-	 * @return the privilege names found missing within the scope just closed, in the order they were
-	 *         checked; never <code>null</code>
+	 * @return what was recorded within the scope just closed; never <code>null</code>
 	 */
-	static Set<String> end(Set<String> enclosing) {
-		Set<String> recorded = missingPrivileges.get();
+	static Recording end(Recording enclosing) {
+		Recording recorded = recording.get();
 		if (enclosing == null) {
-			missingPrivileges.remove();
+			recording.remove();
 		} else {
-			missingPrivileges.set(enclosing);
+			recording.set(enclosing);
 		}
 
-		return recorded != null ? recorded : Collections.emptySet();
+		return recorded != null ? recorded : new Recording();
+	}
+
+	/**
+	 * What one scope recorded.
+	 */
+	static final class Recording {
+
+		private final Set<String> missingPrivileges = new LinkedHashSet<>();
+
+		private boolean authenticationMissing;
+
+		/**
+		 * @return the privilege names found missing, in the order they were checked
+		 */
+		Set<String> getMissingPrivileges() {
+			return Collections.unmodifiableSet(missingPrivileges);
+		}
+
+		/**
+		 * @return true if {@code isAuthenticated()} denied
+		 */
+		boolean isAuthenticationMissing() {
+			return authenticationMissing;
+		}
 	}
 }
