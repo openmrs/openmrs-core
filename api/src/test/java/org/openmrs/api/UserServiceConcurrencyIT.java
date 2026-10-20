@@ -22,8 +22,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,22 +50,23 @@ public class UserServiceConcurrencyIT extends BaseContextSensitiveNonTransaction
 		}
 		getConnection().commit();
 
-		TransactionStatus first = transactionManager.getTransaction(TransactionDefinition.withDefaults());
-		userService.changePasswordUsingActivationKey(key, "Passw0rdOne");
-		CompletableFuture<Throwable> second = CompletableFuture.supplyAsync(() -> {
-			Context.openSession();
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			try {
-				userService.changePasswordUsingActivationKey(key, "Passw0rdTwo");
-				return null;
-			} catch (Throwable t) {
-				return t;
-			} finally {
-				Context.closeSession();
-			}
+		CompletableFuture<Throwable> second = new TransactionTemplate(transactionManager).execute(status -> {
+			userService.changePasswordUsingActivationKey(key, "Passw0rdOne");
+			CompletableFuture<Throwable> overlapping = CompletableFuture.supplyAsync(() -> {
+				Context.openSession();
+				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				try {
+					userService.changePasswordUsingActivationKey(key, "Passw0rdTwo");
+					return null;
+				} catch (Throwable t) {
+					return t;
+				} finally {
+					Context.closeSession();
+				}
+			});
+			assertThrows(TimeoutException.class, () -> overlapping.get(1, TimeUnit.SECONDS));
+			return overlapping;
 		});
-		assertThrows(TimeoutException.class, () -> second.get(1, TimeUnit.SECONDS));
-		transactionManager.commit(first);
 		assertInstanceOf(InvalidActivationKeyException.class, second.get(30, TimeUnit.SECONDS));
 	}
 }
