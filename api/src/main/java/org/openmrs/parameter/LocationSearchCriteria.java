@@ -48,7 +48,8 @@ public class LocationSearchCriteria {
 
 	/**
 	 * @param descendantOfLocation the ancestor location; only its descendants are returned (root
-	 *            excluded)
+	 *            excluded). When retired locations are excluded, a retired location prunes its whole
+	 *            subtree, so a retired ancestor contributes no descendants at all.
 	 */
 	public void setDescendantOfLocation(Location descendantOfLocation) {
 		this.descendantOfLocation = descendantOfLocation;
@@ -97,7 +98,9 @@ public class LocationSearchCriteria {
 	}
 
 	/**
-	 * @return the ancestor location; only descendants of that location are returned (root excluded)
+	 * @return the ancestor location; only descendants of that location are returned (root excluded).
+	 *         When retired locations are excluded, a retired location prunes its whole subtree, so a
+	 *         retired ancestor contributes no descendants at all.
 	 */
 	public Location getDescendantOfLocation() {
 		return descendantOfLocation;
