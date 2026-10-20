@@ -58,7 +58,7 @@ public class Security {
 	private static final int PBKDF2_DEFAULT_ITERATIONS = 600000;
 	private static final int PBKDF2_KEY_LENGTH = 256;
 	private static final int BOOTSTRAP_MAX_PASSWORD_LENGTH = 20;
-	
+
 	// character sets used to guarantee a bootstrap password satisfies OpenMRS's default
 	// password policy, without reintroducing the visually ambiguous characters stripped
 	// from the Base64 output
@@ -232,7 +232,7 @@ public class Security {
 			throw new APIException("bootstrap.hash.generation.failed", null, e);
 		}
 	}
-	
+
 	/**
 	 * Guarantees the given password satisfies OpenMRS's default password policy, which requires
 	 * at least one digit and both an upper-case and a lower-case letter. One character per
@@ -249,7 +249,7 @@ public class Security {
 		if (missing == 0) {
 			return password;
 		}
-		
+
 		// make room for the appended characters by dropping from the end, then re-check
 		// each class against the shortened password so a class whose only character sat
 		// in the dropped tail is guaranteed again
@@ -265,7 +265,7 @@ public class Security {
 		}
 		return sb.toString();
 	}
-	
+
 	private static int countMissingPolicyClasses(String password) {
 		boolean needsDigit = password.chars().noneMatch(c -> c >= '0' && c <= '9');
 		boolean needsUpper = password.chars().noneMatch(c -> c >= 'A' && c <= 'Z');
