@@ -139,7 +139,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
-	public void authenticate_shouldLockOutUserWhenConcurrentFailedAttemptsExceedTheLimit() throws Exception {
+	void authenticate_shouldLockOutUserWhenConcurrentFailedAttemptsExceedTheLimit() throws Exception {
 		List<String> logins = new ArrayList<>();
 		for (int i = 0; i < CONCURRENT_ATTEMPTS; i++) {
 			logins.add(List.of(LOCKED_USERNAME, LOCKED_USER_SYSTEM_ID, LOCKED_USER_SYSTEM_ID_WITHOUT_HYPHEN).get(i % 3));
@@ -165,7 +165,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
-	public void authenticate_shouldNotBlockOtherUsersWhileOneUsersRowIsLocked() throws Exception {
+	void authenticate_shouldNotBlockOtherUsersWhileOneUsersRowIsLocked() throws Exception {
 		Integer lockedUserId = Context.getUserService().getUserByUsername(LOCKED_USERNAME).getUserId();
 		Context.clearSession();
 
@@ -213,7 +213,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
-	public void authenticate_shouldCountEveryAttemptWhenConcurrentAttemptsStayWithinTheLimit() throws Exception {
+	void authenticate_shouldCountEveryAttemptWhenConcurrentAttemptsStayWithinTheLimit() throws Exception {
 		List<String> outcomes = authenticateConcurrently(LOCKED_USERNAME, WRONG_PASSWORD, ALLOWED_FAILED_LOGINS);
 
 		assertTrue(outcomes.stream().noneMatch(m -> m.contains(LOCKOUT_MESSAGE)), outcomes.toString());
@@ -227,7 +227,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	}
 
 	@Test
-	public void liquibase_shouldCreateIndexesOnUsersUsernameAndSystemId() throws Exception {
+	void liquibase_shouldCreateIndexesOnUsersUsernameAndSystemId() throws Exception {
 		Set<String> indexedColumns = new HashSet<>();
 		DatabaseMetaData metaData = getConnection().getMetaData();
 		try (ResultSet indexes = metaData.getIndexInfo(getConnection().getCatalog(), null, "users", false, false)) {
