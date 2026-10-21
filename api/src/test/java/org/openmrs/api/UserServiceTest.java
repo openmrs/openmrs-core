@@ -2120,4 +2120,30 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		return userService.createUser(u, "Openmr5xy");
 	}
+
+	@Test
+	public void validateBootstrapPassword_shouldNotWorkForCallerWithoutTheEditUserPasswordsPrivilege() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User target = createTestUser();
+		User caller = userService.getUser(6001);
+		assertFalse(caller.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+
+		// the privilege is declared on the interface, so this also checks that the gate is
+		// enforced for a method that does not repeat the annotation in the implementation
+		withCurrentUserAs(caller, () -> {
+			assertThrows(APIAuthenticationException.class, () -> userService.validateBootstrapPassword(target, "whatever"));
+		});
+	}
+
+	@Test
+	public void isBootstrapPasswordIssued_shouldNotWorkForCallerWithoutTheGetUsersPrivilege() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User target = createTestUser();
+		User caller = userService.getUser(6001);
+		assertFalse(caller.hasPrivilege(PrivilegeConstants.GET_USERS));
+
+		withCurrentUserAs(caller, () -> {
+			assertThrows(APIAuthenticationException.class, () -> userService.isBootstrapPasswordIssued(target));
+		});
+	}
 }
