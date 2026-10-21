@@ -124,7 +124,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	}
 
 	@BeforeEach
-	public void loadDataIntoRealDatabase() throws Exception {
+	void loadDataIntoRealDatabase() throws Exception {
 		deleteAllData();
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
