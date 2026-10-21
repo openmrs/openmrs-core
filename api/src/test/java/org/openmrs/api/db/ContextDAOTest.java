@@ -13,17 +13,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.type.StandardBasicTypes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,11 +38,20 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
+import org.openmrs.spring.OpenmrsDelegatingPasswordEncoder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.Security;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
@@ -430,5 +444,65 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		dao.closeSession();
 
 		assertSame(boundSession, TransactionSynchronizationManager.getResource(sessionFactory));
+	}
+
+	@Test
+	public void authenticate_shouldUpgradeALegacyPasswordHashToTheConfiguredEncoder() {
+		DefaultListableBeanFactory factory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext)
+		        .getBeanFactory();
+		PasswordEncoder originalEncoder = applicationContext.getBean("openmrsPasswordEncoder", PasswordEncoder.class);
+		PasswordEncoder legacyEncoder = applicationContext.getBean("openmrsLegacyPasswordEncoder", PasswordEncoder.class);
+		PasswordEncoder standIn = new PasswordEncoder() {
+			
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return "stand-in:" + new StringBuilder(rawPassword).reverse();
+			}
+			
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return encode(rawPassword).equals(encodedPassword);
+			}
+		};
+		
+		Object[] original = (Object[]) sessionFactory.getCurrentSession()
+		        .createNativeQuery("select password, date_changed, changed_by from users where user_id = 1")
+		        .uniqueResult();
+		String hashBefore = (String) original[0];
+		
+		factory.destroySingleton("openmrsPasswordEncoder");
+		factory.registerSingleton("openmrsPasswordEncoder", new OpenmrsDelegatingPasswordEncoder("modern",
+		        Collections.singletonMap("modern", standIn), legacyEncoder));
+		try {
+			assertTrue(Security.needsUpgrade(hashBefore), "precondition: the stored hash must need an upgrade");
+			
+			assertNotNull(dao.authenticate("admin", "test"));
+			String hashAfter = readStoredPassword();
+			assertNotEquals(hashBefore, hashAfter);
+			assertFalse(Security.needsUpgrade(hashAfter));
+			
+			assertNotNull(dao.authenticate("admin", "test"));
+			assertEquals(hashAfter, readStoredPassword());
+		}
+		finally {
+			factory.destroySingleton("openmrsPasswordEncoder");
+			factory.registerSingleton("openmrsPasswordEncoder", originalEncoder);
+			
+			// the upgrade committed in its own transaction, so undo it in one too
+			new TransactionTemplate(applicationContext.getBean(PlatformTransactionManager.class),
+			        new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> {
+				        sessionFactory.getCurrentSession().createNativeQuery(
+				            "update users set password = ?1, date_changed = ?2, changed_by = ?3 where user_id = 1")
+				                .setParameter(1, original[0], StandardBasicTypes.STRING)
+				                .setParameter(2, original[1], StandardBasicTypes.TIMESTAMP)
+				                .setParameter(3, original[2], StandardBasicTypes.INTEGER).executeUpdate();
+				        return null;
+			        });
+		}
+	}
+	
+	private String readStoredPassword() {
+		return (String) sessionFactory.getCurrentSession()
+		        .createNativeQuery("select password from users where user_id = 1").uniqueResult();
 	}
 }
