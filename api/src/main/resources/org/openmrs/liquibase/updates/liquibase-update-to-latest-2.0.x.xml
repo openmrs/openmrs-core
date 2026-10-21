@@ -42,7 +42,7 @@
 		</customChange>
 	</changeSet>
 	
-	<changeSet id="1" author="upul" dbms="mysql">
+	<changeSet id="1" author="upul" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
 		</preConditions>
@@ -54,7 +54,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="2" author="upul" dbms="mysql">
+	<changeSet id="2" author="upul" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyTableName="person_attribute_type" foreignKeyName="privilege_which_can_edit"/></not>
 		</preConditions>
@@ -67,7 +67,7 @@
 			referencedTableName="privilege" referencedColumnNames="privilege"/>
 	</changeSet>
 	
-	<changeSet id="200811261102" author="bwolfe" dbms="mysql">
+	<changeSet id="200811261102" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Fix field property for new Tribe person attribute
 		</comment>
@@ -77,7 +77,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="200805281223" author="bmckown" dbms="mysql">
+	<changeSet id="200805281223" author="bmckown" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_complex"/></not>
 		</preConditions>
@@ -96,7 +96,7 @@
 			referencedTableName="concept" referencedColumnNames="concept_id"/>		
 	</changeSet>
 	
-	<changeSet id="200805281224" author="bmckown" dbms="mysql">
+	<changeSet id="200805281224" author="bmckown" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="obs" columnName="value_complex"/></not>
 		</preConditions>
@@ -108,7 +108,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="200805281225" author="bmckown" dbms="mysql">
+	<changeSet id="200805281225" author="bmckown" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				<![CDATA[
@@ -128,7 +128,7 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="200805281226" author="bmckown" dbms="mysql">
+	<changeSet id="200805281226" author="bmckown" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="complex_obs"/>
 		</preConditions>
@@ -139,7 +139,7 @@
 		<dropTable tableName="mime_type"/>
 	</changeSet>
 	
-	<changeSet id="200809191226" author="smbugua" dbms="mysql">
+	<changeSet id="200809191226" author="smbugua" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="hl7_in_archive" columnName="message_state"/></not>
 		</preConditions>
@@ -152,7 +152,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="200809191927" author="smbugua" dbms="mysql">
+	<changeSet id="200809191927" author="smbugua" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="hl7_in_queue" columnName="message_state"/></not>
 		</preConditions>
@@ -167,7 +167,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200901101524" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="200901101524" author="Knoll_Frank" dbms="mysql,mariadb">
 		<comment>
 			Changing datatype of drug.retire_reason from DATETIME to varchar(255)
 		</comment>
@@ -176,7 +176,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200901130950" author="bwolfe" dbms="mysql">
+	<changeSet id="200901130950" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from all roles
 		</comment>
@@ -188,7 +188,7 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200901130951" author="bwolfe" dbms="mysql">
+	<changeSet id="200901130951" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Remove Manage Mime Types, View Mime Types, and Purge Mime Types privilege
 		</comment>
@@ -200,7 +200,7 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200901161126" author="bwolfe" dbms="mysql">
+	<changeSet id="200901161126" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Removed the database_version global property
 		</comment>
@@ -209,7 +209,7 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="20090121-0949" author="bwolfe" dbms="mysql">
+	<changeSet id="20090121-0949" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Switched the default xslt to use PV1-19 instead of PV1-1
 		</comment>
@@ -223,7 +223,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20090122-0853" author="bwolfe" dbms="mysql">
+	<changeSet id="20090122-0853" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="CONTINUE">
 			<not><dbms type="hsql" /></not> <!-- skip over this changeset in unit tests -->
 		</preConditions>
@@ -267,7 +267,7 @@
 		<dropTable tableName="tmp_concept_name_tag_duplicates" />
 	</changeSet>
 	
-	<changeSet id="20090123-0305" author="bwolfe" dbms="mysql">
+	<changeSet id="20090123-0305" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="concept_name_tag_unique_tags" />
@@ -279,7 +279,7 @@
 		<addUniqueConstraint tableName="concept_name_tag" columnNames="tag" constraintName="concept_name_tag_unique_tags"/>
 	</changeSet>
 	
-	<changeSet id="20090224-1229" author="Keelhaul+bwolfe" dbms="mysql">
+	<changeSet id="20090224-1229" author="Keelhaul+bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_tag"/></not>
 		</preConditions>
@@ -315,7 +315,7 @@
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
-	<changeSet id="20090224-1250" author="Keelhaul+bwolfe" dbms="mysql">
+	<changeSet id="20090224-1250" author="Keelhaul+bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_tag_map"/></not>
 		</preConditions>
@@ -341,7 +341,7 @@
 			constraintName="key_for_location_tag_map"/>
 	</changeSet>
 	
-	<changeSet id="20090224-1256" author="Keelhaul+bwolfe" dbms="mysql">
+	<changeSet id="20090224-1256" author="Keelhaul+bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="location" columnName="parent_location"/></not>
 		</preConditions>
@@ -356,7 +356,7 @@
 			referencedTableName="location" referencedColumnNames="location_id"/>
 	</changeSet>
 	
-	<changeSet id="20090225-1551" author="dthomas" dbms="mysql">
+	<changeSet id="20090225-1551" author="dthomas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location_tag" columnName="name"/>
 		</preConditions>
@@ -369,7 +369,7 @@
    			 oldColumnName="retired_reason" newColumnName="retire_reason" columnDataType="varchar(255)"/>
 	</changeSet>
 
-	<changeSet id="02232009-1141" author="nribeka" dbms="mysql">
+	<changeSet id="02232009-1141" author="nribeka" dbms="mysql,mariadb">
 		<comment>
 			Modify the password column to fit the output of SHA-512 function
 		</comment>
@@ -379,7 +379,7 @@
 		</ext:modifyColumn>
 	</changeSet>	
 	
-	<changeSet id="20090301-1259" author="bwolfe" dbms="mysql">
+	<changeSet id="20090301-1259" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Fixes the description for name layout global property
 		</comment>
@@ -393,7 +393,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20090214-2246" author="isherman" dbms="mysql">
+	<changeSet id="20090214-2246" author="isherman" dbms="mysql,mariadb">
 		<comment>
 			Add weight and cd4 to patientGraphConcepts user property (mysql specific)
 		</comment>
@@ -438,7 +438,7 @@
 		</modifySql>
 	</changeSet>
 	
-	<changeSet id="20090316-1008" author="vanand" dbms="mysql">
+	<changeSet id="20090316-1008" author="vanand" dbms="mysql,mariadb">
 		<validCheckSum>cf32d07af2933e9a3555395737b5142</validCheckSum><!-- old checksum before adding in person.birthdate_estimated cleanup -->
 		<validCheckSum>fcdde237e04473db1e6fd16f56bf80e9</validCheckSum><!-- new checksum after adding in person.birthdate_estimated cleanup -->
 		<comment>
@@ -683,7 +683,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200903210905" author="mseaton" dbms="mysql">
+	<changeSet id="200903210905" author="mseaton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="serialized_object"/></not>
 		</preConditions>
@@ -735,7 +735,7 @@
 					baseTableName="serialized_object" baseColumnNames="retired_by"
 					referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
-	<changeSet id="200903210905-fix" author="sunbiz" dbms="mysql">
+	<changeSet id="200903210905-fix" author="sunbiz" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="serialized_object"/>
 		</preConditions>
@@ -747,7 +747,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200904091023" author="bwolfe" dbms="mysql">
+	<changeSet id="200904091023" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from the privilege table and role_privilege table.
 			The privileges will be recreated by the Tribe module if it is installed.
@@ -769,21 +769,21 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet author="Cory McCarthy" id="20090408-1298" dbms="mysql">
+	<changeSet author="Cory McCarthy" id="20090408-1298" dbms="mysql,mariadb">
 		<comment>Changed the datatype for encounter_type to 'text' instead of just 50 chars</comment>
 		<ext:modifyColumn tableName="encounter_type">
 			<column name="description" type="text" />
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200905150814" author="bwolfe" dbms="mysql">
+	<changeSet id="200905150814" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Deleting invalid concept words</comment>
 		<delete tableName="concept_word">
 			<where>concept_name_id = 0</where>
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200905071626" author="bwolfe" failOnError="false" dbms="mysql">
+	<changeSet id="200905071626" author="bwolfe" failOnError="false" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="concept_word_concept_idx"/>
@@ -797,371 +797,371 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090402-1515-38-cohort" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-cohort" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="cohort" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to cohort table</comment>
 		<addColumn tableName="cohort">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept table</comment>
 		<addColumn tableName="concept">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_answer" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_answer" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_answer" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_answer table</comment>
 		<addColumn tableName="concept_answer">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_class" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_class" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_class" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_class table</comment>
 		<addColumn tableName="concept_class">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_datatype" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_datatype" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_datatype" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_datatype table</comment>
 		<addColumn tableName="concept_datatype">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_description" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_description" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_description" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_description table</comment>
 		<addColumn tableName="concept_description">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_map" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_map" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_map" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_map table</comment>
 		<addColumn tableName="concept_map">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_name" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_name" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_name table</comment>
 		<addColumn tableName="concept_name">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_name_tag" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_name_tag" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name_tag" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_name_tag table</comment>
 		<addColumn tableName="concept_name_tag">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_proposal" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_proposal" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_proposal" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_proposal table</comment>
 		<addColumn tableName="concept_proposal">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_set" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_set" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_set" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_set table</comment>
 		<addColumn tableName="concept_set">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_source" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_source" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_source" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_source table</comment>
 		<addColumn tableName="concept_source">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-concept_state_conversion" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-concept_state_conversion" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_state_conversion" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_state_conversion table</comment>
 		<addColumn tableName="concept_state_conversion">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-drug" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-drug" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="drug" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to drug table</comment>
 		<addColumn tableName="drug">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-encounter" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-encounter" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to encounter table</comment>
 		<addColumn tableName="encounter">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-encounter_type" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-encounter_type" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to encounter_type table</comment>
 		<addColumn tableName="encounter_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-field" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-field" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to field table</comment>
 		<addColumn tableName="field">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-field_answer" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-field_answer" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_answer" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to field_answer table</comment>
 		<addColumn tableName="field_answer">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-field_type" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-field_type" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to field_type table</comment>
 		<addColumn tableName="field_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-form" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-form" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to form table</comment>
 		<addColumn tableName="form">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-form_field" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-form_field" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form_field" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to form_field table</comment>
 		<addColumn tableName="form_field">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-global_property" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-global_property" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="global_property" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to global_property table</comment>
 		<addColumn tableName="global_property">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-hl7_in_archive" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-hl7_in_archive" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_archive" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_in_archive table</comment>
 		<addColumn tableName="hl7_in_archive">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-hl7_in_error" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-hl7_in_error" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_error" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_in_error table</comment>
 		<addColumn tableName="hl7_in_error">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-hl7_in_queue" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-hl7_in_queue" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_queue" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_in_queue table</comment>
 		<addColumn tableName="hl7_in_queue">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-hl7_source" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-hl7_source" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_source" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_source table</comment>
 		<addColumn tableName="hl7_source">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-location" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-location" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to location table</comment>
 		<addColumn tableName="location">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-location_tag" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-location_tag" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location_tag" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to location_tag table</comment>
 		<addColumn tableName="location_tag">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-note" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-note" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="note" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to note table</comment>
 		<addColumn tableName="note">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-notification_alert" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-notification_alert" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_alert table</comment>
 		<addColumn tableName="notification_alert">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-notification_template" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-notification_template" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_template" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_template table</comment>
 		<addColumn tableName="notification_template">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-obs" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-obs" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="obs" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to obs table</comment>
 		<addColumn tableName="obs">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-order_type" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-order_type" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="order_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to order_type table</comment>
 		<addColumn tableName="order_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-orders" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-orders" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="orders" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to orders table</comment>
 		<addColumn tableName="orders">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-patient_identifier" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-patient_identifier" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-patient_identifier_type" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-patient_identifier_type" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_identifier_type table</comment>
 		<addColumn tableName="patient_identifier_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-patient_program" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-patient_program" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_program" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_program table</comment>
 		<addColumn tableName="patient_program">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-patient_state" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-patient_state" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_state" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_state table</comment>
 		<addColumn tableName="patient_state">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-person" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-person" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person table</comment>
 		<addColumn tableName="person">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-person_address" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-person_address" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_address table</comment>
 		<addColumn tableName="person_address">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-person_attribute" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-person_attribute" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_attribute table</comment>
 		<addColumn tableName="person_attribute">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-person_attribute_type" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-person_attribute_type" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_attribute_type table</comment>
 		<addColumn tableName="person_attribute_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-person_name" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-person_name" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_name" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_name table</comment>
 		<addColumn tableName="person_name">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-privilege" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-privilege" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="privilege" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to privilege table</comment>
 		<addColumn tableName="privilege">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-program" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-program" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to program table</comment>
 		<addColumn tableName="program">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-program_workflow" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-program_workflow" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to program_workflow table</comment>
 		<addColumn tableName="program_workflow">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-program_workflow_state" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-program_workflow_state" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow_state" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to program_workflow_state table</comment>
 		<addColumn tableName="program_workflow_state">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-relationship" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-relationship" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to relationship table</comment>
 		<addColumn tableName="relationship">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-relationship_type" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-relationship_type" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-report_object" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-report_object" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_object" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to report_object table</comment>
 		<addColumn tableName="report_object">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-report_schema_xml" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-report_schema_xml" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_schema_xml" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to report_schema_xml table</comment>
 		<addColumn tableName="report_schema_xml">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-role" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-role" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="role" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to role table</comment>
 		<addColumn tableName="role">
 			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-38-serialized_object" author="bwolfe" dbms="mysql">
+	<changeSet id="20090402-1515-38-serialized_object" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="serialized_object" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to serialized_object table</comment>
 		<addColumn tableName="serialized_object">
@@ -1700,7 +1700,7 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 	</changeSet>
 
-	<changeSet id="20090414-0804" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0804" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyTableName="concept_set" foreignKeyName="is_a" />
 		</preConditions>
@@ -1708,7 +1708,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_set" constraintName="is_a" />
 	</changeSet>
 	
-	<changeSet id="20090414-0805" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0805" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
 		</preConditions>
@@ -1716,7 +1716,7 @@
 		<dropPrimaryKey tableName="concept_set" />
 	</changeSet>
 	
-	<changeSet id="20090414-0806" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0806" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_set" columnName="concept_set_id"/></not>
 		</preConditions>
@@ -1732,7 +1732,7 @@
 		</modifySql>
 	</changeSet>
 
-	<changeSet id="20090414-0807" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0807" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="idx_concept_set_concept"/></not>
 		</preConditions>
@@ -1743,7 +1743,7 @@
 		<addForeignKeyConstraint baseTableName="concept_set" baseColumnNames="concept_id" constraintName="is_a" referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 
-	<changeSet id="20090414-0808a" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0808a" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyTableName="patient_identifier" foreignKeyName="identifies_patient" />
 		</preConditions>
@@ -1751,7 +1751,7 @@
 		<dropForeignKeyConstraint baseTableName="patient_identifier" constraintName="identifies_patient" />
 	</changeSet>
 	
-	<changeSet id="20090414-0808b" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0808b" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_identifier" columnName="patient_identifier_id"/></not>
 		</preConditions>
@@ -1759,7 +1759,7 @@
 		<dropPrimaryKey tableName="patient_identifier" />
 	</changeSet>
 
-	<changeSet id="20090414-0809" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0809" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_identifier" columnName="patient_identifier_id"/></not>
 		</preConditions>
@@ -1775,7 +1775,7 @@
 		</modifySql>
 	</changeSet>
 
-	<changeSet id="20090414-0810" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0810" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="idx_patient_identifier_patient"/></not>
 		</preConditions>
@@ -2264,7 +2264,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090414-0811a" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0811a" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyTableName="concept_word" foreignKeyName="word_for" />
 		</preConditions>
@@ -2272,7 +2272,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for" />
 	</changeSet>
 	
-	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false" dbms="mysql">
+	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2280,7 +2280,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for_name" />
 	</changeSet>
 	
-	<changeSet id="20090414-0811b" author="bwolfe" failOnError="false" dbms="mysql">
+	<changeSet id="20090414-0811b" author="bwolfe" failOnError="false" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2288,7 +2288,7 @@
 		<dropPrimaryKey tableName="concept_word" />
 	</changeSet>
 	
-	<changeSet id="20090414-0812" author="bwolfe" dbms="mysql">
+	<changeSet id="20090414-0812" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
 		</preConditions>
@@ -2304,7 +2304,7 @@
 		</modifySql>
 	</changeSet>
 	
-	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false" dbms="mysql">
+	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyTableName="concept_word" foreignKeyName="word_for_name"/></not>
 		</preConditions>
@@ -2312,7 +2312,7 @@
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
 	</changeSet>
 	
-	<changeSet id="20090428-0854" author="bwolfe" dbms="mysql">
+	<changeSet id="20090428-0854" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyTableName="concept_word" foreignKeyName="word_for"/>
@@ -2322,7 +2322,7 @@
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 	
-	<changeSet id="200905150821" author="bwolfe" dbms="mysql">
+	<changeSet id="200905150821" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Deleting duplicate concept word keys</comment>
 		<sql>delete from concept_word
              where
@@ -2341,13 +2341,13 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="200904271042" author="bwolfe" dbms="mysql">
+	<changeSet id="200904271042" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_word" columnName="synonym"/></preConditions>
 		<comment>Remove the now unused synonym column</comment>
 		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
 	
-	<changeSet id="200902142212" author="ewolodzko" dbms="mysql">
+	<changeSet id="200902142212" author="ewolodzko" dbms="mysql,mariadb">
                 <preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="sort_weight"/></not></preConditions>
 		<comment>
 			Add a sortWeight field to PersonAttributeType
@@ -2357,7 +2357,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="200902142213" author="ewolodzko" dbms="mysql">
+	<changeSet id="200902142213" author="ewolodzko" dbms="mysql,mariadb">
 		<validCheckSum>3:ace82a1ecb3a0c3246e39f0bebe38423</validCheckSum> <!-- original checksum -->
 		<validCheckSum>3:288804e42d575fe62c852ed9daa9d59d</validCheckSum> <!-- current checksum with TRUNK-4025 fix-->
 		<comment>
@@ -2370,7 +2370,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="200906301606" author="bwolfe" dbms="mysql">
+	<changeSet id="200906301606" author="bwolfe" dbms="mysql,mariadb">
 		<comment>
 			Change person_attribute_type.sort_weight from an integer to a float
 		</comment>
@@ -2379,12 +2379,12 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-1" author="bwolfe" dbms="mysql">
+	<changeSet id="200907161638-1" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Change obs.value_numeric from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="obs"><column name="value_numeric" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-2" author="bwolfe" dbms="mysql">
+	<changeSet id="200907161638-2" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Change concept_numeric columns from a double(22,0) type to a double</comment>
 		<ext:modifyColumn tableName="concept_numeric">
 			<column name="hi_absolute" type="double" />
@@ -2396,17 +2396,17 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-3" author="bwolfe" dbms="mysql">
+	<changeSet id="200907161638-3" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Change concept_set.sort_weight from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="concept_set"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-4" author="bwolfe" dbms="mysql">
+	<changeSet id="200907161638-4" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Change concept_set_derived.sort_weight from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="concept_set_derived"><column name="sort_weight" type="double" /></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-5" author="bwolfe" dbms="mysql">
+	<changeSet id="200907161638-5" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Change drug table columns from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="drug" >
 			<column name="dose_strength" type="double" />
@@ -2415,7 +2415,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200907161638-6" author="bwolfe" dbms="mysql">
+	<changeSet id="200907161638-6" author="bwolfe" dbms="mysql,mariadb">
 		<comment>Change drug_order.dose from a double(22,0) to a double</comment>
 		<ext:modifyColumn tableName="drug_order">
 			<column name="dose" type="double" />
@@ -2438,9 +2438,26 @@
 		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 		<modifySql><replace replace="name-of-uuid-function" with="current_timestamp * 99999999999999"/></modifySql>
+	</changeSet>
+	<changeSet id="TRUNK-6634-2026-07-03-1002" author="arrabelli" dbms="mariadb">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM role where role = 'System Developer'
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Adding the 'System Developer' role on MariaDB. Changeset 20100128-1 only runs for MySQL,
+			so on MariaDB the role was never re-created. 20100128-1 must stay untouched because its
+			modifySql blocks are part of its checksum.
+		</comment>
+		<insert tableName="role">
+			<column name="role" value="System Developer"/>
+			<column name="description" value="Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system."/>
+			<column name="uuid" valueComputed="UUID()"/>
+		</insert>
 	</changeSet>	
 	
-	<changeSet id="20100128-2" author="djazayeri" dbms="mysql">
+	<changeSet id="20100128-2" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
@@ -2451,7 +2468,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20100128-3" author="djazayeri" dbms="mysql">
+	<changeSet id="20100128-3" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
@@ -2461,7 +2478,7 @@
 		</delete>
 	</changeSet>
 	    
-	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe" dbms="mysql">
+	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="scheduler_task_config" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to scheduler_task_config table</comment>
 		<addColumn tableName="scheduler_task_config">
@@ -2522,34 +2539,34 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090907-1" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="20090907-1" author="Knoll_Frank" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="date_voided"/></preConditions>
 		<comment>Rename the concept_source.date_voided column to date_retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
 	</changeSet>
-	<changeSet id="20090907-2a" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="20090907-2a" author="Knoll_Frank" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><foreignKeyConstraintExists foreignKeyTableName="concept_source" foreignKeyName="user_who_voided_concept_source"/></preConditions>
 		<comment>Remove the concept_source.voided_by foreign key constraint</comment>	
 		<dropForeignKeyConstraint baseTableName="concept_source" constraintName="user_who_voided_concept_source" />
 	</changeSet>
-	<changeSet id="20090907-2b" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="20090907-2b" author="Knoll_Frank" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided_by"/></preConditions>
 		<comment>Rename the concept_source.voided_by column to retired_by</comment>	
 		<renameColumn tableName="concept_source" oldColumnName="voided_by" newColumnName="retired_by" columnDataType="int" />
 		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users" />
 	</changeSet>
-	<changeSet id="20090907-3" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="20090907-3" author="Knoll_Frank" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided"/></preConditions>
 		<comment>Rename the concept_source.voided column to retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="voided" newColumnName="retired" columnDataType="smallint" />
 	</changeSet> <!-- Fix not required. See changeset 200908291938-2a -->
-	<changeSet id="20090907-4" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="20090907-4" author="Knoll_Frank" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="void_reason"/></preConditions>
 		<comment>Rename the concept_source.void_reason column to retire_reason</comment>
 		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
 	</changeSet>
 	
-	<changeSet id="200908291938-1" author="dthomas" dbms="mysql">
+	<changeSet id="200908291938-1" author="dthomas" dbms="mysql,mariadb">
 		<comment>set hl7_code in ConceptSource to nullable column</comment>
 		<ext:modifyColumn tableName="concept_source">
 			<column name="hl7_code" type="varchar(50)">
@@ -2558,7 +2575,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200908291938-2a" author="dthomas" dbms="mysql">
+	<changeSet id="200908291938-2a" author="dthomas" dbms="mysql,mariadb">
 		<comment>set retired in ConceptSource to tinyint(1) not null</comment>
 		<ext:modifyColumn tableName="concept_source">
 			<column name="retired" type="tinyint(1)">
@@ -2672,7 +2689,7 @@
 		<update tableName="global_property"><column name="property" value="person.searchMaxResults"/><where> property = 'patient.searchMaxResults'</where></update> 
 	</changeSet>
 
-	<changeSet id="200912141552" author="madanmohan" dbms="mysql">
+	<changeSet id="200912141552" author="madanmohan" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="encounter" columnName="changed_by" />
@@ -2689,7 +2706,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 		
-	<changeSet id="200912141553" author="madanmohan" dbms="mysql">
+	<changeSet id="200912141553" author="madanmohan" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="encounter" columnName="date_changed" />
@@ -2703,7 +2720,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="200912211118" author="nribeka" dbms="mysql">
+	<changeSet id="200912211118" author="nribeka" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="concept_derived" columnName="language" />
@@ -2717,7 +2734,7 @@
 		</addColumn>
 	</changeSet>	
 
-	<changeSet id="200912031842" author="djazayeri" dbms="mysql">
+	<changeSet id="200912031842" author="djazayeri" dbms="mysql,mariadb">
 		<!-- This is safe to re-run, and the pre-condition is hard to write, so I'm not writing one -->
 		<comment>Changing encounter.provider_id to reference person instead of users</comment>
 		<dropForeignKeyConstraint baseTableName="encounter" constraintName="encounter_provider"/>
@@ -2725,7 +2742,7 @@
                                  referencedTableName="person" referencedColumnNames="person_id"/>
 	</changeSet>
 	
-	<changeSet id="201102280948" author="bwolfe" dbms="mysql">
+	<changeSet id="201102280948" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<foreignKeyConstraintExists foreignKeyTableName="users" foreignKeyName="person_id_for_user"/>
@@ -2736,7 +2753,7 @@
 		<dropForeignKeyConstraint baseTableName="users" constraintName="person_id_for_user"/>
 	</changeSet>
 	
-	<changeSet id="200912031846-1" author="djazayeri" dbms="mysql">
+	<changeSet id="200912031846-1" author="djazayeri" dbms="mysql,mariadb">
 		<validCheckSum>3aff267520eec4d52e81ef7614b2da3</validCheckSum>
 		<validCheckSum>11f84b948fc7731d1ffb6869980e6cb</validCheckSum>
 		<preConditions onFail="MARK_RAN">
@@ -2753,7 +2770,7 @@
 		</update>
 	</changeSet>
 
-	<changeSet id="200912031846-2" author="djazayeri" dbms="mysql">
+	<changeSet id="200912031846-2" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
@@ -2769,7 +2786,7 @@
 		<addNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>
 	</changeSet>
 
-	<changeSet id="200912031846-3" author="djazayeri" dbms="mysql">
+	<changeSet id="200912031846-3" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyTableName="users" foreignKeyName="person_id_for_user"/>
@@ -2782,7 +2799,7 @@
 		<addAutoIncrement tableName="users" columnName="user_id" columnDataType="int"/>
 	</changeSet>
 	
-	<changeSet id="200912091819" author="djazayeri" dbms="mysql">
+	<changeSet id="200912091819" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="users" columnName="retired"/>
@@ -2801,7 +2818,7 @@
 			baseTableName="users" baseColumnNames="retired_by"
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
-	<changeSet id="200912091819-fix" author="sunbiz" dbms="mysql">
+	<changeSet id="200912091819-fix" author="sunbiz" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="users" columnName="retired"/>
 		</preConditions>
@@ -2813,7 +2830,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="200912091820" author="djazayeri" dbms="mysql">
+	<changeSet id="200912091820" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<columnExists tableName="users" columnName="retired"/>
@@ -2829,7 +2846,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="200912091821" author="djazayeri" dbms="mysql">
+	<changeSet id="200912091821" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="HALT">
 			<and>
 				<columnExists tableName="users" columnName="retired"/>
@@ -2847,7 +2864,7 @@
 		<dropColumn tableName="users" columnName="void_reason"/>
 	</changeSet>
 	
-	<changeSet id="200912140038" author="djazayeri" dbms="mysql">
+	<changeSet id="200912140038" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="users" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to users table</comment>
 		<addColumn tableName="users">
@@ -2895,7 +2912,7 @@
 		<addNotNullConstraint tableName="users" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
 	
-	<changeSet id="200912151032" author="n.nehete" dbms="mysql">
+	<changeSet id="200912151032" author="n.nehete" dbms="mysql,mariadb">
 		<preConditions onFail="HALT">
 			<sqlCheck expectedResult="All encounters have a non-null encounter type.">
 				<![CDATA[
@@ -2910,7 +2927,7 @@
 		<addNotNullConstraint tableName="encounter" columnName="encounter_type" columnDataType="int" />
 	</changeSet>	
 	
-	<changeSet id="201001072007" author="upul" dbms="mysql">
+	<changeSet id="201001072007" author="upul" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="scheduler_task_config" columnName="last_execution_time"/></not>
 		</preConditions>
@@ -2924,7 +2941,7 @@
 		</addColumn>
 	</changeSet>    	
 	
-	<changeSet id="20091001-1023" author="rcrichton" dbms="mysql">
+	<changeSet id="20091001-1023" author="rcrichton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="relationship_type" columnName="retired"/>
@@ -2938,7 +2955,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20091001-1024" author="rcrichton" dbms="mysql">
+	<changeSet id="20091001-1024" author="rcrichton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="relationship_type" columnName="retired_by"/>
@@ -2950,7 +2967,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20091001-1025" author="rcrichton" dbms="mysql">
+	<changeSet id="20091001-1025" author="rcrichton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyTableName="relationship_type" foreignKeyName="user_who_retired_relationship_type"/></not>
 		</preConditions>
@@ -2962,7 +2979,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
-	<changeSet id="20091001-1026" author="rcrichton" dbms="mysql">
+	<changeSet id="20091001-1026" author="rcrichton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="relationship_type" columnName="date_retired"/>
@@ -2974,7 +2991,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20091001-1027" author="rcrichton" dbms="mysql">
+	<changeSet id="20091001-1027" author="rcrichton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="relationship_type" columnName="retire_reason"/>
@@ -2986,7 +3003,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20091215-0208" author="sunbiz" dbms="mysql">
+	<changeSet id="20091215-0208" author="sunbiz" dbms="mysql,mariadb">
 		<comment>
 			Prune concepts rows orphaned in concept_numeric tables
 		</comment>
@@ -2999,7 +3016,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="20091215-0209" author="jmiranda" dbms="mysql">
+	<changeSet id="20091215-0209" author="jmiranda" dbms="mysql,mariadb">
 		<comment>
 			Prune concepts rows orphaned in concept_complex tables
 		</comment>
@@ -3012,7 +3029,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="20091215-0210" author="jmiranda" dbms="mysql">
+	<changeSet id="20091215-0210" author="jmiranda" dbms="mysql,mariadb">
 		<comment>
 			Prune concepts rows orphaned in concept_derived tables
 		</comment>
@@ -3025,7 +3042,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20100306-095513a" author="thilini.hg" dbms="mysql">
+	<changeSet id="20100306-095513a" author="thilini.hg" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyTableName="notification_alert" foreignKeyName="alert_assigned_to_user"/>
 		</preConditions>
@@ -3033,7 +3050,7 @@
 		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
 	</changeSet>
 	
-	<changeSet id="20100306-095513b" author="thilini.hg" dbms="mysql">
+	<changeSet id="20100306-095513b" author="thilini.hg" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="notification_alert" columnName="user_id"/>
 		</preConditions>
@@ -3041,7 +3058,7 @@
 		<dropColumn tableName="notification_alert" columnName="user_id"/>
 	</changeSet>
 	
-	<changeSet id="20100322-0908" author="syhaas" dbms="mysql">
+	<changeSet id="20100322-0908" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="concept_answer" columnName="sort_weight"/>
@@ -3056,7 +3073,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20100412-2217" author="bwolfe" dbms="mysql">
+	<changeSet id="20100412-2217" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert_recipient" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_alert_recipient table</comment>
 		<addColumn tableName="notification_alert_recipient">
@@ -3109,7 +3126,7 @@
 		<addNotNullConstraint tableName="notification_alert_recipient" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
 	
-	<changeSet id="20100413-1509" author="djazayeri" dbms="mysql">
+	<changeSet id="20100413-1509" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location_tag" columnName="tag"/>
 		</preConditions>
@@ -3120,7 +3137,7 @@
    			 oldColumnName="tag" newColumnName="name" columnDataType="varchar(50)"/>
 	</changeSet>
 	
-	<changeSet id="20110922-0551" author="sunbiz" dbms="mysql">
+	<changeSet id="20110922-0551" author="sunbiz" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted changeLogFile="liquibase-update-to-latest.xml" author="bwolfe" id="20100427-1334"/>
 		</preConditions>
@@ -3130,7 +3147,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100423-1402" author="slorenz" dbms="mysql">
+	<changeSet id="20100423-1402" author="slorenz" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="encounter_datetime_idx"/>
@@ -3143,7 +3160,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20100423-1406" author="slorenz" dbms="mysql">
+	<changeSet id="20100423-1406" author="slorenz" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="obs_datetime_idx"/>
@@ -3155,7 +3172,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20100426-1111-remove-not-null-personid-contraint" author="dkayiwa" dbms="mysql">
+	<changeSet id="20100426-1111-remove-not-null-personid-contraint" author="dkayiwa" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="users" columnName="person_id"/>
 		</preConditions>
@@ -3163,7 +3180,7 @@
 		<dropNotNullConstraint tableName="users" columnName="person_id" columnDataType="int"/>				
 	</changeSet>
 	
-	<changeSet id="20100426-1947" author="syhaas" dbms="mysql">
+	<changeSet id="20100426-1947" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				<![CDATA[
@@ -3192,7 +3209,7 @@
 		</delete>
 	</changeSet>
 
-	<changeSet id="20100512-1400" author="djazayeri" dbms="mysql">
+	<changeSet id="20100512-1400" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				select count(*) from order_type where order_type_id = 2
@@ -3212,12 +3229,12 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="20100517-1545" author="wyclif and djazayeri" dbms="mysql">
+	<changeSet id="20100517-1545" author="wyclif and djazayeri" dbms="mysql,mariadb">
 		<comment>Switch boolean concepts/observations to be stored as coded</comment>
 		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
 	</changeSet>
 	
-	<changeSet id="20100526-1025" author="Harsha.cse" dbms="mysql">
+	<changeSet id="20100526-1025" author="Harsha.cse" dbms="mysql,mariadb">
 		<comment>
 			Drop Not-Null constraint from location column in Encounter and Obs table
 		</comment>
@@ -3225,7 +3242,7 @@
 		<dropNotNullConstraint tableName="obs" columnName="location_id" columnDataType="int"/>
 	</changeSet>
 
-	<changeSet id="20100604-0933a" author="wyclif" dbms="mysql">
+	<changeSet id="20100604-0933a" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists columnName="message_state" tableName="hl7_in_archive" />
 		</preConditions>
@@ -3246,7 +3263,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20100323-192043" author="ricardosbarbosa" dbms="mysql">
+	<changeSet id="20100323-192043" author="ricardosbarbosa" dbms="mysql,mariadb">
 		<comment>
 			Removing the duplicate privilege 'Add Concept Proposal' in favor of 'Add Concept Proposals'
 		</comment>
@@ -3258,7 +3275,7 @@
 		<delete tableName="privilege"><where>privilege='Add Concept Proposal'</where></delete>
 	</changeSet>
 		
-	<changeSet id="20100330-190413" author="ricardosbarbosa" dbms="mysql">
+	<changeSet id="20100330-190413" author="ricardosbarbosa" dbms="mysql,mariadb">
 		<comment>
 			Removing the duplicate privilege 'Edit Concept Proposal' in favor of 'Edit Concept Proposals'
 		</comment>		
@@ -3271,7 +3288,7 @@
 	</changeSet>
 	
 
-	<changeSet id="20100525-818-1" author="syhaas" dbms="mysql">
+	<changeSet id="20100525-818-1" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list_type"/>
@@ -3309,7 +3326,7 @@
 			baseTableName="active_list_type" baseColumnNames="creator"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
-	<changeSet id="20100525-818-1-fix" author="sunbiz" dbms="mysql">
+	<changeSet id="20100525-818-1-fix" author="sunbiz" dbms="mysql,mariadb">
 		<comment>(Fixed)Change active_list_type.retired to BOOLEAN</comment>
 		<ext:modifyColumn tableName="active_list_type">
 			<column name="retired" type="boolean" defaultValueBoolean="false">
@@ -3318,7 +3335,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100525-818-2" author="syhaas" dbms="mysql">
+	<changeSet id="20100525-818-2" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list"/>
@@ -3392,7 +3409,7 @@
 			</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100525-818-3" author="syhaas" dbms="mysql">
+	<changeSet id="20100525-818-3" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list_allergy"/>
@@ -3412,7 +3429,7 @@
 			referencedTableName="concept" referencedColumnNames="concept_id" />
 	</changeSet>
 	
-	<changeSet id="20100525-818-4" author="syhaas" dbms="mysql">
+	<changeSet id="20100525-818-4" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="active_list_problem"/>
@@ -3428,7 +3445,7 @@
 		</createTable>
 	</changeSet>
 	
-	<changeSet id="20100525-818-5" author="syhaas" dbms="mysql">
+	<changeSet id="20100525-818-5" author="syhaas" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT count(*) FROM active_list_type
@@ -3459,7 +3476,7 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="20100607-1550a" author="wyclif" dbms="mysql">
+	<changeSet id="20100607-1550a" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists columnName="concept_name_type" tableName="concept_name"/>
@@ -3471,7 +3488,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20100607-1550b" author="wyclif" dbms="mysql">
+	<changeSet id="20100607-1550b" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists columnName="locale_preferred" tableName="concept_name"/>
@@ -3482,14 +3499,14 @@
 			<column name="locale_preferred" type="smallint" defaultValueNumeric="0"></column>
 		</addColumn>
 	</changeSet>
-	<changeSet id="20100607-1550b-fix" author="sunbiz" dbms="mysql">
+	<changeSet id="20100607-1550b-fix" author="sunbiz" dbms="mysql,mariadb">
 		<comment>(Fixed)Change concept_name.locale_preferred to BOOLEAN</comment>
 		<ext:modifyColumn tableName="concept_name">
 			<column name="locale_preferred" type="boolean" defaultValueBoolean="false"/>
 		</ext:modifyColumn>
 	</changeSet>
 
-	<changeSet id="20100607-1550c" author="wyclif" dbms="mysql">
+	<changeSet id="20100607-1550c" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyTableName="concept_name_tag_map" foreignKeyName="mapped_concept_name_tag"/>
 		</preConditions>
@@ -3612,7 +3629,7 @@
 		<customChange class="org.openmrs.util.databasechange.ConceptValidatorChangeSet"/>				
 	</changeSet>
 	
-	<changeSet id="20100607-1550i" author="wyclif" dbms="mysql">
+	<changeSet id="20100607-1550i" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">			
 			<not>
 				<foreignKeyConstraintExists foreignKeyTableName="concept_name_tag_map" foreignKeyName="mapped_concept_name_tag"/>
@@ -3624,7 +3641,7 @@
 								constraintName="mapped_concept_name_tag"/>
 	</changeSet>
 
-	<changeSet id="20100621-1443" author="jkeiper" dbms="mysql">
+	<changeSet id="20100621-1443" author="jkeiper" dbms="mysql,mariadb">
 		<comment>
 			Modify the error_details column of hl7_in_error to hold
 			stacktraces
@@ -3634,7 +3651,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="201008021047" author="bwolfe" failOnError="false" dbms="mysql">
+	<changeSet id="201008021047" author="bwolfe" failOnError="false" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="family_name2"/>
@@ -3653,7 +3670,7 @@
 		<customChange class="org.openmrs.util.databasechange.ProgramValidatorChangeSet"/>				
 	</changeSet>
 
-	<changeSet id="201008242121" author="misha680" dbms="mysql">
+	<changeSet id="201008242121" author="misha680" dbms="mysql,mariadb">
 		<comment>Make person_name.person_id not NULLable</comment>
 		<ext:modifyColumn tableName="person_name">
 			<column name="person_id" type="int">
@@ -3662,7 +3679,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20100924-1110" author="mseaton" dbms="mysql">
+	<changeSet id="20100924-1110" author="mseaton" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_program" columnName="location_id"/></not>
 		</preConditions>
@@ -3677,7 +3694,7 @@
 			referencedTableName="location" referencedColumnNames="location_id"/>
 	</changeSet>
 
-	<changeSet id="201009281047" author="misha680" dbms="mysql">
+	<changeSet id="201009281047" author="misha680" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept" columnName="default_charge"/>
 		</preConditions>
@@ -3701,7 +3718,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="201010151054" author="bwolfe" dbms="mysql">
+	<changeSet id="201010151054" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_published_index" /></not>
 		</preConditions>
@@ -3711,7 +3728,7 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="201010151055" author="bwolfe" dbms="mysql">
+	<changeSet id="201010151055" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_retired_index" /></not>
 		</preConditions>
@@ -3721,7 +3738,7 @@
 		</createIndex>	
 	</changeSet>
 	
-	<changeSet id="201010151056" author="bwolfe" dbms="mysql">
+	<changeSet id="201010151056" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="form_published_and_retired_index" /></not>
 		</preConditions>
@@ -3732,7 +3749,7 @@
 		</createIndex>	
 	</changeSet>
 	
-	<changeSet id="201010261143" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261143" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="neighborhood_cell"/>
 		</preConditions>
@@ -3741,7 +3758,7 @@
 			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261145" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261145" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="township_division"/>
 		</preConditions>
@@ -3750,7 +3767,7 @@
 			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261147" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261147" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="subregion"/>
 		</preConditions>
@@ -3759,7 +3776,7 @@
 			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261149" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261149" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="person_address" columnName="region"/>
 		</preConditions>
@@ -3768,7 +3785,7 @@
 			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261151" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261151" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="neighborhood_cell"/>
 		</preConditions>
@@ -3777,7 +3794,7 @@
 			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261153" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261153" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="township_division"/>
 		</preConditions>
@@ -3786,7 +3803,7 @@
 			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261156" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261156" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="subregion"/>
 		</preConditions>
@@ -3795,7 +3812,7 @@
 			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201010261159" author="crecabarren" dbms="mysql">
+	<changeSet id="201010261159" author="crecabarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="location" columnName="region"/>
 		</preConditions>
@@ -3804,7 +3821,7 @@
 			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="201012092009" author="djazayeri" dbms="mysql">
+	<changeSet id="201012092009" author="djazayeri" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><changeSetExecuted id="201012092009" author="djazayeri" changeLogFile="liquibase-update-to-latest.xml"/></not>
 		</preConditions>
@@ -3821,7 +3838,7 @@
 		<ext:modifyColumn tableName="location"><column name="county_district" type="varchar(255)"/></ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="201011011600" author="jkeiper" dbms="mysql">
+	<changeSet id="201011011600" author="jkeiper" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="hl7_in_archive_message_state_idx" /></not>
 		</preConditions>
@@ -3836,7 +3853,7 @@
 		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>				
 	</changeSet>
 	
-	<changeSet id="20101209-1721" author="wyclif" dbms="mysql">
+	<changeSet id="20101209-1721" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="weight"/></not>
 		</preConditions>
@@ -3846,7 +3863,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20101209-1722" author="wyclif" dbms="mysql">
+	<changeSet id="20101209-1722" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="concept_word_weight_index" /></not>
 		</preConditions>
@@ -3856,7 +3873,7 @@
 		</createIndex>
 	</changeSet>
 		
-	<changeSet id="20101209-1723" author="wyclif" dbms="mysql">
+	<changeSet id="20101209-1723" author="wyclif" dbms="mysql,mariadb">
 		<validCheckSum>db17937286d48f680b2be16bee24e62</validCheckSum> <!-- old checksum without specifying date_created -->
 		<validCheckSum>4d67c48557f5665a8c2be7e87e22913</validCheckSum> <!-- current checksum with date_created property added -->
 		<preConditions onFail="MARK_RAN">
@@ -3876,7 +3893,7 @@
 		</insert>
 	</changeSet>
 
-	<changeSet id="20101209-1731" author="wyclif" dbms="mysql">
+	<changeSet id="20101209-1731" author="wyclif" dbms="mysql,mariadb">
 		<validCheckSum><comment>Using Correct BOOLEAN in update query</comment>3:6de3e859f77856fe939d3ae6a73b4752</validCheckSum>
 		<validCheckSum>3:5b57be46af9578a59fb2b4f2af24c816</validCheckSum>
 		<preConditions onFail="MARK_RAN">
@@ -3894,7 +3911,7 @@
 	</changeSet>
 
 	<!-- TODO: https://source.openmrs.org/cru/CR-TRUNK-204#CFR-4477 -->
-	<changeSet id="201012081716" author="nribeka" dbms="mysql">
+	<changeSet id="201012081716" author="nribeka" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
 		</preConditions>
@@ -3902,7 +3919,7 @@
 		<delete tableName="concept_derived" />
 	</changeSet>
 	
-	<changeSet id="201012081717" author="nribeka" dbms="mysql">
+	<changeSet id="201012081717" author="nribeka" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
 		</preConditions>
@@ -3910,7 +3927,7 @@
 		<dropTable tableName="concept_derived"/>
 	</changeSet>
 	
-	<changeSet id="201011051300" author="bwolfe" dbms="mysql">
+	<changeSet id="201011051300" author="bwolfe" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="alert_date_to_expire_idx" /></not>
 		</preConditions>
@@ -3920,7 +3937,7 @@
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="20100603-1625-1-person_address" author="sapna" dbms="mysql">
+	<changeSet id="20100603-1625-1-person_address" author="sapna" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="date_changed"/></not></preConditions>
 		<comment>Adding "date_changed" column to person_address table</comment>
 		<addColumn tableName="person_address">
@@ -3929,7 +3946,7 @@
 	</changeSet>
 	
 
-	<changeSet id="20100603-1625-2-person_address" author="sapna" dbms="mysql">
+	<changeSet id="20100603-1625-2-person_address" author="sapna" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="changed_by"/></not></preConditions>
 		<comment>Adding "changed_by" column to person_address table</comment>
 		<addColumn tableName="person_address">
@@ -3940,7 +3957,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
-	<changeSet id="20110218-1206" author="rubailly" dbms="mysql">
+	<changeSet id="20110218-1206" author="rubailly" dbms="mysql,mariadb">
 		<preConditions>
 			<not>
 				<columnExists tableName="patient_identifier_type"
@@ -3955,7 +3972,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110218-1210" author="rubailly" dbms="mysql">
+	<changeSet id="20110218-1210" author="rubailly" dbms="mysql,mariadb">
 		<comment>
 			Drop Not-Null constraint from location_id column in patient_identifier table
 		</comment>
@@ -3963,7 +3980,7 @@
 			columnName="location_id" columnDataType="int" />
 	</changeSet>
 
-	<changeSet id="20101029-1016" author="gobi/prasann" dbms="mysql">
+	<changeSet id="20101029-1016" author="gobi/prasann" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="concept_stop_word" />
@@ -3988,7 +4005,7 @@
 			columnNames="word,locale" constraintName="Unique_StopWord_Key" />
 	</changeSet>
 
-	<changeSet id="20101029-1026" author="gobi/prasann" dbms="mysql">
+	<changeSet id="20101029-1026" author="gobi/prasann" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">select count(*) from concept_stop_word where word = 'A'</sqlCheck>
 		</preConditions>
@@ -4035,7 +4052,7 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="201118012301" author="lkellett" dbms="mysql">
+	<changeSet id="201118012301" author="lkellett" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="discontinued_reason_non_coded"/></not>
 		</preConditions>
@@ -4047,7 +4064,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110125-1435" author="wyclif" dbms="mysql">
+	<changeSet id="20110125-1435" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_address" columnName="start_date"/></not>
 		</preConditions>
@@ -4057,7 +4074,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110125-1436" author="wyclif" dbms="mysql">
+	<changeSet id="20110125-1436" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="person_address" columnName="end_date"/></not>
 		</preConditions>
@@ -4067,7 +4084,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110201-1625-1" author="arahulkmit" dbms="mysql">
+	<changeSet id="20110201-1625-1" author="arahulkmit" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="date_changed"/></not></preConditions>
 		<comment>Adding "date_changed" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
@@ -4075,7 +4092,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110201-1625-2" author="arahulkmit" dbms="mysql">
+	<changeSet id="20110201-1625-2" author="arahulkmit" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="changed_by"/></not></preConditions>
 		<comment>Adding "changed_by" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
@@ -4094,7 +4111,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20110201-1626-2" author="arahulkmit" dbms="mysql">
+	<changeSet id="20110201-1626-2" author="arahulkmit" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="changed_by"/></not></preConditions>
 		<comment>Adding "changed_by" column to relationship table</comment>
 		<addColumn tableName="relationship">
@@ -4105,7 +4122,7 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 	
-	<changeSet id="201101221453" author="suho" dbms="mysql">
+	<changeSet id="201101221453" author="suho" dbms="mysql,mariadb">
 		<comment>Increasing the serialized_data column of serialized_object to hold mediumtext</comment>
 		<ext:modifyColumn tableName="serialized_object">
 			<column name="serialized_data" type="mediumtext" >
@@ -4114,7 +4131,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="201101121434" author="gbalaji,gobi" dbms="mysql">
+	<changeSet id="201101121434" author="gbalaji,gobi" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="obs" columnName="date_started"/>
 		</preConditions>
@@ -4122,7 +4139,7 @@
 		<dropColumn tableName="obs" columnName="date_started"/>
 	</changeSet>
 	
-	<changeSet id="201102081800" author="gbalaji,gobi" dbms="mysql">
+	<changeSet id="201102081800" author="gbalaji,gobi" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="obs" columnName="date_stopped"/>			
 		</preConditions>
@@ -4130,7 +4147,7 @@
 		<dropColumn tableName="obs" columnName="date_stopped"/>
 	</changeSet>
 	
-	<changeSet id="20110124-1030" author="surangak" dbms="mysql">
+	<changeSet id="20110124-1030" author="surangak" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<foreignKeyConstraintExists foreignKeyTableName="concept_answer"
@@ -4207,7 +4224,7 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="20090224-1002-create-visit_type" author="dkayiwa" dbms="mysql">
+	<changeSet id="20090224-1002-create-visit_type" author="dkayiwa" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit_type"/></not>
 		</preConditions>
@@ -4251,7 +4268,7 @@
 			referencedTableName="users" referencedColumnNames="user_id"/>
 	</changeSet>
 	
-	<changeSet id="20100419-1209" author="wyclif" dbms="mysql">
+	<changeSet id="20100419-1209" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit" /> </not>
 		</preConditions>
@@ -4312,7 +4329,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa" dbms="mysql">
+	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="encounter" columnName="visit_id"/></not>
 		</preConditions>
@@ -4325,7 +4342,7 @@
 			referencedTableName="visit" referencedColumnNames="visit_id" />
 	</changeSet>
 	
-	<changeSet id="201101271456-add-startdate-to-relationship" author="misha680" dbms="mysql">
+	<changeSet id="201101271456-add-startdate-to-relationship" author="misha680" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="relationship" columnName="start_date"/></not>
 		</preConditions>
@@ -4337,7 +4354,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="201101271456-add-enddate-to-relationship" author="misha680" dbms="mysql">
+	<changeSet id="201101271456-add-enddate-to-relationship" author="misha680" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="relationship" columnName="end_date"/></not>
 		</preConditions>
@@ -4349,7 +4366,7 @@
 		</addColumn>
 	</changeSet>
 	
-    <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri" dbms="mysql">
+    <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri" dbms="mysql,mariadb">
     	<validCheckSum>3:fbdd2c69187f89a0abc7f27ee138441a</validCheckSum>
     	<validCheckSum>3:3cf419ea9657f9a072881cafb2543d77</validCheckSum>
         <preConditions onFail="MARK_RAN">
@@ -4412,7 +4429,7 @@
 		</addColumn>
 	</changeSet>
 
-    <changeSet id="20110425-1700-create-visit-attribute-table" author="djazayeri" dbms="mysql">
+    <changeSet id="20110425-1700-create-visit-attribute-table" author="djazayeri" dbms="mysql,mariadb">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="visit_attribute"/></not>
         </preConditions>
@@ -4461,7 +4478,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 
-    <changeSet id="201107192313-change-length-of-regex-column" author="jtellez" dbms="mysql">
+    <changeSet id="201107192313-change-length-of-regex-column" author="jtellez" dbms="mysql,mariadb">
 		<preConditions onFail="HALT">
 			<columnExists tableName="patient_identifier_type" columnName="format" />
 		</preConditions>
@@ -4490,7 +4507,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20110708-2105" author="cta" dbms="mysql">
+	<changeSet id="20110708-2105" author="cta" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<indexExists indexName="concept_source_unique_hl7_codes" />
@@ -4502,7 +4519,7 @@
 		<addUniqueConstraint tableName="concept_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
 	</changeSet>
 
-	<changeSet id="2011-07-12-1947-add-outcomesConcept-to-program" author="grwarren" dbms="mysql">
+	<changeSet id="2011-07-12-1947-add-outcomesConcept-to-program" author="grwarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="program" columnName="outcomes_concept_id"/>
@@ -4520,7 +4537,7 @@
 								 referencedColumnNames="concept_id"/>
 	</changeSet>
 
-	<changeSet id="2011-07-12-2005-add-outcome-to-patientprogram" author="grwarren" dbms="mysql">
+	<changeSet id="2011-07-12-2005-add-outcome-to-patientprogram" author="grwarren" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="patient_program" columnName="outcome_concept_id"/>
@@ -4538,7 +4555,7 @@
 								 referencedColumnNames="concept_id"/>
 	</changeSet>
 
-	<changeSet id="20110817-1544-create-location-attribute-type-table" author="djazayeri" dbms="mysql">
+	<changeSet id="20110817-1544-create-location-attribute-type-table" author="djazayeri" dbms="mysql,mariadb">
 		<validCheckSum>3:fb309279a3ba9fda3358361cf02244a8</validCheckSum>
 		<validCheckSum>3:41fa30c01ec2d1107beccb8126146464</validCheckSum>
 		<preConditions onFail="MARK_RAN">
@@ -5114,7 +5131,7 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20110301-1030a" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030a" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><tableExists tableName="concept_reference_source" /></not>
@@ -5124,7 +5141,7 @@
 		<renameTable oldTableName="concept_source" newTableName="concept_reference_source"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030b" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030b" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_reference_term" /></not>
 		</preConditions>
@@ -5170,7 +5187,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20110301-1030c" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030c" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_map_type" /></not>
 		</preConditions>
@@ -5219,7 +5236,7 @@
 		</ext:modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20110301-1030d" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030d" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><tableExists tableName="concept_reference_map" /></not>
@@ -5229,7 +5246,7 @@
 		<renameTable oldTableName="concept_map" newTableName="concept_reference_map"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030e" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030e" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_reference_map" columnName="concept_reference_term_id" /></not>
 		</preConditions>
@@ -5245,7 +5262,7 @@
 		<renameColumn tableName="concept_map_type" oldColumnName="isHidden" newColumnName="is_hidden" columnDataType="boolean"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030f" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030f" author="wyclif" dbms="mysql,mariadb">
 		<validCheckSum><comment>Initial version with random UUIDs</comment>3:97128f92a883840dc2ba1a55a01cd4a3</validCheckSum>
 		<validCheckSum><comment>Corrected version with predefined UUIDs</comment>3:5faead5506cbcde69490fef985711d66</validCheckSum>
 		<preConditions onFail="MARK_RAN">
@@ -5294,7 +5311,7 @@
 		</customChange>
 	</changeSet>
 	
-	<changeSet id="20110301-1030g" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030g" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><columnExists tableName="concept_reference_map" columnName="concept_map_type_id" /></not>
@@ -5309,7 +5326,7 @@
 			baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030h" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030h" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><columnExists tableName="concept_reference_map" columnName="changed_by" /></not>
@@ -5324,7 +5341,7 @@
 			baseTableName="concept_reference_map" baseColumnNames="changed_by" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030i" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030i" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<and>
 				<not><columnExists tableName="concept_reference_map" columnName="date_changed" /></not>
@@ -5336,7 +5353,7 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20110301-1030j" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030j" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="concept_reference_term_map" /></not>
 		</preConditions>
@@ -5371,7 +5388,7 @@
 			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
 	</changeSet>
 		
-	<changeSet id="20110301-1030m" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030m" author="wyclif" dbms="mysql,mariadb">
 		<validCheckSum><comment>Initial SQL version</comment>3:523b32f95b74186733ebf2be0ef4ba7f</validCheckSum>
 		<validCheckSum><comment>Changed to Java</comment>3:b286407bfcdf3853512cb15009c816f1</validCheckSum>
 		<preConditions onFail="MARK_RAN">
@@ -5384,7 +5401,7 @@
 		<customChange class="org.openmrs.util.databasechange.MigrateConceptReferenceTermChangeSet" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030n" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<not><foreignKeyConstraintExists foreignKeyTableName="concept_reference_map" foreignKeyName="mapped_concept_reference_term" /></not>
 		</preConditions>
@@ -5394,7 +5411,7 @@
 			baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id" />
 	</changeSet>
 	
-	<changeSet id="20110301-1030o" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030o" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<foreignKeyConstraintExists foreignKeyTableName="concept_reference_map" foreignKeyName="map_source"/>
 		</preConditions>
@@ -5402,7 +5419,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_reference_map"  constraintName="map_source"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030p" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030p" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="source"/>
 		</preConditions>
@@ -5410,7 +5427,7 @@
 		<dropColumn tableName="concept_reference_map" columnName="source"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030q" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030q" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="source_code"/>
 		</preConditions>
@@ -5418,7 +5435,7 @@
 		<dropColumn tableName="concept_reference_map" columnName="source_code"/>
 	</changeSet>
 	
-	<changeSet id="20110301-1030r" author="wyclif" dbms="mysql">
+	<changeSet id="20110301-1030r" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept_reference_map" columnName="comment"/>
 		</preConditions>
@@ -5446,7 +5463,7 @@
             deferrable="false" initiallyDeferred="false" referencedColumnNames="person_id" referencedTableName="person"/>
 	</changeSet>
         
-	<changeSet id="20090316-1008-fix" author="sunbiz" dbms="mysql">
+	<changeSet id="20090316-1008-fix" author="sunbiz" dbms="mysql,mariadb">
 		<comment>(Fixed)Changing from smallint to BOOLEAN type on BOOLEAN properties</comment>
 		<ext:modifyColumn tableName="cohort">
 			<column name="voided" type="boolean" defaultValueBoolean="false">
@@ -5694,7 +5711,7 @@
 			</update>
 	</changeSet>
 
-	<changeSet id="20110919-0639-void_empty_attributes" author="dkayiwa" dbms="mysql" >
+	<changeSet id="20110919-0639-void_empty_attributes" author="dkayiwa" dbms="mysql,mariadb" >
 		<comment>
 			Void all attributes that have empty string values.
 		</comment>
@@ -6007,7 +6024,7 @@
 		</modifySql>
      </changeSet>
      
-     <changeSet id="20110825-1000-creating-providers-for-persons-from-encounter" author="raff" dbms="mysql">
+     <changeSet id="20110825-1000-creating-providers-for-persons-from-encounter" author="raff" dbms="mysql,mariadb">
      	<validCheckSum>3:d0da8b0b930623f6c62e2bd02bc2523b</validCheckSum>
      	<validCheckSum><comment>Changing identifier from person.person_id to user.system_id</comment>3:cccc02519a766bd8fde048cea13d307c</validCheckSum>
      	<validCheckSum><comment>Changing now() to CURRENT_TIMESTAMP</comment>3:a70d8897d05364a0a4398f2b90542fd4</validCheckSum>
@@ -6040,7 +6057,7 @@
          </sql>
  	</changeSet>
      
-     <changeSet id="20110825-1000-migrating-providers-to-encounter-provider" author="raff" dbms="mysql">
+     <changeSet id="20110825-1000-migrating-providers-to-encounter-provider" author="raff" dbms="mysql,mariadb">
      	<preConditions onFail="MARK_RAN">
  			<columnExists tableName="encounter" columnName="provider_id"/>
  		</preConditions>
@@ -6116,7 +6133,7 @@
         </addColumn>
 	</changeSet>
 
-	<changeSet id="201110091820-b" author="jkeiper" dbms="mysql">
+	<changeSet id="201110091820-b" author="jkeiper" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="201103152243-d" author="jkeiper" changeLogFile="liquibase-update-to-latest.xml"/>
 		</preConditions>
@@ -6194,7 +6211,7 @@
 			constraintName="unique_form_and_name" columnNames="form_id,name" />
 	</changeSet>
 
-	<changeSet id="20110326-2" author="Knoll_Frank" dbms="mysql">
+	<changeSet id="20110326-2" author="Knoll_Frank" dbms="mysql,mariadb">
 		<preConditions>
 			<columnExists tableName="obs" columnName="previous_version"/>
 		</preConditions>
@@ -6212,7 +6229,7 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20111128-1601" author="wyclif" dbms="mysql">
+	<changeSet id="20111128-1601" author="wyclif" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT COUNT(*) FROM scheduler_task_config
@@ -6264,7 +6281,7 @@
          </sql>
  	</changeSet>
  	
- 	<changeSet id="20100426-1111-add-not-null-personid-contraint" author="dkayiwa" dbms="mysql">
+ 	<changeSet id="20100426-1111-add-not-null-personid-contraint" author="dkayiwa" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="users" columnName="person_id"/>
 		</preConditions>
@@ -8735,7 +8752,7 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="201508111304" author="sns.recommind" dbms="mysql">
+	<changeSet id="201508111304" author="sns.recommind" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><indexExists indexName="global_property_property_index"/></not></preConditions>
 		<comment>Add an index to the global_property.property column</comment>
 		<createIndex tableName="global_property" indexName="global_property_property_index">
@@ -8743,7 +8760,7 @@
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="201508111412" author="sns.recommind" dbms="mysql">
+	<changeSet id="201508111412" author="sns.recommind" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_class_name_index"/></not></preConditions>
 		<comment>Add an index to the concept_class.name column</comment>
 		<createIndex tableName="concept_class" indexName="concept_class_name_index">
@@ -8751,7 +8768,7 @@
 		</createIndex>
 	</changeSet>
 
-	<changeSet id="201508111415" author="sns.recommind" dbms="mysql">
+	<changeSet id="201508111415" author="sns.recommind" dbms="mysql,mariadb">
 		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_datatype_name_index"/></not></preConditions>
 		<comment>Add an index to the concept_datatype.name column</comment>
 		<createIndex tableName="concept_datatype" indexName="concept_datatype_name_index">
