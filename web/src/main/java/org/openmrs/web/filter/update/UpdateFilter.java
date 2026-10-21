@@ -35,6 +35,7 @@ import org.openmrs.web.filter.util.FilterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -257,7 +258,7 @@ public class UpdateFilter extends StartupFilter {
 					StringBuilder sb = new StringBuilder("<ul>");
 					
 					for (String warning : updateJob.getUpdateWarnings()) {
-						sb.append("<li>").append(warning).append("</li>");
+						sb.append("<li>").append(HtmlUtils.htmlEscape(warning)).append("</li>");
 					}
 					
 					sb.append("</ul>");
