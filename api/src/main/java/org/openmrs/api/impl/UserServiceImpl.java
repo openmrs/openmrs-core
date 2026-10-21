@@ -149,6 +149,21 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 
 	/**
+	 * The service's single entry point to {@link UserDAO#saveUserProperty(User, String, String)},
+	 * raising the permit that the DAO requires of anything that can change a user.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private void daoSaveUserProperty(User user, String key, String value) {
+		UserPasswordGuard.enter();
+		try {
+			dao.saveUserProperty(user, key, value);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
 	 * The service's single entry point to {@link UserDAO#changePassword(User, String)}.
 	 *
 	 * @see UserPasswordGuard
@@ -946,11 +961,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#isBootstrapPasswordExpired(User)
+	 * @see org.openmrs.api.UserService#isBootstrapPasswordIssued(User)
 	 */
 	@Override
-	public boolean isBootstrapPasswordExpired(User user) {
-		return Security.isBootstrapPasswordExpired(user);
+	public boolean isBootstrapPasswordIssued(User user) {
+		return Security.isBootstrapPasswordIssued(user);
 	}
 
 	/**
@@ -959,6 +974,24 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
 	public String generateBootstrapPassword(User user) throws APIException {
-		return Security.generateBootstrapPassword(user);
+		if (user == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+		
+		// derive the password from the user that is actually persisted, so that a copy of the user
+		// does not derive a different password
+		User target = user.getUserId() == null ? user : dao.getUser(user.getUserId());
+		if (target == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+		
+		// derive the password before recording the issuance, so that a misconfigured system does
+		// not leave an account with a bootstrap password it cannot derive
+		String password = Security.generateBootstrapPassword(target);
+		if (target.getUserId() != null) {
+			// record the issuance, otherwise the issued bootstrap password would not validate
+			daoSaveUserProperty(target, OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED, "true");
+		}
+		return password;
 	}
 }

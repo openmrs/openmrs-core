@@ -31,6 +31,19 @@ public interface UserDAO {
 	public User saveUser(User user, String password) throws DAOException;
 	
 	/**
+	 * Saves a single property on the given user, without persisting any other change to that
+	 * user.
+	 * <p>
+	 * The user is reloaded before the property is written, so that a change the caller made to
+	 * the user is not written along with the property.
+	 *
+	 * @param user the user to save the property on
+	 * @param key the property key
+	 * @param value the property value
+	 */
+	public void saveUserProperty(User user, String key, String value) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.api.UserService#getUser(Integer)
 	 */
 	public User getUser(Integer userId) throws DAOException;

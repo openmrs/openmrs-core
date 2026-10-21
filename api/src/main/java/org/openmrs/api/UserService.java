@@ -609,13 +609,17 @@ public interface UserService extends OpenmrsService {
 	String getLastLoginTime(User user);
 
 	/**
-	 * Generates a deterministic bootstrap password for a user.
+	 * Issues a deterministic bootstrap password for a user.
 	 *
 	 * The password is derived from the user's UUID and a system-wide pepper using PBKDF2.
 	 * It is not stored in the database and can be regenerated at any time.
+	 * <p>
+	 * Issuing the password records that this account has one, so that it validates through
+	 * {@link #validateBootstrapPassword(User, String)}. An account that was never issued a
+	 * bootstrap password does not validate one, even for someone who knows the pepper.
 	 *
-	 * @param user the user for whom to generate the bootstrap password
-	 * @return the generated bootstrap password
+	 * @param user the user for whom to issue the bootstrap password
+	 * @return the issued bootstrap password
 	 * @throws APIException if the user is null, has no UUID, or pepper is not configured
 	 * @since 2.8.11
 	 */
@@ -624,10 +628,13 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Validates a password against a user's bootstrap password.
+	 * <p>
+	 * The check fails closed: it only succeeds for a user that was issued a bootstrap
+	 * password and has not consumed it yet.
 	 *
 	 * @param user the user
 	 * @param password the password to validate
-	 * @return true if the password matches the user's bootstrap password and the bootstrap password has not expired
+	 * @return true if the password matches the user's issued bootstrap password
 	 * @since 2.8.11
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
@@ -638,8 +645,8 @@ public interface UserService extends OpenmrsService {
 	 * Forces a user to change their password on next login.
 	 *
 	 * This is typically called after a user successfully logs in with a bootstrap password.
-	 * It also marks any issued bootstrap password as expired, so the consumed
-	 * bootstrap credential cannot be used again.
+	 * It also consumes any issued bootstrap password, so the used bootstrap credential
+	 * cannot be used again.
 	 *
 	 * @param user the user whose password change should be forced
 	 * @since 2.8.11
@@ -648,18 +655,17 @@ public interface UserService extends OpenmrsService {
 	void forcePasswordChange(User user);
 
 	/**
-	 * Checks if a user's bootstrap password has expired.
+	 * Checks if a bootstrap password has been issued for a user.
 	 *
-	 * Bootstrap passwords are considered expired when the user has been
-	 * successfully authenticated with them and was forced to change their password.
-	 * Expiry is tracked in a dedicated user property independent of the general
-	 * force-password flag and only ever moves one way, so a consumed bootstrap
-	 * password stays expired.
+	 * Issuance is tracked in a dedicated user property independent of the general
+	 * force-password flag. The property is set when the bootstrap password is handed out
+	 * and removed when it is consumed, so a bootstrap password only ever validates for an
+	 * account it was issued to.
 	 *
 	 * @param user the user
-	 * @return true if the bootstrap password is expired
+	 * @return true if the user has an issued bootstrap password
 	 * @since 2.8.11
 	 */
 	@Authorized({ PrivilegeConstants.GET_USERS })
-	boolean isBootstrapPasswordExpired(User user);
+	boolean isBootstrapPasswordIssued(User user);
 }

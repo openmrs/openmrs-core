@@ -139,6 +139,10 @@ public class Security {
 	 * {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters. A digit, an upper-case
 	 * letter and a lower-case letter are always included so the password also
 	 * satisfies OpenMRS's own default password policy.
+	 * <p>
+	 * This only derives the password. Use
+	 * {@link org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)} to hand
+	 * one out, since a derived password does not validate until it has been issued.
 	 *
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password (a user-friendly string)
@@ -297,10 +301,17 @@ public class Security {
 
 	/**
 	 * Validates a password against a user's bootstrap password.
+	 * <p>
+	 * Only an account that was actually issued a bootstrap password can validate one. The
+	 * check fails closed: an account without the
+	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED} user property has no
+	 * bootstrap password, so knowing the system pepper is not enough to log in as that
+	 * account.
 	 *
 	 * @param user the user
 	 * @param password the password to validate
-	 * @return true if the password matches the user's bootstrap password and the bootstrap password has not expired
+	 * @return true if the password matches the user's issued bootstrap password and that
+	 *         password has not been consumed
 	 * @since 2.8.11
 	 */
 	public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
@@ -308,7 +319,7 @@ public class Security {
 			return false;
 		}
 
-		if (isBootstrapPasswordExpired(user)) {
+		if (!isBootstrapPasswordIssued(user)) {
 			return false;
 		}
 
@@ -325,33 +336,71 @@ public class Security {
 	}
 
 	/**
-	 * Checks if a user's bootstrap password has expired.
+	 * Issues a bootstrap password for a user.
+	 * <p>
+	 * The password is derived from the user's UUID and the system pepper, and the user is
+	 * marked as having an issued bootstrap password, so that
+	 * {@link #validateBootstrapPassword(org.openmrs.User, String)} accepts it. The flag is
+	 * what makes the bootstrap password a credential of that one account rather than of every
+	 * account whose UUID is known.
+	 * <p>
+	 * The caller is responsible for persisting the user, otherwise the issuance is lost. Use
+	 * {@link org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)}, which
+	 * records the issuance on the persisted user.
 	 *
-	 * A bootstrap password is considered expired once the user has been
-	 * successfully authenticated with it and was forced to change their password.
-	 * This is tracked with the dedicated
-	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED} user property,
-	 * which is independent of the general "forcePassword" user property. It only ever
-	 * moves from unset to "true", so a consumed bootstrap password stays expired.
-	 *
-	 * @param user the user
-	 * @return true if the bootstrap password is expired
+	 * @param user the user to issue a bootstrap password for
+	 * @return the issued bootstrap password
+	 * @throws APIException if the user is null, has no UUID, or the pepper is not configured
 	 * @since 2.8.11
 	 */
-	public static boolean isBootstrapPasswordExpired(org.openmrs.User user) {
+	public static String issueBootstrapPassword(org.openmrs.User user) {
+		String password = generateBootstrapPassword(user);
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED, "true");
+		return password;
+	}
+
+	/**
+	 * Marks a user's bootstrap password as consumed, so that it no longer validates.
+	 * <p>
+	 * The issued flag is removed rather than cleared to a value, so that an account whose
+	 * bootstrap password was consumed cannot be resurrected by an unrelated change to its
+	 * user properties.
+	 *
+	 * @param user the user whose bootstrap password was consumed
+	 * @since 2.8.11
+	 */
+	public static void consumeBootstrapPassword(org.openmrs.User user) {
+		if (user != null) {
+			user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED);
+		}
+	}
+
+	/**
+	 * Checks if a bootstrap password has been issued for a user.
+	 * <p>
+	 * Issuance is tracked with the dedicated
+	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED} user property, which
+	 * is independent of the general "forcePassword" user property. The property is only set
+	 * when a bootstrap password is handed out and removed when it is consumed, so an account
+	 * that was never issued one never validates one.
+	 *
+	 * @param user the user
+	 * @return true if a bootstrap password has been issued for the user and not consumed yet
+	 * @since 2.8.11
+	 */
+	public static boolean isBootstrapPasswordIssued(org.openmrs.User user) {
 		if (user == null) {
 			return false;
 		}
-		String expired = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED);
-		return "true".equals(expired);
+		return "true".equals(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED));
 	}
 
 	/**
 	 * Forces a user to change their password on next login.
 	 *
-	 * Sets the "forcePassword" user property to "true". Also marks any issued
-	 * bootstrap password as expired, so a bootstrap credential that has already
-	 * been consumed cannot be used again.
+	 * Sets the "forcePassword" user property to "true". Also consumes any issued
+	 * bootstrap password, so a bootstrap credential that has already been used cannot be
+	 * used again.
 	 *
 	 * @param user the user whose password change should be forced
 	 * @since 2.8.11
@@ -359,7 +408,7 @@ public class Security {
 	public static void forcePasswordChange(org.openmrs.User user) {
 		if (user != null) {
 			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
-			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED, "true");
+			consumeBootstrapPassword(user);
 		}
 	}
 
