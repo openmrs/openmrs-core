@@ -2485,7 +2485,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		newObs = obsService.saveObs(newObs, null);
 
 		obsService.purgeObs(newObs);
-		Context.flushSession();
 		assertNull(obsService.getObs(newObs.getObsId()));
 
 		assertDoesNotThrow(() -> obsService.purgeObs(existing));

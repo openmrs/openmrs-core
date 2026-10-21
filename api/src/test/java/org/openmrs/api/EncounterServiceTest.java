@@ -80,6 +80,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -608,6 +609,28 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		for (Integer orderId : existingOrderIds) {
 			assertNull(Context.getOrderService().getOrder(orderId));
 		}
+	}
+
+	/**
+	 * @see EncounterService#purgeEncounter(Encounter,boolean)
+	 */
+	@Test
+	public void purgeEncounter_shouldCascadePurgeWhenObsWasEditedToALaterDatetime() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Encounter encounter = es.getEncounter(1);
+		Obs oldObs = encounter.getAllObs().iterator().next();
+		Obs newObs = Obs.newInstance(oldObs);
+		newObs.setValueNumeric(99.0);
+		newObs.setPreviousVersion(oldObs);
+		newObs.setObsDatetime(new Date(oldObs.getObsDatetime().getTime() + 10000));
+		encounter.addObs(newObs);
+		es.saveEncounter(encounter);
+
+		assertDoesNotThrow(() -> es.purgeEncounter(encounter, true));
+		assertNull(es.getEncounter(1));
+		assertNull(os.getObs(oldObs.getObsId()));
+		assertNull(os.getObs(newObs.getObsId()));
 	}
 
 	/**

@@ -32,6 +32,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.ObsArchive;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
@@ -93,8 +94,17 @@ public class HibernateObsDAO implements ObsDAO {
 		FlushMode flushMode = session.getHibernateFlushMode();
 		session.setHibernateFlushMode(FlushMode.MANUAL);
 		try {
-			return session.createQuery("select 1 from Obs where previousVersion = :obs", Integer.class)
-			        .setParameter("obs", obs).setMaxResults(1).uniqueResult() != null;
+			// find() returns null for an obs this session has already removed, the same way the
+			// dropped FK stopped counting a referencing row once its DELETE had run
+			boolean referencedInObs = session
+			        .createQuery("select o.obsId from Obs o where o.previousVersion = :obs", Integer.class)
+			        .setParameter("obs", obs).list().stream().anyMatch(id -> session.find(Obs.class, id) != null);
+			if (referencedInObs) {
+				return true;
+			}
+			return session.createQuery("select a.obsId from ObsArchive a where a.previousVersionId = :obsId", Integer.class)
+			        .setParameter("obsId", obs.getObsId()).list().stream()
+			        .anyMatch(id -> session.find(ObsArchive.class, id) != null);
 		} finally {
 			session.setHibernateFlushMode(flushMode);
 		}

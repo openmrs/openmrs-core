@@ -2105,4 +2105,69 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		assertNull(obsService.getObs(id1));
 		assertFalse(obsArchiveHelper.isArchived(id1));
 	}
+
+	@Test
+	public void purgeObs_shouldThrowWhenArchivedObsIsReferencedAsPreviousVersionByArchivedObs() throws Exception {
+		// 1. Create obs1, obs2 (referencing obs1), and obs3 (referencing obs2)
+		Obs obs1 = createSingleObs(10.0);
+		obs1 = obsService.saveObs(obs1, "obs1");
+		Integer id1 = obs1.getObsId();
+		createdObsIds.add(id1);
+
+		Obs obs2 = createSingleObs(20.0);
+		obs2.setPreviousVersion(obs1);
+		obs2 = obsService.saveObs(obs2, "obs2");
+		Integer id2 = obs2.getObsId();
+		createdObsIds.add(id2);
+
+		Obs obs3 = createSingleObs(30.0);
+		obs3.setPreviousVersion(obs2);
+		obs3 = obsService.saveObs(obs3, "obs3");
+		Integer id3 = obs3.getObsId();
+		createdObsIds.add(id3);
+
+		// Void obs1 and obs2 so they are swept into obs_archive
+		obsService.voidObs(obs1, "v1 replaced");
+		obsService.voidObs(obs2, "v2 replaced");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(id1);
+		assertArchived(id2);
+		assertActive(id3);
+
+		// 2. Attempt to purge the oldest archived obs1 while archived obs2 still references it
+		Obs archivedObs1 = obsService.getObs(id1);
+		APIException e = assertThrows(APIException.class, () -> obsService.purgeObs(archivedObs1));
+		assertEquals(Context.getMessageSourceService().getMessage("Obs.error.cannot.purge.referenced.as.previous.version",
+		    new Object[] { id1 }, null), e.getMessage());
+		assertArchived(id1);
+
+		// Verify that the middle archived version still has its full previous version with concept
+		Obs middleObs = obsService.getObs(id2);
+		assertNotNull(middleObs.getPreviousVersion());
+		assertEquals(id1, middleObs.getPreviousVersion().getObsId());
+		assertNotNull(middleObs.getPreviousVersion().getConcept());
+		assertEquals(obs1.getConcept(), middleObs.getPreviousVersion().getConcept());
+
+		// 3. Purging live obs3 first, then archived obs2, then archived obs1
+		Obs liveObs3 = obsService.getObs(id3);
+		obsService.purgeObs(liveObs3);
+		Context.flushSession();
+		assertNull(obsService.getObs(id3));
+
+		Obs archivedObs2 = obsService.getObs(id2);
+		assertDoesNotThrow(() -> obsService.purgeObs(archivedObs2));
+		Context.flushSession();
+		assertNull(obsService.getObs(id2));
+		assertFalse(obsArchiveHelper.isArchived(id2));
+
+		assertDoesNotThrow(() -> obsService.purgeObs(archivedObs1));
+		Context.flushSession();
+		assertNull(obsService.getObs(id1));
+		assertFalse(obsArchiveHelper.isArchived(id1));
+	}
 }

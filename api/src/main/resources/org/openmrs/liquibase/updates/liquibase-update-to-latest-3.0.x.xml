@@ -233,6 +233,9 @@
 		<createIndex indexName="idx_obs_archive_concept_id" tableName="obs_archive">
 			<column name="concept_id"/>
 		</createIndex>
+		<createIndex indexName="idx_obs_archive_previous_version" tableName="obs_archive">
+			<column name="previous_version"/>
+		</createIndex>
 		
 		<addForeignKeyConstraint constraintName="fk_obs_archive_person" baseTableName="obs_archive" baseColumnNames="person_id" referencedTableName="person" referencedColumnNames="person_id"/>
 		<addForeignKeyConstraint constraintName="fk_obs_archive_concept" baseTableName="obs_archive" baseColumnNames="concept_id" referencedTableName="concept" referencedColumnNames="concept_id"/>
