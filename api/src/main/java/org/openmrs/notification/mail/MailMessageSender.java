@@ -24,8 +24,10 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+@Component
 public class MailMessageSender implements MessageSender {
 
 	private static final Logger log = LoggerFactory.getLogger(MailMessageSender.class);
@@ -97,6 +99,9 @@ public class MailMessageSender implements MessageSender {
 			message.setContentType(contentType);
 		}
 
+		if (session == null) {
+			session = Session.getInstance(mailProperties);
+		}
 		MimeMessage mimeMessage = new MimeMessage(session);
 
 		String sender = message.getSender();
