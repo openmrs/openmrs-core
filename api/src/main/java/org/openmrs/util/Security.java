@@ -263,6 +263,11 @@ public class Security {
 	 * Gets the pepper used for bootstrap password generation.
 	 *
 	 * The pepper is read from the runtime property "openmrs.bootstrap.pepper".
+	 * <p>
+	 * The pepper is a secret: anyone who holds it can derive the bootstrap password of every
+	 * user, so it must not be stored in the database or sent to a client. It has to stay the
+	 * same for the lifetime of the deployment, because changing it makes every bootstrap
+	 * password that was issued with it stop validating.
 	 *
 	 * @return the pepper, or null if not configured
 	 * @since 2.8.11
@@ -277,6 +282,11 @@ public class Security {
 	 *
 	 * Reads from runtime property "openmrs.bootstrap.iterations".
 	 * Falls back to default (600,000) if not configured or invalid.
+	 * <p>
+	 * The iteration count is part of the derivation, so it has to stay the same for the
+	 * lifetime of the deployment. Changing it makes every bootstrap password that was issued
+	 * with the old count stop validating, so it should be raised before any password is
+	 * issued rather than after.
 	 *
 	 * @return the number of iterations (always > 0)
 	 * @since 2.8.11

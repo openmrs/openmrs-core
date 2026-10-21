@@ -647,8 +647,13 @@ public interface UserService extends OpenmrsService {
 	 * This is typically called after a user successfully logs in with a bootstrap password.
 	 * It also consumes any issued bootstrap password, so the used bootstrap credential
 	 * cannot be used again.
+	 * <p>
+	 * Only the two properties of that one user are written, so the caller needs the Edit Users
+	 * privilege and nothing else. No other change to the user is written along with them, and
+	 * the user does not have to pass validation.
 	 *
 	 * @param user the user whose password change should be forced
+	 * @throws APIException if the user is null or has not been saved
 	 * @since 2.8.11
 	 */
 	@Authorized({ PrivilegeConstants.EDIT_USERS })

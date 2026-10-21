@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openmrs.APIException;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -1567,12 +1569,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 				} finally {
 					Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 				}
+				// the method only writes the properties of that one user, so the caller needs
+				// the Edit Users privilege and nothing else
 				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				try {
 					userService.forcePasswordChange(target);
 				} finally {
-					Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 					Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 				}
 			});
@@ -1583,6 +1585,57 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User reloaded = userService.getUser(target.getUserId());
 		assertEquals("true", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 		assertEquals("", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED));
+	}
+
+	@Test
+	public void forcePasswordChange_shouldWorkForATargetHoldingARoleTheCallerDoesNotHave() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User target = createTestUser();
+		User caller = userService.getUser(6001);
+		assertFalse(caller.hasPrivilege(PrivilegeConstants.EDIT_USERS));
+
+		// the target holds a role with a privilege that the caller does not have
+		Role role = new Role("Role With A Privilege");
+		role.addPrivilege(userService.getPrivilege("Some Privilege"));
+		userService.saveRole(role);
+		target.addRole(role);
+		userService.saveUser(target);
+
+		withCurrentUserAs(caller, () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			try {
+				userService.forcePasswordChange(target);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			}
+		});
+
+		User reloaded = userService.getUser(target.getUserId());
+		assertEquals("true", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+	}
+
+	@Test
+	public void forcePasswordChange_shouldNotWriteAnythingElseOnTheUser() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User target = createTestUser();
+		User caller = userService.getUser(6001);
+
+		// a change the caller made to the user, which must not be written along with the
+		// properties that forcePasswordChange writes
+		target.setUserProperty("someOtherProperty", "someValue");
+
+		withCurrentUserAs(caller, () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			try {
+				userService.forcePasswordChange(target);
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			}
+		});
+
+		User reloaded = userService.getUser(target.getUserId());
+		assertEquals("true", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+		assertEquals("", reloaded.getUserProperty("someOtherProperty"));
 	}
 
 	@Test
@@ -1605,14 +1658,30 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals("", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 		assertEquals("", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED));
 	}
-	
+
+	@Test
+	public void forcePasswordChange_shouldNotWorkForAUserThatHasNotBeenSaved() throws IllegalAccessException {
+		User unsavedUser = new User();
+		unsavedUser.setUuid(UUID.randomUUID().toString());
+
+		withCurrentUserAs(userService.getUser(6001), () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			try {
+				APIException exception = assertThrows(APIException.class, () -> userService.forcePasswordChange(unsavedUser));
+				assertEquals(messages.getMessage("forcepasswordchange.user.not.saved", new Object[] {}, null), exception.getMessage());
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			}
+		});
+	}
+
 	@Test
 	public void generateBootstrapPassword_shouldNotWorkForCallerWhoHasOnlyGetUsersPrivilege() throws IllegalAccessException {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
 		User target = createTestUser();
 		User caller = userService.getUser(6001);
 		assertFalse(caller.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
-		
+
 		withCurrentUserAs(caller, () -> {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
 			try {
@@ -1622,7 +1691,31 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			}
 		});
 	}
-	
+
+	@Test
+	public void generateBootstrapPassword_shouldNotWorkForAUserThatHasNotBeenSaved() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User unsavedUser = new User();
+		unsavedUser.setUuid(UUID.randomUUID().toString());
+
+		Properties originalProperties = Context.getRuntimeProperties();
+		Context.setRuntimeProperties(runtimePropertiesWithBootstrapPepper(originalProperties));
+		try {
+			withCurrentUserAs(userService.getUser(6001), () -> {
+				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
+				try {
+					// the issuance is recorded on the persisted user, so an unsaved user cannot be issued one
+					APIException exception = assertThrows(APIException.class, () -> userService.generateBootstrapPassword(unsavedUser));
+					assertEquals(messages.getMessage("bootstrap.user.not.saved", new Object[] {}, null), exception.getMessage());
+				} finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
+				}
+			});
+		} finally {
+			Context.setRuntimeProperties(originalProperties);
+		}
+	}
+
 	@Test
 	public void generateBootstrapPassword_shouldRecordTheIssuanceOnTheUser() throws IllegalAccessException, SQLException {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
@@ -1656,19 +1749,19 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertTrue(resultSet.next(), "The issuance should have been persisted");
 		assertEquals("true", resultSet.getString(1));
 	}
-	
+
 	@Test
 	public void generateBootstrapPassword_shouldRecordTheIssuanceOnThePersistedUser() throws IllegalAccessException {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
 		User target = createTestUser();
 		target.setUserProperty("someOtherProperty", "someValue");
 		userService.saveUser(target);
-		
+
 		// a caller that holds a copy of the user instead of the persisted instance
 		User copy = new User();
 		copy.setUserId(target.getUserId());
 		copy.setUuid(target.getUuid());
-		
+
 		Properties originalProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(runtimePropertiesWithBootstrapPepper(originalProperties));
 		try {
@@ -1684,19 +1777,19 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		} finally {
 			Context.setRuntimeProperties(originalProperties);
 		}
-		
+
 		User reloaded = userService.getUser(target.getUserId());
 		assertEquals("true", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED));
 		assertEquals("someValue", reloaded.getUserProperty("someOtherProperty"));
 	}
-	
+
 	@Test
 	public void generateBootstrapPassword_shouldNotPersistChangesToTheUser() throws IllegalAccessException, SQLException {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
 		User target = createTestUser();
 		Role providerRole = userService.getRole("Provider");
 		User caller = userService.getUser(6001);
-		
+
 		Properties originalProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(runtimePropertiesWithBootstrapPepper(originalProperties));
 		try {
@@ -1712,7 +1805,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		} finally {
 			Context.setRuntimeProperties(originalProperties);
 		}
-		
+
 		// issuing a bootstrap password may not be used to change anything else on the user
 		userService.getUserByUsername(target.getUsername());
 		PreparedStatement statement = getConnection().prepareStatement(
@@ -1722,7 +1815,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertTrue(resultSet.next());
 		assertEquals(0, resultSet.getInt(1), "The roles should not have been persisted");
 	}
-	
+
 	@Test
 	public void validateBootstrapPassword_shouldReturnFalseForAUserWithoutAnIssuedBootstrapPassword() throws IllegalAccessException {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
@@ -1747,7 +1840,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			Context.setRuntimeProperties(originalProperties);
 		}
 	}
-	
+
 	@Test
 	public void validateBootstrapPassword_shouldReturnTrueForAnIssuedBootstrapPassword() throws IllegalAccessException {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
@@ -1778,7 +1871,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			Context.setRuntimeProperties(originalProperties);
 		}
 	}
-	
+
 	/**
 	 * @param originalProperties the runtime properties to copy
 	 * @return a copy of the given runtime properties with a bootstrap pepper configured
@@ -1790,7 +1883,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		properties.setProperty("openmrs.bootstrap.iterations", "1000");
 		return properties;
 	}
-	
+
 	@Test
 	public void changePasswordUsingSecretAnswer_shouldUpdatePasswordIfSecretIsCorrect() {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
