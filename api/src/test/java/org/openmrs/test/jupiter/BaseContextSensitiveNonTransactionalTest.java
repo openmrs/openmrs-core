@@ -888,6 +888,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
+				if ("jobrunr_migrations".equalsIgnoreCase(tableName)) {
+					continue;
+				}
 				dataset.addTable(new DefaultTable(tableName));
 			}
 
