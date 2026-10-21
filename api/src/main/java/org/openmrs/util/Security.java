@@ -167,30 +167,12 @@ public class Security {
 	}
 
 	/**
-	 * Generates a deterministic hash using PBKDF2 with the default iteration count.
-	 *
-	 * This is a convenience method that calls
-	 * {@link #generateDeterministicHash(String, String, int)} with the default
-	 * iterations ({@value #PBKDF2_DEFAULT_ITERATIONS}).
-	 *
-	 * @param input the input string to derive from (typically user UUID + system pepper)
-	 * @param salt  the per-user salt (typically the user's UUID)
-	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
-	 *         and guaranteed to contain a digit and upper- and lower-case letters
-	 * @throws APIException if input or salt is null
-	 * @since 2.8.11
-	 */
-	public static String generateDeterministicHash(String input, String salt) {
-		return generateDeterministicHash(input, salt, PBKDF2_DEFAULT_ITERATIONS);
-	}
-
-	/**
 	 * Generates a deterministic hash using PBKDF2.
 	 *
 	 * This method is used for bootstrap password generation, where deterministic output is required
 	 * for a given user (same user -> same password). The UUID serves as a per-user salt, while the
-	 * pepper (system secret) is concatenated into the input string. This ensures that even if the
-	 * pepper is compromised, each user's password remains unique due to the per-user salt.
+	 * pepper (system secret) is concatenated into the input string. The pepper is the only secret
+	 * input: anyone who holds it can derive every user's bootstrap password from their UUID.
 	 *
 	 * Unlike {@link #encodeString(String)}, which uses SHA-512, this method uses PBKDF2 with a high
 	 * iteration count, making it suitable for password derivation.

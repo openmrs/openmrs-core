@@ -39,16 +39,16 @@ class BootstrapPasswordTest {
 	void testGenerateDeterministicHash_shouldReturnSameOutputForSameInput() {
 		String input = "test-input";
 		String salt = "test-salt";
-		String hash1 = Security.generateDeterministicHash(input, salt);
-		String hash2 = Security.generateDeterministicHash(input, salt);
+		String hash1 = Security.generateDeterministicHash(input, salt, 1000);
+		String hash2 = Security.generateDeterministicHash(input, salt, 1000);
 		assertEquals(hash1, hash2, "Same input should produce same hash");
 	}
 
 	@Test
 	void testGenerateDeterministicHash_shouldReturnDifferentOutputForDifferentInputs() {
 		String salt = "test-salt";
-		String hash1 = Security.generateDeterministicHash("input-1", salt);
-		String hash2 = Security.generateDeterministicHash("input-2", salt);
+		String hash1 = Security.generateDeterministicHash("input-1", salt, 1000);
+		String hash2 = Security.generateDeterministicHash("input-2", salt, 1000);
 		assertNotEquals(hash1, hash2, "Different inputs should produce different hashes");
 	}
 

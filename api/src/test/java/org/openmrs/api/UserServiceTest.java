@@ -1591,7 +1591,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals("", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 		assertEquals("", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_EXPIRED));
 	}
-
+	
+	@Test
+	public void generateBootstrapPassword_shouldNotWorkForCallerWhoHasOnlyGetUsersPrivilege() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User target = createTestUser();
+		User caller = userService.getUser(6001);
+		assertFalse(caller.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
+		
+		withCurrentUserAs(caller, () -> {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+			try {
+				assertThrows(APIAuthenticationException.class, () -> userService.generateBootstrapPassword(target));
+			} finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+			}
+		});
+	}
+	
 	@Test
 	public void changePasswordUsingSecretAnswer_shouldUpdatePasswordIfSecretIsCorrect() {
 		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
