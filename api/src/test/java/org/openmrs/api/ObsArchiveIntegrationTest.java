@@ -45,6 +45,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionManager;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -2060,5 +2061,48 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		// 4. Attempt to purge the concept — should throw ConceptNameInUseException, not DB foreign key error
 		final Concept conceptToPurge = conceptService.getConceptByName("cd4 count");
 		assertThrows(ConceptNameInUseException.class, () -> conceptService.purgeConcept(conceptToPurge));
+	}
+
+	@Test
+	public void purgeObs_shouldThrowWhenArchivedObsIsReferencedAsPreviousVersionByLiveObs() throws Exception {
+		// 1. Create obs1, save, void, and archive it
+		Obs obs1 = createSingleObs(10.0);
+		obs1 = obsService.saveObs(obs1, "obs1");
+		Integer id1 = obs1.getObsId();
+		createdObsIds.add(id1);
+
+		Obs obs2 = createSingleObs(20.0);
+		obs2.setPreviousVersion(obs1);
+		obs2 = obsService.saveObs(obs2, "obs2");
+		Integer id2 = obs2.getObsId();
+		createdObsIds.add(id2);
+
+		obsService.voidObs(obs1, "replaced");
+		Context.flushSession();
+		Context.clearSession();
+
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		assertArchived(id1);
+		assertActive(id2);
+
+		// 2. Attempt to purge the archived obs1 while live obs2 still references it
+		Obs archivedObs1 = obsService.getObs(id1);
+		APIException e = assertThrows(APIException.class, () -> obsService.purgeObs(archivedObs1));
+		assertEquals(Context.getMessageSourceService().getMessage("Obs.error.cannot.purge.referenced.as.previous.version",
+		    new Object[] { id1 }, null), e.getMessage());
+		assertArchived(id1);
+
+		// 3. Purging live obs2 first frees obs1 to be purged
+		Obs liveObs2 = obsService.getObs(id2);
+		obsService.purgeObs(liveObs2);
+		Context.flushSession();
+		assertNull(obsService.getObs(id2));
+
+		assertDoesNotThrow(() -> obsService.purgeObs(archivedObs1));
+		Context.flushSession();
+		assertNull(obsService.getObs(id1));
+		assertFalse(obsArchiveHelper.isArchived(id1));
 	}
 }

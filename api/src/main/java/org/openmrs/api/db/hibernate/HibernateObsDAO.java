@@ -81,6 +81,26 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ObsDAO#isObsReferencedAsPreviousVersion(org.openmrs.Obs)
+	 */
+	@Override
+	public boolean isObsReferencedAsPreviousVersion(Obs obs) throws DAOException {
+		if (obs == null || obs.getObsId() == null) {
+			return false;
+		}
+		// avoid premature flushes when this internal check is called from inside purgeObs
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			return session.createQuery("select 1 from Obs where previousVersion = :obs", Integer.class)
+			        .setParameter("obs", obs).setMaxResults(1).uniqueResult() != null;
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	@Override

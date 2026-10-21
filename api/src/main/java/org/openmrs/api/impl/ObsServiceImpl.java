@@ -404,14 +404,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	 */
 	@Override
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
-		if (!purgeComplexData(obs)) {
-			// Log a warning instead of throwing an error.
-			// This allows purging the obs row even if the associated file is missing,
-			// which matches the behavior expected by modules like Attachments.
-			log.warn("purgeComplexData returned false for Obs ID: " + (obs != null ? obs.getObsId() : "null") + ". "
-			        + "This may mean the file is already missing. Proceeding to purge the database row.");
-		}
-
 		if (cascade) {
 			throw new APIException("Obs.error.cascading.purge.not.implemented", (Object[]) null);
 			// TODO delete any related objects here before deleting the obs
@@ -420,11 +412,23 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 
 		if (obs != null && obs.getObsId() != null) {
+			if (dao.isObsReferencedAsPreviousVersion(obs)) {
+				throw new APIException("Obs.error.cannot.purge.referenced.as.previous.version",
+				        new Object[] { obs.getObsId() });
+			}
 			if (getArchiveHelper().isArchived(obs.getObsId())) {
 				getArchiveHelper().purgeObsFromArchive(obs.getObsId());
 				return;
 			}
 			getArchiveHelper().handleArchivedDataOnPurge(obs, true);
+		}
+
+		if (!purgeComplexData(obs)) {
+			// Log a warning instead of throwing an error.
+			// This allows purging the obs row even if the associated file is missing,
+			// which matches the behavior expected by modules like Attachments.
+			log.warn("purgeComplexData returned false for Obs ID: " + (obs != null ? obs.getObsId() : "null") + ". "
+			        + "This may mean the file is already missing. Proceeding to purge the database row.");
 		}
 
 		dao.deleteObs(obs);
