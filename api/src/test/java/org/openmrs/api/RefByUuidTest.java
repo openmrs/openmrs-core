@@ -74,6 +74,23 @@ public class RefByUuidTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getRefByUuid_shouldThrowAPIExceptionForNullType() {
+		for (RefByUuid refByUuid : refByUuids) {
+			// setup
+			String dummyUuid = "some-random-uuid";
+
+			// verify
+			APIException exception = assertThrows(APIException.class, () -> {
+				refByUuid.getRefByUuid(null, dummyUuid);
+			}, "Expected APIException for a null type, on RefByUuid class : "
+			        + AopUtils.getTargetClass(refByUuid).getSimpleName());
+
+			assertEquals("Unsupported type for getRefByUuid: null", exception.getMessage(), "Unexpected message for "
+			        + AopUtils.getTargetClass(refByUuid).getSimpleName() + ": " + exception.getMessage());
+		}
+	}
+
+	@Test
 	public void getRefTypes_shouldDeclareAllRefTypesFoundViaReflection() {
 		for (RefByUuid refByUuid : refByUuids) {
 			// setup
