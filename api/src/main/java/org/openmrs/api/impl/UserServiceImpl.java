@@ -954,7 +954,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#forcePasswordChange(User)
 	 */
 	@Override
-	@Authorized({ PrivilegeConstants.EDIT_USERS })
 	public void forcePasswordChange(User user) {
 		if (user == null) {
 			return;
@@ -996,7 +995,6 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)
 	 */
 	@Override
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
 	public String generateBootstrapPassword(User user) throws APIException {
 		if (user == null) {
 			throw new APIException("bootstrap.user.null", (Object[]) null);
