@@ -13,12 +13,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.servlet.ServletException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Tests some of the methods on the {@link UpdateFilter}
@@ -76,5 +83,32 @@ public class UpdateFilterTest extends BaseWebContextSensitiveTest {
 	public void isSuperUser_shouldReturnFalseIfGivenUserDoesNotHaveTheSuperUserRole() throws SQLException {
 		assertFalse(new UpdateFilter().isSuperUser(getConnection(), 502));
 	}
-	
+
+	@Test
+	public void doPost_shouldHtmlEscapeUpdateWarnings() throws Exception {
+		UpdateFilter filter = new UpdateFilter();
+		reportUpdateWarning(filter, "criteria <img src=x onerror=alert(1)> & more");
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter("page", "updateProgress.vm.ajaxRequest");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		filter.doPost(request, response);
+
+		String content = response.getContentAsString();
+		assertTrue(content.contains("&lt;img src=x onerror=alert(1)&gt; &amp; more"));
+		assertFalse(content.contains("<img"));
+	}
+
+	private void reportUpdateWarning(UpdateFilter filter, String warning) throws Exception {
+		Class<?> jobClass = Class.forName(UpdateFilter.class.getName() + "$UpdateFilterCompletion");
+		Constructor<?> constructor = jobClass.getDeclaredConstructor(UpdateFilter.class);
+		constructor.setAccessible(true);
+		Object job = constructor.newInstance(filter);
+		Method reportWarnings = jobClass.getDeclaredMethod("reportWarnings", List.class);
+		reportWarnings.setAccessible(true);
+		reportWarnings.invoke(job, Collections.singletonList(warning));
+		Field field = UpdateFilter.class.getDeclaredField("updateJob");
+		field.setAccessible(true);
+		field.set(filter, job);
+	}
 }
