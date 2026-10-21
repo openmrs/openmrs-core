@@ -910,7 +910,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		if (useInMemoryDatabase()) {
 			return "PUBLIC";
 		} else {
-			return "public";
+			return isPostgreSQL() ? "public" : null;
 		}
 	}
 
