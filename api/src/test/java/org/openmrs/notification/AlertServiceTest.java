@@ -16,6 +16,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -78,8 +79,8 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 
 		// "butch" is a Provider with no privileges, so he must not be able to read all alerts
 		Context.becomeUser("3-4");
-		assertThrows(APIAuthenticationException.class, () -> Context.getAlertService().getAllAlerts());
-		assertThrows(APIAuthenticationException.class, () -> Context.getAlertService().getAllAlerts(true));
+		assertThrows(AccessDeniedException.class, () -> Context.getAlertService().getAllAlerts());
+		assertThrows(AccessDeniedException.class, () -> Context.getAlertService().getAllAlerts(true));
 	}
 
 	@Test
@@ -143,9 +144,22 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(as.getAlertsByUser(butch));
 		assertNotNull(as.getAllActiveAlerts(butch));
 		// ...but not another user's
-		assertThrows(APIAuthenticationException.class, () -> as.getAlerts(superUser, true, true));
-		assertThrows(APIAuthenticationException.class, () -> as.getAlertsByUser(superUser));
-		assertThrows(APIAuthenticationException.class, () -> as.getAllActiveAlerts(superUser));
+		assertThrows(AccessDeniedException.class, () -> as.getAlerts(superUser, true, true));
+		assertThrows(AccessDeniedException.class, () -> as.getAlertsByUser(superUser));
+		assertThrows(AccessDeniedException.class, () -> as.getAllActiveAlerts(superUser));
+	}
+
+	@Test
+	public void getAlerts_shouldDenyAnotherUsersAlertsWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+
+		Context.becomeUser("3-4");
+
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> as.getAlerts(superUser, true, true));
+		assertEquals("Privilege required: Get Alerts", denial.getMessage());
 	}
 
 	@Test

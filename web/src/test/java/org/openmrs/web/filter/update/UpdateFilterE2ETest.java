@@ -10,7 +10,11 @@
 package org.openmrs.web.filter.update;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
@@ -25,6 +29,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -273,6 +278,19 @@ class UpdateFilterE2ETest {
 		assertEquals("{}", content);
 	}
 
+	@Test
+	void progressAjax_shouldHtmlEscapeUpdateWarnings() throws Exception {
+		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+		request.setParameter("page", "updateProgress.vm.ajaxRequest");
+		reportUpdateWarning("criteria <img src=x onerror=alert(1)> & more");
+
+		filter.doPost(request, realResponse);
+
+		String content = realResponse.getContentAsString();
+		assertTrue(content.contains("&lt;img src=x onerror=alert(1)&gt; &amp; more"));
+		assertFalse(content.contains("<img"));
+	}
+
 	// ========== Full Flow: Login -> Review Changes ==========
 
 	@Test
@@ -506,6 +524,19 @@ class UpdateFilterE2ETest {
 
 	private boolean getAuthenticatedSuccessfully() {
 		return Boolean.TRUE.equals(request.getSession().getAttribute(AUTHENTICATED_SUCCESSFULLY_ATTR));
+	}
+
+	private void reportUpdateWarning(String warning) throws Exception {
+		Class<?> jobClass = Class.forName(UpdateFilter.class.getName() + "$UpdateFilterCompletion");
+		Constructor<?> constructor = jobClass.getDeclaredConstructor(UpdateFilter.class);
+		constructor.setAccessible(true);
+		Object job = constructor.newInstance(filter);
+		Method reportWarnings = jobClass.getDeclaredMethod("reportWarnings", List.class);
+		reportWarnings.setAccessible(true);
+		reportWarnings.invoke(job, Collections.singletonList(warning));
+		Field field = UpdateFilter.class.getDeclaredField("updateJob");
+		field.setAccessible(true);
+		field.set(filter, job);
 	}
 
 	private void setDatabaseUpdateInProgress(boolean value) throws Exception {

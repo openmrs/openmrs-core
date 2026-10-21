@@ -29,7 +29,6 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -507,8 +506,14 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		}
 	}
 
+	/**
+	 * Case-insensitive on the role name, like every other role comparison: a role differing from
+	 * {@link RoleConstants#SUPERUSER} only in case still confers superuser status (see
+	 * {@code RolePrivilegeCache}'s own check), so comparing exactly here would let it be assigned
+	 * without {@code ASSIGN_SYSTEM_DEVELOPER_ROLE}.
+	 */
 	private void checkSuperUserPrivilege(Role r) {
-		if (r.getRole().equals(RoleConstants.SUPERUSER)
+		if (RoleConstants.SUPERUSER.equalsIgnoreCase(r.getRole())
 		        && !Context.hasPrivilege(PrivilegeConstants.ASSIGN_SYSTEM_DEVELOPER_ROLE)) {
 			throw new APIException("User.you.must.have.role", new Object[] { RoleConstants.SUPERUSER });
 		}
@@ -734,10 +739,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see UserService#changePassword(User, String, String)
 	 */
 	@Override
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changePassword(User user, String oldPassword, String newPassword) throws APIException {
 		if (user.getUserId() == null) {
