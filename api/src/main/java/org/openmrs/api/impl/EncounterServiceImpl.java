@@ -441,15 +441,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			orderService.voidOrder(o, reason);
 		}
 
-		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
-			if (!encounterProvider.getVoided()) {
-				encounterProvider.setVoided(true);
-				encounterProvider.setVoidedBy(encounter.getVoidedBy());
-				encounterProvider.setDateVoided(encounter.getDateVoided());
-				encounterProvider.setVoidReason(reason);
-			}
-		}
-
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
 		//we expect the dateVoided to be already set by AOP logic at this point unless this method was called within the API,
@@ -459,6 +450,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			encounter.setDateVoided(new Date());
 		}
 		encounter.setVoidReason(reason);
+
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			if (!encounterProvider.getVoided()) {
+				encounterProvider.setVoided(true);
+				encounterProvider.setVoidedBy(encounter.getVoidedBy());
+				encounterProvider.setDateVoided(encounter.getDateVoided());
+				encounterProvider.setVoidReason(reason);
+			}
+		}
 
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
