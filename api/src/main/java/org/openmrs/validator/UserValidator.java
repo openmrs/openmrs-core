@@ -85,12 +85,7 @@ public class UserValidator implements Validator {
 				if (person.getGender() == null) {
 					errors.rejectValue("person.gender", "error.null");
 				}
-				if (person.getDead() == null) {
-					errors.rejectValue("person.dead", "error.null");
-				}
-				if (person.getVoided() == null) {
-					errors.rejectValue("person.voided", "error.null");
-				}
+
 				if (person.getPersonName() == null || StringUtils.isEmpty(person.getPersonName().getFullName())) {
 					errors.rejectValue("person", "Person.names.length");
 				}
