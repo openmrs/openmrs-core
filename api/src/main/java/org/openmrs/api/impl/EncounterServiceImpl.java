@@ -437,15 +437,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// There is intentionally no voided check around this method call.  See TRUNK-5996.
 			orderService.voidOrder(o, reason);
 		}
-
-		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
-			if (!encounterProvider.getVoided()) {
-				encounterProvider.setVoided(true);
-				encounterProvider.setVoidedBy(encounter.getVoidedBy());
-				encounterProvider.setDateVoided(encounter.getDateVoided());
-				encounterProvider.setVoidReason(reason);
-			}
-		}
 		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
@@ -456,6 +447,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			encounter.setDateVoided(new Date());
 		}
 		encounter.setVoidReason(reason);
+
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			if (!encounterProvider.getVoided()) {
+				encounterProvider.setVoided(true);
+				encounterProvider.setVoidedBy(encounter.getVoidedBy());
+				encounterProvider.setDateVoided(encounter.getDateVoided());
+				encounterProvider.setVoidReason(reason);
+			}
+		}
 
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
