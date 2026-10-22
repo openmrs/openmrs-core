@@ -250,9 +250,19 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 		        && currentPersonId.equals(encounter.getPatient().getPatientId())) {
 			return true;
 		}
+		return isPatientMergeMove(previousPersonId, currentPersonId);
+	}
+
+	/**
+	 * @param fromPersonId the id of the person a record belongs to
+	 * @param toPersonId the id of the person it is to belong to
+	 * @return true if the patient merge running on the current thread moves records from the first
+	 *         person to the second
+	 * @since 3.0.0
+	 */
+	public static boolean isPatientMergeMove(Integer fromPersonId, Integer toPersonId) {
 		PatientMerge merge = patientMerge.get();
-		return merge != null && merge.notPreferredId().equals(previousPersonId)
-		        && merge.preferredId().equals(currentPersonId);
+		return merge != null && merge.notPreferredId().equals(fromPersonId) && merge.preferredId().equals(toPersonId);
 	}
 
 	/**

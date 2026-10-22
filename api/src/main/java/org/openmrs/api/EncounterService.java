@@ -62,6 +62,12 @@ public interface EncounterService extends OpenmrsService {
 	 * obsdatetimes<br/>
 	 * <strong>Should</strong> not change the datetime or location of voided obs<br/>
 	 * <strong>Should</strong> move voided obs with the encounter to its new patient<br/>
+	 * <strong>Should</strong> leave a voided group with its voided member that has no encounter<br/>
+	 * <strong>Should</strong> move a voided group whose member without an encounter has the new
+	 * patient<br/>
+	 * <strong>Should</strong> move a voided group whose live member has no encounter<br/>
+	 * <strong>Should</strong> move a voided member of a live group that belongs to the encounter<br/>
+	 * <strong>Should</strong> move a voided obs that is in its own group<br/>
 	 * <strong>Should</strong> update the obs of the encounter in the session when a group member is
 	 * edited<br/>
 	 * <strong>Should</strong> leave the voided version of an obs moved in with the encounter it came
@@ -258,6 +264,7 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> cascade unvoid to orders<br/>
 	 * <strong>Should</strong> unvoid and unmark all attributes<br/>
 	 * <strong>Should</strong> not change the obs it unvoids<br/>
+	 * <strong>Should</strong> save a new version of a voided group left on its patient by a move<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
 	 * encounter
 	 *

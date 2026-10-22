@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.RefByUuid;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.api.db.hibernate.ImmutableEntityInterceptor;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
@@ -141,8 +143,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			Location newLocation = encounter.getLocation();
 			for (Obs obs : encounter.getAllFlattenedObs(true)) {
 				// a saved voided obs moves with this encounter only if it belongs to it, so a voided member of
-				// a group here with another encounter, or with none, keeps its patient
-				if (obs.getVoided() && obs.getObsId() != null && !isInEncounter(obs, encounter)) {
+				// a group here with another encounter, or with none, keeps its patient, and so does the rest
+				// of its voided group
+				if (obs.getVoided() && obs.getObsId() != null && !movesWithEncounter(obs, encounter, p)) {
 					continue;
 				}
 				// a voided obs keeps the datetime and location it was voided with
@@ -243,6 +246,66 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	private static boolean isInEncounter(Obs obs, Encounter encounter) {
 		return obs.getEncounter() != null && encounter.getEncounterId().equals(obs.getEncounter().getEncounterId());
+	}
+
+	/**
+	 * A saved voided obs is changed in place rather than saved as a new version, so it moves to another
+	 * patient only with its own encounter or in a patient merge. It takes the given encounter's patient
+	 * only if it belongs to the encounter and the rest of its voided group ends up with that patient
+	 * too: the topmost saved voided obs above it, and the saved voided obs below that through saved
+	 * voided groups, must each belong to the encounter, already have its patient, or be moved there by
+	 * a running patient merge. So a voided group keeps its patient, with its voided members, when one
+	 * of them cannot move.
+	 *
+	 * @param obs a saved voided obs reached from the encounter
+	 * @param encounter the encounter being saved
+	 * @param patient the patient the encounter is saved with
+	 * @return true if the obs takes the encounter's patient
+	 */
+	private static boolean movesWithEncounter(Obs obs, Encounter encounter, Patient patient) {
+		if (!isInEncounter(obs, encounter)) {
+			return false;
+		}
+		// an obs that already has the patient does not change, so its group is not looked at
+		if (obs.getPerson().getPersonId().equals(patient.getPatientId())) {
+			return true;
+		}
+		// remembering the obs walked through ends the walk at a group that holds itself, at any depth
+		Set<Obs> walked = new HashSet<>();
+		Obs top = obs;
+		while (walked.add(top) && isSavedAndVoided(top.getObsGroup())) {
+			top = top.getObsGroup();
+		}
+		return endsUpWithPatient(top, encounter, patient, new HashSet<>());
+	}
+
+	/**
+	 * @param visited the obs already looked at, so that an obs in its own group is looked at once
+	 * @return true if the given obs and its saved voided members, and theirs in turn, are each in the
+	 *         given encounter, already have the given patient, or are moved to it by a running patient
+	 *         merge
+	 */
+	private static boolean endsUpWithPatient(Obs obs, Encounter encounter, Patient patient, Set<Obs> visited) {
+		if (!visited.add(obs)) {
+			return true;
+		}
+		Integer personId = obs.getPerson().getPersonId();
+		if (!isInEncounter(obs, encounter) && !personId.equals(patient.getPatientId())
+		        && !ImmutableEntityInterceptor.isPatientMergeMove(personId, patient.getPatientId())) {
+			return false;
+		}
+		if (obs.hasGroupMembers(true)) {
+			for (Obs member : obs.getGroupMembers(true)) {
+				if (isSavedAndVoided(member) && !endsUpWithPatient(member, encounter, patient, visited)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private static boolean isSavedAndVoided(Obs obs) {
+		return obs != null && obs.getObsId() != null && obs.getVoided();
 	}
 
 	/**

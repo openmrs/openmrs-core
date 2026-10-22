@@ -368,7 +368,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		if (observation != null) {
 			obs.add(observation);
 
-			//Propagate some attributes to the obs and its live groupMembers
+			//Propagate some attributes to the obs and any groupMembers
 
 			// a Deque is a two-ended queue, that lets us add to the end, and fetch from the beginning
 			Deque<Obs> obsToUpdate = new ArrayDeque<>();
@@ -400,7 +400,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 					o.setLocation(getLocation());
 				}
 
-				//propagate attributes to the live group members as well; a voided member keeps its encounter
+				//propagate attributes to  all group members as well
 				if (o.getGroupMembers(true) != null) {
 					obsToUpdate.addAll(o.getGroupMembers());
 				}

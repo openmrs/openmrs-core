@@ -2637,6 +2637,32 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A voided group moves to the preferred patient with its encounter even when one of its voided
+	 * members has no encounter of its own, since the merge moves that member too.
+	 *
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveAVoidedGroupWithItsVoidedMemberThatHasNoEncounter() throws Exception {
+		ObsService obsService = Context.getObsService();
+		Obs group = obsService.voidObs(EncounterServiceTest
+		        .saveGroupWithAMemberThatHasNoEncounter(Context.getEncounterService().getEncounter(3)).getObsGroup(),
+		    "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		// this merge saves new versions of the encounter's live obs, which needs Add Observations;
+		// MERGE_PRIVILEGES leaves that privilege out, so the merge runs as the super user
+		patientService.mergePatients(patientService.getPatient(999), notPreferred);
+		Context.flushSession();
+		Context.clearSession();
+
+		EncounterServiceTest.assertVoidedGroupBelongsTo(obsService.getObs(group.getObsId()), 999);
+	}
+
+	/**
 	 * After the merge, the earlier version of an obs it moved still cannot be moved in place.
 	 *
 	 * @see PatientService#mergePatients(Patient,Patient)
