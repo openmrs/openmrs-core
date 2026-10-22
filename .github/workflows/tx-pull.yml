@@ -20,7 +20,16 @@ jobs:
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TRANSIFEX_TOKEN }}
-          args: pull --force --all
+          args: pull --force --all --mode onlytranslated --minimum-perc 1
+      # `--mode onlytranslated` still writes untranslated strings as `key=`, and Spring would use that empty
+      # value instead of falling back to a less specific locale or English. This removes them from the files
+      # the pull wrote. The `:` covers uncaughtException.programmerError: its source value starts with `:`,
+      # which Transifex reads as part of the separator, so it comes back as `key=: ` when untranslated.
+      - name: 🧹 Remove untranslated strings
+        run: |
+          git status --porcelain --untracked-files=all -- 'api/src/main/resources/messages_*.properties' \
+            | cut -c4- \
+            | xargs -r sed -i -E '/^[^#![:space:]][^=]*=[[:space:]:]*$/d'
       - name: 🔄 Create PR if necessary
         id: cpr
         uses: peter-evans/create-pull-request@v8.1.1

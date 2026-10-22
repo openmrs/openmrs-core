@@ -47,25 +47,26 @@
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
 		<springVersion>7.0.9</springVersion>
-		<springTestVersion>7.0.8</springTestVersion>
+		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
-		<springSecurityVersion>7.0.7</springSecurityVersion>
-		<hibernateVersion>7.4.5.Final</hibernateVersion>
+		<springSecurityVersion>7.1.1</springSecurityVersion>
+		<hibernateVersion>7.4.13.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
 		<hibernateSearchVersion>8.3.2.Final</hibernateSearchVersion>
-		<hibernateValidatorVersion>9.1.3.Final</hibernateValidatorVersion>
-		<luceneVersion>10.5.1</luceneVersion>
+		<hibernateValidatorVersion>9.1.5.Final</hibernateValidatorVersion>
+		<luceneVersion>10.5.2</luceneVersion>
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.22.2</jacksonVersion>
+		<jacksonVersion>2.22.4</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.26.1</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<owaspEncoderVersion>1.4.0</owaspEncoderVersion>
-		<graalJsVersion>25.2.4</graalJsVersion>
-		<nettyVersion>4.2.17.Final</nettyVersion>
+		<owaspEncoderVersion>1.6.0</owaspEncoderVersion>
+		<bouncyCastleVersion>1.86</bouncyCastleVersion>
+		<graalJsVersion>25.4.4.1.1</graalJsVersion>
+		<nettyVersion>4.2.19.Final</nettyVersion>
 
 		<!-- Jakarta -->
 		<jakartaServletVersion>6.1.0</jakartaServletVersion>
@@ -80,7 +81,7 @@
 		<!-- Apache Commons -->
 		<commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
 		<commonsIoVersion>2.22.0</commonsIoVersion>
-		<commonsLang3Version>3.20.0</commonsLang3Version>
+		<commonsLang3Version>3.21.0</commonsLang3Version>
 		<commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
 		<commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
 		<commonsFileupload2JakartaVersion>2.0.0-M5</commonsFileupload2JakartaVersion>
@@ -106,7 +107,7 @@
 		<!-- Database -->
 		<mysqlConnectorVersion>9.7.0</mysqlConnectorVersion>
 		<mariadbClientVersion>3.5.10</mariadbClientVersion>
-		<postgresqlVersion>42.7.13</postgresqlVersion>
+		<postgresqlVersion>42.7.14</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
@@ -114,23 +115,23 @@
 		<javassistVersion>3.33.0-GA</javassistVersion>
 		<reflectionsVersion>0.10.2</reflectionsVersion>
 		<groovyVersion>2.4.21</groovyVersion>
-		<tomcatVersion>11.0.25</tomcatVersion>
-		<guavaVersion>33.7.1-jre</guavaVersion>
+		<tomcatVersion>11.0.27</tomcatVersion>
+		<guavaVersion>33.7.2-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
-		<jobrunrVersion>8.8.1</jobrunrVersion>
-		<shedlockVersion>7.9.0</shedlockVersion>
+		<jobrunrVersion>9.0.1</jobrunrVersion>
+		<shedlockVersion>7.10.1</shedlockVersion>
 
 		<!-- Testing -->
 		<junitVersion>6.1.3</junitVersion>
-		<mockitoVersion>5.23.0</mockitoVersion>
+		<mockitoVersion>5.24.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
-		<h2Version>2.3.232</h2Version>
-		<dbunitVersion>3.5.0</dbunitVersion>
+		<h2Version>2.5.252</h2Version>
+		<dbunitVersion>3.5.2</dbunitVersion>
 		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
-		<s3mockVersion>5.2.0</s3mockVersion>
+		<s3mockVersion>5.2.3</s3mockVersion>
 	</properties>
 
 	<distributionManagement>
@@ -151,7 +152,7 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.10.0</version>
+				<version>3.10.4</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
@@ -577,6 +578,11 @@
 				<groupId>org.owasp</groupId>
 				<artifactId>csrfguard-extension-session</artifactId>
 				<version>${owaspCsrfGuardVersion}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncyCastleVersion}</version>
 			</dependency>
 
 			<!-- Other Runtime -->

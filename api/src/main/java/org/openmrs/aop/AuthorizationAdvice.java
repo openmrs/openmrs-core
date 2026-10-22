@@ -9,13 +9,22 @@
  */
 package org.openmrs.aop;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
-import org.openmrs.annotation.AuthorizedAnnotationAttributes;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -23,11 +32,21 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Component;
 
 /**
  * This class provides the authorization AOP advice performed before every service layer method
  * call.
+ * <p>
+ * Enforces the deprecated {@link org.openmrs.annotation.Authorized}, which Spring Security's
+ * {@code @PreAuthorize} family (wired in {@link org.openmrs.security.OpenmrsSecurityConfig}) now
+ * supersedes. The two advisors are independent and coexist while usages are converted; this one
+ * stays enforced for as long as any {@code @Authorized} method remains.
  */
 @Component("authorizationInterceptor")
 public class AuthorizationAdvice implements MethodBeforeAdvice {
@@ -38,6 +57,16 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private static final Logger log = LoggerFactory.getLogger(AuthorizationAdvice.class);
 
 	private static final String USER_IS_NOT_AUTHORIZED_TO_ACCESS = "User {} is not authorized to access {}";
+
+	private static final List<Class<? extends Annotation>> SPRING_SECURITY_ANNOTATIONS = List.of(PreAuthorize.class,
+	    PostAuthorize.class, PreFilter.class, PostFilter.class);
+
+	/**
+	 * Resolved {@link Authorized} metadata per advised method. Which privileges a method requires never
+	 * changes, but working it out means walking every supertype of the declaring class, and this advice
+	 * runs ahead of every service call.
+	 */
+	private final Map<Method, AuthorizationMetadata> metadataCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Allows us to check whether a user is authorized to access a particular method.
@@ -53,6 +82,22 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		log.debug("Calling authorization advice before {}", method.getName());
 
+		if (Daemon.isDaemonThread()) {
+			return;
+		}
+
+		// computeIfAbsent will always obtain a lock while get will not, hence this construction
+		// we can't rely on the key not existing because multiple threads could hit this at once
+		// and we don't synchronize
+		AuthorizationMetadata metadata = metadataCache.get(method);
+		if (metadata == null) {
+			metadata = metadataCache.computeIfAbsent(method, AuthorizationAdvice::resolveMetadata);
+		}
+
+		if (!metadata.annotated()) {
+			return;
+		}
+
 		if (log.isDebugEnabled()) {
 			User user = Context.getAuthenticatedUser();
 			log.debug("User {}", user);
@@ -61,13 +106,8 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 			}
 		}
 
-		if (Daemon.isDaemonThread()) {
-			return;
-		}
-
-		AuthorizedAnnotationAttributes attributes = new AuthorizedAnnotationAttributes();
-		Collection<String> privileges = attributes.getAttributes(method);
-		boolean requireAll = attributes.getRequireAll(method);
+		Collection<String> privileges = metadata.privileges();
+		boolean requireAll = metadata.requireAll();
 
 		// Only execute if the "secure" method has authorization attributes
 		// Iterate through required privileges and return only if the user has
@@ -108,14 +148,75 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 				throwUnauthorized(Context.getAuthenticatedUser(), method, privileges);
 			}
 
-		} else if (attributes.hasAuthorizedAnnotation(method)
-		        && !(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
+		} else if (!(Context.isAuthenticated() || Context.hasProxyPrivileges())) {
+			// an @Authorized that names no privilege only asks that the caller be authenticated
 			throwUnauthorized(Context.getAuthenticatedUser(), method);
 		}
 	}
 
 	/**
-	 * Throws an APIAuthorization exception stating why the user failed
+	 * Works out which {@link Authorized} annotation, if any, governs a method.
+	 * <p>
+	 * Java does not inherit method annotations, so reading the method's own would let a subtype that
+	 * redeclares an annotated method — usually only to narrow the return type — silently drop its
+	 * privilege requirement. {@link AnnotationUtils#findAnnotation(Method, Class)} instead searches the
+	 * supertypes of the declaring class and follows synthetic bridge methods, preferring an annotation
+	 * on the method's own declaration over an inherited one. Which of two annotated supertype branches
+	 * wins is not documented, so a service hierarchy should not depend on it.
+	 * <p>
+	 * Runs inside {@link Map#computeIfAbsent}, so it must not call back into a service: the advice on
+	 * that call would re-enter this map, which {@link ConcurrentHashMap} forbids. Reflection and
+	 * logging only.
+	 */
+	private static AuthorizationMetadata resolveMetadata(Method method) {
+		Authorized authorized = AnnotationUtils.findAnnotation(method, Authorized.class);
+		if (authorized == null) {
+			warnMethodIsUnguarded(method);
+			return AuthorizationMetadata.UNGUARDED;
+		}
+
+		return AuthorizationMetadata.of(authorized);
+	}
+
+	/**
+	 * Reports, once per method thanks to the cache, that nothing guards a proxied method. Plenty of
+	 * service methods are deliberately unguarded, so this is a hint for a reviewer rather than
+	 * something necessarily wrong.
+	 * <p>
+	 * Bridge and synthetic methods are skipped because a bridge duplicates a declaration reported in
+	 * its own right; non-public methods and {@link Object}'s are not part of the service API a caller
+	 * reaches through the proxy. A method carrying a Spring Security annotation is skipped too: as of
+	 * 3.0.0 those guard a method instead of {@link Authorized} (see
+	 * {@link org.openmrs.security.OpenmrsSecurityConfig}), so reporting it as unchecked would be wrong.
+	 */
+	private static void warnMethodIsUnguarded(Method method) {
+		if (method.isBridge() || method.isSynthetic() || !Modifier.isPublic(method.getModifiers())
+		        || method.getDeclaringClass() == Object.class || isGuardedBySpringSecurity(method)) {
+			return;
+		}
+
+		log.warn("No authorization annotation applies to {}.{}(), directly or through any method it overrides, "
+		        + "so calls to it are not privilege checked",
+		    method.getDeclaringClass().getName(), method.getName());
+	}
+
+	/**
+	 * @return true if Spring Security method security guards this method, in which case
+	 *         {@link Authorized} is not expected on it
+	 */
+	private static boolean isGuardedBySpringSecurity(Method method) {
+		for (Class<? extends Annotation> annotation : SPRING_SECURITY_ANNOTATIONS) {
+			if (AnnotationUtils.findAnnotation(method, annotation) != null
+			        || AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotation) != null) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -128,7 +229,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 
 	/**
-	 * Throws an APIAuthorization exception stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -141,7 +242,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 
 	/**
-	 * Throws an APIAuthorization exception stating why the user failed
+	 * Throws an {@link APIAuthenticationException} stating why the user failed
 	 *
 	 * @param user authenticated user
 	 * @param method acting method
@@ -149,5 +250,26 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	private void throwUnauthorized(User user, Method method) {
 		log.debug(USER_IS_NOT_AUTHORIZED_TO_ACCESS, user, method.getName());
 		throw new APIAuthenticationException(Context.getMessageSourceService().getMessage("error.aunthenticationRequired"));
+	}
+
+	/**
+	 * The {@link Authorized} configuration governing a single method. Privileges and
+	 * {@code requireAll} always come from one annotation, so a redeclaration replaces the inherited
+	 * configuration outright rather than merging with it.
+	 * <p>
+	 * {@code annotated} records whether an annotation was found at all, which
+	 * {@code privileges.isEmpty()} cannot tell apart from an {@code @Authorized} naming no privilege.
+	 * It is carried in band because {@link ConcurrentHashMap} will not store a null value.
+	 */
+	private record AuthorizationMetadata(boolean annotated, Collection<String> privileges, boolean requireAll) {
+
+		private static final AuthorizationMetadata UNGUARDED = new AuthorizationMetadata(false, Collections.emptyList(),
+		        false);
+
+		private static AuthorizationMetadata of(Authorized authorized) {
+			// drop duplicate privileges
+			Set<String> privileges = new LinkedHashSet<>(Arrays.asList(authorized.value()));
+			return new AuthorizationMetadata(true, Collections.unmodifiableSet(privileges), authorized.requireAll());
+		}
 	}
 }

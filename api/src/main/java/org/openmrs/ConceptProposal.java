@@ -14,6 +14,7 @@ import java.util.Date;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,19 +48,19 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@Column(name = "concept_proposal_id")
 	private Integer conceptProposalId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "obs_concept_id")
 	private Concept obsConcept;
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
 	@JoinColumn(name = "obs_id")
 	private Obs obs;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id")
 	private Concept mappedConcept;
 
@@ -75,7 +76,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@Column(name = "comments", length = 255)
 	private String comments;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
@@ -83,7 +84,7 @@ public class ConceptProposal extends BaseOpenmrsObject {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCreated;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 
