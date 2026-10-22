@@ -39,9 +39,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.VoidHandler;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -108,7 +106,6 @@ public class Encounter extends BaseChangeableOpenmrsData {
 
 	@OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL)
 	@OrderBy("provider_id")
-	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
 
 	@OneToMany(mappedBy = "encounter")
