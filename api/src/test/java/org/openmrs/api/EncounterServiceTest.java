@@ -2867,7 +2867,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call getEncounterByUuid(String) method
 		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().getEncounterByUuid(encounter.getUuid()));
+		EncounterService encounterService = Context.getEncounterService();
+		String uuid = encounter.getUuid();
+
+		assertThrows(APIException.class, () -> encounterService.getEncounterByUuid(uuid));
 	}
 
 	/**
@@ -2912,7 +2915,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call saveEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(encounter));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
 	}
 
 	/**
@@ -2934,7 +2939,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(encounter));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
 
 		// discard the rejected change and reload the encounter from the database
 		Context.evictFromSession(encounter);
@@ -2963,7 +2970,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call saveEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().saveEncounter(encounter));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
 	}
 
 	/**
@@ -3027,7 +3036,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call voidEncounter(Encounter,String) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().voidEncounter(encounter, "test"));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.voidEncounter(encounter, "test"));
 	}
 
 	/**
@@ -3047,7 +3058,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call unvoidEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().unvoidEncounter(encounter));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.unvoidEncounter(encounter));
 	}
 
 	/**
@@ -3067,7 +3080,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call purgeEncounter(Encounter) method
 		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(encounter));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter));
 	}
 
 	/**
@@ -3087,7 +3102,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// have to add privilege in order to be able to call purgeEncounter(Encounter,Boolean) method
 		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
 
-		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE));
+		EncounterService encounterService = Context.getEncounterService();
+
+		assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter, Boolean.TRUE));
 	}
 
 	@Test
