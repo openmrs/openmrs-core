@@ -47,7 +47,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openmrs.APIException;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -1714,6 +1713,26 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		} finally {
 			Context.setRuntimeProperties(originalProperties);
 		}
+	}
+
+	@Test
+	public void generateBootstrapPassword_shouldRefuseTheAdminAccountWhileThePasswordIsLocked() {
+		User admin = userService.getUserByUsername(ADMIN_USERNAME);
+
+		Properties originalProperties = Context.getRuntimeProperties();
+		Properties properties = runtimePropertiesWithBootstrapPepper(originalProperties);
+		properties.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(properties);
+		try {
+			APIException exception = assertThrows(APIException.class, () -> userService.generateBootstrapPassword(admin));
+			assertEquals("admin.password.is.locked", exception.getMessage());
+		} finally {
+			Context.setRuntimeProperties(originalProperties);
+		}
+
+		// the refusal may not leave an issuance behind
+		User reloaded = userService.getUser(admin.getUserId());
+		assertEquals("", reloaded.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED));
 	}
 
 	@Test

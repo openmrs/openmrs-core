@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
 class BootstrapPasswordTest {
@@ -126,13 +127,13 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testValidateBootstrapPassword_shouldReturnTrueForCorrectPassword() {
-		String password = Security.issueBootstrapPassword(user);
+		String password = issueBootstrapPassword(user);
 		assertTrue(Security.validateBootstrapPassword(user, password));
 	}
 
 	@Test
 	void testValidateBootstrapPassword_shouldReturnFalseForIncorrectPassword() {
-		String password = Security.issueBootstrapPassword(user);
+		String password = issueBootstrapPassword(user);
 		assertFalse(Security.validateBootstrapPassword(user, password + "wrong"));
 	}
 
@@ -218,7 +219,7 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testIsBootstrapPasswordIssued_shouldBeTrueAfterIssuance() {
-		Security.issueBootstrapPassword(user);
+		issueBootstrapPassword(user);
 		assertTrue(Security.isBootstrapPasswordIssued(user));
 	}
 
@@ -230,7 +231,7 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testIsBootstrapPasswordIssued_shouldBeFalseAfterTheBootstrapPasswordWasConsumed() {
-		Security.issueBootstrapPassword(user);
+		issueBootstrapPassword(user);
 		Security.consumeBootstrapPassword(user);
 		assertFalse(Security.isBootstrapPasswordIssued(user));
 	}
@@ -242,7 +243,7 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testForcePasswordChange_shouldAlsoConsumeTheBootstrapPassword() {
-		Security.issueBootstrapPassword(user);
+		issueBootstrapPassword(user);
 		assertTrue(Security.isBootstrapPasswordIssued(user));
 
 		Security.forcePasswordChange(user);
@@ -253,14 +254,14 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testValidateBootstrapPassword_shouldNotBeBlockedByTheForcePasswordFlagAlone() {
-		String password = Security.issueBootstrapPassword(user);
+		String password = issueBootstrapPassword(user);
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
 		assertTrue(Security.validateBootstrapPassword(user, password));
 	}
 
 	@Test
 	void testValidateBootstrapPassword_shouldReturnFalseForAConsumedBootstrapPassword() {
-		String password = Security.issueBootstrapPassword(user);
+		String password = issueBootstrapPassword(user);
 		assertTrue(Security.validateBootstrapPassword(user, password));
 
 		Security.forcePasswordChange(user);
@@ -270,7 +271,7 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testValidateBootstrapPassword_shouldReturnFalseForAConsumedBootstrapPasswordEvenAfterThePasswordIsCleared() {
-		String password = Security.issueBootstrapPassword(user);
+		String password = issueBootstrapPassword(user);
 		Security.forcePasswordChange(user);
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "false");
 
@@ -279,7 +280,7 @@ class BootstrapPasswordTest {
 
 	@Test
 	void testValidateBootstrapPassword_shouldStayFalseWhenTheUserPropertiesAreReplaced() {
-		String password = Security.issueBootstrapPassword(user);
+		String password = issueBootstrapPassword(user);
 		Security.forcePasswordChange(user);
 		assertFalse(Security.validateBootstrapPassword(user, password));
 
@@ -290,5 +291,61 @@ class BootstrapPasswordTest {
 
 		assertFalse(Security.validateBootstrapPassword(user, password),
 			"A consumed bootstrap password must not come back when the user properties are replaced");
+	}
+
+	@Test
+	void testGenerateBootstrapPassword_shouldRefuseTheAdminUsernameWhileThePasswordIsLocked() {
+		user.setUsername("admin");
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		assertThrows(APIException.class, () -> Security.generateBootstrapPassword(user));
+	}
+
+	@Test
+	void testGenerateBootstrapPassword_shouldRefuseTheAdminSystemIdWhileThePasswordIsLocked() {
+		user.setSystemId("admin");
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		assertThrows(APIException.class, () -> Security.generateBootstrapPassword(user));
+	}
+
+	@Test
+	void testGenerateBootstrapPassword_shouldAllowOtherAccountsWhileTheAdminPasswordIsLocked() {
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		assertNotNull(Security.generateBootstrapPassword(user));
+	}
+
+	@Test
+	void testValidateBootstrapPassword_shouldReturnFalseForAdminIssuedBeforeThePasswordWasLocked() {
+		user.setUsername("admin");
+		String password = issueBootstrapPassword(user);
+		assertTrue(Security.validateBootstrapPassword(user, password));
+
+		Properties props = Context.getRuntimeProperties();
+		props.setProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "true");
+		Context.setRuntimeProperties(props);
+
+		assertFalse(Security.validateBootstrapPassword(user, password),
+			"An admin bootstrap password issued before the lock must not validate while the lock is set");
+	}
+
+	/**
+	 * Issues a bootstrap password in the test by marking the user directly, since the
+	 * production issuance path is the service.
+	 *
+	 * @param user the user to issue a bootstrap password for
+	 * @return the issued bootstrap password
+	 */
+	private String issueBootstrapPassword(User user) {
+		String password = Security.generateBootstrapPassword(user);
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED, "true");
+		return password;
 	}
 }

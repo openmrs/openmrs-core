@@ -29,6 +29,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.NoContextPasswordEncoderFactory;
@@ -144,14 +145,24 @@ public class Security {
 	 * {@link org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)} to hand
 	 * one out, since a derived password does not validate until it has been issued.
 	 *
+	 * <p>
+	 * The admin account is refused while {@code admin.password.locked} is set. Its password
+	 * can only be changed through the runtime property, so a bootstrap login would leave the
+	 * account unable to complete the forced password change.
+	 *
 	 * @param user the user for whom to generate the bootstrap password
 	 * @return the generated bootstrap password (a user-friendly string)
-	 * @throws APIException if user is null, has no UUID, or the pepper is not configured
+	 * @throws APIException if user is null, has no UUID, the pepper is not configured, or the
+	 *         admin password is locked
 	 * @since 2.8.11
 	 */
 	public static String generateBootstrapPassword(org.openmrs.User user) {
 		if (user == null) {
 			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+
+		if (isAdminPasswordLocked(user)) {
+			throw new APIException("admin.password.is.locked");
 		}
 
 		String uuid = user.getUuid();
@@ -168,6 +179,18 @@ public class Security {
 		int iterations = getBootstrapIterations();
 
 		return generateDeterministicHash(input, uuid, iterations);
+	}
+
+	/**
+	 * Checks whether the given user is the admin account whose password is locked.
+	 *
+	 * @param user the user to check
+	 * @return true if the user is admin and {@code admin.password.locked} is set
+	 */
+	private static boolean isAdminPasswordLocked(org.openmrs.User user) {
+		boolean admin = "admin".equals(user.getSystemId()) || "admin".equals(user.getUsername());
+		return admin && Boolean.parseBoolean(
+			Context.getRuntimeProperties().getProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "false"));
 	}
 
 	/**
@@ -316,7 +339,9 @@ public class Security {
 	 * check fails closed: an account without the
 	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED} user property has no
 	 * bootstrap password, so knowing the system pepper is not enough to log in as that
-	 * account.
+	 * account. The admin account never validates a bootstrap password while
+	 * {@code admin.password.locked} is set, including one that was issued before the lock was
+	 * set.
 	 *
 	 * @param user the user
 	 * @param password the password to validate
@@ -343,30 +368,6 @@ public class Security {
 			log.debug("Failed to validate bootstrap password: {}", e.getMessage());
 			return false;
 		}
-	}
-
-	/**
-	 * Issues a bootstrap password for a user.
-	 * <p>
-	 * The password is derived from the user's UUID and the system pepper, and the user is
-	 * marked as having an issued bootstrap password, so that
-	 * {@link #validateBootstrapPassword(org.openmrs.User, String)} accepts it. The flag is
-	 * what makes the bootstrap password a credential of that one account rather than of every
-	 * account whose UUID is known.
-	 * <p>
-	 * The caller is responsible for persisting the user, otherwise the issuance is lost. Use
-	 * {@link org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)}, which
-	 * records the issuance on the persisted user.
-	 *
-	 * @param user the user to issue a bootstrap password for
-	 * @return the issued bootstrap password
-	 * @throws APIException if the user is null, has no UUID, or the pepper is not configured
-	 * @since 2.8.11
-	 */
-	public static String issueBootstrapPassword(org.openmrs.User user) {
-		String password = generateBootstrapPassword(user);
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED, "true");
-		return password;
 	}
 
 	/**
