@@ -80,6 +80,8 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 
 	private static final String REPLACED_WORK_LOG_ENTRY = "Replaced the default admin password";
 
+	private static final String INSTALLATION_SCRIPT_PROPERTY = "installation.script.property";
+
 	@TempDir
 	Path applicationDataDirectory;
 
@@ -391,6 +393,48 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		assertFalse(InitializationFilter.isInstallationStarted());
 	}
 
+	@Test
+	void finishInstallation_shouldPutBackTheRuntimePropertiesOpenmrsHadBeforeAFailedInstall() {
+		Properties runtimePropertiesBeforeInstall = Context.getRuntimeProperties();
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		job.addRuntimeProperties(installationScriptProperty());
+		assertNotEquals(runtimePropertiesBeforeInstall, Context.getRuntimeProperties());
+		job.reportError(ErrorMessageConstants.ERROR_DB_UPDATE_TO_LATEST, "chooselang.vm", "an update failed");
+
+		job.finishInstallation(false);
+
+		assertEquals(runtimePropertiesBeforeInstall, Context.getRuntimeProperties());
+	}
+
+	@Test
+	void finishInstallation_shouldPutBackTheRuntimePropertiesOpenmrsHadWhenOnlyStartingOpenmrsFailed() throws Exception {
+		Properties runtimePropertiesBeforeInstall = Context.getRuntimeProperties();
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		// the test database's connection, which the setup steps use
+		Properties installRuntimeProperties = runtimeProperties();
+		installRuntimeProperties.putAll(installationScriptProperty());
+		Properties runtimeProperties = job.addRuntimeProperties(installRuntimeProperties);
+		assertNotEquals(runtimePropertiesBeforeInstall, Context.getRuntimeProperties());
+		useAnonymousUserContext();
+		assertTrue(job.completeSetup(runtimeProperties));
+		job.reportError(ErrorMessageConstants.ERROR_MANDATORY_MOD_REQ, "chooselang.vm", "a mandatory module failed");
+
+		job.finishInstallation(false);
+
+		assertTrue(runtimePropertiesFile.exists());
+		assertEquals(runtimePropertiesBeforeInstall, Context.getRuntimeProperties());
+	}
+
+	@Test
+	void finishInstallation_shouldLeaveOpenmrsWithTheRuntimePropertiesOfAnInstallThatStartedIt() {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		job.addRuntimeProperties(installationScriptProperty());
+
+		job.finishInstallation(true);
+
+		assertEquals("yes", Context.getRuntimeProperties().getProperty(INSTALLATION_SCRIPT_PROPERTY));
+	}
+
 	/**
 	 * Gives this thread a user context with no authenticated user and core's username and password
 	 * authentication, which is what the install thread runs with. The web test context authenticates
@@ -415,6 +459,16 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		Properties runtimeProperties = new Properties();
 		runtimeProperties.putAll(testDatabase);
 		return runtimeProperties;
+	}
+
+	/**
+	 * A runtime property that only the install has, as an installation script's property.* entries give
+	 * it
+	 */
+	private Properties installationScriptProperty() {
+		Properties properties = new Properties();
+		properties.setProperty(INSTALLATION_SCRIPT_PROPERTY, "yes");
+		return properties;
 	}
 
 	/**

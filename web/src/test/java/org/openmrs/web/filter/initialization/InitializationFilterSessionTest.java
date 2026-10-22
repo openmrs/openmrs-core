@@ -33,6 +33,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -245,6 +246,46 @@ class InitializationFilterSessionTest {
 		assertThat(secondProgress, not(hasKey("errorPage")));
 		assertThat(secondProgress, not(hasKey("logLines")));
 		assertTrue(filter.getWizardModel(second).errors.isEmpty());
+	}
+
+	@Test
+	void shouldNotShowTheConnectionOfAFailedInstallToAnotherSession() throws Exception {
+		// what a standalone launcher's runtime properties file gives the wizard when OpenMRS starts
+		writeExistingRuntimeProperties("StandalonePassword1");
+		Properties runtimePropertiesBeforeInstall = Context.getRuntimeProperties();
+		filter.runInstalls = true;
+		// test data with no server to import it from, so the install fails at the step after the one that checks
+		// its database connection
+		filter.installationScript.setProperty("import_test_data", "true");
+		String firstConnection = "jdbc:h2:mem:first_session_" + UUID.randomUUID().toString().replace("-", "");
+		MockHttpSession first = startSession();
+		post(first, "installmethod.vm", "install_method", "advanced");
+		post(first, "databasesetup.vm", "database_connection", firstConnection, "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "first_session_db");
+		post(first, TABLES_AND_USER_PAGE, "create_tables", "no", "current_database_user", "yes", "current_database_username",
+		    "first_session_user", "current_database_password", "FirstSessionPassword1");
+		post(first, "otherruntimeproperties.vm", "module_web_admin", "yes", "auto_update_database", "no");
+		post(first, "adminusersetup.vm", "new_admin_password", "Admin123", "new_admin_password_confirm", "Admin123");
+		post(first, "implementationidsetup.vm", "implementation_name", "", "implementation_id", "", "pass_phrase", "",
+		    "description", "");
+		post(first, "wizardcomplete.vm");
+		filter.initJob.waitForCompletion();
+		assertThat(filter.initJob.getErrors(), hasKey(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA));
+
+		MockHttpSession second = startSession();
+		post(second, "chooselang.vm", "locale", "en");
+		post(second, "installmethod.vm", "install_method", "simple");
+		String confirmation = post(second, "simplesetup.vm", "database_type", "mysql", "database_root_password",
+		    "SecondSessionRoot1");
+
+		assertThat(confirmation, containsString("value=\"wizardcomplete.vm\""));
+		assertThat(confirmation, not(containsString(firstConnection)));
+		assertThat(confirmation, containsString("jdbc:mysql://localhost:3306/openmrs"));
+		InitializationWizardModel secondModel = filter.getWizardModel(second);
+		assertEquals("openmrs", secondModel.createDatabaseUsername);
+		assertEquals("openmrs", secondModel.currentDatabaseUsername);
+		assertEquals("StandalonePassword1", secondModel.currentDatabasePassword);
+		assertEquals(runtimePropertiesBeforeInstall, Context.getRuntimeProperties());
 	}
 
 	@Test

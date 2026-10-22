@@ -189,6 +189,9 @@ public class InitializationFilter extends StartupFilter {
 	 * The names the wizard puts into SQL as database and user names: letters, digits and underscores,
 	 * with single hyphens or dots between them as in the OpenMRS SDK's openmrs-&lt;server id&gt;
 	 */
+	// Sonar (java:S5998) flags the repeated group as able to overflow the stack on a long input. Not here:
+	// isValidDatabaseName, which matches names against it, first checks they are within DATABASE_NAME_MAX_LENGTH.
+	@SuppressWarnings("java:S5998")
 	private static final Pattern DATABASE_NAME_PATTERN = Pattern.compile("[A-Za-z0-9_]+([-.][A-Za-z0-9_]+)*");
 
 	private static final int DATABASE_NAME_MAX_LENGTH = 64;
@@ -400,6 +403,9 @@ public class InitializationFilter extends StartupFilter {
 	 * @param session the session of the request
 	 * @return the session's wizard model
 	 */
+	// Sonar (java:S2441) wants session attributes to be Serializable. Deliberate: the javadoc of
+	// InitializationWizardModel says why it is not.
+	@SuppressWarnings("java:S2441")
 	InitializationWizardModel getWizardModel(HttpSession session) {
 		InitializationWizardModel wizardModel = getExistingWizardModel(session);
 		if (wizardModel == null) {
@@ -1446,6 +1452,11 @@ public class InitializationFilter extends StartupFilter {
 		 */
 		private boolean setupComplete = false;
 
+		/**
+		 * The runtime properties OpenMRS had before this install added its own, once it has added them
+		 */
+		private Properties runtimePropertiesBeforeInstall;
+
 		public synchronized void reportError(String error, String errorPage, Object... params) {
 			errors.put(error, params);
 			this.errorPage = errorPage;
@@ -1728,11 +1739,7 @@ public class InitializationFilter extends StartupFilter {
 
 						runtimeProperties.putAll(wizardModel.additionalPropertiesFromInstallationScript);
 
-						Properties properties = Context.getRuntimeProperties();
-						properties.putAll(runtimeProperties);
-						runtimeProperties = properties;
-
-						Context.setRuntimeProperties(runtimeProperties);
+						runtimeProperties = addRuntimeProperties(runtimeProperties);
 
 						/**
 						 * A callback class that prints out info about liquibase changesets
@@ -1947,6 +1954,22 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		/**
+		 * Adds the runtime properties of this install to the ones OpenMRS has, which the steps that follow
+		 * read, and keeps a copy of the ones OpenMRS had, which {@link #finishInstallation(boolean)} puts
+		 * back if the install does not succeed
+		 *
+		 * @param installRuntimeProperties the runtime properties of this install
+		 * @return the runtime properties OpenMRS has now
+		 */
+		Properties addRuntimeProperties(Properties installRuntimeProperties) {
+			runtimePropertiesBeforeInstall = Context.getRuntimeProperties();
+			Properties runtimeProperties = Context.getRuntimeProperties();
+			runtimeProperties.putAll(installRuntimeProperties);
+			Context.setRuntimeProperties(runtimeProperties);
+			return runtimeProperties;
+		}
+
+		/**
 		 * Runs the steps between starting the web application context and starting OpenMRS, in a session
 		 * the caller opened, unless an earlier step of the install has reported an error. The runtime
 		 * properties file, which marks OpenMRS as installed, is written last, so a step that fails before
@@ -2128,12 +2151,14 @@ public class InitializationFilter extends StartupFilter {
 
 		/**
 		 * Ends the install, in the finally of the install thread. Only an install that got through starting
-		 * OpenMRS without an error sets initialization complete, which lets requests past this filter. One
-		 * that failed before its setup was complete removes the runtime properties file it opened to write
-		 * it, so the next start comes back to this wizard; opening a file empties it, so this holds for a
-		 * file that was there before the install too. A runtime properties file the install never opened
-		 * stays, since whoever wrote it owns it. Once the setup is complete the database no longer has the
-		 * seeded admin password, so the file stays when only starting OpenMRS failed.
+		 * OpenMRS without an error sets initialization complete, which lets requests past this filter. Any
+		 * other install puts back the runtime properties OpenMRS had before the install added its own, so
+		 * the wizard pages of the sessions that walk the wizard next do not read this install's values from
+		 * them. One that failed before its setup was complete removes the runtime properties file it opened
+		 * to write it, so the next start comes back to this wizard; opening a file empties it, so this
+		 * holds for a file that was there before the install too. A runtime properties file the install
+		 * never opened stays, since whoever wrote it owns it. Once the setup is complete the database no
+		 * longer has the seeded admin password, so the file stays when only starting OpenMRS failed.
 		 *
 		 * @param succeeded whether the install got through starting OpenMRS
 		 */
@@ -2148,6 +2173,10 @@ public class InitializationFilter extends StartupFilter {
 					return;
 				}
 
+				// before the finally clears installation started, which lets sessions walk the wizard again
+				if (runtimePropertiesBeforeInstall != null) {
+					Context.setRuntimeProperties(runtimePropertiesBeforeInstall);
+				}
 				if (!hasErrors()) {
 					reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, "");
 				}
