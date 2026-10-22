@@ -21,6 +21,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -436,6 +437,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// There is intentionally no voided check around this method call.  See TRUNK-5996.
 			orderService.voidOrder(o, reason);
 		}
+
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			if (!encounterProvider.getVoided()) {
+				encounterProvider.setVoided(true);
+				encounterProvider.setVoidedBy(encounter.getVoidedBy());
+				encounterProvider.setDateVoided(encounter.getDateVoided());
+				encounterProvider.setVoidReason(reason);
+			}
+		}
 		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
@@ -446,6 +456,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			encounter.setDateVoided(new Date());
 		}
 		encounter.setVoidReason(reason);
+
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
 	}
