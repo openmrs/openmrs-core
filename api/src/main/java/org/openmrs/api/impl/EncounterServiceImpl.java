@@ -650,12 +650,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		Encounter encounter = dao.getEncounterByUuid(uuid);
 		if (encounter == null) {
 			return null;
-		} else if (canViewEncounter(encounter, null)) {
-			return encounter;
-		} else {
-			throw new APIException("Encounter.error.privilege.required.view",
-			        new Object[] { encounter.getEncounterType().getViewPrivilege() });
 		}
+		EncounterType encounterType = encounter.getEncounterType();
+		if (encounterType != null && !canViewEncounter(encounter, null)) {
+			throw new APIException("Encounter.error.privilege.required.view",
+			        new Object[] { encounterType.getViewPrivilege() });
+		}
+		return encounter;
 	}
 
 	/**
