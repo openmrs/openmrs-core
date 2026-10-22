@@ -117,6 +117,30 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.UserDAO#updateUserProperties(User, java.util.Map)
+	 */
+	@Override
+	public void updateUserProperties(User user, Map<String, String> properties) {
+		requireUserService("Illegal attempt to save user properties from unknown caller");
+		if (properties == null || properties.isEmpty()) {
+			return;
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+		// reload the user, so that a change the caller made to it is not written along with the
+		// properties
+		session.refresh(user);
+		for (Map.Entry<String, String> property : properties.entrySet()) {
+			if (property.getValue() == null) {
+				user.removeUserProperty(property.getKey());
+			} else {
+				user.setUserProperty(property.getKey(), property.getValue());
+			}
+		}
+		session.saveOrUpdate(user);
+	}
+
+	/**
 	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
 	 */
 	@Override

@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +23,13 @@ import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.spring.NoContextPasswordEncoderFactory;
@@ -51,6 +55,18 @@ public class Security {
 	// supports is NoContextPasswordEncoderFactory's business, not this class's.
 	private static final PasswordEncoder FALLBACK_ENCODER = NoContextPasswordEncoderFactory.create();
 	
+	private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256";
+	private static final int PBKDF2_DEFAULT_ITERATIONS = 600000;
+	private static final int PBKDF2_KEY_LENGTH = 256;
+	private static final int BOOTSTRAP_MAX_PASSWORD_LENGTH = 20;
+
+	// character sets used to guarantee a bootstrap password satisfies OpenMRS's default
+	// password policy, without reintroducing the visually ambiguous characters stripped
+	// from the Base64 output
+	private static final String DIGIT_ALPHABET = "123456789";
+	private static final String UPPERCASE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // A-Z without O and I
+	private static final String LOWERCASE_ALPHABET = "abcdefghijkmnopqrstuvwxyz"; // a-z without l
+
 	private Security() {
 	}
 	
@@ -109,6 +125,302 @@ public class Security {
 		return hashedPassword.equals(encodeString(passwordToHash))
 			|| hashedPassword.equals(encodeStringSHA1(passwordToHash))
 			|| hashedPassword.equals(incorrectlyEncodeString(passwordToHash));
+	}
+
+	/**
+	 * Generates a deterministic bootstrap password for a user.
+	 *
+	 * The password is derived from the user's UUID and the system pepper using PBKDF2.
+	 * The UUID acts as a per-user salt, ensuring uniqueness per user, while the pepper
+	 * (stored in runtime.properties) provides system-wide secrecy.
+	 *
+	 * The resulting password is Base64-encoded, stripped of visually ambiguous
+	 * or awkward-to-type characters ({@code 0}, {@code O}, {@code I}, {@code l},
+	 * {@code +}, {@code /}) and truncated to a user-friendly length of
+	 * {@value #BOOTSTRAP_MAX_PASSWORD_LENGTH} characters. A digit, an upper-case
+	 * letter and a lower-case letter are always included so the password also
+	 * satisfies OpenMRS's own default password policy.
+	 * <p>
+	 * This only derives the password. Use
+	 * {@link org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)} to hand
+	 * one out, since a derived password does not validate until it has been issued.
+	 *
+	 * <p>
+	 * The admin account is refused while {@code admin.password.locked} is set. Its password
+	 * can only be changed through the runtime property, so a bootstrap login would leave the
+	 * account unable to complete the forced password change.
+	 *
+	 * @param user the user for whom to generate the bootstrap password
+	 * @return the generated bootstrap password (a user-friendly string)
+	 * @throws APIException if user is null, has no UUID, the pepper is not configured, or the
+	 *         admin password is locked
+	 * @since 2.8.11
+	 */
+	public static String generateBootstrapPassword(org.openmrs.User user) {
+		if (user == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+
+		if (isAdminPasswordLocked(user)) {
+			throw new APIException("admin.password.is.locked");
+		}
+
+		String uuid = user.getUuid();
+		if (!StringUtils.hasText(uuid)) {
+			throw new APIException("bootstrap.user.uuid.missing", (Object[]) null);
+		}
+
+		String pepper = getBootstrapPepper();
+		if (!StringUtils.hasText(pepper)) {
+			throw new APIException("bootstrap.pepper.missing", (Object[]) null);
+		}
+
+		String input = uuid + pepper;
+		int iterations = getBootstrapIterations();
+
+		return generateDeterministicHash(input, uuid, iterations);
+	}
+
+	/**
+	 * Checks whether the given user is the admin account whose password is locked.
+	 *
+	 * @param user the user to check
+	 * @return true if the user is admin and {@code admin.password.locked} is set
+	 */
+	private static boolean isAdminPasswordLocked(org.openmrs.User user) {
+		boolean admin = "admin".equals(user.getSystemId()) || "admin".equals(user.getUsername());
+		return admin && Boolean.parseBoolean(
+			Context.getRuntimeProperties().getProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY, "false"));
+	}
+
+	/**
+	 * Generates a deterministic hash using PBKDF2.
+	 *
+	 * This method is used for bootstrap password generation, where deterministic output is required
+	 * for a given user (same user -> same password). The UUID serves as a per-user salt, while the
+	 * pepper (system secret) is concatenated into the input string. The pepper is the only secret
+	 * input: anyone who holds it can derive every user's bootstrap password from their UUID.
+	 *
+	 * Unlike {@link #encodeString(String)}, which uses SHA-512, this method uses PBKDF2 with a high
+	 * iteration count, making it suitable for password derivation.
+	 *
+	 * @param input      the input string to derive from (typically user UUID + system pepper)
+	 * @param salt       the per-user salt (typically the user's UUID) to make each derivation unique
+	 * @param iterations the number of PBKDF2 iterations (use 0 to apply the default)
+	 * @return the derived hash as a Base64 encoded string, truncated to a user-friendly length
+	 *         and guaranteed to contain a digit and upper- and lower-case letters
+	 * @throws APIException if input or salt is null
+	 * @since 2.8.11
+	 */
+	public static String generateDeterministicHash(String input, String salt, int iterations) {
+		if (input == null || salt == null) {
+			throw new APIException("bootstrap.input.null", (Object[]) null);
+		}
+
+		int actualIterations = iterations > 0 ? iterations : PBKDF2_DEFAULT_ITERATIONS;
+
+		try {
+			SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+			KeySpec spec = new PBEKeySpec(
+				input.toCharArray(),
+				salt.getBytes(StandardCharsets.UTF_8),
+				actualIterations,
+				PBKDF2_KEY_LENGTH
+			);
+			byte[] derived = factory.generateSecret(spec).getEncoded();
+
+			String base64 = Base64.getEncoder().withoutPadding().encodeToString(derived);
+			String cleaned = base64.replaceAll("[0OIl+/]", "");
+			if (cleaned.length() > BOOTSTRAP_MAX_PASSWORD_LENGTH) {
+				cleaned = cleaned.substring(0, BOOTSTRAP_MAX_PASSWORD_LENGTH);
+			}
+			return guaranteePolicyCharacters(cleaned, derived);
+
+		} catch (GeneralSecurityException e) {
+			log.error("Failed to generate deterministic hash", e);
+			throw new APIException("bootstrap.hash.generation.failed", null, e);
+		}
+	}
+
+	/**
+	 * Guarantees the given password satisfies OpenMRS's default password policy, which requires
+	 * at least one digit and both an upper-case and a lower-case letter. One character per
+	 * missing class is appended, chosen deterministically from the given PBKDF2 output so the
+	 * result stays a pure function of the input. Characters are taken from the alphabets above
+	 * so no visually ambiguous character is reintroduced.
+	 *
+	 * @param password the password to check and complete
+	 * @param derived the PBKDF2 output the password was derived from
+	 * @return the password, with one character appended per missing character class
+	 */
+	private static String guaranteePolicyCharacters(String password, byte[] derived) {
+		int missing = countMissingPolicyClasses(password);
+		if (missing == 0) {
+			return password;
+		}
+
+		// make room for the appended characters by dropping from the end, then re-check
+		// each class against the shortened password so a class whose only character sat
+		// in the dropped tail is guaranteed again
+		StringBuilder sb = new StringBuilder(password.substring(0, Math.max(0, password.length() - missing)));
+		if (sb.chars().noneMatch(c -> c >= '0' && c <= '9')) {
+			sb.append(DIGIT_ALPHABET.charAt((derived[0] & 0xFF) % DIGIT_ALPHABET.length()));
+		}
+		if (sb.chars().noneMatch(c -> c >= 'A' && c <= 'Z')) {
+			sb.append(UPPERCASE_ALPHABET.charAt((derived[1] & 0xFF) % UPPERCASE_ALPHABET.length()));
+		}
+		if (sb.chars().noneMatch(c -> c >= 'a' && c <= 'z')) {
+			sb.append(LOWERCASE_ALPHABET.charAt((derived[2] & 0xFF) % LOWERCASE_ALPHABET.length()));
+		}
+		return sb.toString();
+	}
+
+	private static int countMissingPolicyClasses(String password) {
+		boolean needsDigit = password.chars().noneMatch(c -> c >= '0' && c <= '9');
+		boolean needsUpper = password.chars().noneMatch(c -> c >= 'A' && c <= 'Z');
+		boolean needsLower = password.chars().noneMatch(c -> c >= 'a' && c <= 'z');
+		return (needsDigit ? 1 : 0) + (needsUpper ? 1 : 0) + (needsLower ? 1 : 0);
+	}
+
+	/**
+	 * Gets the pepper used for bootstrap password generation.
+	 *
+	 * The pepper is read from the runtime property "openmrs.bootstrap.pepper".
+	 * <p>
+	 * The pepper is a secret: anyone who holds it can derive the bootstrap password of every
+	 * user, so it must not be stored in the database or sent to a client. It has to stay the
+	 * same for the lifetime of the deployment, because changing it makes every bootstrap
+	 * password that was issued with it stop validating.
+	 *
+	 * @return the pepper, or null if not configured
+	 * @since 2.8.11
+	 */
+	public static String getBootstrapPepper() {
+		return Context.getRuntimeProperties()
+			.getProperty("openmrs.bootstrap.pepper");
+	}
+
+	/**
+	 * Gets the configured number of PBKDF2 iterations for bootstrap password generation.
+	 *
+	 * Reads from runtime property "openmrs.bootstrap.iterations".
+	 * Falls back to default (600,000) if not configured or invalid.
+	 * <p>
+	 * The iteration count is part of the derivation, so it has to stay the same for the
+	 * lifetime of the deployment. Changing it makes every bootstrap password that was issued
+	 * with the old count stop validating, so it should be raised before any password is
+	 * issued rather than after.
+	 *
+	 * @return the number of iterations (always > 0)
+	 * @since 2.8.11
+	 */
+	public static int getBootstrapIterations() {
+		String value = Context.getRuntimeProperties().getProperty("openmrs.bootstrap.iterations");
+		if (StringUtils.hasText(value)) {
+			try {
+				int iterations = Integer.parseInt(value.trim());
+				if (iterations > 0) {
+					return iterations;
+				}
+				log.warn("Invalid bootstrap iterations value (must be > 0): {}, using default: {}",
+						value, PBKDF2_DEFAULT_ITERATIONS);
+			} catch (NumberFormatException e) {
+				log.warn("Invalid bootstrap iterations format: {}, using default: {}",
+						value, PBKDF2_DEFAULT_ITERATIONS);
+			}
+		}
+		return PBKDF2_DEFAULT_ITERATIONS;
+	}
+
+	/**
+	 * Validates a password against a user's bootstrap password.
+	 * <p>
+	 * Only an account that was actually issued a bootstrap password can validate one. The
+	 * check fails closed: an account without the
+	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED} user property has no
+	 * bootstrap password, so knowing the system pepper is not enough to log in as that
+	 * account. The admin account never validates a bootstrap password while
+	 * {@code admin.password.locked} is set, including one that was issued before the lock was
+	 * set.
+	 *
+	 * @param user the user
+	 * @param password the password to validate
+	 * @return true if the password matches the user's issued bootstrap password and that
+	 *         password has not been consumed
+	 * @since 2.8.11
+	 */
+	public static boolean validateBootstrapPassword(org.openmrs.User user, String password) {
+		if (user == null || password == null) {
+			return false;
+		}
+
+		if (!isBootstrapPasswordIssued(user)) {
+			return false;
+		}
+
+		try {
+			String expected = generateBootstrapPassword(user);
+			return MessageDigest.isEqual(
+				expected.getBytes(StandardCharsets.UTF_8),
+				password.getBytes(StandardCharsets.UTF_8)
+			);
+		} catch (APIException e) {
+			log.debug("Failed to validate bootstrap password: {}", e.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * Marks a user's bootstrap password as consumed, so that it no longer validates.
+	 * <p>
+	 * The issued flag is removed rather than cleared to a value, so that an account whose
+	 * bootstrap password was consumed cannot be resurrected by an unrelated change to its
+	 * user properties.
+	 *
+	 * @param user the user whose bootstrap password was consumed
+	 * @since 2.8.11
+	 */
+	public static void consumeBootstrapPassword(org.openmrs.User user) {
+		if (user != null) {
+			user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED);
+		}
+	}
+
+	/**
+	 * Checks if a bootstrap password has been issued for a user.
+	 * <p>
+	 * Issuance is tracked with the dedicated
+	 * {@link OpenmrsConstants#USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED} user property, which
+	 * is independent of the general "forcePassword" user property. The property is only set
+	 * when a bootstrap password is handed out and removed when it is consumed, so an account
+	 * that was never issued one never validates one.
+	 *
+	 * @param user the user
+	 * @return true if a bootstrap password has been issued for the user and not consumed yet
+	 * @since 2.8.11
+	 */
+	public static boolean isBootstrapPasswordIssued(org.openmrs.User user) {
+		if (user == null) {
+			return false;
+		}
+		return "true".equals(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED));
+	}
+
+	/**
+	 * Forces a user to change their password on next login.
+	 *
+	 * Sets the "forcePassword" user property to "true". Also consumes any issued
+	 * bootstrap password, so a bootstrap credential that has already been used cannot be
+	 * used again.
+	 *
+	 * @param user the user whose password change should be forced
+	 * @since 2.8.11
+	 */
+	public static void forcePasswordChange(org.openmrs.User user) {
+		if (user != null) {
+			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
+			consumeBootstrapPassword(user);
+		}
 	}
 
 	/**

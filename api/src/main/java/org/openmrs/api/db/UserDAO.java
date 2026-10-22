@@ -10,6 +10,7 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -30,6 +31,23 @@ public interface UserDAO {
 	 */
 	public User saveUser(User user, String password) throws DAOException;
 	
+	/**
+	 * Writes the given properties on the given user, without persisting any other change to
+	 * that user.
+	 * <p>
+	 * The user is reloaded before the properties are written, so that a change the caller made
+	 * to the user is not written along with the properties. A property with a null value is
+	 * removed from the user.
+	 * <p>
+	 * All the properties are written in one call, because the reload discards a change that has
+	 * not been written yet.
+	 *
+	 * @param user the user to write the properties on
+	 * @param properties the properties to write, keyed by property name, a null value removes
+	 *            the property
+	 */
+	public void updateUserProperties(User user, Map<String, String> properties) throws DAOException;
+
 	/**
 	 * @see org.openmrs.api.UserService#getUser(Integer)
 	 */

@@ -1171,6 +1171,18 @@ public final class OpenmrsConstants {
 	 */
 	public static final String USER_PROPERTY_CHANGE_PASSWORD = "forcePassword";
 	
+	/**
+	 * User property that records that a bootstrap password has been issued for a user.
+	 * <p>
+	 * A bootstrap password only validates while this property is set to "true". An account that
+	 * was never given a bootstrap password therefore fails the check, so knowing the system
+	 * pepper is not enough to log in as that account. The property is removed once the
+	 * bootstrap password has been consumed.
+	 *
+	 * @since 2.8.11
+	 */
+	public static final String USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED = "bootstrapPasswordIssued";
+
 	public static final String USER_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
 	
 	public static final String USER_PROPERTY_DEFAULT_LOCATION = "defaultLocation";

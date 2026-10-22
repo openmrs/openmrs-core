@@ -11,7 +11,9 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -143,6 +145,21 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		UserPasswordGuard.enter();
 		try {
 			return dao.saveUser(user, password);
+		} finally {
+			UserPasswordGuard.exit();
+		}
+	}
+
+	/**
+	 * The service's single entry point to {@link UserDAO#updateUserProperties(User, Map)},
+	 * raising the permit that the DAO requires of anything that can change a user.
+	 *
+	 * @see UserPasswordGuard
+	 */
+	private void daoUpdateUserProperties(User user, Map<String, String> properties) {
+		UserPasswordGuard.enter();
+		try {
+			dao.updateUserProperties(user, properties);
 		} finally {
 			UserPasswordGuard.exit();
 		}
@@ -923,5 +940,84 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public String getLastLoginTime(User user) {
 		return dao.getLastLoginTime(user);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#validateBootstrapPassword(User, String)
+	 */
+	@Override
+	public boolean validateBootstrapPassword(User user, String password) {
+		return Security.validateBootstrapPassword(user, password);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#forcePasswordChange(User)
+	 */
+	@Override
+	public void forcePasswordChange(User user) {
+		if (user == null) {
+			return;
+		}
+		if (user.getUserId() == null) {
+			throw new APIException("forcepasswordchange.user.not.saved", (Object[]) null);
+		}
+
+		// work on the user that is actually persisted, so that a copy of the user does not
+		// derive a different result
+		User target = dao.getUser(user.getUserId());
+		if (target == null) {
+			throw new APIException("forcepasswordchange.user.not.saved", (Object[]) null);
+		}
+
+		// write both properties in one call: the DAO reloads the user before writing, and a
+		// reload discards a change that has not been written yet
+		Map<String, String> properties = new HashMap<>();
+		properties.put(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, "true");
+		// a null value removes the property, so that a consumed bootstrap password cannot be
+		// used again
+		properties.put(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED, null);
+		daoUpdateUserProperties(target, properties);
+
+		// set the flag on the instance the caller passed in as well, so that the caller sees the
+		// change on the user it holds
+		Security.forcePasswordChange(user);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#isBootstrapPasswordIssued(User)
+	 */
+	@Override
+	public boolean isBootstrapPasswordIssued(User user) {
+		return Security.isBootstrapPasswordIssued(user);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#generateBootstrapPassword(org.openmrs.User)
+	 */
+	@Override
+	public String generateBootstrapPassword(User user) throws APIException {
+		if (user == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+		if (user.getUserId() == null) {
+			// the issuance is recorded on the persisted user, so there is nothing to issue a
+			// password for until the user has been saved
+			throw new APIException("bootstrap.user.not.saved", (Object[]) null);
+		}
+
+		// derive the password from the user that is actually persisted, so that a copy of the user
+		// does not derive a different password
+		User target = dao.getUser(user.getUserId());
+		if (target == null) {
+			throw new APIException("bootstrap.user.null", (Object[]) null);
+		}
+
+		// derive the password before recording the issuance, so that a misconfigured system does
+		// not leave an account with a bootstrap password it cannot derive
+		String password = Security.generateBootstrapPassword(target);
+		// record the issuance, otherwise the issued bootstrap password would not validate
+		daoUpdateUserProperties(target, Collections.singletonMap(OpenmrsConstants.USER_PROPERTY_BOOTSTRAP_PASSWORD_ISSUED,
+		    "true"));
+		return password;
 	}
 }

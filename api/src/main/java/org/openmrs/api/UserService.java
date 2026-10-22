@@ -607,4 +607,70 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized
 	String getLastLoginTime(User user);
+
+	/**
+	 * Issues a deterministic bootstrap password for a user.
+	 *
+	 * The password is derived from the user's UUID and a system-wide pepper using PBKDF2.
+	 * It is not stored in the database and can be regenerated at any time.
+	 * <p>
+	 * Issuing the password records that this account has one, so that it validates through
+	 * {@link #validateBootstrapPassword(User, String)}. An account that was never issued a
+	 * bootstrap password does not validate one, even for someone who knows the pepper.
+	 *
+	 * @param user the user for whom to issue the bootstrap password
+	 * @return the issued bootstrap password
+	 * @throws APIException if the user is null, has no UUID, or pepper is not configured
+	 * @since 2.8.11
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	String generateBootstrapPassword(User user);
+
+	/**
+	 * Validates a password against a user's bootstrap password.
+	 * <p>
+	 * The check fails closed: it only succeeds for a user that was issued a bootstrap
+	 * password and has not consumed it yet.
+	 *
+	 * @param user the user
+	 * @param password the password to validate
+	 * @return true if the password matches the user's issued bootstrap password
+	 * @since 2.8.11
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@Logging(ignoredArgumentIndexes = { 1 })
+	boolean validateBootstrapPassword(User user, String password);
+
+	/**
+	 * Forces a user to change their password on next login.
+	 *
+	 * This is typically called after a user successfully logs in with a bootstrap password.
+	 * It also consumes any issued bootstrap password, so the used bootstrap credential
+	 * cannot be used again.
+	 * <p>
+	 * Only the two properties of that one user are written, so the caller needs the Edit Users
+	 * privilege and nothing else. No other change to the user is written along with them, and
+	 * the user does not have to pass validation.
+	 *
+	 * @param user the user whose password change should be forced
+	 * @throws APIException if the user is null or has not been saved
+	 * @since 2.8.11
+	 */
+	@Authorized({ PrivilegeConstants.EDIT_USERS })
+	void forcePasswordChange(User user);
+
+	/**
+	 * Checks if a bootstrap password has been issued for a user.
+	 *
+	 * Issuance is tracked in a dedicated user property independent of the general
+	 * force-password flag. The property is set when the bootstrap password is handed out
+	 * and removed when it is consumed, so a bootstrap password only ever validates for an
+	 * account it was issued to.
+	 *
+	 * @param user the user
+	 * @return true if the user has an issued bootstrap password
+	 * @since 2.8.11
+	 */
+	@Authorized({ PrivilegeConstants.GET_USERS })
+	boolean isBootstrapPasswordIssued(User user);
 }
