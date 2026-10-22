@@ -368,7 +368,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 		if (observation != null) {
 			obs.add(observation);
 
-			//Propagate some attributes to the obs and any groupMembers
+			//Propagate some attributes to the obs and its live groupMembers
 
 			// a Deque is a two-ended queue, that lets us add to the end, and fetch from the beginning
 			Deque<Obs> obsToUpdate = new ArrayDeque<>();
@@ -400,12 +400,35 @@ public class Encounter extends BaseChangeableOpenmrsData {
 					o.setLocation(getLocation());
 				}
 
-				//propagate attributes to  all group members as well
+				//propagate attributes to the live group members as well; a voided member keeps its encounter
 				if (o.getGroupMembers(true) != null) {
 					obsToUpdate.addAll(o.getGroupMembers());
 				}
 			}
 
+		}
+	}
+
+	/**
+	 * Add the given Obs, which is already saved, to the list of obs for this Encounter as it is. Unlike
+	 * {@link #addObs(Obs)}, it does not set the obs's encounter or fill in its datetime, person or
+	 * location, so it does not move an obs here from another encounter. {@link #addObs(Obs)} followed
+	 * by saving this encounter moves a live obs here as a new version; a voided obs cannot change its
+	 * encounter.
+	 * <p>
+	 * <strong>Should</strong> add the obs without changing it<br/>
+	 * <strong>Should</strong> not fail with null obs
+	 *
+	 * @param observation the saved Obs to add to this encounter
+	 * @since 3.0.0
+	 */
+	public void addSavedObs(Obs observation) {
+		if (obs == null) {
+			obs = new LinkedHashSet<>();
+		}
+
+		if (observation != null) {
+			obs.add(observation);
 		}
 	}
 

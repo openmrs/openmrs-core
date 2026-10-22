@@ -60,6 +60,18 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> cascade encounter datetime to obs<br/>
 	 * <strong>Should</strong> only cascade the obsdatetimes to obs with different initial
 	 * obsdatetimes<br/>
+	 * <strong>Should</strong> not change the datetime or location of voided obs<br/>
+	 * <strong>Should</strong> move voided obs with the encounter to its new patient<br/>
+	 * <strong>Should</strong> update the obs of the encounter in the session when a group member is
+	 * edited<br/>
+	 * <strong>Should</strong> leave the voided version of an obs moved in with the encounter it came
+	 * from<br/>
+	 * <strong>Should</strong> move an encounter holding a group moved in with a voided member<br/>
+	 * <strong>Should</strong> keep the voided members of a group moved in from another patient with
+	 * their encounter<br/>
+	 * <strong>Should</strong> reject a voided obs moved in from another encounter<br/>
+	 * <strong>Should</strong> give a new voided obs of another encounter the encounter's patient<br/>
+	 * <strong>Should</strong> leave the obs it holds as they were saved<br/>
 	 * <strong>Should</strong> not overwrite creator if non null<br/>
 	 * <strong>Should</strong> not overwrite dateCreated if non null<br/>
 	 * <strong>Should</strong> not overwrite obs and orders creator or dateCreated<br/>
@@ -226,6 +238,8 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> cascade to orders<br/>
 	 * <strong>Should</strong> throw error with null reason parameter<br/>
 	 * <strong>Should</strong> not void providers<br/>
+	 * <strong>Should</strong> not change the voided obs it holds<br/>
+	 * <strong>Should</strong> not trim the text of an order it voids<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
 	 * encounter
 	 *
@@ -243,6 +257,7 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> cascade unvoid to obs<br/>
 	 * <strong>Should</strong> cascade unvoid to orders<br/>
 	 * <strong>Should</strong> unvoid and unmark all attributes<br/>
+	 * <strong>Should</strong> not change the obs it unvoids<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
 	 * encounter
 	 *
@@ -884,7 +899,8 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> transfer an encounter with observations but not orders to given
 	 * patient<br/>
 	 * <strong>Should</strong> void given encounter<br/>
-	 * <strong>Should</strong> void given encounter visit if given encounter is the only encounter
+	 * <strong>Should</strong> void given encounter visit if given encounter is the only encounter<br/>
+	 * <strong>Should</strong> transfer the copies of voided group members with their group
 	 *
 	 * @param encounter
 	 * @param patient

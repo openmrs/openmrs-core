@@ -2548,6 +2548,133 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A voided obs without an encounter moves to the preferred patient in place, keeps its values, and
+	 * is recorded in the merge log.
+	 *
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveVoidedObsThatHaveNoEncounter() throws Exception {
+		ObsService obsService = Context.getObsService();
+		Obs obs = saveObsWithoutEncounter(patientService.getPatient(7));
+		obsService.voidObs(obs, "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
+
+		Context.clearSession();
+		Obs moved = obsService.getObs(obs.getObsId());
+		assertEquals(999, moved.getPerson().getPersonId());
+		assertTrue(moved.getVoided());
+		assertEquals(70.0, moved.getValueNumeric());
+		assertTrue(isValueInList(moved.getUuid(), audit.getPersonMergeLogData().getMovedIndependentObservations()));
+	}
+
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveVoidedEncountersWithTheirObsAndOrders() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		encounterService.voidEncounter(encounterService.getEncounter(3), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		mergePatientsAsNonSuperUser(patientService.getPatient(999), patientService.getPatient(7));
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter encounter = encounterService.getEncounter(3);
+		assertTrue(encounter.getVoided());
+		assertEquals(999, encounter.getPatient().getPatientId());
+		ObsService obsService = Context.getObsService();
+		for (Integer obsId : new Integer[] { 7, 9 }) {
+			Obs obs = obsService.getObs(obsId);
+			assertEquals(999, obs.getPerson().getPersonId());
+			assertTrue(obs.getVoided());
+		}
+		assertEquals(50.0, obsService.getObs(7).getValueNumeric());
+		assertEquals(150.0, obsService.getObs(9).getValueNumeric());
+		OrderService orderService = Context.getOrderService();
+		for (Integer orderId : new Integer[] { 1, 111 }) {
+			Order order = orderService.getOrder(orderId);
+			assertEquals(999, order.getPatient().getPatientId());
+			assertTrue(order.getVoided());
+		}
+	}
+
+	/**
+	 * A voided member of a group, saved without an encounter of its own, moves to the preferred patient
+	 * with the other obs that have no encounter.
+	 *
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveAVoidedGroupMemberWithoutItsOwnEncounter() throws Exception {
+		ObsService obsService = Context.getObsService();
+		Obs member = obsService.voidObs(
+		    EncounterServiceTest.saveGroupWithAMemberThatHasNoEncounter(Context.getEncounterService().getEncounter(3)),
+		    "testing");
+		Context.flushSession();
+		Context.clearSession();
+		assertNull(obsService.getObs(member.getObsId()).getEncounter());
+
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		// this merge saves a new version of the live group, which needs Add Observations; MERGE_PRIVILEGES
+		// leaves that privilege out, so the merge runs as the super user
+		patientService.mergePatients(patientService.getPatient(999), notPreferred);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs movedMember = obsService.getObs(member.getObsId());
+		assertEquals(999, movedMember.getPerson().getPersonId());
+		assertTrue(movedMember.getVoided());
+	}
+
+	/**
+	 * After the merge, the earlier version of an obs it moved still cannot be moved in place.
+	 *
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldNotLetObsMoveInPlaceAfterTheMerge() throws Exception {
+		ObsService obsService = Context.getObsService();
+		Obs obs = saveObsWithoutEncounter(patientService.getPatient(7));
+		Context.flushSession();
+		Context.clearSession();
+
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		mergePatientsAsNonSuperUser(patientService.getPatient(999), notPreferred);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs earlierVersion = obsService.getObs(obs.getObsId());
+		assertTrue(earlierVersion.getVoided());
+		assertEquals(7, earlierVersion.getPerson().getPersonId());
+		earlierVersion.setPerson(patientService.getPatient(999));
+		assertThrows(UnchangeableObjectException.class, () -> {
+			obsService.saveObs(earlierVersion, "testing");
+			Context.flushSession();
+		});
+	}
+
+	/**
+	 * Saves, through the obs service, an obs of the given patient that has no encounter.
+	 */
+	static Obs saveObsWithoutEncounter(Patient patient) {
+		Obs obs = new Obs(patient, Context.getConceptService().getConcept(5089), new Date(),
+		        Context.getLocationService().getLocation(1));
+		obs.setValueNumeric(70.0);
+		return Context.getObsService().saveObs(obs, null);
+	}
+
+	/**
 	 * @see PatientService#mergePatients(Patient,Patient)
 	 */
 	@Test

@@ -140,19 +140,27 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			Date newDate = encounter.getEncounterDatetime();
 			Location newLocation = encounter.getLocation();
 			for (Obs obs : encounter.getAllFlattenedObs(true)) {
-				// if the date was changed
-				if (OpenmrsUtil.compare(originalDate, newDate) != 0
-				        && OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
-
-					// if the obs datetime is the same as the
-					// original encounter datetime, fix it
-					obs.setObsDatetime(newDate);
-
+				// a saved voided obs moves with this encounter only if it belongs to it, so a voided member of
+				// a group here with another encounter, or with none, keeps its patient
+				if (obs.getVoided() && obs.getObsId() != null && !isInEncounter(obs, encounter)) {
+					continue;
 				}
+				// a voided obs keeps the datetime and location it was voided with
+				if (!obs.getVoided()) {
+					// if the date was changed
+					if (OpenmrsUtil.compare(originalDate, newDate) != 0
+					        && OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
 
-				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)
-				        && obs.getLocation().equals(originalLocation)) {
-					obs.setLocation(newLocation);
+						// if the obs datetime is the same as the
+						// original encounter datetime, fix it
+						obs.setObsDatetime(newDate);
+
+					}
+
+					if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)
+					        && obs.getLocation().equals(originalLocation)) {
+						obs.setLocation(newLocation);
+					}
 				}
 
 				// if the Person in the obs doesn't match the Patient in the
@@ -201,7 +209,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				//with the newly loaded and voided instance, apparently reloading the encounter
 				//didn't do the tick
 				obsToRemove.add(o);
-				obsToAdd.add(os.getObs(o.getId()));
+				Obs replaced = os.getObs(o.getId());
+				// an obs moved here from another encounter leaves its voided version in that encounter
+				if (isInEncounter(replaced, encounter)) {
+					obsToAdd.add(replaced);
+				}
 				obsToAdd.add(newObs);
 			}
 		}
@@ -223,6 +235,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		encounter.getDiagnoses().forEach(Context.getDiagnosisService()::save);
 
 		return encounter;
+	}
+
+	/**
+	 * @return true if the obs's own encounter is the given saved encounter, compared by id so that the
+	 *         obs's encounter is not loaded
+	 */
+	private static boolean isInEncounter(Obs obs, Encounter encounter) {
+		return obs.getEncounter() != null && encounter.getEncounterId().equals(obs.getEncounter().getEncounterId());
 	}
 
 	/**
@@ -293,14 +313,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 
 	/**
-	 * This method will add given Collection of obs and their group members to encounter
+	 * This method will add given Collection of obs and their group members to encounter, as they are,
+	 * since they are already saved
 	 *
 	 * @param obsToAdd Collection of obs that need to be added recursively
 	 * @param encounter the encounter to which the obs will be added
 	 */
 	private void addGivenObsAndTheirGroupMembersToEncounter(Collection<Obs> obsToAdd, Encounter encounter) {
 		for (Obs o : obsToAdd) {
-			encounter.addObs(o);
+			encounter.addSavedObs(o);
 			Set<Obs> groupMembers = o.getGroupMembers(true);
 			if (CollectionUtils.isNotEmpty(groupMembers)) {
 				addGivenObsAndTheirGroupMembersToEncounter(groupMembers, encounter);

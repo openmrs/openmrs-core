@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 
 import org.hibernate.SessionFactory;
@@ -653,6 +654,40 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A voided obs is saved in place, so saving it again does not store its complex data a second time.
+	 *
+	 * @see ObsService#saveObs(Obs, String)
+	 */
+	@Test
+	public void saveObs_shouldNotStoreTheComplexDataOfAVoidedObsAgain() {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		Concept questionConcept = Context.getConceptService().getConcept(8474);
+		Obs obs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+		obs.setComplexData(new ComplexData("nameOfFile.txt", new CharArrayReader("some text".toCharArray())));
+		os.saveObs(obs, null);
+		Integer obsId = obs.getObsId();
+
+		try {
+			os.voidObs(obs, "testing");
+			Context.flushSession();
+			Context.clearSession();
+
+			Obs voided = os.getObs(obsId);
+			assertNotNull(voided.getComplexData());
+			String valueComplex = voided.getValueComplex();
+			os.saveObs(voided, "testing");
+			Context.flushSession();
+			Context.clearSession();
+
+			assertEquals(valueComplex, os.getObs(obsId).getValueComplex());
+		} finally {
+			Context.clearSession();
+			os.purgeObs(os.getObs(obsId));
+		}
+	}
+
+	/**
 	 * @throws IOException
 	 * @see ObsService#saveObs(Obs,String)
 	 */
@@ -827,6 +862,131 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// fetch the obs from the database again
 		obs = Context.getObsService().getObs(7);
 		assertTrue(obs.getVoided());
+	}
+
+	/**
+	 * An obs voided in the save is saved in place, where the obs interceptor checks it like any other
+	 * obs, so voiding it does not let its value change.
+	 *
+	 * @see ObsService#saveObs(Obs, String)
+	 */
+	@Test
+	public void saveObs_shouldNotChangeTheValueOfAnObsInTheSaveThatVoidsIt() {
+		assertChangeIsRejected(obs -> {
+			obs.setVoided(true);
+			obs.setVoidReason("testing");
+			obs.setValueNumeric(99.0);
+		}, obs -> Context.getObsService().saveObs(obs, "testing"));
+	}
+
+	/**
+	 * A voided obs keeps the values it was voided with: a save that edits it is rejected, and unvoiding
+	 * it brings back the original values.
+	 *
+	 * @see ObsService#saveObs(Obs, String)
+	 */
+	@Test
+	public void saveObs_shouldNotChangeTheValueOfAVoidedObs() {
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(7), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		assertChangeIsRejected(obs -> obs.setValueNumeric(99.0), obs -> os.saveObs(obs, "testing"));
+
+		os.unvoidObs(os.getObs(7));
+		Context.flushSession();
+		Context.clearSession();
+		Obs unvoided = os.getObs(7);
+		assertFalse(unvoided.getVoided());
+		assertEquals(50.0, unvoided.getValueNumeric());
+	}
+
+	/**
+	 * Outside a patient merge, a voided obs without an encounter cannot be moved to another person.
+	 *
+	 * @see ObsService#saveObs(Obs, String)
+	 */
+	@Test
+	public void saveObs_shouldNotMoveAVoidedObsWithoutAnEncounterToAnotherPerson() {
+		ObsService os = Context.getObsService();
+		Obs obs = PatientServiceTest.saveObsWithoutEncounter(Context.getPatientService().getPatient(7));
+		os.voidObs(obs, "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs voided = os.getObs(obs.getObsId());
+		voided.setPerson(Context.getPatientService().getPatient(2));
+		assertThrows(UnchangeableObjectException.class, () -> {
+			os.saveObs(voided, "testing");
+			Context.flushSession();
+		});
+
+		Context.clearSession();
+		assertEquals(7, os.getObs(obs.getObsId()).getPerson().getPersonId());
+	}
+
+	/**
+	 * The new voided members of a new group, at any depth, are saved with the group's encounter and
+	 * person, as the copies of a copied group's voided members are.
+	 *
+	 * @see ObsService#saveObs(Obs, String)
+	 */
+	@Test
+	public void saveObs_shouldSaveTheNewVoidedMembersOfANewGroupWithTheGroupsEncounterAndPerson() {
+		ObsService os = Context.getObsService();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Concept grouping = Context.getConceptService().getConcept(23);
+		Obs group = new Obs(encounter.getPatient(), grouping, encounter.getEncounterDatetime(), encounter.getLocation());
+		group.setEncounter(encounter);
+		Obs subgroup = new Obs(encounter.getPatient(), grouping, encounter.getEncounterDatetime(), encounter.getLocation());
+		subgroup.setEncounter(encounter);
+		subgroup.setVoided(true);
+		subgroup.setVoidReason("testing");
+		group.addGroupMember(subgroup);
+		Encounter other = Context.getEncounterService().getEncounter(6);
+		Obs member = new Obs(other.getPatient(), Context.getConceptService().getConcept(5089),
+		        encounter.getEncounterDatetime(), encounter.getLocation());
+		member.setEncounter(other);
+		member.setValueNumeric(70.0);
+		member.setVoided(true);
+		member.setVoidReason("testing");
+		subgroup.addGroupMember(member);
+
+		os.saveObs(group, null);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs stored = os.getObs(member.getObsId());
+		assertTrue(stored.getVoided());
+		assertEquals(3, stored.getEncounter().getEncounterId());
+		assertEquals(7, stored.getPerson().getPersonId());
+	}
+
+	/**
+	 * A voided obs can have a person other than its encounter's patient, as the earlier versions an
+	 * encounter's move to another patient leaves behind do. Unvoiding one does not move it to its
+	 * encounter's patient in place.
+	 *
+	 * @see ObsService#unvoidObs(Obs)
+	 */
+	@Test
+	public void unvoidObs_shouldRejectAnObsWhosePersonIsNotItsEncountersPatient() {
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(7), "testing");
+		Context.flushSession();
+		Context.getAdministrationService().executeSQL("update obs set person_id = 2 where obs_id = 7", false);
+		Context.clearSession();
+
+		assertThrows(UnchangeableObjectException.class, () -> {
+			os.unvoidObs(os.getObs(7));
+			Context.flushSession();
+		});
+
+		Context.clearSession();
+		Obs stored = os.getObs(7);
+		assertTrue(stored.getVoided());
+		assertEquals(2, stored.getPerson().getPersonId());
 	}
 
 	/**
@@ -2174,6 +2334,34 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obsService.voidObs(obs, "testing void function");
 
 		assertTrue(obs.getVoided());
+	}
+
+	/**
+	 * @see ObsService#voidObs(Obs,String)
+	 */
+	@Test
+	public void voidObs_shouldRejectAnObsWithOtherChanges() {
+		assertChangeIsRejected(obs -> obs.setValueNumeric(99.0), obs -> Context.getObsService().voidObs(obs, "testing"));
+	}
+
+	/**
+	 * Applies the change to obs 7, saves it through the given call and asserts that the flush rejects
+	 * it and the stored obs keeps its voided flag and its value.
+	 */
+	private void assertChangeIsRejected(Consumer<Obs> change, Consumer<Obs> save) {
+		ObsService os = Context.getObsService();
+		Obs obs = os.getObs(7);
+		boolean voided = obs.getVoided();
+		change.accept(obs);
+		assertThrows(UnchangeableObjectException.class, () -> {
+			save.accept(obs);
+			Context.flushSession();
+		});
+
+		Context.clearSession();
+		Obs stored = os.getObs(7);
+		assertEquals(voided, stored.getVoided());
+		assertEquals(50.0, stored.getValueNumeric());
 	}
 
 	/**

@@ -10,12 +10,16 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
+import org.openmrs.Encounter;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.Retireable;
 import org.openmrs.Voidable;
 import org.openmrs.api.UnchangeableObjectException;
@@ -36,6 +40,9 @@ import org.slf4j.LoggerFactory;
 public abstract class ImmutableEntityInterceptor implements Interceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
+
+	// Holds the patient merge running on a thread, see setPatientMergeForThread
+	private static final ThreadLocal<PatientMerge> patientMerge = new ThreadLocal<>();
 
 	// This thread local enables storing additional mutable properties to allow for a given thread
 	private final ThreadLocal<String[]> additionalMutableProperties = new ThreadLocal<>();
@@ -58,9 +65,25 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	/**
 	 * Subclasses can override this to specify whether voided or retired items are mutable
 	 *
-	 * @return true if voided or retired objects are mutable otherwise false means they are immutable
+	 * @return true if objects that are voided or retired in the database are mutable otherwise false
+	 *         means they are immutable
 	 */
 	protected boolean ignoreVoidedOrRetiredObjects() {
+		return false;
+	}
+
+	/**
+	 * Subclasses can override this to allow a change to a property that is not in
+	 * {@link #getMutablePropertyNames()}. It is only called for a property whose value has changed.
+	 *
+	 * @param entity the entity being flushed
+	 * @param property the name of the changed property
+	 * @param previousValue the value in the database
+	 * @param currentValue the value about to be written
+	 * @return true if the change is allowed
+	 * @since 3.0.0
+	 */
+	protected boolean isAllowedChange(Object entity, String property, Object previousValue, Object currentValue) {
 		return false;
 	}
 
@@ -68,15 +91,27 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	 * <p>
 	 * <strong>Should</strong> fail if an entity has a changed property<br/>
 	 * <strong>Should</strong> pass if an entity has changes for an allowed mutable property<br/>
-	 * <strong>Should</strong> pass if the edited object is voided or retired and ignore is set to
+	 * <strong>Should</strong> pass if the edited object is voided in the database and ignore is set to
 	 * true<br/>
-	 * <strong>Should</strong> fail if the edited object is voided or retired and ignore is set to false
+	 * <strong>Should</strong> pass if the edited object is retired in the database and ignore is set to
+	 * true<br/>
+	 * <strong>Should</strong> fail if the edited object is voided in the same flush and ignore is set
+	 * to true<br/>
+	 * <strong>Should</strong> fail if the edited object is voided in the database and ignore is set to
+	 * false<br/>
+	 * <strong>Should</strong> pass if a date differs only below a second<br/>
+	 * <strong>Should</strong> pass if a date before 1970 differs only below a second<br/>
+	 * <strong>Should</strong> fail if a date falls in another second
 	 */
 	@Override
 	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) {
 
 		if (getSupportedType().isAssignableFrom(entity.getClass())) {
+			if (ignoreVoidedOrRetiredObjects() && isVoidedOrRetiredInDatabase(entity, previousState, propertyNames)) {
+				return false;
+			}
+
 			List<String> changedProperties = null;
 			for (int i = 0; i < propertyNames.length; i++) {
 				String property = propertyNames[i];
@@ -84,19 +119,10 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 					continue;
 				}
 
-				boolean isVoidedOrRetired = false;
-				if (Voidable.class.isAssignableFrom(entity.getClass())) {
-					isVoidedOrRetired = ((Voidable) entity).getVoided();
-				} else if (Retireable.class.isAssignableFrom(entity.getClass())) {
-					isVoidedOrRetired = ((Retireable) entity).getRetired();
-				}
-				if (isVoidedOrRetired && ignoreVoidedOrRetiredObjects()) {
-					continue;
-				}
-
 				Object previousValue = (previousState != null) ? previousState[i] : null;
 				Object currentValue = (currentState != null) ? currentState[i] : null;
-				if (!OpenmrsUtil.nullSafeEquals(currentValue, previousValue)) {
+				if (!isSameValue(currentValue, previousValue)
+				        && !isAllowedChange(entity, property, previousValue, currentValue)) {
 					if (changedProperties == null) {
 						changedProperties = new ArrayList<>();
 					}
@@ -112,6 +138,39 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Reads the voided or retired flag from the state in the database, not from the entity, whose flag
+	 * may have been set in the same flush.
+	 */
+	private boolean isVoidedOrRetiredInDatabase(Object entity, Object[] previousState, String[] propertyNames) {
+		String flag;
+		if (entity instanceof Voidable) {
+			flag = "voided";
+		} else if (entity instanceof Retireable) {
+			flag = "retired";
+		} else {
+			return false;
+		}
+		int index = ArrayUtils.indexOf(propertyNames, flag);
+		return previousState != null && index >= 0 && Boolean.TRUE.equals(previousState[index]);
+	}
+
+	/**
+	 * Compares dates to the second, because {@link DropMillisecondsHibernateInterceptor} drops the
+	 * milliseconds of the dates it is about to write before this interceptor runs.
+	 */
+	private static boolean isSameValue(Object currentValue, Object previousValue) {
+		// an unchanged lazy association is the same proxy in both states, and equals would load it
+		if (currentValue == previousValue) {
+			return true;
+		}
+		if (currentValue instanceof Date && previousValue instanceof Date) {
+			return Math.floorDiv(((Date) currentValue).getTime(), 1000L) == Math.floorDiv(((Date) previousValue).getTime(),
+			    1000L);
+		}
+		return OpenmrsUtil.nullSafeEquals(currentValue, previousValue);
 	}
 
 	/**
@@ -148,5 +207,62 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	 */
 	public void removeMutablePropertiesForThread() {
 		additionalMutableProperties.remove();
+	}
+
+	/**
+	 * Lets a voided obs, or an order, move in place from {@code notPreferred} to {@code preferred}
+	 * while a patient merge runs on the current thread. A move is checked when the session is flushed,
+	 * so the caller must flush the session before it invokes {@link #removePatientMergeForThread()},
+	 * which it must do in a finally block.
+	 * <p>
+	 * <strong>Should</strong> let a voided obs move in a patient merge only from the non preferred to
+	 * the preferred patient
+	 *
+	 * @param preferred the patient the records move to
+	 * @param notPreferred the patient being merged away
+	 * @since 3.0.0
+	 */
+	public static void setPatientMergeForThread(Patient preferred, Patient notPreferred) {
+		patientMerge.set(new PatientMerge(notPreferred.getPatientId(), preferred.getPatientId()));
+	}
+
+	/**
+	 * Ends the patient merge started by {@link #setPatientMergeForThread(Patient, Patient)}.
+	 *
+	 * @since 3.0.0
+	 */
+	public static void removePatientMergeForThread() {
+		patientMerge.remove();
+	}
+
+	/**
+	 * @param encounter the encounter the changed entity belongs to, or null
+	 * @param previousPersonId the id of the person the entity belongs to in the database
+	 * @param currentPersonId the id of the person the entity is about to belong to
+	 * @return true if the entity moves to its encounter's patient, or from the non-preferred to the
+	 *         preferred patient of the patient merge running on this thread
+	 */
+	static boolean isAllowedPersonChange(Encounter encounter, Integer previousPersonId, Integer currentPersonId) {
+		if (currentPersonId == null) {
+			return false;
+		}
+		if (encounter != null && encounter.getPatient() != null
+		        && currentPersonId.equals(encounter.getPatient().getPatientId())) {
+			return true;
+		}
+		PatientMerge merge = patientMerge.get();
+		return merge != null && merge.notPreferredId().equals(previousPersonId)
+		        && merge.preferredId().equals(currentPersonId);
+	}
+
+	/**
+	 * @param personOrId a {@link Person}, a person id, or null
+	 * @return the person id
+	 */
+	static Integer toPersonId(Object personOrId) {
+		return personOrId instanceof Person ? ((Person) personOrId).getPersonId() : (Integer) personOrId;
+	}
+
+	private record PatientMerge(Integer notPreferredId, Integer preferredId) {
 	}
 }

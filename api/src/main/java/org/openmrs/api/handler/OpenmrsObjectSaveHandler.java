@@ -16,6 +16,7 @@ import java.util.Date;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Order;
 import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.AllowEmptyStrings;
@@ -53,6 +54,8 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 	 * <strong>Should</strong> not trim empty strings for AllowLeadingOrTrailingWhitespace
 	 * annotation<br/>
 	 * <strong>Should</strong> trim strings without AllowLeadingOrTrailingWhitespace annotation<br/>
+	 * <strong>Should</strong> not trim the strings of a saved order<br/>
+	 * <strong>Should</strong> trim the strings of a new order<br/>
 	 * <strong>Should</strong> trim empty strings for AllowEmptyStrings annotation
 	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
@@ -86,9 +89,10 @@ public class OpenmrsObjectSaveHandler implements SaveHandler<OpenmrsObject> {
 				continue;
 			}
 
-			//We are dealing with only strings
+			//We are dealing with only strings, and leave out an Obs and a saved Order
 			//TODO We shouldn't be doing this for all immutable types and fields
-			if (openmrsObject instanceof Obs || !property.getPropertyType().equals(String.class)) {
+			if (openmrsObject instanceof Obs || (openmrsObject instanceof Order && openmrsObject.getId() != null)
+			        || !property.getPropertyType().equals(String.class)) {
 				continue;
 			}
 
