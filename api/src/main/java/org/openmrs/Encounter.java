@@ -410,29 +410,6 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	}
 
 	/**
-	 * Add the given Obs, which is already saved, to the list of obs for this Encounter as it is. Unlike
-	 * {@link #addObs(Obs)}, it does not set the obs's encounter or fill in its datetime, person or
-	 * location, so it does not move an obs here from another encounter. {@link #addObs(Obs)} followed
-	 * by saving this encounter moves a live obs here as a new version; a voided obs cannot change its
-	 * encounter.
-	 * <p>
-	 * <strong>Should</strong> add the obs without changing it<br/>
-	 * <strong>Should</strong> not fail with null obs
-	 *
-	 * @param observation the saved Obs to add to this encounter
-	 * @since 3.0.0
-	 */
-	public void addSavedObs(Obs observation) {
-		if (obs == null) {
-			obs = new LinkedHashSet<>();
-		}
-
-		if (observation != null) {
-			obs.add(observation);
-		}
-	}
-
-	/**
 	 * Remove the given observation from the list of obs for this Encounter
 	 * <p>
 	 * <strong>Should</strong> remove obs successfully<br/>

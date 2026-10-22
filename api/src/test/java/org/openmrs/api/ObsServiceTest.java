@@ -66,6 +66,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -961,6 +962,34 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertTrue(stored.getVoided());
 		assertEquals(3, stored.getEncounter().getEncounterId());
 		assertEquals(7, stored.getPerson().getPersonId());
+	}
+
+	/**
+	 * A caller can replace a saved member of a group: it voids the member and leaves it in the group,
+	 * adds a new version of the member that names it as its previous version, and saves the group.
+	 *
+	 * @see ObsService#saveObs(Obs, String)
+	 */
+	@Test
+	public void saveObs_shouldSaveAGroupWithAVoidedMemberAndTheNewVersionThatReplacesIt() {
+		ObsService os = Context.getObsService();
+		Obs group = os.getObs(saveGroupWithOneMember());
+		Obs member = group.getGroupMembers().iterator().next();
+		Obs newVersion = replaceMember(group, member);
+
+		os.saveObs(group, "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs storedMember = os.getObs(member.getObsId());
+		assertTrue(storedMember.getVoided());
+		assertEquals(70.0, storedMember.getValueNumeric());
+		assertEquals(group.getObsId(), storedMember.getObsGroup().getObsId());
+		Obs storedNewVersion = os.getObs(newVersion.getObsId());
+		assertFalse(storedNewVersion.getVoided());
+		assertEquals(71.0, storedNewVersion.getValueNumeric());
+		assertEquals(member.getObsId(), storedNewVersion.getPreviousVersion().getObsId());
+		assertEquals(group.getObsId(), storedNewVersion.getObsGroup().getObsId());
 	}
 
 	/**
@@ -2345,6 +2374,32 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * Taking a member out of its group changes the member's group, so doing that in the flush that
+	 * voids the member is rejected, and the member stays live in its group.
+	 *
+	 * @see ObsService#voidObs(Obs, String)
+	 */
+	@Test
+	public void voidObs_shouldRejectAMemberTakenOutOfItsGroup() {
+		ObsService os = Context.getObsService();
+		Obs group = os.getObs(saveGroupWithOneMember());
+		Obs member = group.getGroupMembers().iterator().next();
+		replaceMember(group, member);
+		group.removeGroupMember(member);
+
+		UnchangeableObjectException exception = assertThrows(UnchangeableObjectException.class, () -> {
+			os.saveObs(group, "testing");
+			Context.flushSession();
+		});
+		assertThat(exception.getMessage(), containsString("[obsGroup]"));
+
+		Context.clearSession();
+		Obs stored = os.getObs(member.getObsId());
+		assertFalse(stored.getVoided());
+		assertEquals(group.getObsId(), stored.getObsGroup().getObsId());
+	}
+
+	/**
 	 * Applies the change to obs 7, saves it through the given call and asserts that the flush rejects
 	 * it and the stored obs keeps its voided flag and its value.
 	 */
@@ -2362,6 +2417,42 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Obs stored = os.getObs(7);
 		assertEquals(voided, stored.getVoided());
 		assertEquals(50.0, stored.getValueNumeric());
+	}
+
+	/**
+	 * Saves a group on encounter 3 with one member whose value is 70, and clears the session.
+	 *
+	 * @return the id of the group
+	 */
+	private static Integer saveGroupWithOneMember() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Obs group = new Obs(encounter.getPatient(), Context.getConceptService().getConcept(23),
+		        encounter.getEncounterDatetime(), encounter.getLocation());
+		group.setEncounter(encounter);
+		Obs member = new Obs(encounter.getPatient(), Context.getConceptService().getConcept(5089),
+		        encounter.getEncounterDatetime(), encounter.getLocation());
+		member.setEncounter(encounter);
+		member.setValueNumeric(70.0);
+		group.addGroupMember(member);
+		Context.getObsService().saveObs(group, null);
+		Context.flushSession();
+		Context.clearSession();
+		return group.getObsId();
+	}
+
+	/**
+	 * Voids the given member of the given group, leaving it in the group, and adds to the group a new
+	 * version of the member with the value 71 that names the member as its previous version.
+	 *
+	 * @return the new version
+	 */
+	private static Obs replaceMember(Obs group, Obs member) {
+		Obs newVersion = Obs.newInstance(member);
+		newVersion.setPreviousVersion(member);
+		Context.getObsService().voidObs(member, "testing");
+		group.addGroupMember(newVersion);
+		newVersion.setValueNumeric(71.0);
+		return newVersion;
 	}
 
 	/**

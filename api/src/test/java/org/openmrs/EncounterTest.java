@@ -801,37 +801,6 @@ public class EncounterTest extends BaseContextMockTest {
 	}
 
 	/**
-	 * @see Encounter#addSavedObs(Obs)
-	 */
-	@Test
-	public void addSavedObs_shouldAddTheObsWithoutChangingIt() {
-		Encounter encounter = new Encounter();
-		encounter.setEncounterDatetime(new Date());
-		encounter.setLocation(new Location(1));
-		encounter.setPatient(new Patient(1));
-		Obs obs = new Obs(123);
-
-		encounter.addSavedObs(obs);
-
-		assertEquals(1, encounter.getAllObs(true).size());
-		assertTrue(encounter.getAllObs(true).contains(obs));
-		assertNull(obs.getEncounter());
-		assertNull(obs.getObsDatetime());
-		assertNull(obs.getLocation());
-		assertNull(obs.getPerson());
-	}
-
-	/**
-	 * @see Encounter#addSavedObs(Obs)
-	 */
-	@Test
-	public void addSavedObs_shouldNotFailWithNullObs() {
-		Encounter encounter = new Encounter();
-		encounter.addSavedObs(null);
-		assertEquals(0, encounter.getAllObs(true).size());
-	}
-
-	/**
 	 * @see Encounter#addObs(Obs)
 	 */
 	@Test

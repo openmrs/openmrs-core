@@ -314,14 +314,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 	/**
 	 * This method will add given Collection of obs and their group members to encounter, as they are,
-	 * since they are already saved
+	 * since they are already saved. They go into the set getAllObs(true) returns, which is the
+	 * encounter's own set whenever that is not null, and saveEncounter only has obs to add after
+	 * finding obs in it. Encounter#addObs would also set their encounter and fill in a missing
+	 * datetime, person or location.
 	 *
 	 * @param obsToAdd Collection of obs that need to be added recursively
 	 * @param encounter the encounter to which the obs will be added
 	 */
 	private void addGivenObsAndTheirGroupMembersToEncounter(Collection<Obs> obsToAdd, Encounter encounter) {
 		for (Obs o : obsToAdd) {
-			encounter.addSavedObs(o);
+			encounter.getAllObs(true).add(o);
 			Set<Obs> groupMembers = o.getGroupMembers(true);
 			if (CollectionUtils.isNotEmpty(groupMembers)) {
 				addGivenObsAndTheirGroupMembersToEncounter(groupMembers, encounter);

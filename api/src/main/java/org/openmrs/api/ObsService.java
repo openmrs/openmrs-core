@@ -139,7 +139,8 @@ public interface ObsService extends OpenmrsService {
 	 * <strong>Should</strong> not move a voided obs without an encounter to another person<br/>
 	 * <strong>Should</strong> save the new voided members of a new group with the group's encounter and
 	 * person<br/>
-	 * <strong>Should</strong> not store the complex data of a voided obs again
+	 * <strong>Should</strong> not store the complex data of a voided obs again<br/>
+	 * <strong>Should</strong> save a group with a voided member and the new version that replaces it
 	 *
 	 * @param obs the Obs to save to the database
 	 * @param changeMessage String explaining why <code>obs</code> is being changed. If <code>obs</code>
@@ -160,7 +161,8 @@ public interface ObsService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> set voided bit on given obs<br/>
 	 * <strong>Should</strong> fail if reason parameter is empty<br/>
-	 * <strong>Should</strong> reject an obs with other changes
+	 * <strong>Should</strong> reject an obs with other changes<br/>
+	 * <strong>Should</strong> reject a member taken out of its group
 	 *
 	 * @param obs Obs to void
 	 * @param reason String reason it's being voided
