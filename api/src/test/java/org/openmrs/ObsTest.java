@@ -600,6 +600,21 @@ public class ObsTest {
 	}
 
 	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfTimeHasTrailingCharactersIfTypeIsTM() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("13:45garbage"));
+	}
+
+	/**
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test
