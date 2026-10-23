@@ -2659,6 +2659,22 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see EncounterService#canEditEncounter(Encounter, User)
+	 */
+	@Test
+	public void canEditEncounter_shouldReturnFalseIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		// get encounter whose saved type has an edit privilege, changed in memory to a type without one
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left user as is - i.e. without required privilege
+
+		assertFalse(Context.getEncounterService().canEditEncounter(encounter, user));
+	}
+
+	/**
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
@@ -2947,7 +2963,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 	}
 
 	/**
