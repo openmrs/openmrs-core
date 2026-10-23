@@ -2702,6 +2702,75 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(originalRange.getLowNormal(), newRange.getLowNormal());
 	}
 
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldFailAndLeavePatientUnchangedWhenCriteriaCallsASetter() {
+		setReferenceRangeCriteriaForConcept4089("$patient.setDead(true) || true");
+		Obs obs = buildObservation();
+
+		assertThrows(APIException.class, () -> obsService.saveObs(obs, null));
+
+		Context.flushSession();
+		Context.clearSession();
+		Patient patient = Context.getPatientService().getPatient(2);
+		assertFalse(patient.getDead());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldFailAndLeaveRolesUnchangedWhenCriteriaMutatesEncounterCreatorRoles() {
+		int roleCount = Context.getUserService().getUser(1).getRoles().size();
+		setReferenceRangeCriteriaForConcept4089("$obs.encounter.creator.getRoles().clear() == null");
+		Obs obs = buildObservation();
+
+		assertThrows(APIException.class, () -> obsService.saveObs(obs, null));
+
+		Context.flushSession();
+		Context.clearSession();
+		assertEquals(roleCount, Context.getUserService().getUser(1).getRoles().size());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldFailAndLeaveUserPropertiesUnchangedWhenCriteriaAssignsAMapEntry() {
+		setReferenceRangeCriteriaForConcept4089("$encounter.creator.userProperties['sandbox'] = 'escaped'");
+		Obs obs = buildObservation();
+
+		assertThrows(APIException.class, () -> obsService.saveObs(obs, null));
+
+		Context.flushSession();
+		Context.clearSession();
+		assertFalse(Context.getUserService().getUser(1).getUserProperties().containsKey("sandbox"));
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldApplyReferenceRangeWhoseCriteriaUsesOnlyGettersAndHelpers() {
+		setReferenceRangeCriteriaForConcept4089(
+		    "$patient.getGender() == 'M' && $patient.isDead() == false && $fn.getYears($patient.birthdate) >= 1");
+		Obs obs = buildObservation();
+
+		obsService.saveObs(obs, null);
+
+		assertNotNull(obs.getReferenceRange());
+	}
+
+	private void setReferenceRangeCriteriaForConcept4089(String criteria) {
+		Context.getAdministrationService().executeSQL("UPDATE concept_reference_range SET criteria = '"
+		        + criteria.replace("'", "''") + "' WHERE uuid = 'd8ad3ceb-00a4-4484-a1ff-700f7ac3d10d'",
+		    false);
+		Context.flushSession();
+		Context.clearSession();
+	}
+
 	private Obs buildObservation() {
 		Concept concept = Context.getConceptService().getConcept(4089);
 		Patient patient = Context.getPatientService().getPatient(2);

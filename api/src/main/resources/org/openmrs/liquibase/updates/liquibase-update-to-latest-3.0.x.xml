@@ -155,5 +155,12 @@
 		</update>
 	</changeSet>
 
-</databaseChangeLog>
+	<changeSet id="20261015-check-concept-reference-range-criteria" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_range</sqlCheck></not>
+		</preConditions>
+		<comment>Report concept reference range criteria that can no longer be evaluated because they call methods the criteria sandbox refuses</comment>
+		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
+	</changeSet>
 
+</databaseChangeLog>
