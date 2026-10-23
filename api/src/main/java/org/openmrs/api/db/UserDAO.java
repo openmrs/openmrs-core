@@ -82,6 +82,17 @@ public interface UserDAO {
 	 */
 	public List<Role> getAllRoles() throws DAOException;
 
+	/**
+	 * Returns the role names stored in the database matching the given role name according to database
+	 * collation.
+	 *
+	 * @param role the role name to search for
+	 * @return list of matching role names as stored in the database
+	 * @throws DAOException
+	 * @since 3.0.0
+	 */
+	public List<String> getStoredRoleNames(String role) throws DAOException;
+
 	// Privilege stuff
 
 	/**
@@ -98,6 +109,17 @@ public interface UserDAO {
 	 * @see org.openmrs.api.UserService#getAllPrivileges()
 	 */
 	public List<Privilege> getAllPrivileges() throws DAOException;
+
+	/**
+	 * Returns the privilege names stored in the database matching the given privilege name according to
+	 * database collation.
+	 *
+	 * @param privilege the privilege name to search for
+	 * @return list of matching privilege names as stored in the database
+	 * @throws DAOException
+	 * @since 3.0.0
+	 */
+	public List<String> getStoredPrivilegeNames(String privilege) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
