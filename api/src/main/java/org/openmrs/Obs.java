@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -1132,10 +1133,24 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					setValueNumeric(Double.valueOf(s));
 				} else if ("DT".equals(abbrev)) {
 					DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-					setValueDatetime(dateFormat.parse(s));
+					dateFormat.setLenient(false);
+					// ParsePosition tracks how much of the string was consumed, so trailing characters
+					// are rejected instead of ignored, and its index locates the failure in the exception.
+					ParsePosition position = new ParsePosition(0);
+					Date parsedDate = dateFormat.parse(s, position);
+					if (parsedDate == null || position.getIndex() != s.length()) {
+						throw new ParseException("Unable to parse date: " + s, position.getIndex());
+					}
+					setValueDatetime(parsedDate);
 				} else if ("TM".equals(abbrev)) {
 					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
-					setValueDatetime(timeFormat.parse(s));
+					timeFormat.setLenient(false);
+					ParsePosition position = new ParsePosition(0);
+					Date parsedTime = timeFormat.parse(s, position);
+					if (parsedTime == null || position.getIndex() != s.length()) {
+						throw new ParseException("Unable to parse time: " + s, position.getIndex());
+					}
+					setValueDatetime(parsedTime);
 				} else if ("TS".equals(abbrev)) {
 					setValueDatetime(DateUtil.parseDatetimeString(s));
 				} else {
