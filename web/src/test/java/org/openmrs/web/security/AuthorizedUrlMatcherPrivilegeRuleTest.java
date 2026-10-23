@@ -16,7 +16,6 @@ import java.util.Locale;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -24,6 +23,7 @@ import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.context.UserContextTestUtil;
 import org.openmrs.security.PrivilegeNamingAuthorizationManager;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.cache.Cache;
@@ -136,8 +136,7 @@ public class AuthorizedUrlMatcherPrivilegeRuleTest extends BaseWebContextSensiti
 		// privilege is matched exactly.
 		Cache cache = Context.getRegisteredComponent("apiCacheManager", CacheManager.class)
 		        .getCache(RolePrivilegeCache.CACHE_NAME);
-		cache.put(RolePrivileges.normalize(ROLE),
-		    new RolePrivileges(Collections.singleton(UNREGISTERED.toUpperCase()), false));
+		cache.put(ROLE, new RolePrivileges(Collections.singleton(UNREGISTERED.toUpperCase()), false));
 		try {
 			runAs(userWithRoles(ROLE),
 			    () -> assertTrue(decide(AuthorizedUrlMatcher.requestMatchers("/admin/**").hasAuthority(UNREGISTERED))));
@@ -288,14 +287,14 @@ public class AuthorizedUrlMatcherPrivilegeRuleTest extends BaseWebContextSensiti
 		return user;
 	}
 
-	private void runAs(User user, Runnable action) throws IllegalAccessException {
+	private void runAs(User user, Runnable action) {
 		UserContext userContext = Context.getUserContext();
 		User previous = userContext.getAuthenticatedUser();
 		try {
-			FieldUtils.getField(UserContext.class, "user", true).set(userContext, user);
+			UserContextTestUtil.setAuthenticatedUser(userContext, user);
 			action.run();
 		} finally {
-			FieldUtils.getField(UserContext.class, "user", true).set(userContext, previous);
+			UserContextTestUtil.setAuthenticatedUser(userContext, previous);
 		}
 	}
 }

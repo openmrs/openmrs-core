@@ -9,11 +9,12 @@
  */
 package org.openmrs.api.cache;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.openmrs.Privilege;
-import org.openmrs.Role;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.util.RoleConstants;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,13 +26,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class RolePrivilegeCacheTest {
 
-	@Test
-	public void computeRolePrivileges_shouldCollectDirectPrivileges() {
-		Role role = new Role("Clerk");
-		role.addPrivilege(new Privilege("View Patients"));
-		role.addPrivilege(new Privilege("Edit Patients"));
+	private final Map<String, StoredRole> stored = new HashMap<>();
 
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(role);
+	private void store(String name, Set<String> privileges, Set<String> parents) {
+		stored.put(name, new StoredRole(name, privileges, parents));
+	}
+
+	private RolePrivileges resolve(String roleName) {
+		return RolePrivilegeCache.resolve(roleName, stored::get);
+	}
+
+	@Test
+	public void resolve_shouldCollectDirectPrivileges() {
+		store("Clerk", Set.of("View Patients", "Edit Patients"), Set.of());
+
+		RolePrivileges result = resolve("Clerk");
 
 		assertTrue(result.containsPrivilege("View Patients"));
 		assertTrue(result.containsPrivilege("Edit Patients"));
@@ -40,82 +49,61 @@ public class RolePrivilegeCacheTest {
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldMatchPrivilegesCaseInsensitively() {
-		Role role = new Role("Clerk");
-		role.addPrivilege(new Privilege("View Patients"));
+	public void resolve_shouldMatchPrivilegesCaseInsensitively() {
+		store("Clerk", Set.of("View Patients"), Set.of());
 
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(role);
+		RolePrivileges result = resolve("Clerk");
 
 		assertTrue(result.containsPrivilege("VIEW PATIENTS"));
 		assertTrue(result.containsPrivilege("view patients"));
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldIncludeInheritedPrivileges() {
-		Role parent = new Role("Parent");
-		parent.addPrivilege(new Privilege("Parent Privilege"));
+	public void resolve_shouldIncludeInheritedPrivileges() {
+		store("Parent", Set.of("Parent Privilege"), Set.of());
+		store("Child", Set.of("Child Privilege"), Set.of("Parent"));
 
-		Role child = new Role("Child");
-		child.addPrivilege(new Privilege("Child Privilege"));
-		child.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(parent)));
-
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(child);
+		RolePrivileges result = resolve("Child");
 
 		assertTrue(result.containsPrivilege("Child Privilege"));
 		assertTrue(result.containsPrivilege("Parent Privilege"));
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldFlattenMultipleLevelsOfInheritance() {
-		Role grandparent = new Role("Grandparent");
-		grandparent.addPrivilege(new Privilege("Grandparent Privilege"));
+	public void resolve_shouldFlattenMultipleLevelsOfInheritance() {
+		store("Grandparent", Set.of("Grandparent Privilege"), Set.of());
+		store("Parent", Set.of("Parent Privilege"), Set.of("Grandparent"));
+		store("Child", Set.of(), Set.of("Parent"));
 
-		Role parent = new Role("Parent");
-		parent.addPrivilege(new Privilege("Parent Privilege"));
-		parent.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(grandparent)));
-
-		Role child = new Role("Child");
-		child.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(parent)));
-
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(child);
+		RolePrivileges result = resolve("Child");
 
 		assertTrue(result.containsPrivilege("Grandparent Privilege"));
 		assertTrue(result.containsPrivilege("Parent Privilege"));
+		assertTrue(result.includesRole("Grandparent"));
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldGrantSuperuserWhenRoleIsSuperuser() {
-		Role role = new Role(RoleConstants.SUPERUSER);
+	public void resolve_shouldGrantSuperuserWhenRoleIsSuperuser() {
+		store(RoleConstants.SUPERUSER, Set.of(), Set.of());
 
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(role);
-
-		assertTrue(result.grantsSuperuser());
+		assertTrue(resolve(RoleConstants.SUPERUSER).grantsSuperuser());
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldInheritSuperuserStatus() {
-		Role superuser = new Role(RoleConstants.SUPERUSER);
+	public void resolve_shouldInheritSuperuserStatus() {
+		store(RoleConstants.SUPERUSER, Set.of(), Set.of());
+		store("Delegated Admin", Set.of(), Set.of(RoleConstants.SUPERUSER));
 
-		Role role = new Role("Delegated Admin");
-		role.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(superuser)));
-
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(role);
-
-		assertTrue(result.grantsSuperuser());
+		assertTrue(resolve("Delegated Admin").grantsSuperuser());
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldTerminateOnInheritanceCycle() {
-		Role a = new Role("A");
-		a.addPrivilege(new Privilege("Privilege A"));
-		Role b = new Role("B");
-		b.addPrivilege(new Privilege("Privilege B"));
-
+	public void resolve_shouldTerminateOnInheritanceCycle() {
 		// A inherits B and B inherits A, forming a cycle
-		a.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(b)));
-		b.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(a)));
+		store("A", Set.of("Privilege A"), Set.of("B"));
+		store("B", Set.of("Privilege B"), Set.of("A"));
 
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(a);
+		RolePrivileges result = resolve("A");
 
 		assertTrue(result.containsPrivilege("Privilege A"));
 		assertTrue(result.containsPrivilege("Privilege B"));
@@ -123,13 +111,18 @@ public class RolePrivilegeCacheTest {
 	}
 
 	@Test
-	public void computeRolePrivileges_shouldTerminateWhenRoleInheritsItself() {
-		Role role = new Role("Self");
-		role.addPrivilege(new Privilege("Self Privilege"));
-		role.setInheritedRoles(new HashSet<>(java.util.Collections.singletonList(role)));
+	public void resolve_shouldTerminateWhenRoleInheritsItself() {
+		store("Self", Set.of("Self Privilege"), Set.of("Self"));
 
-		RolePrivileges result = RolePrivilegeCache.computeRolePrivileges(role);
+		assertTrue(resolve("Self").containsPrivilege("Self Privilege"));
+	}
 
-		assertTrue(result.containsPrivilege("Self Privilege"));
+	@Test
+	public void resolve_shouldGrantNothingForARoleThatIsNotStored() {
+		RolePrivileges result = resolve("Missing");
+
+		assertFalse(result.containsPrivilege("View Patients"));
+		assertFalse(result.grantsSuperuser());
+		assertFalse(result.includesRole("Missing"));
 	}
 }
