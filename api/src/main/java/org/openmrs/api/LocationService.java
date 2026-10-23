@@ -202,7 +202,6 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.10
 	 */
 	@PreAuthorize("hasPermission(#parent, '" + PrivilegeConstants.GET_LOCATIONS + "')")
-	//TODO: DAO auth filter
 	public List<Location> getLocations(String nameFragment, Location parent,
 	        Map<LocationAttributeType, Object> attributeValues, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
@@ -446,7 +445,6 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
-	//TODO: DAO auth filter
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 
 	/**
@@ -477,7 +475,6 @@ public interface LocationService extends OpenmrsService {
 	 * @since 2.8.7
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
-	//TODO: DAO auth filter
 	List<Location> getLocations(LocationSearchCriteria criteria);
 
 	/**
