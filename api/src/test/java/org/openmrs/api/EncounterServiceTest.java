@@ -1885,6 +1885,56 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see EncounterService#getAllEncounters(Cohort)
+	 */
+	@Test
+	public void getAllEncounters_shouldNotReturnEncountersTheUserIsNotAllowedToView() {
+		// sets a view privilege on encounter type 1; patient 7 has two encounters of that type and one of type 2
+		getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getAllEncounters(Cohort) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		Cohort cohort = new Cohort();
+		cohort.addMember(7);
+		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
+
+		assertEquals(List.of(3), allEncounters.get(7).stream().map(Encounter::getId).toList());
+	}
+
+	/**
+	 * @see EncounterService#getAllEncounters(Cohort)
+	 */
+	@Test
+	public void getAllEncounters_shouldNotReturnAPatientWhoseEncountersTheUserIsNotAllowedToView() {
+		// sets a view privilege on encounter type 1; every encounter of patient 3 is of that type
+		getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getAllEncounters(Cohort) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		Cohort cohort = new Cohort();
+		cohort.addMember(3);
+		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
+
+		assertFalse(allEncounters.containsKey(3));
+	}
+
+	/**
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
 	 *      boolean)

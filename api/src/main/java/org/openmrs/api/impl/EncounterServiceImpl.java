@@ -663,7 +663,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
-		return dao.getAllEncounters(patients);
+		Map<Integer, List<Encounter>> encountersByPatient = dao.getAllEncounters(patients);
+		EncounterService encounterService = Context.getEncounterService();
+		for (List<Encounter> encounters : encountersByPatient.values()) {
+			encounterService.filterEncountersByViewPermissions(encounters, null);
+		}
+		encountersByPatient.values().removeIf(List::isEmpty);
+		return encountersByPatient;
 	}
 
 	/**

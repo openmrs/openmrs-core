@@ -557,7 +557,9 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get all encounters for a cohort of patients
 	 * <p>
-	 * <strong>Should</strong> get all encounters for a cohort of patients
+	 * <strong>Should</strong> get all encounters for a cohort of patients<br/>
+	 * <strong>Should</strong> not return encounters the user is not allowed to view<br/>
+	 * <strong>Should</strong> not return a patient whose encounters the user is not allowed to view
 	 *
 	 * @param patients Cohort of patients to search
 	 * @return Map of all encounters for specified patients.
