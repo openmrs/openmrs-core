@@ -23,6 +23,11 @@
 			</generator>
 		</id>
 
+		<natural-id>
+			<property name="uuid" type="java.lang.String"
+				column="uuid" length="38" unique="true" />
+		</natural-id>
+
 		<many-to-one name="HL7Source" class="org.openmrs.hl7.HL7Source" not-null="true">
 			<column name="hl7_source" />
 		</many-to-one>
@@ -42,7 +47,5 @@
 		<property name="messageState" type="java.lang.Integer" 
 			column="message_state" not-null="false" length="4" />
 		
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
 	</class>
 </hibernate-mapping>

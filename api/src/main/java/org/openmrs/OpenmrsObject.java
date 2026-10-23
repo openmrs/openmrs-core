@@ -32,6 +32,10 @@ public interface OpenmrsObject {
 	public String getUuid();
 
 	/**
+	 * Sets the uuid of this object. The uuid is the natural id of the object and cannot change once the
+	 * object has been saved, so an externally determined uuid (for example, a name-based UUID) must be
+	 * assigned before the object is first saved.
+	 *
 	 * @param uuid a universally unique id for this object
 	 */
 	public void setUuid(String uuid);
