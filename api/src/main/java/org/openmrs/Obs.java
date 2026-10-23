@@ -1134,6 +1134,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 				} else if ("DT".equals(abbrev)) {
 					DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 					dateFormat.setLenient(false);
+					// ParsePosition tracks how much of the string was consumed, so trailing characters
+					// are rejected instead of ignored, and its index locates the failure in the exception.
 					ParsePosition position = new ParsePosition(0);
 					Date parsedDate = dateFormat.parse(s, position);
 					if (parsedDate == null || position.getIndex() != s.length()) {
