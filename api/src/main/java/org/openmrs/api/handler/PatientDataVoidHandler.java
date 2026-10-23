@@ -12,7 +12,6 @@ package org.openmrs.api.handler;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -49,7 +48,7 @@ public class PatientDataVoidHandler implements VoidHandler<Patient> {
 		//void all the encounters associated with this patient
 		EncounterService es = Context.getEncounterService();
 		List<Encounter> encounters = es.getEncountersByPatient(patient);
-		if (CollectionUtils.isNotEmpty(encounters)) {
+		if (encounters != null && !encounters.isEmpty()) {
 			for (Encounter encounter : encounters) {
 				if (!encounter.getVoided()) {
 					// EncounterServiceImpl.voidEncounter and the requiredDataAdvice will set dateVoided to current date

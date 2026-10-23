@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.ListUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -928,7 +927,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		//should have this and the two form fields from the handler
 		assertEquals(initialFormFieldCount += 3, updatedFormFields.size());
 		//get the formfields added by the handler and check their parent
-		List<FormField> childFormFields = ListUtils.subtract(updatedFormFields, originalFormFields);
+		List<FormField> childFormFields = new ArrayList<>(updatedFormFields);
+		childFormFields.removeAll(originalFormFields);
 		childFormFields.remove(formField);//exclude this form field
 		for (FormField ff : childFormFields) {
 			assertEquals(formField, ff.getParent());

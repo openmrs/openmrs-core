@@ -31,7 +31,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -573,7 +572,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				log.warn("Unidentified attribute: " + attribute);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(innerFields) || CollectionUtils.isNotEmpty(whereConditions)) {
+		if (!innerFields.isEmpty() || !whereConditions.isEmpty()) {
 			String innerFieldsJoined = StringUtils.join(innerFields, ", ");
 			String whereFieldsJoined = StringUtils.join(whereConditions, " and ");
 			String innerWhereCondition = "";
