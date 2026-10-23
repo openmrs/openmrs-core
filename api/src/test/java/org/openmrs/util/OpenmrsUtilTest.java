@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -29,6 +30,11 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
@@ -507,6 +513,56 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		sdf.applyPattern("yyyymmdd");
 		assertTrue(!OpenmrsUtil.getDateFormat(locale).toPattern().equals(sdf.toPattern()),
 		    "cached dateFormatCache pattern is modifiable");
+	}
+
+	/**
+	 * @see OpenmrsUtil#getTimeFormat(Locale)
+	 */
+	@Test
+	public void getTimeFormat_shouldNotAllowTheReturnedSimpleDateFormatToBeModified() {
+		Locale locale = new Locale("hk");
+
+		SimpleDateFormat sdf = OpenmrsUtil.getTimeFormat(locale);
+		assertNotSame(OpenmrsUtil.getTimeFormat(locale), sdf);
+
+		String cachedPattern = sdf.toPattern();
+		sdf.applyPattern("HHmmss");
+		assertEquals(cachedPattern, OpenmrsUtil.getTimeFormat(locale).toPattern());
+	}
+
+	/**
+	 * @see OpenmrsUtil#getDateFormat(Locale)
+	 * @see OpenmrsUtil#getTimeFormat(Locale)
+	 */
+	@Test
+	public void getDateFormatAndGetTimeFormat_shouldReturnTheSamePatternsWhenCalledConcurrently() throws Exception {
+		List<Locale> locales = Arrays.asList(Locale.getAvailableLocales()).subList(0,
+		    Math.min(50, Locale.getAvailableLocales().length));
+		int threads = 8;
+		ExecutorService executor = Executors.newFixedThreadPool(threads);
+		CountDownLatch start = new CountDownLatch(1);
+		try {
+			List<Future<List<String>>> results = new ArrayList<>();
+			for (int i = 0; i < threads; i++) {
+				results.add(executor.submit(() -> {
+					start.await();
+					List<String> patterns = new ArrayList<>();
+					for (Locale locale : locales) {
+						patterns.add(OpenmrsUtil.getDateFormat(locale).toPattern() + " "
+						        + OpenmrsUtil.getTimeFormat(locale).toPattern());
+					}
+					return patterns;
+				}));
+			}
+			start.countDown();
+
+			List<String> expected = results.get(0).get(30, TimeUnit.SECONDS);
+			for (Future<List<String>> result : results) {
+				assertEquals(expected, result.get(30, TimeUnit.SECONDS));
+			}
+		} finally {
+			executor.shutdownNow();
+		}
 	}
 
 	@Test
