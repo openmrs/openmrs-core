@@ -37,21 +37,19 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	 */
 	@Override
 	public void execute(Database database) throws CustomChangeException {
-		Connection conn = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
+		Connection conn = database.getConnection().getUnderlyingConnection();
+		DatabaseUpdater.reportUpdateWarnings(buildWarnings(conn));
+	}
+
+	List<String> buildWarnings(Connection conn) {
 		List<String> messages = new ArrayList<>();
-		
+		messages.add("Starting now, when you transition a patient into a state that is configured as terminal, "
+		        + "then that whole program enrollment will be marked as completed. Please check that programs, "
+		        + "workflows, and states are configured. States that are marked as both initial and terminal will "
+		        + "instantly close the enrollment of anyone started in them, and workflows with no initial state have "
+		        + "no state to start people in.");
+
 		// Warn if any states are configured as both initial and terminal
-		StringBuilder message = new StringBuilder();
-		message.append("Starting now, when you transition a patient into a state that is configured as terminal, ");
-		message.append("then that whole program enrollment will be marked as completed.<br/>");
-		message.append("Please check that programs, workflows, and states are configured.<br/>");
-		message.append("This check will highlight two things: ");
-		message.append("<ul><li>states that are marked as both initial and terminal ");
-		message.append("(if you start someone in that state their program enrollment will be instantly closed)</li>");
-		message.append("<li>workflows that have no initial states (because you don't have a state to start people in)</li>");
-		message.append("</ul><br/>");
-		message.append("The following states are configured as both initial and terminal:<br/>");
-		
 		StringBuilder query = new StringBuilder();
 		query.append(" select 	s.concept_id, min(n.name) as name ");
 		query.append(" from 	program_workflow_state s, concept_name n ");
@@ -59,21 +57,20 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		query.append(" group by s.concept_id ");
 		List<List<Object>> results = DatabaseUtil.executeSQL(conn, query.toString(), true);
 		if (results.isEmpty()) {
-			message.append("None found.");
+			messages.add("No states are configured as both initial and terminal.");
 		} else {
 			for (List<Object> row : results) {
-				message.append(row.get(1).toString()).append("<br/>");
+				messages.add("The state '" + row.get(1) + "' is configured as both initial and terminal.");
 			}
 		}
-		
+
 		// Warn if any workflows have no initial states
-		message.append("<br/>The following workflows have no initial states...<br/>");
 		query = new StringBuilder();
 		query.append(" select 		w.concept_id, s.initial, count(*) as num ");
 		query.append(" from			program_workflow w, program_workflow_state s ");
 		query.append(" where		w.program_workflow_id = s.program_workflow_id ");
 		query.append(" group by 	w.concept_id, s.initial ");
-		
+
 		results = DatabaseUtil.executeSQL(conn, query.toString(), true);
 		List<Integer> missingInitial = new ArrayList<>();
 		for (List<Object> row : results) {
@@ -88,19 +85,17 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 			}
 		}
 		if (missingInitial.isEmpty()) {
-			message.append("None found.");
+			messages.add("No workflows are missing an initial state.");
 		} else {
 			for (Integer conceptId : missingInitial) {
 				String sql = "select min(name) from concept_name where concept_id = " + conceptId;
 				String name = DatabaseUtil.executeSQL(conn, sql, true).get(0).get(0).toString();
-				message.append(name).append("<br/>");
+				messages.add("The workflow '" + name + "' has no initial state.");
 			}
 		}
-		messages.add(message.toString());
-		
-		DatabaseUpdater.reportUpdateWarnings(messages);
+		return messages;
 	}
-	
+
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
