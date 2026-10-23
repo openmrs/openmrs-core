@@ -384,11 +384,15 @@ public class ConceptReferenceRangeUtility {
 		 * for the supplied concept and patient.
 		 *
 		 * @param conceptRef can be either concept uuid or conceptMap's code and sourceName
-		 * @param currentObs the current Obs being evaluated
-		 * @return the most relevant Obs based on the current Obs, or the latest Obs if the current one has
-		 *         no valid value
+		 * @param currentObs the current Obs being evaluated, null when criteria are evaluated without an
+		 *            Obs
+		 * @return the most relevant Obs based on the current Obs, the latest Obs if the current one has no
+		 *         valid value, or null if there is no current Obs
 		 */
 		public Obs getCurrentObs(String conceptRef, Obs currentObs) {
+			if (currentObs == null) {
+				return null;
+			}
 			Concept concept = Context.getConceptService().getConceptByReference(conceptRef);
 
 			if (concept != null && concept.equals(currentObs.getConcept())
