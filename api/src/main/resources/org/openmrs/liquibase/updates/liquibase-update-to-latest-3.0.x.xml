@@ -142,5 +142,25 @@
 		</addColumn>
 	</changeSet>
 	
-</databaseChangeLog>
+	<changeSet id="TRUNK-6549-2026-06-07" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				SELECT count(*) FROM global_property WHERE property = 'log.layout' AND property_value = '%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n'
+			</sqlCheck>
+		</preConditions>
+		<comment>Updating log.layout to include centralized log sanitization</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="%p - %C{1}.%M(%L) |%d{ISO8601}| %replace{%m}{[\p{Cc}\u2028\u2029&amp;&amp;[^\t]]}{ }%n"/>
+			<where>property = 'log.layout'</where>
+		</update>
+	</changeSet>
 
+	<changeSet id="20261015-check-concept-reference-range-criteria" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_range</sqlCheck></not>
+		</preConditions>
+		<comment>Report concept reference range criteria that can no longer be evaluated because they call methods the criteria sandbox refuses</comment>
+		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
+	</changeSet>
+
+</databaseChangeLog>

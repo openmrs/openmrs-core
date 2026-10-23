@@ -28,11 +28,13 @@ import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.Visit;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Orders
@@ -125,8 +127,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderContext the OrderContext object
 	 * @return the Order that was saved
 	 * @throws APIException exists settings exists settings exists concept same drug
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.EDIT_ORDERS + "') or hasPermission(#order, '"
+	        + PrivilegeConstants.ADD_ORDERS + "')")
 	public Order saveOrder(Order order, OrderContext orderContext) throws APIException;
 
 	/**
@@ -142,9 +147,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderContext the OrderContext object
 	 * @return the Order that was saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #saveOrder(Order, OrderContext)
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.EDIT_ORDERS + "') or hasPermission(#order, '"
+	        + PrivilegeConstants.ADD_ORDERS + "')")
 	public Order saveRetrospectiveOrder(Order order, OrderContext orderContext);
 
 	/**
@@ -155,8 +163,10 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param order The Order to remove from the system
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.PURGE_ORDERS + "')")
 	public void purgeOrder(Order order) throws APIException;
 
 	/**
@@ -171,9 +181,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param order The Order to remove from the system
 	 * @param cascade
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9.4
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.PURGE_ORDERS + "')")
 	public void purgeOrder(Order order, boolean cascade) throws APIException;
 
 	/**
@@ -190,8 +202,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param order Order to void
 	 * @return the Order that was voided
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.DELETE_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.DELETE_ORDERS + "')")
 	public Order voidOrder(Order order, String voidReason) throws APIException;
 
 	/**
@@ -200,8 +214,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderId internal order identifier
 	 * @return order with given internal identifier
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#orderId, 'Order', '" + PrivilegeConstants.GET_ORDERS + "')")
 	public Order getOrder(Integer orderId) throws APIException;
 
 	/**
@@ -212,8 +228,10 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return order or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#uuid, 'Order', '" + PrivilegeConstants.GET_ORDERS + "')")
 	public Order getOrderByUuid(String uuid) throws APIException;
 
 	/**
@@ -227,9 +245,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param order
 	 * @return the discontinuation order or null if none
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public Order getDiscontinuationOrder(Order order) throws APIException;
 
 	/**
@@ -244,9 +265,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param order
 	 * @return the revision order or null if none
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public Order getRevisionOrder(Order order) throws APIException;
 
 	/**
@@ -264,9 +288,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderType The OrderType to match on
 	 * @param includeVoided Specifies whether voided orders should be included or not
 	 * @return list of Orders matching the parameters
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getOrders(Patient patient, CareSetting careSetting, OrderType orderType, boolean includeVoided);
 
 	/**
@@ -277,9 +304,12 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param patient the patient to match on
 	 * @return list of matching {@link org.openmrs.Order}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getAllOrdersByPatient(Patient patient);
 
 	/**
@@ -291,9 +321,12 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderSearchCriteria the object containing search parameters
 	 * @return a list of orders matching the search criteria
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.2
 	 */
-	@Authorized({ PrivilegeConstants.GET_ORDERS })
+	@PreAuthorize("hasPermission(#orderSearchCriteria?.patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getOrders(OrderSearchCriteria orderSearchCriteria);
 
 	/**
@@ -307,8 +340,10 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param order order to be unvoided
 	 * @return the Order that was unvoided
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.DELETE_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.DELETE_ORDERS + "')")
 	public Order unvoidOrder(Order order) throws APIException;
 
 	/**
@@ -325,8 +360,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param fullFillerComment is a string which describes a comment that is set while changing the
 	 *            FulfillerStatus
 	 * @return the Order that is updated with an according fulfillerStatus and fulFillerComment
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.EDIT_ORDERS + "')")
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus,
 	        String fullFillerComment);
 
@@ -347,8 +384,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param accessionNumber is the accession number to set
 	 * @return the Order that is updated with an according fulfillerStatus and fulFillerComment and
 	 *         accession number
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	@PreAuthorize("hasPermission(#order, '" + PrivilegeConstants.EDIT_ORDERS + "')")
 	public Order updateOrderFulfillerStatus(Order order, Order.FulfillerStatus orderFulfillerStatus,
 	        String fullFillerComment, String accessionNumber);
 
@@ -360,8 +399,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderNumber the order number
 	 * @return the order object
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public Order getOrderByOrderNumber(String orderNumber);
 
 	/**
@@ -376,16 +418,21 @@ public interface OrderService extends OpenmrsService {
 	 * @param patient the patient.
 	 * @param concept the concept.
 	 * @return the list of orders.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 
 	/**
 	 * Gets the next available order number seed
 	 *
 	 * @return the order number seed
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.ADD_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.ADD_ORDERS + "')")
 	public Long getNextOrderNumberSeedSequenceValue();
 
 	/**
@@ -397,8 +444,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderNumber the order number whose history to get
 	 * @return a list of orders for given order number
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
 
 	/**
@@ -427,9 +477,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param careSetting the care setting, returns all ignoring care setting if value is null
 	 * @param asOfDate defaults to current time
 	 * @return all active orders for given patient parameters
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getActiveOrders(Patient patient, OrderType orderType, CareSetting careSetting, Date asOfDate);
 
 	/**
@@ -437,9 +490,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param careSettingId
 	 * @return the care setting
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
+	@PreAuthorize("hasPermission(#careSettingId, 'CareSetting', '" + PrivilegeConstants.GET_CARE_SETTINGS + "')")
 	public CareSetting getCareSetting(Integer careSettingId);
 
 	/**
@@ -449,8 +504,10 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid to match on
 	 * @return CareSetting
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
+	@PreAuthorize("hasPermission(#uuid, 'CareSetting', '" + PrivilegeConstants.GET_CARE_SETTINGS + "')")
 	public CareSetting getCareSettingByUuid(String uuid);
 
 	/**
@@ -460,8 +517,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param name the name to match on
 	 * @return CareSetting
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CARE_SETTINGS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_CARE_SETTINGS + "')")
 	public CareSetting getCareSettingByName(String name);
 
 	/**
@@ -474,8 +534,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param includeRetired specifies whether retired care settings should be returned or not
 	 * @return A List of CareSettings
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_CARE_SETTINGS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CARE_SETTINGS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CARE_SETTINGS + "')")
 	public List<CareSetting> getCareSettings(boolean includeRetired);
 
 	/**
@@ -485,9 +548,12 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderTypeName the name to match against
 	 * @return OrderType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public OrderType getOrderTypeByName(String orderTypeName);
 
 	/**
@@ -497,9 +563,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderFrequencyId the id to match against
 	 * @return OrderFrequency
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#orderFrequencyId, 'OrderFrequency', '" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
 	public OrderFrequency getOrderFrequency(Integer orderFrequencyId);
 
 	/**
@@ -509,9 +577,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid the uuid to match against
 	 * @return OrderFrequency
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#uuid, 'OrderFrequency', '" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
 	public OrderFrequency getOrderFrequencyByUuid(String uuid);
 
 	/**
@@ -521,9 +591,12 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param concept the concept to match against
 	 * @return OrderFrequency
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
 	public OrderFrequency getOrderFrequencyByConcept(Concept concept);
 
 	/**
@@ -536,8 +609,11 @@ public interface OrderService extends OpenmrsService {
 	 * @return List&lt;OrderFrequency&gt;
 	 * @since 1.10
 	 * @param includeRetired specifies whether retired ones should be included or not
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
 	public List<OrderFrequency> getOrderFrequencies(boolean includeRetired);
 
 	/**
@@ -560,9 +636,12 @@ public interface OrderService extends OpenmrsService {
 	 *            locale will be matched e.g in case en_GB is passed in then en will be matched
 	 * @param includeRetired Specifies if retired order frequencies that match should be included or not
 	 * @return List&lt;OrderFrequency&gt;
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_FREQUENCIES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_FREQUENCIES + "')")
 	public List<OrderFrequency> getOrderFrequencies(String searchPhrase, Locale locale, boolean exactLocale,
 	        boolean includeRetired);
 
@@ -586,9 +665,12 @@ public interface OrderService extends OpenmrsService {
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.ADD_ORDERS, PrivilegeConstants.EDIT_ORDERS })
+	@PreAuthorize("hasPermission(#orderToDiscontinue, '" + PrivilegeConstants.ADD_ORDERS
+	        + "') or hasPermission(#orderToDiscontinue, '" + PrivilegeConstants.EDIT_ORDERS + "')")
 	public Order discontinueOrder(Order orderToDiscontinue, Concept reasonCoded, Date discontinueDate, Provider orderer,
 	        Encounter encounter);
 
@@ -612,9 +694,12 @@ public interface OrderService extends OpenmrsService {
 	 * @return the new order that discontinued orderToDiscontinue
 	 * @throws APIException if the <code>action</code> of orderToDiscontinue is
 	 *             <code>Order.Action.DISCONTINUE</code>
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.ADD_ORDERS, PrivilegeConstants.EDIT_ORDERS })
+	@PreAuthorize("hasPermission(#orderToDiscontinue, '" + PrivilegeConstants.ADD_ORDERS
+	        + "') or hasPermission(#orderToDiscontinue, '" + PrivilegeConstants.EDIT_ORDERS + "')")
 	public Order discontinueOrder(Order orderToDiscontinue, String reasonNonCoded, Date discontinueDate, Provider orderer,
 	        Encounter encounter);
 
@@ -627,9 +712,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderFrequency the order frequency to save
 	 * @return the order frequency created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#orderFrequency, '" + PrivilegeConstants.MANAGE_ORDER_FREQUENCIES + "')")
 	public OrderFrequency saveOrderFrequency(OrderFrequency orderFrequency) throws APIException;
 
 	/**
@@ -640,9 +727,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderFrequency the order frequency to retire
 	 * @param reason the retire reason
 	 * @return the retired order frequency
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#orderFrequency, '" + PrivilegeConstants.MANAGE_ORDER_FREQUENCIES + "')")
 	public OrderFrequency retireOrderFrequency(OrderFrequency orderFrequency, String reason);
 
 	/**
@@ -652,9 +741,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderFrequency the order frequency to unretire
 	 * @return the unretired order frequency
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#orderFrequency, '" + PrivilegeConstants.MANAGE_ORDER_FREQUENCIES + "')")
 	public OrderFrequency unretireOrderFrequency(OrderFrequency orderFrequency);
 
 	/**
@@ -664,9 +755,11 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> not allow deleting an order frequency that is in use
 	 *
 	 * @param orderFrequency the order frequency to purge
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_FREQUENCIES)
+	@PreAuthorize("hasPermission(#orderFrequency, '" + PrivilegeConstants.PURGE_ORDER_FREQUENCIES + "')")
 	public void purgeOrderFrequency(OrderFrequency orderFrequency) throws APIException;
 
 	/**
@@ -678,8 +771,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderTypeId the orderTypeId to match on
 	 * @since 1.10
 	 * @return order type object associated with given id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderTypeId, 'OrderType', '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public OrderType getOrderType(Integer orderTypeId);
 
 	/**
@@ -691,8 +786,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param uuid the uuid to match on
 	 * @since 1.10
 	 * @return order type object associated with given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#uuid, 'OrderType', '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public OrderType getOrderTypeByUuid(String uuid);
 
 	/**
@@ -705,9 +802,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param includeRetired boolean flag which indicate search needs to look at retired order types or
 	 *            not
 	 * @return list of order types
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public List<OrderType> getOrderTypes(boolean includeRetired);
 
 	/**
@@ -718,9 +818,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderType the order type to save
 	 * @return the order type created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	public OrderType saveOrderType(OrderType orderType);
 
 	/**
@@ -730,9 +832,11 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> not allow deleting an order type that is in use
 	 *
 	 * @param orderType the order type to purge
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderType, '" + PrivilegeConstants.PURGE_ORDER_TYPES + "')")
 	public void purgeOrderType(OrderType orderType) throws APIException;
 
 	/**
@@ -743,9 +847,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderType the order type to retire
 	 * @param reason the retire reason
 	 * @return the retired order type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	public OrderType retireOrderType(OrderType orderType, String reason);
 
 	/**
@@ -755,9 +861,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderType the order type to unretire
 	 * @return the unretired order type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	public OrderType unretireOrderType(OrderType orderType);
 
 	/**
@@ -767,8 +875,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderType the order type which needs to search for its' dependencies
 	 * @param includeRetired boolean flag for include retired order types or not
 	 * @return list of order type which matches the given order type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderType, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public List<OrderType> getSubtypes(OrderType orderType, boolean includeRetired);
 
 	/**
@@ -778,9 +889,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param conceptClass the concept class
 	 * @return the matching order type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#conceptClass, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public OrderType getOrderTypeByConceptClass(ConceptClass conceptClass);
 
 	/**
@@ -790,9 +903,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param concept the concept
 	 * @return the matching order type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public OrderType getOrderTypeByConcept(Concept concept);
 
 	/**
@@ -805,8 +920,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param includeRetired boolean flag for include retired or not
 	 * @since 3.0.0
 	 * @return return the order types associated with given class name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeRetired) throws APIException;
 
 	/**
@@ -822,8 +940,11 @@ public interface OrderService extends OpenmrsService {
 	 * @param includeRetired boolean flag for include retired or not
 	 * @since 3.0.0
 	 * @return return the order types associated with given class name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_TYPES + "')")
 	public List<OrderType> getOrderTypesByClassName(String javaClassName, boolean includeSubclasses, boolean includeRetired)
 	        throws APIException;
 
@@ -835,9 +956,12 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> return an empty list if nothing is configured
 	 *
 	 * @return concept list of drug routes
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 	public List<Concept> getDrugRoutes();
 
 	/**
@@ -849,9 +973,12 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> return a list if GP is set
 	 *
 	 * @return concept list of drug dosing units
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 	public List<Concept> getDrugDosingUnits();
 
 	/**
@@ -864,9 +991,12 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> return the union of the dosing and dispensing units
 	 *
 	 * @return concept list of units of dispensing
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 	public List<Concept> getDrugDispensingUnits();
 
 	/**
@@ -878,9 +1008,12 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> return a list if GP is set
 	 *
 	 * @return concept list of units of duration
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 	public List<Concept> getDurationUnits();
 
 	/**
@@ -892,9 +1025,12 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> return a list if GP is set
 	 *
 	 * @return concept list of specimen sources
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 	public List<Concept> getTestSpecimenSources();
 
 	/**
@@ -903,9 +1039,12 @@ public interface OrderService extends OpenmrsService {
 	 * return null if nothing is configured<br/> <strong>Should</strong> return a concept if GP is set
 	 *
 	 * @return concept of non coded drug
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.12
 	 */
-	@Authorized(PrivilegeConstants.GET_CONCEPTS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_CONCEPTS + "')")
 	public Concept getNonCodedDrugConcept();
 
 	/**
@@ -913,10 +1052,12 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid Uuid Of the OrderGroup
 	 * @return saved OrderGroup
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.12
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderGroup', '" + PrivilegeConstants.GET_ORDERS + "')")
 	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException;
 
 	/**
@@ -924,20 +1065,25 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderGroupId Id of the OrderGroup
 	 * @return saved OrderGroup
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.12
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#orderGroupId, 'OrderGroup', '" + PrivilegeConstants.GET_ORDERS + "')")
 	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException;
 
 	/**
 	 * Saves the orderGroup. It also saves the list of orders that are present within the orderGroup.
 	 *
 	 * @param orderGroup the orderGroup to be saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.12
 	 * @throws APIException
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@PreAuthorize("hasPermission(#orderGroup, '" + PrivilegeConstants.EDIT_ORDERS + "') or hasPermission(#orderGroup, '"
+	        + PrivilegeConstants.ADD_ORDERS + "')")
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws APIException;
 
 	/**
@@ -947,10 +1093,13 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderContext the order context data transfer object containing care setting and the order
 	 *            type to save with the order group
 	 * @return the order group that was saved with the specified order context data
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 * @throws APIException
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@PreAuthorize("hasPermission(#orderGroup, '" + PrivilegeConstants.EDIT_ORDERS + "') or hasPermission(#orderGroup, '"
+	        + PrivilegeConstants.ADD_ORDERS + "')")
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup, OrderContext orderContext) throws APIException;
 
 	/**
@@ -958,10 +1107,13 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param patient the patient to match on
 	 * @return list of matching OrderGroups
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
 
 	/**
@@ -969,10 +1121,13 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param encounter the encounter to match on
 	 * @return list of matching OrderGroups
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @throws APIException
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<OrderGroup> getOrderGroupsByEncounter(Encounter encounter) throws APIException;
 
 	/**
@@ -980,8 +1135,11 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @return all {@link OrderGroupAttributeType}s
 	 * @should return all order group attribute types including retired ones
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	List<OrderGroupAttributeType> getAllOrderGroupAttributeTypes() throws APIException;
 
 	/**
@@ -991,8 +1149,11 @@ public interface OrderService extends OpenmrsService {
 	 * @return the {@link OrderGroupAttributeType} with the given internal id
 	 * @should return the order group attribute type using the provided id
 	 * @should return null if no order group attribute type exists with the given id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#orderGroupAttributeTypeId, 'OrderGroupAttributeType', '" + PrivilegeConstants.GET_ORDERS
+	        + "')")
 	OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws APIException;
 
 	/**
@@ -1012,8 +1173,11 @@ public interface OrderService extends OpenmrsService {
 	 * @return the order group attribute type created or saved
 	 * @should create a new order group attribute type
 	 * @should edit an existing order group attribute type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@PreAuthorize("hasPermission(#orderGroupAttributeType, '" + PrivilegeConstants.EDIT_ORDERS
+	        + "') or hasPermission(#orderGroupAttributeType, '" + PrivilegeConstants.ADD_ORDERS + "')")
 	OrderGroupAttributeType saveOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
@@ -1023,8 +1187,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param reason The reason why the order group attribute type is being retired
 	 * @return the order group attribute type retired
 	 * @should retire an order group attribute type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderGroupAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	OrderGroupAttributeType retireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType, String reason)
 	        throws APIException;
 
@@ -1034,8 +1200,10 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderGroupAttributeType The order group attribute type to unretire
 	 * @return the order group attribute type unretired
 	 * @should unretire an order group attribute type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderGroupAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	OrderGroupAttributeType unretireOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType)
 	        throws APIException;
 
@@ -1044,8 +1212,10 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderGroupAttributeType The order group attribute type to purge
 	 * @should completely remove an order group attribute type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	@PreAuthorize("hasPermission(#orderGroupAttributeType, '" + PrivilegeConstants.PURGE_ORDERS + "')")
 	void purgeOrderGroupAttributeType(OrderGroupAttributeType orderGroupAttributeType) throws APIException;
 
 	/**
@@ -1055,8 +1225,11 @@ public interface OrderService extends OpenmrsService {
 	 * @return the {@link OrderGroupAttributeType} with the specified name
 	 * @should return the order group attribute type with the specified name
 	 * @should return null if no order group attribute type exists with the specified name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	OrderGroupAttributeType getOrderGroupAttributeTypeByName(String orderGroupAttributeTypeName) throws APIException;
 
 	/**
@@ -1064,21 +1237,26 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid The uuid of the order group attribute to fetch
 	 * @return the {@link OrderGroupAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should get the order group attribute with the given uuid
 	 * @should return null if no order group attribute has the given uuid
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderGroupAttribute', '" + PrivilegeConstants.GET_ORDERS + "')")
 	OrderGroupAttribute getOrderGroupAttributeByUuid(String uuid) throws APIException;
 
 	/**
 	 * Returns all order attribute types
 	 *
 	 * @return all {@link OrderAttributeType}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should return all order attribute types including retired ones
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	List<OrderAttributeType> getAllOrderAttributeTypes() throws APIException;
 
 	/**
@@ -1086,11 +1264,13 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param id The Id of the order attribute type to fetch from the database
 	 * @return the {@link OrderAttributeType} with the given internal id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should return the order attribute type using the provided id
 	 * @should return null if no order attribute type exists with the given id
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#orderAttributeTypeId, 'OrderAttributeType', '" + PrivilegeConstants.GET_ORDERS + "')")
 	OrderAttributeType getOrderAttributeTypeById(Integer orderAttributeTypeId) throws APIException;
 
 	/**
@@ -1109,11 +1289,14 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeType The order attribute type to save in the database
 	 * @return the order attribute type created or saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should create a new order attribute type
 	 * @should edit an existing order attribute type
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
+	@PreAuthorize("hasPermission(#orderAttributeType, '" + PrivilegeConstants.EDIT_ORDERS
+	        + "') or hasPermission(#orderAttributeType, '" + PrivilegeConstants.ADD_ORDERS + "')")
 	OrderAttributeType saveOrderAttributeType(OrderAttributeType orderAttributeType) throws APIException;
 
 	/**
@@ -1122,10 +1305,12 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderAttributeType The order attribute type to retire
 	 * @param reason The reason why the order attribute type is being retired
 	 * @return the order attribute type retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should retire an order attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	OrderAttributeType retireOrderAttributeType(OrderAttributeType orderAttributeType, String reason) throws APIException;
 
 	/**
@@ -1133,20 +1318,24 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeType The order attribute type to unretire
 	 * @return the order attribute type unretired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should unretire an order attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@PreAuthorize("hasPermission(#orderAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_TYPES + "')")
 	OrderAttributeType unretireOrderAttributeType(OrderAttributeType orderAttributeType) throws APIException;
 
 	/**
 	 * Completely removes an order attribute type from the database
 	 *
 	 * @param orderAttributeType The order attribute type to purge
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should completely remove an order attribute type
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDERS)
+	@PreAuthorize("hasPermission(#orderAttributeType, '" + PrivilegeConstants.PURGE_ORDERS + "')")
 	void purgeOrderAttributeType(OrderAttributeType orderAttributeType) throws APIException;
 
 	/**
@@ -1154,11 +1343,14 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param orderAttributeTypeName The name of the order attribute type to fetch
 	 * @return the {@link OrderAttributeType} with the specified name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should return the order attribute type with the specified name
 	 * @should return null if no order attribute type exists with the specified name
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	OrderAttributeType getOrderAttributeTypeByName(String orderAttributeTypeName) throws APIException;
 
 	/**
@@ -1166,11 +1358,13 @@ public interface OrderService extends OpenmrsService {
 	 *
 	 * @param uuid The uuid of the order attribute to fetch
 	 * @return the {@link OrderAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.5.0
 	 * @should get the order attribute with the given uuid
 	 * @should return null if no order attribute has the given uuid
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderAttribute', '" + PrivilegeConstants.GET_ORDERS + "')")
 	OrderAttribute getOrderAttributeByUuid(String uuid) throws APIException;
 
 	/**
@@ -1179,9 +1373,12 @@ public interface OrderService extends OpenmrsService {
 	 *      visit to the search criteria. It effectively surpasses the above method; the old one is
 	 *      however kept for backward compatibility reasons.
 	 * @param visit the {@link Visit} to restrict active orders (optional)
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getActiveOrders(Patient patient, Visit visit, OrderType orderType, CareSetting careSetting,
 	        Date asOfDate);
 
@@ -1191,9 +1388,12 @@ public interface OrderService extends OpenmrsService {
 	 *      effectively surpasses the above method; the old one is however kept for backward
 	 *      compatibility reasons.
 	 * @param visit the {@link Visit} to restrict orders (optional)
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDERS)
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_ORDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDERS + "')")
 	public List<Order> getOrders(Patient patient, Visit visit, CareSetting careSetting, OrderType orderType,
 	        boolean includeVoided);
 }

@@ -35,6 +35,17 @@ public interface AdministrationDAO {
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 
 	/**
+	 * Gets the name that the global property {@link #getGlobalPropertyObject(String)} finds for
+	 * <code>propertyName</code> is stored under, which differs from <code>propertyName</code> when the
+	 * lookup ignores case or the database treats other spellings as equal.
+	 *
+	 * @param propertyName the name to look up, not null
+	 * @return the stored name, or null if no property is found
+	 * @since 2.8.10
+	 */
+	public String getStoredGlobalPropertyName(String propertyName);
+
+	/**
 	 * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
 	 */
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException;

@@ -16,6 +16,7 @@ import java.util.Comparator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -70,7 +71,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@Column(name = "patient_identifier_id", nullable = false)
 	private Integer patientIdentifierId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@AssociationInverseSide(inversePath = @ObjectPath({ @PropertyValue(propertyName = "identifiers") }))
@@ -84,17 +85,17 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 	@Column(name = "identifier", length = 50, nullable = false)
 	private String identifier;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "identifier_type", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private PatientIdentifierType identifierType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_id")
 	private Location location;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_program_id")
 	private PatientProgram patientProgram;
 

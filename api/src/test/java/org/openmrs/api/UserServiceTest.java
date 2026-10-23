@@ -40,7 +40,11 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.messagesource.MutableMessageSource;
+import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessageSender;
+import org.openmrs.notification.MessageService;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -48,14 +52,17 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -63,6 +70,12 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.openmrs.test.TestUtil.containsId;
 
 /**
@@ -1110,7 +1123,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		Context.logout();
 
-		assertThrows(APIException.class, () -> userService.removeUserProperty(user, "some key"));
+		assertThrows(AccessDeniedException.class, () -> userService.removeUserProperty(user, "some key"));
 	}
 
 	/**
@@ -1179,7 +1192,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(502);
 
 		Context.logout();
-		assertThrows(APIException.class, () -> userService.setUserProperty(user, "some key", "some value"));
+		assertThrows(AccessDeniedException.class, () -> userService.setUserProperty(user, "some key", "some value"));
 	}
 
 	/**
@@ -1465,7 +1478,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user6001, wrongPassword, newPassword));
 		assertThat(exception.getMessage(), is(
 		    messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USER_PASSWORDS }, null)));
@@ -1485,7 +1498,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user6001, oldPassword, newPassword));
 		assertThat(exception.getMessage(), is(
 		    messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USER_PASSWORDS }, null)));
@@ -1506,7 +1519,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//user6001 has not got required priviliges
 		Context.authenticate(user6001.getUsername(), "userServiceTest");
 
-		APIException exception = assertThrows(APIException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user6001, oldPassword, newPassword));
 		assertThat(exception.getMessage(), is(
 		    messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USER_PASSWORDS }, null)));
@@ -1566,7 +1579,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertFalse(user.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS));
 		Context.authenticate(user.getUsername(), "userServiceTest");
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> userService.changePassword(user, "userServiceTest", "testTest123"));
 
 		assertThat(exception.getMessage(), is(
@@ -1712,6 +1725,128 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThat(exception.getMessage(), is(messages.getMessage("activation.key.not.correct")));
 	}
 
+	@Test
+	public void changePasswordUsingActivationKey_shouldClearActivationKeyOnceUsed() {
+		User createdUser = createTestUser();
+		String key = givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		userService.changePasswordUsingActivationKey(key, "Admin123");
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void changePasswordUsingActivationKey_shouldNotAllowReusingActivationKey() {
+		User createdUser = createTestUser();
+		String key = givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		userService.changePasswordUsingActivationKey(key, "Admin123");
+		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+
+		InvalidActivationKeyException exception = assertThrows(InvalidActivationKeyException.class,
+		    () -> userService.changePasswordUsingActivationKey(key, "Pa55w0rd"));
+		assertThat(exception.getMessage(), is(messages.getMessage("activation.key.not.correct")));
+	}
+
+	@Test
+	public void changePassword_shouldClearPendingActivationKeyWhenUserChangesOwnPassword() {
+		User createdUser = createTestUser();
+		givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		userService.changePassword("Openmr5xy", "Admin123");
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void changePassword_shouldClearPendingActivationKeyWhenAdminChangesUsersPassword() {
+		User createdUser = createTestUser();
+		givenPendingActivationKey(createdUser);
+		userService.changePassword(createdUser, "Admin123");
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void changePassword_shouldKeepPendingActivationKeyIfOldPasswordIsNotCorrect() {
+		User createdUser = createTestUser();
+		givenPendingActivationKey(createdUser);
+		Context.authenticate(createdUser.getUsername(), "Openmr5xy");
+		assertThrows(APIException.class, () -> userService.changePassword("wrongPassword", "Admin123"));
+		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	/**
+	 * Stores a pending, unexpired activation key on the user's login credential and returns the raw key
+	 * the user would have received by email.
+	 *
+	 * @param user the user to give a pending password reset
+	 * @return the raw (unhashed) activation key
+	 */
+	private String givenPendingActivationKey(User user) {
+		String key = "h4ph0fpNzQCIPSw8plJI";
+		long tokenTime = System.currentTimeMillis() + 10 * 60 * 1000;
+		LoginCredential credentials = dao.getLoginCredential(user);
+		credentials.setActivationKey(
+		    "b071c88d6d877922e35af2e6a90dd57d37ac61143a03bb986c5f353566f3972a86ce9b2604c31a22dfa467922dcfd54fa7d18b0a7c7648d94ca3d97a88ea2fd0:"
+		            + tokenTime);
+		dao.setUserActivationKey(credentials);
+		return key;
+	}
+
+	@Test
+	public void setUserActivationKey_shouldAppendResetLinkAfterMessageBody() throws Exception {
+		User createdUser = createTestUser();
+		String content = sendPasswordResetEmail(createdUser, "Hi {name}, use the link below.", "text/plain");
+		assertThat(content.substring(content.lastIndexOf("\n\n") + 2), startsWith(RESET_URL_PREFIX));
+	}
+
+	@Test
+	public void setUserActivationKey_shouldNotSubstituteResetLinkIntoMessageBody() throws Exception {
+		User createdUser = createTestUser();
+		String content = sendPasswordResetEmail(createdUser, "Go to https://evil.example/?u={link}", "text/plain");
+		assertThat(content, not(containsString("?u=http")));
+	}
+
+	@Test
+	public void setUserActivationKey_shouldAppendResetLinkAsAnchorForHtmlMail() throws Exception {
+		User createdUser = createTestUser();
+		String content = sendPasswordResetEmail(createdUser, "Hi {name},<br/>use the link below.",
+		    "text/html; charset=UTF-8");
+		assertThat(content.substring(content.lastIndexOf("<br/><br/>") + 10), startsWith("<a href=\"" + RESET_URL_PREFIX));
+	}
+
+	private static final String RESET_URL_PREFIX = "http://localhost:8080/openmrs/reset/";
+
+	/**
+	 * Sends the password reset email for the user with the given text as the mail.passwordreset.content
+	 * template and the given mail content type, and returns the email body.
+	 */
+	private String sendPasswordResetEmail(User user, String template, String contentType) throws MessageException {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_RESET_URL,
+		    RESET_URL_PREFIX + "{activationKey}");
+		Context.getAdministrationService().setGlobalProperty("mail.default_content_type", contentType);
+		MutableMessageSource source = mock(MutableMessageSource.class);
+		when(source.getMessage(eq("mail.passwordreset.content"), isNull(), anyString(), any(Locale.class)))
+		        .thenReturn(template);
+		when(source.getMessage(eq("mail.passwordreset.subject"), isNull(), anyString(), any(Locale.class)))
+		        .thenReturn("Password Reset");
+		MessageSourceService messageSourceService = Context.getMessageSourceService();
+		MutableMessageSource originalSource = messageSourceService.getActiveMessageSource();
+		MessageService messageService = Context.getMessageService();
+		MessageSender originalSender = messageService.getMessageSender();
+		List<Message> sent = new ArrayList<>();
+		messageSourceService.setActiveMessageSource(source);
+		messageService.setMessageSender(sent::add);
+		try {
+			userService.setUserActivationKey(user);
+		} finally {
+			messageService.setMessageSender(originalSender);
+			messageSourceService.setActiveMessageSource(originalSource);
+		}
+		return sent.getFirst().getContent();
+	}
+
 	/**
 	 * Utility method to set the current executing user to test various permission levels.
 	 *
@@ -1811,4 +1946,40 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		return userService.createUser(u, "Openmr5xy");
 	}
+
+	/**
+	 * Pins the superuser-assignment guard in {@code UserServiceImpl.checkSuperUserPrivilege}, which
+	 * compares the role name case-insensitively. It has to: a role differing from
+	 * {@link RoleConstants#SUPERUSER} only in case still confers superuser status, since
+	 * {@code RolePrivilegeCache} resolves that name with {@code equalsIgnoreCase}. Comparing exactly
+	 * here would let such a role be handed out without {@code ASSIGN_SYSTEM_DEVELOPER_ROLE}.
+	 */
+	@Test
+	public void saveUser_shouldRequireAssignSystemDeveloperRoleForADifferentlyCasedSuperuserRole() throws Exception {
+		// an already-valid user, because RequiredDataAdvice validates a save* call before the service
+		// method body runs - a hand-built User fails validation long before reaching the guard
+		User toSave = userService.getUser(1);
+		// drop admin's own exact-case System Developer role first, so the differently-cased one added
+		// below is the only thing that can trip the guard - otherwise the test passes either way
+		toSave.getRoles().clear();
+		toSave.addRole(new Role(RoleConstants.SUPERUSER.toUpperCase()));
+
+		// a principal with no roles, so it lacks ASSIGN_SYSTEM_DEVELOPER_ROLE. EDIT_USERS satisfies
+		// saveUser's own requirePrivilege and @Authorized; GET_GLOBAL_PROPERTIES is what the validator
+		// run by RequiredDataAdvice needs before the guard is reached.
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> withCurrentUserAs(new User(), () -> userService.saveUser(toSave)));
+
+			// the role guard, not the privileges one below it - the message arrives as its raw template
+			// here, since the test message source does not interpolate arguments
+			assertThat(exception.getMessage(), containsString("must have the role"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+
 }

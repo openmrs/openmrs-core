@@ -1,0 +1,123 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.web.security;
+
+import java.io.IOException;
+import java.util.Objects;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+/**
+ * Puts the user's {@link UserContext} on the request thread, so the OpenMRS API - which keeps
+ * authentication on the current {@link Thread} - sees it on whichever thread serves the request.
+ * Registered as part of {@link WebSecurityConfig}'s {@code SecurityFilterChain}, superseding
+ * {@code org.openmrs.web.filter.OpenmrsFilter}, which did this from outside Spring Security.
+ * <p>
+ * It runs early - before {@code CSRFGuard}, {@code ModuleFilter} and everything downstream - since
+ * all of those need the {@link org.springframework.security.core.Authentication} it installs via
+ * {@link Context#setUserContext(UserContext)}. {@link OpenmrsAuthorizationFilter} sits further down
+ * {@code web.xml}, after {@code ModuleFilter}, and authorizes against whatever authentication is
+ * current by then - possibly one a module's own filter installed in between. See
+ * {@link OpenmrsAuthenticationToken} for the token type installed here.
+ *
+ * @since 3.0.0
+ */
+public class OpenmrsSecurityContextFilter extends OncePerRequestFilter {
+
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsSecurityContextFilter.class);
+
+	/**
+	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(HttpServletRequest,
+	 *      HttpServletResponse, FilterChain)
+	 */
+	@Override
+	protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
+	        throws ServletException, IOException {
+
+		HttpSession httpSession = httpRequest.getSession();
+
+		// used by htmlInclude tag
+		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(System.currentTimeMillis()));
+
+		log.debug("requestURI {}", httpRequest.getRequestURI());
+		log.debug("requestURL {}", httpRequest.getRequestURL());
+		log.debug("request path info {}", httpRequest.getPathInfo());
+
+		// User context is created if it doesn't already exist and added to the session
+		// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to
+		// 		 prevent stack traces being shown to non-authenticated users
+		UserContext userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
+
+		// if there isn't a userContext on the session yet, create one and set it onto the session
+		if (userContext == null) {
+			userContext = new UserContext(Context.getAuthenticationScheme());
+			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+
+			log.debug("Just set user context {} as attribute on session", userContext);
+		}
+
+		// determine the username to store on the session
+		String username = "-anonymous user-";
+		User user = userContext.getAuthenticatedUser();
+
+		if (user != null) {
+			// set username as attribute on session so parent servlet container
+			// can identify sessions easier
+			username = user.getUsername();
+		}
+
+		setSessionAttributeIfChanged(httpSession, "username", username);
+		setSessionAttributeIfChanged(httpSession, "locale", userContext.getLocale());
+
+		// We do not cache the csrfguard javascript file because it contains the csrf token that is
+		// dynamically embedded in forms. For this to work, this filter must run before CSRFGuard,
+		// which it does: web.xml positions springSecurityFilterChain (which this filter is part of)
+		// ahead of the CSRFGuard filter.
+		if (httpRequest.getRequestURI().endsWith("csrfguard")) {
+			httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+			httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+			httpResponse.setHeader("Expires", "0"); // Proxies.
+		}
+
+		// Add the user context to the current thread
+		Context.setUserContext(userContext);
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+
+		log.debug("before chain.Filter");
+
+		// continue the filter chain (going on to the rest of Spring Security, authorization, etc)
+		try {
+			chain.doFilter(httpRequest, httpResponse);
+		} finally {
+			Context.clearUserContext();
+		}
+
+		log.debug("after chain.doFilter");
+	}
+
+	private void setSessionAttributeIfChanged(HttpSession session, String name, Object value) {
+		if (!Objects.equals(session.getAttribute(name), value)) {
+			session.setAttribute(name, value);
+		}
+	}
+}
