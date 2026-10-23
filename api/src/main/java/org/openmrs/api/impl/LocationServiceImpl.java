@@ -227,7 +227,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	@Transactional(readOnly = true)
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
-		return (tags == null || tags.isEmpty()) ? getAllLocations(false) : dao.getLocationsHavingAllTags(tags);
+		return (tags == null || tags.isEmpty()) ? dao.getAllLocations(false) : dao.getLocationsHavingAllTags(tags);
 	}
 
 	/**
