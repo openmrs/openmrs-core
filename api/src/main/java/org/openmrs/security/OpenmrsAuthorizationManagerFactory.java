@@ -9,9 +9,9 @@
  */
 package org.openmrs.security;
 
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.context.UserContext;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManagerFactory;
@@ -34,12 +34,13 @@ import org.springframework.security.core.Authentication;
  * {@code PrePostMethodSecurityConfiguration} would apply a bean to its own internal handler, which
  * the custom one has already replaced, and the factory would be dropped without an error.
  * <p>
- * {@code hasRole(...)} and friends redirect onto {@link User#hasRole(String)}, so a role name means
- * an OpenMRS role with its superuser bypass, read from the user's in-memory role graph - the
- * implicit Anonymous and Authenticated roles are therefore not matched. A {@code Daemon} thread is
- * granted any role. Because installing a custom factory turns off Spring's own {@code ROLE_}
- * stripping, this does it instead: {@code hasRole('X')} and {@code hasRole('ROLE_X')} both mean the
- * role {@code X}, and a role genuinely named {@code ROLE_X} needs {@code access(...)}.
+ * {@code hasRole(...)} and friends redirect onto {@link UserContext#hasRole(String)}, so a role
+ * name means an OpenMRS role with its superuser bypass, read from the roles the user held when
+ * loaded - the implicit Anonymous and Authenticated roles are therefore not matched. A
+ * {@code Daemon} thread is granted any role. Because installing a custom factory turns off Spring's
+ * own {@code ROLE_} stripping, this does it instead: {@code hasRole('X')} and
+ * {@code hasRole('ROLE_X')} both mean the role {@code X}, and a role genuinely named {@code ROLE_X}
+ * needs {@code access(...)}.
  * <p>
  * Misses are recorded with {@link MissingPrivilegeRecorder} - a privilege not held, or an
  * {@code isAuthenticated()} that denied - so a denial still names what was missing, as
@@ -158,9 +159,9 @@ public class OpenmrsAuthorizationManagerFactory<T> implements AuthorizationManag
 			return true;
 		}
 
-		User user = Context.getAuthenticatedUser();
-		// User#hasRole(String) applies the superuser bypass itself
-		return user != null && user.hasRole(stripRolePrefix(role));
+		// UserContext#hasRole(String) applies the superuser bypass itself, and reads roles as stored
+		// rather than from the authenticated user's role set, which any caller can change
+		return Context.getUserContext().hasRole(stripRolePrefix(role));
 	}
 
 	/**

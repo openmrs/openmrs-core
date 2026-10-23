@@ -31,10 +31,9 @@ public final class RolePrivilegeCacheTestUtil {
 	 */
 	public static void seed(String roleName, String... privileges) {
 		Context.getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class).forgetWritesInCurrentTransaction();
-		String key = RolePrivileges.normalize(roleName);
 		// the cache's put does not overwrite, so drop any entry an earlier privilege check cached
-		getCache().evict(key);
-		getCache().put(key, new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
+		getCache().evict(roleName);
+		getCache().put(roleName, new RolePrivileges(new HashSet<>(Arrays.asList(privileges)), false));
 	}
 
 	/**
@@ -42,7 +41,7 @@ public final class RolePrivilegeCacheTestUtil {
 	 *         transaction would read it
 	 */
 	public static boolean isCached(String roleName) {
-		return getCache().get(RolePrivileges.normalize(roleName)) != null;
+		return getCache().get(roleName) != null;
 	}
 
 	/** Removes every entry from this node's role cache immediately. */

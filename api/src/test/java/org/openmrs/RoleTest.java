@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -229,6 +230,36 @@ public class RoleTest {
 		assertEquals(1, aunt.getAllChildRoles().size());
 		assertEquals(1, uncle.getAllChildRoles().size());
 		assertEquals(6, grandparent.getAllChildRoles().size());
+	}
+
+	@Test
+	public void setters_shouldCopyTheGivenSets() {
+		Role role = new Role("Some Role");
+		Set<Privilege> privileges = new HashSet<>();
+		Set<Role> inheritedRoles = new HashSet<>();
+		Set<Role> childRoles = new HashSet<>();
+		role.setPrivileges(privileges);
+		role.setInheritedRoles(inheritedRoles);
+		role.setChildRoles(childRoles);
+
+		privileges.add(new Privilege("Some Privilege"));
+		inheritedRoles.add(new Role("Parent"));
+		childRoles.add(new Role("Child"));
+
+		assertTrue(role.getPrivileges().isEmpty());
+		assertTrue(role.getInheritedRoles().isEmpty());
+		assertTrue(role.getChildRoles().isEmpty());
+	}
+
+	@Test
+	public void setters_shouldKeepTheSetTheRoleAlreadyHolds() {
+		Role role = new Role("Some Role");
+		role.setPrivileges(new HashSet<>());
+		Set<Privilege> privileges = role.getPrivileges();
+
+		role.setPrivileges(privileges);
+
+		assertSame(privileges, role.getPrivileges());
 	}
 
 }

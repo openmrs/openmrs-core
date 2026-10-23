@@ -57,7 +57,7 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	}
 
 	private RolePrivileges cachedEntry(Role role) {
-		return cache().get(RolePrivileges.normalize(role.getRole()), RolePrivileges.class);
+		return cache().get(role.getRole(), RolePrivileges.class);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 		// The role name is not in the database, so a miss would fail-closed to an empty closure and drop
 		// the seeded privilege; this also keeps the test independent of daemon-thread visibility.
 		RolePrivileges seeded = new RolePrivileges(Collections.singleton("Cache Hit Privilege"), false);
-		cache().put(RolePrivileges.normalize("Cache Hit Role"), seeded);
+		cache().put("Cache Hit Role", seeded);
 
 		RolePrivileges result = rolePrivilegeCache.getRolePrivileges(new Role("Cache Hit Role"));
 
@@ -178,11 +178,13 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	@Test
 	public void getRolePrivileges_shouldSeeRoleChangesMadeEarlierInTheSameTransaction() {
 		// The daemon load cannot see this transaction's uncommitted role, so resolving it through the cache
-		// would grant nothing and cache that for every session.
+		// would grant nothing and cache that for every session. Roles are read as stored, so it must be
+		// flushed to be seen.
 		Privilege privilege = userService.savePrivilege(new Privilege("Uncommitted Privilege", "an uncommitted privilege"));
 		Role role = new Role("Uncommitted Role", "role saved in the current transaction");
 		role.addPrivilege(privilege);
 		userService.saveRole(role);
+		Context.flushSession();
 
 		RolePrivileges resolved = rolePrivilegeCache.getRolePrivileges(role);
 
@@ -228,8 +230,7 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	private void primeCache() {
 		// Seeded directly: after a role or privilege change in this transaction, lookups bypass the cache.
 		Role role = new Role("Primed Role");
-		cache().put(RolePrivileges.normalize(role.getRole()),
-		    new RolePrivileges(Collections.singleton("Primed Privilege"), false));
+		cache().put(role.getRole(), new RolePrivileges(Collections.singleton("Primed Privilege"), false));
 		assertNotNull(cachedEntry(role), "cache should be primed");
 	}
 

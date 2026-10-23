@@ -82,8 +82,8 @@ public class OpenmrsSecurityConfig {
 		DefaultMethodSecurityExpressionHandler handler = new PrivilegeCachingMethodSecurityExpressionHandler();
 		handler.setPermissionEvaluator(permissionEvaluator);
 		// Makes the built-in hasAuthority(...)/hasRole(...) resolve through Context.hasPrivilege(String)
-		// and User#hasRole(String), so they agree with @Authorized. Set here rather than published as
-		// an AuthorizationManagerFactory bean on purpose - PrePostMethodSecurityConfiguration applies
+		// and UserContext#hasRole(String), so they agree with @Authorized. Set here rather than published
+		// as an AuthorizationManagerFactory bean on purpose - PrePostMethodSecurityConfiguration applies
 		// such a bean to its own internal expression handler, which this handler has already replaced
 		// on the interceptors, so a bean would be silently ignored.
 		handler.setAuthorizationManagerFactory(new OpenmrsAuthorizationManagerFactory<>());

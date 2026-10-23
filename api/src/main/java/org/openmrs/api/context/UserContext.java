@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
@@ -71,9 +72,13 @@ public class UserContext implements Serializable {
 	private static final AtomicBoolean rolePrivilegeCacheUnavailableWarned = new AtomicBoolean(false);
 
 	/**
-	 * User object containing details about the authenticated user
+	 * The authenticated user, with the id and roles read from the database when they were loaded.
+	 * Privilege checks, role checks and refreshes use these recorded values, never the user object,
+	 * which any caller can change in memory. Replaced as a whole, so a check never mixes one user's id
+	 * with another's roles. Null in a session serialized before this field existed, which is treated as
+	 * logged out.
 	 */
-	private User user = null;
+	private volatile Principal principal = Principal.NONE;
 
 	/**
 	 * User's permission proxies
@@ -138,8 +143,8 @@ public class UserContext implements Serializable {
 		Authenticated authenticated = null;
 		try {
 			authenticated = performAuthenticate(credentials);
-			this.user = authenticated.getUser();
-			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
+			setUser(authenticated.getUser());
+			notifyUserSessionListener(getAuthenticatedUser(), Event.LOGIN, Status.SUCCESS);
 		} catch (ContextAuthenticationException e) {
 			User loggingInUser = new User();
 			loggingInUser.setUsername(credentials.getClientName());
@@ -150,7 +155,7 @@ public class UserContext implements Serializable {
 		setUserLocation(true);
 		setUserLocale(true);
 
-		log.debug("Authenticated as: {}", this.user);
+		log.debug("Authenticated as: {}", getAuthenticatedUser());
 
 		return authenticated;
 	}
@@ -213,12 +218,42 @@ public class UserContext implements Serializable {
 	public void refreshAuthenticatedUser() {
 		log.debug("Refreshing authenticated user");
 
-		if (user != null) {
-			user = Context.getUserService().getUser(user.getUserId());
+		if (isAuthenticated()) {
+			// by the id recorded when the user was loaded, never the user object's, which any caller can
+			// change in memory; read through ContextDAO rather than UserService: the user may lack Get Users
+			Integer userId = getPrincipal().userId;
+			User user = userId == null ? null : hydrate(Context.getContextDAO().getUserById(userId));
+			principal = Principal.of(user, userId);
 			//update the stored location in the user's session
 			setUserLocation(false);
 			setUserLocale(false);
 		}
+	}
+
+	/**
+	 * Makes the given user the authenticated one, or logs out if null. Package-private for tests; see
+	 * {@link Principal#of(User)} for how the user's roles are recorded.
+	 */
+	void setUser(User newUser) {
+		principal = Principal.of(newUser);
+	}
+
+	private Principal getPrincipal() {
+		Principal current = principal;
+		return current == null ? Principal.NONE : current;
+	}
+
+	/**
+	 * Initializes the user's lazy state, since the user is kept beyond the Hibernate session it was
+	 * loaded in.
+	 */
+	private static User hydrate(User user) {
+		if (user != null) {
+			user.getAllRoles().size();
+			user.getUserProperties().size();
+			user.getPrivileges().size();
+		}
+		return user;
 	}
 
 	/**
@@ -230,7 +265,7 @@ public class UserContext implements Serializable {
 	 * @throws ContextAuthenticationException
 	 */
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
-		if (!Daemon.isDaemonThread() && !Context.getAuthenticatedUser().isSuperUser()) {
+		if (!Daemon.isDaemonThread() && !hasRole(RoleConstants.SUPERUSER)) {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 
@@ -255,13 +290,13 @@ public class UserContext implements Serializable {
 			userToBecome.getPrivileges().size();
 		}
 
-		this.user = userToBecome;
+		setUser(userToBecome);
 
 		//update the user's location and locale
 		setUserLocation(false);
 		setUserLocale(false);
 
-		log.debug("Becoming user: {}", user);
+		log.debug("Becoming user: {}", userToBecome);
 
 		return userToBecome;
 	}
@@ -270,14 +305,24 @@ public class UserContext implements Serializable {
 	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */
 	public User getAuthenticatedUser() {
-		return user;
+		return getPrincipal().user;
+	}
+
+	/**
+	 * @return the id the authenticated user had when they were loaded, which, unlike the id on
+	 *         {@link #getAuthenticatedUser()}, can't be changed in memory; or null if no stored user is
+	 *         authenticated
+	 * @since 2.8.11
+	 */
+	public Integer getAuthenticatedUserId() {
+		return getPrincipal().userId;
 	}
 
 	/**
 	 * @return true if user has been authenticated in this UserContext
 	 */
 	public boolean isAuthenticated() {
-		return user != null;
+		return getAuthenticatedUser() != null;
 	}
 
 	/**
@@ -287,8 +332,8 @@ public class UserContext implements Serializable {
 	 */
 	public void logout() {
 		log.debug("setting user to null on logout");
-		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
-		user = null;
+		notifyUserSessionListener(getAuthenticatedUser(), Event.LOGOUT, Status.SUCCESS);
+		setUser(null);
 		locationId = null;
 		locale = null;
 		proxies.clear();
@@ -475,6 +520,55 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * Unlike {@link #getAllRoles()}, which reads the authenticated user's roles in memory, this gives
+	 * the roles privilege checks use.
+	 *
+	 * @return the names of the roles the authenticated user held when loaded, plus
+	 *         {@link RoleConstants#AUTHENTICATED} if a user is authenticated, and
+	 *         {@link RoleConstants#ANONYMOUS}; not including the roles those inherit
+	 * @since 2.8.11
+	 */
+	public Set<String> getAssignedRoleNames() {
+		Set<String> names = new HashSet<>();
+		Principal current = getPrincipal();
+		if (current.isAuthenticated()) {
+			names.addAll(current.roleNames);
+			names.add(RoleConstants.AUTHENTICATED);
+		}
+		names.add(RoleConstants.ANONYMOUS);
+		return names;
+	}
+
+	/**
+	 * Tests whether the authenticated user holds a role, directly or by inheritance, as stored when
+	 * they were loaded. Like {@link User#hasRole(String)}, a superuser holds every role, and names are
+	 * compared case-insensitively.
+	 *
+	 * @param role the name of the role
+	 * @return true if the authenticated user holds the role
+	 * @since 2.8.11
+	 */
+	public boolean hasRole(String role) {
+		Principal current = getPrincipal();
+		if (!current.isAuthenticated()) {
+			return false;
+		}
+		RolePrivilegeCache cache = getRolePrivilegeCache();
+		for (String roleName : current.roleNames) {
+			if (roleName.equalsIgnoreCase(role)) {
+				return true;
+			}
+		}
+		for (String roleName : current.roleNames) {
+			RolePrivileges rolePrivileges = resolveRole(cache, roleName);
+			if (rolePrivileges.grantsSuperuser() || rolePrivileges.includesRole(role)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Tests whether the currently authenticated user has a particular privilege
 	 * <p>
 	 * <strong>Should</strong> authorize if authenticated user has specified privilege<br/>
@@ -539,42 +633,60 @@ public class UserContext implements Serializable {
 		RolePrivilegeCache cache = getRolePrivilegeCache();
 
 		// if a user has logged in, check their privileges
-		if (isAuthenticated()) {
+		Principal current = getPrincipal();
+		if (current.isAuthenticated()) {
 			// All authenticated users have the "" (empty) privilege, matching User.hasPrivilege.
 			if (StringUtils.isEmpty(privilege)) {
 				return true;
 			}
 
-			User authenticatedUser = getAuthenticatedUser();
-			if (authenticatedUser.getRoles() != null) {
-				for (Role role : authenticatedUser.getRoles()) {
-					if (roleGrants(cache, role, privilege)) {
-						return true;
-					}
+			for (String roleName : current.roleNames) {
+				if (roleGrants(cache, roleName, privilege)) {
+					return true;
 				}
 			}
 
-			if (roleGrants(cache, getAuthenticatedRole(), privilege)) {
+			// by name, never the cached Role instance, which getAllRoles hands to callers
+			if (roleGrants(cache, RoleConstants.AUTHENTICATED, privilege)) {
 				return true;
 			}
 		}
 
-		return roleGrants(cache, getAnonymousRole(), privilege);
+		return roleGrants(cache, RoleConstants.ANONYMOUS, privilege);
 	}
 
 	/**
-	 * Tests whether a single role (and its inherited closure) grants the given privilege, using the
-	 * cached flattening when available and falling back to a direct computation otherwise.
+	 * Tests whether a single role (and its inherited closure) grants the given privilege.
 	 *
 	 * @param cache the role privilege cache, or <code>null</code> if unavailable
-	 * @param role the directly assigned role to test
+	 * @param roleName the name of the directly assigned role to test
 	 * @param privilege the privilege to check
 	 * @return true if the role grants superuser status or contains the privilege
 	 */
-	private boolean roleGrants(RolePrivilegeCache cache, Role role, String privilege) {
-		RolePrivileges rolePrivileges = (cache != null) ? cache.getRolePrivileges(role)
-		        : RolePrivilegeCache.computeRolePrivileges(role);
+	private boolean roleGrants(RolePrivilegeCache cache, String roleName, String privilege) {
+		RolePrivileges rolePrivileges = resolveRole(cache, roleName);
 		return rolePrivileges.grantsSuperuser() || rolePrivileges.containsPrivilege(privilege);
+	}
+
+	/**
+	 * Resolves a role as stored, through the cache when it is available. Without it, as while the
+	 * application context refreshes, the role is read from the database on every call, and grants
+	 * nothing if that read fails.
+	 *
+	 * @param cache the role privilege cache, or <code>null</code> if unavailable
+	 * @param roleName the name of the role
+	 * @return the role's flattened privileges
+	 */
+	private static RolePrivileges resolveRole(RolePrivilegeCache cache, String roleName) {
+		if (cache != null) {
+			return cache.getRolePrivileges(roleName);
+		}
+		try {
+			return RolePrivilegeCache.resolve(roleName, Context.getContextDAO()::getStoredRole);
+		} catch (RuntimeException e) {
+			log.error("Could not read role {} without the role privilege cache; it grants nothing", roleName, e);
+			return new RolePrivileges(Collections.emptySet(), false);
+		}
 	}
 
 	/**
@@ -701,14 +813,15 @@ public class UserContext implements Serializable {
 	 */
 	private void setUserLocation(boolean useDefault) {
 		// location should be null if no user is logged in
-		if (this.user == null) {
+		User user = getAuthenticatedUser();
+		if (user == null) {
 			this.locationId = null;
 			return;
 		}
 
 		// intended to be when the user initially authenticates
 		if (this.locationId == null && useDefault) {
-			this.locationId = getDefaultLocationId(this.user);
+			this.locationId = getDefaultLocationId(user);
 		}
 	}
 
@@ -718,7 +831,8 @@ public class UserContext implements Serializable {
 	 */
 	private void setUserLocale(boolean useDefault) {
 		// local should be null if no user is logged in
-		if (this.user == null) {
+		User user = getAuthenticatedUser();
+		if (user == null) {
 			this.locale = null;
 			return;
 		}
@@ -788,6 +902,61 @@ public class UserContext implements Serializable {
 	private void notifyUserSessionListener(User user, Event event, Status status) {
 		for (UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
 			userSessionListener.loggedInOrOut(user, event, status);
+		}
+	}
+
+	/**
+	 * The authenticated user's identity and roles as read from the database when they were loaded.
+	 */
+	private static final class Principal implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private static final Principal NONE = new Principal(null, null, Collections.emptySet());
+
+		/** The user object this was recorded for */
+		private final User user;
+
+		private final Integer userId;
+
+		/** Names of the roles the user holds directly */
+		private final Set<String> roleNames;
+
+		private Principal(User user, Integer userId, Set<String> roleNames) {
+			this.user = user;
+			this.userId = userId;
+			this.roleNames = Collections.unmodifiableSet(new HashSet<>(roleNames));
+		}
+
+		private boolean isAuthenticated() {
+			return user != null;
+		}
+
+		/**
+		 * Records a stored user's roles as read from the database. A user that isn't stored, as in tests or
+		 * authentication schemes that don't persist users, keeps its in-memory roles.
+		 */
+		private static Principal of(User user) {
+			return user == null ? NONE : of(user, user.getUserId());
+		}
+
+		/**
+		 * As {@link #of(User)}, but for a user already known to be stored under {@code userId}, such as one
+		 * reloaded by that id, whose own id may have been changed in memory.
+		 */
+		private static Principal of(User user, Integer userId) {
+			if (user == null) {
+				return NONE;
+			}
+			Set<String> roleNames;
+			if (userId != null) {
+				roleNames = Context.getContextDAO().getStoredRoleNames(userId);
+			} else {
+				roleNames = user.getRoles() == null ? Collections.emptySet()
+				        : user.getRoles().stream().filter(Objects::nonNull).map(Role::getRole).filter(Objects::nonNull)
+				                .collect(Collectors.toSet());
+			}
+			return new Principal(user, userId, roleNames);
 		}
 	}
 }

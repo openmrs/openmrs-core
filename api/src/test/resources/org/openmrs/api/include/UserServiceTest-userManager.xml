@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <privilege privilege="Edit Users" description="Able to change information relating to a user account" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d501" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Edit Users" />
+  <privilege privilege="Edit User Passwords" description="Able to change the passwords of users" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d502" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Edit User Passwords" />
+  <privilege privilege="Get Users" description="Able to get users" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d503" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Get Users" />
+  <privilege privilege="Manage Roles" description="Able to manage roles" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d504" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Manage Roles" />
+  <privilege privilege="Get Roles" description="Able to get roles" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d505" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Get Roles" />
+  <privilege privilege="Get Privileges" description="Able to get privileges" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d506" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Get Privileges" />
+  <role role="User Manager" description="Manages users and roles, but can't make anyone a superuser" uuid="0a7d1f2e-3b4c-4d5e-8f60-71a2b3c4d507"/>
+  <role_privilege role="User Manager" privilege="Edit Users" />
+  <role_privilege role="User Manager" privilege="Edit User Passwords" />
+  <role_privilege role="User Manager" privilege="Get Users" />
+  <role_privilege role="User Manager" privilege="Manage Roles" />
+  <role_privilege role="User Manager" privilege="Get Roles" />
+  <role_privilege role="User Manager" privilege="Get Privileges" />
+  <user_role user_id="5511" role="User Manager" />
+</dataset>

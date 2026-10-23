@@ -20,9 +20,13 @@ import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
+import org.openmrs.security.UserKeyGenerator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 
@@ -311,6 +315,86 @@ public class UserContextTest extends BaseContextSensitiveTest {
 			assertThat(denial.getMessage(), is("You must be a superuser to assume another user's identity"));
 		} finally {
 			// deleteUser() purges as the superuser this test stopped being
+			authenticate();
+		}
+	}
+
+	/**
+	 * A separate context logged in as {@link #testUser}, whose user is detached as a web session's is
+	 * on every request after login.
+	 */
+	private UserContext loggedInAsTestUser() {
+		Context.flushSession();
+		UserContext session = new UserContext(Context.getAuthenticationScheme());
+		session.authenticate(new UsernamePasswordCredentials("testUser", "Test1234"));
+		Context.evictFromSession(session.getAuthenticatedUser());
+		return session;
+	}
+
+	@Test
+	void hasPrivilege_shouldIgnoreARoleAddedToTheAuthenticatedUserInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			session.getAuthenticatedUser().addRole(userService.getRole(RoleConstants.SUPERUSER));
+
+			assertFalse(session.hasPrivilege(PrivilegeConstants.EDIT_USERS));
+		} finally {
+			authenticate();
+		}
+	}
+
+	@Test
+	void getAuthenticatedUserId_shouldKeyUserCachesByTheRecordedIdWhenTheUsersIdIsChangedInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		Integer userId = testUser.getUserId();
+		try {
+			session.getAuthenticatedUser().setUserId(1);
+
+			assertThat(Context.getAuthenticatedUserId(), is(userId));
+			assertThat(new UserKeyGenerator().generate(null, null), is(new SimpleKey(userId)));
+		} finally {
+			session.getAuthenticatedUser().setUserId(userId);
+			authenticate();
+		}
+	}
+
+	@Test
+	void refreshAuthenticatedUser_shouldKeepTheRecordedIdWhenTheUsersIdIsChangedInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			// refreshing makes the user the session's managed copy, whose id can be changed until the next flush
+			session.refreshAuthenticatedUser();
+			session.getAuthenticatedUser().setUserId(1);
+			session.refreshAuthenticatedUser();
+
+			assertThat(session.getAuthenticatedUserId(), is(testUser.getUserId()));
+			assertFalse(session.hasRole(RoleConstants.SUPERUSER));
+		} finally {
+			Context.evictFromSession(session.getAuthenticatedUser());
+			authenticate();
+		}
+	}
+
+	@Test
+	void refreshAuthenticatedUser_shouldNotLoadAnotherUserWhenTheUsersUuidIsChangedInMemory() {
+		String adminUuid = userService.getUser(1).getUuid();
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			session.refreshAuthenticatedUser();
+			session.getAuthenticatedUser().setUuid(adminUuid);
+			session.refreshAuthenticatedUser();
+			session.refreshAuthenticatedUser();
+
+			assertThat(session.getAuthenticatedUserId(), is(testUser.getUserId()));
+			assertFalse(session.hasRole(RoleConstants.SUPERUSER));
+		} finally {
+			// users are equal by uuid, so authenticate() would otherwise take this user for the admin
+			session.getAuthenticatedUser().setUuid(testUser.getUuid());
+			Context.evictFromSession(session.getAuthenticatedUser());
 			authenticate();
 		}
 	}

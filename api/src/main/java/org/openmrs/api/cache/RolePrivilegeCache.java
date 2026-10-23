@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -21,11 +23,11 @@ import java.util.function.Function;
 
 import org.infinispan.Cache;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
-import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
@@ -38,40 +40,39 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
- * Per-role cache of flattened privilege resolutions, so privilege and superuser checks need not
- * re-expand a user's role graph on every call. The cached value for a role is an immutable
- * {@link RolePrivileges} covering that role and its entire inherited closure.
+ * Per-role cache of flattened privilege resolutions, so privilege, role and superuser checks need
+ * not re-expand a user's role graph on every call. The cached value for a role is an immutable
+ * {@link RolePrivileges} covering that role and its entire inherited closure. Roles are looked up
+ * by name, exactly as given: only the name of a caller-supplied {@link Role} is used.
  * <p>
- * On a miss the closure is computed from a freshly loaded copy of the role, never the
- * caller-supplied instance, which may be a stale role graph held by a long-lived
- * {@code UserContext}. The role is loaded in a daemon thread, because loading it through the
- * secured {@code UserService} requires {@code Get Roles}, the very kind of check being resolved.
- * The caller waits for the load, and concurrent misses for the same role share one. A role absent
- * from the database grants nothing.
+ * On a miss the closure is read from the database as stored, never from a loaded {@link Role},
+ * which may hold unsaved changes or be stale. The read runs in a daemon thread, so it neither
+ * depends on the caller's privileges nor sees the caller's uncommitted changes. The caller waits
+ * for the load, and concurrent misses for the same role share one. A role absent from the database
+ * grants nothing.
  * <p>
  * If the load fails, the caller is interrupted while waiting for it, or the cache was evicted while
  * the caller waited, so that the load may have read the role from before a change, the role is
  * instead read once through the caller's own session, without caching it. That read sees committed
- * data and the caller's own changes, but a role the session has already loaded is served as the
- * session first loaded it. If that read fails too, the role grants nothing, so a privilege check
- * denies rather than throws.
+ * data and the caller's flushed changes, but not unflushed ones. If that read fails too, the role
+ * grants nothing, so a privilege check denies rather than throws.
  * <p>
  * The daemon only sees committed data. Evictions go through {@link CacheInvalidation}, so a load
  * only keeps its entry if nothing was evicted, on any node, while it ran, and a miss never waits on
  * a load that started before the latest eviction.
  * <p>
  * Within a transaction, the eviction is applied once, when the transaction completes. Until then
- * the transaction resolves roles through its own session, without the cache, so that it sees its
- * own changes, while other transactions keep reading the committed ones. Once a transaction that
+ * the transaction resolves roles through its own session, without the cache, so it sees its own
+ * flushed changes while other transactions keep reading the committed ones. Once a transaction that
  * changed a role or privilege has completed, privileges are therefore never served from before that
  * change, except on a node that missed the eviction while cut off from the cluster.
  * <p>
  * {@link org.openmrs.api.UserService} clears the cache when it saves or purges a role or privilege,
  * and {@link org.openmrs.api.db.hibernate.RolePrivilegeCacheInterceptor} clears it whenever
- * Hibernate flushes a change to one, which covers code that changes a loaded {@link Role} or
- * {@link Privilege} directly. Changes to the tables made outside Hibernate, for example with SQL,
- * are not detected, but the {@code role-privileges} cache template's lifespan limits how long they
- * can be served stale.
+ * Hibernate flushes a change to one; such a change is first vetted by
+ * {@link org.openmrs.api.db.hibernate.RoleWriteGuardListener}. Changes to the tables made outside
+ * Hibernate, for example with SQL, are not detected, but the {@code role-privileges} cache
+ * template's lifespan limits how long they can be served stale.
  *
  * @since 2.8.9
  */
@@ -98,23 +99,23 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	 */
 	private final Function<Runnable, Future<?>> backgroundRunner;
 
-	/** Loads a role by name on the background thread, seeing only committed data. */
-	private final Function<String, Role> committedRoleLoader;
+	/** Reads a role by name on the background thread, seeing only committed data. */
+	private final Function<String, StoredRole> committedRoleLoader;
 
-	/** Loads in progress, by normalized role name, so concurrent misses share a single load. */
+	/** Loads in progress, by role name, so concurrent misses share a single load. */
 	private final ConcurrentMap<String, Load> loads = new ConcurrentHashMap<>();
 
 	private final CacheInvalidation invalidation;
 
 	@Autowired
-	public RolePrivilegeCache(@Qualifier("apiCacheManager") SpringEmbeddedCacheManager cacheManager, UserDAO dao) {
-		// daemon threads skip authorization, so the secured UserService can load the role
-		this(cacheManager, dao, task -> Daemon.runNewDaemonTask(task, daemonCallerKey()),
-		        roleName -> Context.getUserService().getRole(roleName));
+	public RolePrivilegeCache(@Qualifier("apiCacheManager") SpringEmbeddedCacheManager cacheManager, UserDAO dao,
+	    ContextDAO contextDAO) {
+		// the daemon thread has no transaction of its own, so it reads through the transactional ContextDAO
+		this(cacheManager, dao, task -> Daemon.runNewDaemonTask(task, daemonCallerKey()), contextDAO::getStoredRole);
 	}
 
 	RolePrivilegeCache(SpringEmbeddedCacheManager cacheManager, UserDAO dao, Function<Runnable, Future<?>> backgroundRunner,
-	    Function<String, Role> committedRoleLoader) {
+	    Function<String, StoredRole> committedRoleLoader) {
 		this.cacheManager = cacheManager;
 		this.dao = dao;
 		this.backgroundRunner = backgroundRunner;
@@ -152,16 +153,29 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	 * @return the flattened privilege closure for the role
 	 */
 	public RolePrivileges getRolePrivileges(Role role) {
-		if (role == null || role.getRole() == null) {
+		return getRolePrivileges(role == null ? null : role.getRole());
+	}
+
+	/**
+	 * Returns the flattened privileges for the named role, loading and caching them on a miss. Never
+	 * returns {@code null} and never throws; a role that cannot be loaded grants nothing.
+	 *
+	 * @param roleName the name of the directly assigned role to resolve
+	 * @return the flattened privilege closure for the role
+	 * @since 2.8.11
+	 */
+	public RolePrivileges getRolePrivileges(String roleName) {
+		if (roleName == null) {
 			return new RolePrivileges(new HashSet<>(), false);
 		}
 
 		if (invalidation.isWrittenInCurrentTransaction(null)) {
-			return resolveInCurrentSession(role.getRole(), null);
+			return resolveInCurrentSession(roleName, null);
 		}
 
 		Cache<Object, Object> cache = getCache();
-		String key = RolePrivileges.normalize(role.getRole());
+		// not normalized: on a case-sensitive database, names differing only in case are different roles
+		String key = roleName;
 		if (cache != null) {
 			Object cached = cache.get(key);
 			if (cached instanceof RolePrivileges) {
@@ -169,7 +183,7 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 			}
 		}
 
-		Load load = startOrJoinLoad(key, role.getRole(), cache);
+		Load load = startOrJoinLoad(key, roleName, cache);
 		RolePrivileges loaded;
 		try {
 			loaded = await(key, load);
@@ -177,11 +191,11 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 			// the daemon may have failed for want of a connection the caller already holds, or the caller
 			// may have been interrupted
 			log.warn("Could not load the privileges of role {}; reading it through the caller's session", key, e);
-			return resolveInCurrentSession(role.getRole(), e);
+			return resolveInCurrentSession(roleName, e);
 		}
 
 		if (cache != null && !CacheInvalidation.isCurrent(cache, load.generation)) {
-			return resolveInCurrentSession(role.getRole(), null);
+			return resolveInCurrentSession(roleName, null);
 		}
 		return loaded;
 	}
@@ -213,52 +227,37 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Flattens a role and its transitively inherited roles into an immutable {@link RolePrivileges},
-	 * with a visited set guarding against inheritance cycles. A <code>null</code> role grants nothing.
-	 * <p>
-	 * Resolves against the passed-in instance with <em>no freshness guarantee</em>, so it must not
-	 * drive a security decision on a possibly stale role.
+	 * Flattens a role and its inherited roles as read through {@code reader}, tolerating inheritance
+	 * cycles. Superuser status is judged from the names as stored, so a name the database matches
+	 * loosely, for example with different case or trailing spaces, can't hide a superuser role. A role
+	 * absent from the database grants nothing.
 	 *
-	 * @param role the role to flatten
+	 * @param roleName the name of the role to flatten
+	 * @param reader reads a role as stored, returning null if there is no such role
 	 * @return the flattened privilege closure
+	 * @since 2.8.11
 	 */
-	public static RolePrivileges computeRolePrivileges(Role role) {
+	public static RolePrivileges resolve(String roleName, Function<String, StoredRole> reader) {
 		Set<String> privileges = new HashSet<>();
-		Set<String> visited = new HashSet<>();
-		boolean grantsSuperuser = collect(role, privileges, visited);
-		return new RolePrivileges(privileges, grantsSuperuser);
-	}
-
-	/**
-	 * Depth-first walk over a role and its inherited roles, collecting privilege names.
-	 *
-	 * @param role the role currently being visited
-	 * @param privileges accumulates privilege names in their original casing; {@link RolePrivileges}
-	 *            normalizes them for matching on construction, so raw names are fine here
-	 * @param visited role names already visited, to break inheritance cycles
-	 * @return true if this role or any role reachable from it confers superuser status
-	 */
-	private static boolean collect(Role role, Set<String> privileges, Set<String> visited) {
-		if (role == null || role.getRole() == null || !visited.add(RolePrivileges.normalize(role.getRole()))) {
-			return false;
-		}
-
-		// Superuser status can be inherited, so a superuser role anywhere in the closure grants it.
-		boolean grantsSuperuser = RoleConstants.SUPERUSER.equalsIgnoreCase(role.getRole());
-
-		if (role.getPrivileges() != null) {
-			for (Privilege privilege : role.getPrivileges()) {
-				if (privilege != null && privilege.getPrivilege() != null) {
-					privileges.add(privilege.getPrivilege());
-				}
+		// names as stored, which also marks a role as visited however it was named when reached
+		Set<String> roleNames = new HashSet<>();
+		Set<String> requested = new HashSet<>();
+		Deque<String> pending = new ArrayDeque<>();
+		pending.push(roleName);
+		boolean grantsSuperuser = false;
+		while (!pending.isEmpty()) {
+			String name = pending.pop();
+			if (!requested.add(name)) {
+				continue;
+			}
+			StoredRole stored = reader.apply(name);
+			if (stored != null && roleNames.add(stored.getName())) {
+				grantsSuperuser |= RoleConstants.SUPERUSER.equalsIgnoreCase(stored.getName());
+				privileges.addAll(stored.getPrivileges());
+				stored.getParentRoles().forEach(pending::push);
 			}
 		}
-
-		for (Role inherited : role.getInheritedRoles()) {
-			grantsSuperuser |= collect(inherited, privileges, visited);
-		}
-
-		return grantsSuperuser;
+		return new RolePrivileges(privileges, grantsSuperuser, roleNames);
 	}
 
 	/**
@@ -326,12 +325,12 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Runs on the background thread: loads a fresh copy of the role, flattens it, and caches it unless
-	 * the generation token has changed since <code>generation</code> was read. A role absent from the
+	 * Runs on the background thread: reads the role as stored, flattens it, and caches it unless the
+	 * generation token has changed since <code>generation</code> was read. A role absent from the
 	 * database grants nothing.
 	 */
 	private RolePrivileges load(String key, String roleName, Cache<Object, Object> cache, Object generation) {
-		RolePrivileges loaded = computeRolePrivileges(committedRoleLoader.apply(roleName));
+		RolePrivileges loaded = resolve(roleName, committedRoleLoader);
 		if (cache != null) {
 			CacheInvalidation.putIfCurrent(cache, key, loaded, generation);
 		}
@@ -339,14 +338,14 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Reads the role through the caller's own session and flattens it, without caching it. If the read
-	 * fails, the role grants nothing.
+	 * Flattens the role as stored, read through the caller's own session, without caching the result.
+	 * If the read fails, the role grants nothing.
 	 *
 	 * @param loadFailure why the load failed, if it did, which is recorded on any failure of this read
 	 */
 	private RolePrivileges resolveInCurrentSession(String roleName, Exception loadFailure) {
 		try {
-			return computeRolePrivileges(dao.getRole(roleName));
+			return resolve(roleName, dao::getStoredRole);
 		} catch (RuntimeException e) {
 			if (loadFailure != null) {
 				e.addSuppressed(loadFailure);
