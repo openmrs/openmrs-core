@@ -41,8 +41,10 @@
 			<many-to-many class="Role" column="parent_role" />
 		</set>
 
-		<!-- bi-directional many-to-many association to Role to create childRoles-->
-		<set name="childRoles" cascade="none" lazy="false"
+		<!-- bi-directional many-to-many association to Role to create childRoles. Read-only (inverse):
+		     role_role is written only through inheritedRoles, so saveRole's checks on inheritedRoles
+		     can't be sidestepped by adding a child to a role instead. -->
+		<set name="childRoles" cascade="none" lazy="false" inverse="true"
 			table="role_role">
 			<cache usage="read-write"/>
 			<key>

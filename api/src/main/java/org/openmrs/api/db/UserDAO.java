@@ -78,6 +78,17 @@ public interface UserDAO {
 	public Role getRole(String r) throws DAOException;
 
 	/**
+	 * Reads a role as stored, rather than returning the session's copy, which may hold unsaved changes.
+	 * A role saved through {@link org.openmrs.api.UserService} in this transaction is read as saved,
+	 * flushed or not; any other role is read from the database without flushing.
+	 *
+	 * @param roleName the role's name
+	 * @return the role as stored, or null if there is no such role
+	 * @since 2.8.11
+	 */
+	public StoredRole getStoredRole(String roleName) throws DAOException;
+
+	/**
 	 * @see org.openmrs.api.UserService#getAllRoles()
 	 */
 	public List<Role> getAllRoles() throws DAOException;

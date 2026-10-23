@@ -21,7 +21,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -136,6 +140,61 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
+	 * Transaction-scoped record of the roles and privileges this service has saved or purged.
+	 * {@link org.openmrs.api.db.hibernate.RoleWriteGuardListener} rejects any other write to a role or
+	 * privilege, so a Role or Privilege changed in memory can't be written as a side effect of some
+	 * other save (for example saving a user who holds the role), bypassing Manage Roles or Manage
+	 * Privileges. The record lasts until the transaction ends, because the write may be flushed after
+	 * the service method returns.
+	 * <p>
+	 * Only a nestmate of {@code UserServiceImpl} can add to the record. As with
+	 * {@link UserPasswordGuard}, this guards against accidental writes around the service layer, not
+	 * hostile code sharing the JVM, and it doesn't cover SQL run outside Hibernate.
+	 *
+	 * @since 2.8.11
+	 */
+	public static final class RoleWriteGuard {
+
+		private RoleWriteGuard() {
+		}
+
+		@SuppressWarnings("unchecked")
+		private static void permit(Class<?> type, Object id) {
+			if (id == null || !TransactionSynchronizationManager.isSynchronizationActive()) {
+				return;
+			}
+			Set<String> permitted = (Set<String>) TransactionSynchronizationManager.getResource(RoleWriteGuard.class);
+			if (permitted == null) {
+				permitted = new HashSet<>();
+				TransactionSynchronizationManager.bindResource(RoleWriteGuard.class, permitted);
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+
+					@Override
+					public void afterCompletion(int status) {
+						TransactionSynchronizationManager.unbindResourceIfPossible(RoleWriteGuard.class);
+					}
+				});
+			}
+			permitted.add(key(type, id));
+		}
+
+		/**
+		 * @param type {@link Role} or {@link Privilege}
+		 * @param id the role or privilege name
+		 * @return true if this service saved or purged that role or privilege in the current transaction
+		 */
+		@SuppressWarnings("unchecked")
+		public static boolean isPermitted(Class<?> type, Object id) {
+			Set<String> permitted = (Set<String>) TransactionSynchronizationManager.getResource(RoleWriteGuard.class);
+			return permitted != null && permitted.contains(key(type, id));
+		}
+
+		private static String key(Class<?> type, Object id) {
+			return type.getName() + ":" + id;
+		}
+	}
+
+	/**
 	 * The service's single entry point to {@link UserDAO#saveUser(User, String)}, raising the permit
 	 * that the DAO requires of anything that can change a password.
 	 *
@@ -200,6 +259,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		Context.requirePrivilege(PrivilegeConstants.ADD_USERS);
 
+		user.setRoles(replaceContents(user.getRoles(), loadStoredRoles(user.getRoles())));
 		checkPrivileges(user);
 
 		// if a password wasn't supplied, throw an error
@@ -269,6 +329,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		Context.requirePrivilege(PrivilegeConstants.EDIT_USERS);
 
+		user.setRoles(replaceContents(user.getRoles(), loadStoredRoles(user.getRoles())));
 		checkPrivileges(user);
 
 		if (hasDuplicateUsername(user)) {
@@ -349,6 +410,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 
+		RoleWriteGuard.permit(Privilege.class, privilege.getPrivilege());
 		dao.deletePrivilege(privilege);
 		rolePrivilegeCache.clear();
 	}
@@ -358,7 +420,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public Privilege savePrivilege(Privilege privilege) throws APIException {
+		RoleWriteGuard.permit(Privilege.class, privilege.getPrivilege());
 		Privilege saved = dao.savePrivilege(privilege);
+		RoleWriteGuard.permit(Privilege.class, saved.getPrivilege());
 		rolePrivilegeCache.clear();
 		return saved;
 	}
@@ -398,6 +462,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			throw new CannotDeleteRoleWithChildrenException();
 		}
 
+		RoleWriteGuard.permit(Role.class, role.getRole());
 		dao.deleteRole(role);
 		rolePrivilegeCache.clear();
 	}
@@ -407,6 +472,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public Role saveRole(Role role) throws APIException {
+		if (role.getInheritedRoles() != null) {
+			role.setInheritedRoles(replaceContents(role.getInheritedRoles(), loadStoredRoles(role.getInheritedRoles())));
+		}
+
 		// make sure one of the parents of this role isn't itself...this would
 		// cause an infinite loop
 		if (role.getAllParentRoles().contains(role)) {
@@ -415,7 +484,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		checkPrivileges(role);
 
+		RoleWriteGuard.permit(Role.class, role.getRole());
 		Role saved = dao.saveRole(role);
+		RoleWriteGuard.permit(Role.class, saved.getRole());
 		rolePrivilegeCache.clear();
 		return saved;
 	}
@@ -491,19 +562,72 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
-	 * Convenience method to check if the authenticated user has all privileges they are giving out
+	 * Checks that the authenticated user holds every privilege the user's roles grant, including
+	 * inherited ones. The user's roles must already have been replaced by
+	 * {@link #loadStoredRoles(Collection)}.
 	 *
 	 * @param user user that has privileges
 	 */
 	private void checkPrivileges(User user) {
-		List<String> requiredPrivs = user.getAllRoles().stream().peek(this::checkSuperUserPrivilege).map(Role::getPrivileges)
-		        .filter(Objects::nonNull).flatMap(Collection::stream).map(Privilege::getPrivilege)
-		        .filter(p -> !Context.hasPrivilege(p)).sorted().collect(Collectors.toList());
+		List<String> requiredPrivs = new ArrayList<>(missingPrivileges(user.getRoles()));
 		if (requiredPrivs.size() == 1) {
 			throw new APIException("User.you.must.have.privilege", new Object[] { requiredPrivs.get(0) });
 		} else if (requiredPrivs.size() > 1) {
 			throw new APIException("User.you.must.have.privileges", new Object[] { String.join(", ", requiredPrivs) });
 		}
+	}
+
+	/**
+	 * Replaces each role with the stored role of the same name, dropping names that aren't stored.
+	 * Privileges are granted by the stored role, so a caller-supplied role must never be checked or
+	 * persisted in its place: its privileges and parents need not match what is stored under its name.
+	 */
+	private Set<Role> loadStoredRoles(Collection<Role> roles) {
+		Set<Role> stored = new HashSet<>();
+		if (roles != null) {
+			roles.stream().filter(Objects::nonNull).map(Role::getRole).filter(Objects::nonNull).map(dao::getRole)
+			        .filter(Objects::nonNull).forEach(stored::add);
+		}
+		return stored;
+	}
+
+	/**
+	 * Makes {@code roles} hold exactly {@code stored}, changing it in place and only if it doesn't
+	 * already hold the same instances. Replacing or rewriting an unchanged Hibernate collection would
+	 * make Hibernate rewrite its rows.
+	 *
+	 * @return {@code roles}, or {@code stored} if {@code roles} is null
+	 */
+	private static Set<Role> replaceContents(Set<Role> roles, Set<Role> stored) {
+		if (roles == null) {
+			return stored;
+		}
+		boolean same = roles.size() == stored.size() && roles.stream().allMatch(r -> stored.stream().anyMatch(s -> s == r));
+		if (!same) {
+			roles.clear();
+			roles.addAll(stored);
+		}
+		return roles;
+	}
+
+	/**
+	 * Returns, sorted, the privileges granted by the given roles and every role they inherit from that
+	 * the authenticated user lacks.
+	 *
+	 * @throws APIException if the System Developer role appears anywhere among them and the user lacks
+	 *             {@link PrivilegeConstants#ASSIGN_SYSTEM_DEVELOPER_ROLE}
+	 */
+	private SortedSet<String> missingPrivileges(Collection<Role> roles) {
+		SortedSet<String> missing = new TreeSet<>();
+		if (roles == null) {
+			return missing;
+		}
+		Set<Role> closure = new HashSet<>(roles);
+		roles.forEach(r -> closure.addAll(r.getAllParentRoles()));
+		closure.forEach(this::checkSuperUserPrivilege);
+		closure.stream().map(Role::getPrivileges).filter(Objects::nonNull).flatMap(Collection::stream)
+		        .map(Privilege::getPrivilege).filter(p -> !Context.hasPrivilege(p)).forEach(missing::add);
+		return missing;
 	}
 
 	/**
@@ -525,17 +649,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
-			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser())) {
-				throw new APIException("you.are.not.authorized.change.properties", new Object[] { user.getUserId() });
-			}
-
+			requireCanEditProperties(user);
+			saveStoredUserProperties(user.getUserId(), properties -> properties.put(key, value));
 			user.setUserProperty(key, value);
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
-			} finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			}
 		}
 
 		return user;
@@ -547,25 +663,46 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	public User removeUserProperty(User user, String key) {
 		if (user != null) {
-
-			// if the current user isn't allowed to edit users and
-			// the user being edited is not the current user, throw an
-			// exception
-			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser())) {
-				throw new APIException("you.are.not.authorized.change.properties", new Object[] { user.getUserId() });
-			}
-
+			requireCanEditProperties(user);
+			saveStoredUserProperties(user.getUserId(), properties -> properties.remove(key));
 			user.removeUserProperty(key);
-
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-				Context.getUserService().saveUser(user);
-			} finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
-			}
 		}
 
 		return user;
+	}
+
+	private void requireCanEditProperties(User user) {
+		User authenticated = Context.getAuthenticatedUser();
+		boolean self = authenticated != null && user.getUserId() != null
+		        && user.getUserId().equals(authenticated.getUserId());
+		if (!self && !Context.hasPrivilege(PrivilegeConstants.EDIT_USERS)) {
+			throw new APIException("you.are.not.authorized.change.properties", new Object[] { user.getUserId() });
+		}
+	}
+
+	/**
+	 * Applies {@code change} to the stored user's property map and saves only that. The user is loaded
+	 * by id rather than taken from the caller so that any other state on the caller's copy, such as
+	 * roles or the retired flag on a session user captured at login, is never written back. When the
+	 * user is the authenticated user, the change is mirrored onto the session's copy so that it reads
+	 * its own writes.
+	 */
+	private User saveStoredUserProperties(Integer userId, Consumer<Map<String, String>> change) {
+		if (userId == null) {
+			throw new APIException("This method can be called only to update existing users");
+		}
+		User stored = dao.getUser(userId);
+		if (stored == null) {
+			throw new APIException("no.authenticated.user.found", (Object[]) null);
+		}
+		change.accept(stored.getUserProperties());
+		User saved = daoSaveUser(stored, null);
+
+		User authenticated = Context.getAuthenticatedUser();
+		if (authenticated != null && authenticated != stored && userId.equals(authenticated.getUserId())) {
+			change.accept(authenticated.getUserProperties());
+		}
+		return saved;
 	}
 
 	/**
@@ -622,18 +759,19 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
-	 * Convenience method to check if the authenticated user has all privileges they are giving out to
-	 * the new role
+	 * Checks that the authenticated user holds every privilege the role grants, both its own and those
+	 * of every role it inherits from. Its inherited roles must already have been replaced by
+	 * {@link #loadStoredRoles(Collection)}.
 	 *
 	 * @param role
 	 */
 	private void checkPrivileges(Role role) {
-		Optional.ofNullable(role.getPrivileges()).map(p -> p.stream().filter(pr -> !Context.hasPrivilege(pr.getPrivilege()))
-		        .map(Privilege::getPrivilege).distinct().collect(Collectors.joining(", "))).ifPresent(missing -> {
-			        if (StringUtils.isNotBlank(missing)) {
-				        throw new APIException("Role.you.must.have.privileges", new Object[] { missing });
-			        }
-		        });
+		Set<String> missing = new TreeSet<>(missingPrivileges(role.getInheritedRoles()));
+		Optional.ofNullable(role.getPrivileges()).ifPresent(
+		    p -> p.stream().map(Privilege::getPrivilege).filter(pr -> !Context.hasPrivilege(pr)).forEach(missing::add));
+		if (!missing.isEmpty()) {
+			throw new APIException("Role.you.must.have.privileges", new Object[] { String.join(", ", missing) });
+		}
 	}
 
 	/**
@@ -721,8 +859,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		if (user == null) {
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
-		user.setUserProperty(key, value);
-		return daoSaveUser(user, null);
+		return saveStoredUserProperties(user.getUserId(), properties -> properties.put(key, value));
 	}
 
 	@Override
@@ -731,11 +868,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		if (user == null) {
 			throw new APIException("no.authenticated.user.found", (Object[]) null);
 		}
-		user.getUserProperties().clear();
-		for (Map.Entry<String, String> entry : properties.entrySet()) {
-			user.setUserProperty(entry.getKey(), entry.getValue());
-		}
-		return daoSaveUser(user, null);
+		return saveStoredUserProperties(user.getUserId(), stored -> {
+			stored.clear();
+			stored.putAll(properties);
+		});
 	}
 
 	/**

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
+import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -191,27 +193,25 @@ public class RolePrivilegeCacheIntegrationTest extends BaseContextSensitiveTest 
 	}
 
 	@Test
-	public void flushingAChangeToALoadedRole_shouldStopTheTransactionReadingTheCache() {
+	public void flushingAChangeToALoadedRole_shouldBeRejected() {
+		// a role can only be written through UserService, so the cache never has to account for a role
+		// changed behind its back
 		Role provider = userService.getRole("Provider");
-		primeCache();
 
 		provider.setDescription("changed without saving through the service");
-		Context.flushSession();
 
-		assertPrimedEntryNotServed();
+		assertThrows(APIException.class, Context::flushSession);
 	}
 
 	@Test
-	public void flushingAChangeToALoadedRolesInheritedRoles_shouldStopTheTransactionReadingTheCache() {
+	public void flushingAChangeToALoadedRolesInheritedRoles_shouldBeRejected() {
 		// flushed as an update of the role's collection, not of the role
 		Role provider = userService.getRole("Provider");
 		Role authenticated = userService.getRole(RoleConstants.AUTHENTICATED);
-		primeCache();
 
 		provider.getInheritedRoles().add(authenticated);
-		Context.flushSession();
 
-		assertPrimedEntryNotServed();
+		assertThrows(APIException.class, Context::flushSession);
 	}
 
 	@Test

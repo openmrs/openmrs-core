@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -97,7 +99,8 @@ public class RolePrivilegeCacheClusterTest {
 		Role revoked = new Role("Clerk");
 		revoked.addPrivilege(new Privilege("Revoked Privilege"));
 		UserDAO dao = mock(UserDAO.class);
-		when(dao.getRole("Clerk")).thenReturn(clerk);
+		when(dao.getStoredRole("Clerk"))
+		        .thenReturn(new StoredRole("Clerk", Collections.singleton("View Patients"), Collections.emptySet()));
 		RolePrivilegeCache racing = new RolePrivilegeCache(nodes[1], dao, loadExecutor::submit, name -> {
 			cache1.clear();
 			return revoked;

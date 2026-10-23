@@ -22,6 +22,8 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -312,6 +314,31 @@ public class UserContextTest extends BaseContextSensitiveTest {
 			assertThat(denial.getMessage(), is("You must be a superuser to assume another user's identity"));
 		} finally {
 			// deleteUser() purges as the superuser this test stopped being
+			authenticate();
+		}
+	}
+
+	/**
+	 * A separate context logged in as {@link #testUser}, whose user is detached as a web session's is
+	 * on every request after login.
+	 */
+	private UserContext loggedInAsTestUser() {
+		Context.flushSession();
+		UserContext session = new UserContext(Context.getAuthenticationScheme());
+		session.authenticate(new UsernamePasswordCredentials("testUser", "Test1234"));
+		Context.evictFromSession(session.getAuthenticatedUser());
+		return session;
+	}
+
+	@Test
+	void hasPrivilege_shouldIgnoreARoleAddedToTheAuthenticatedUserInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			session.getAuthenticatedUser().addRole(userService.getRole(RoleConstants.SUPERUSER));
+
+			assertFalse(session.hasPrivilege(PrivilegeConstants.EDIT_USERS));
+		} finally {
 			authenticate();
 		}
 	}

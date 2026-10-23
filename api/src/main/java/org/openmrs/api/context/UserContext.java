@@ -12,6 +12,7 @@ package org.openmrs.api.context;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
@@ -73,6 +75,17 @@ public class UserContext implements Serializable {
 	 * User object containing details about the authenticated user
 	 */
 	private User user = null;
+
+	/**
+	 * Stand-ins for {@link #user}'s roles as they were loaded, which privilege checks use instead of
+	 * the user's own role set. That set belongs to an object any caller can change, and a role added to
+	 * it in memory must not grant anything. Only the names matter: privileges are resolved from the
+	 * database by role name.
+	 */
+	private Set<Role> loadedRoles = Collections.emptySet();
+
+	/** The user {@link #loadedRoles} was taken from */
+	private User loadedRolesOf = null;
 
 	/**
 	 * User's permission proxies
@@ -138,6 +151,7 @@ public class UserContext implements Serializable {
 		try {
 			authenticated = performAuthenticate(credentials);
 			this.user = authenticated.getUser();
+			captureLoadedRoles();
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
 		} catch (ContextAuthenticationException e) {
 			User loggingInUser = new User();
@@ -213,11 +227,54 @@ public class UserContext implements Serializable {
 		log.debug("Refreshing authenticated user");
 
 		if (user != null) {
-			user = Context.getUserService().getUser(user.getUserId());
+			// read through ContextDAO rather than UserService: the user may lack Get Users
+			user = hydrate(Context.getContextDAO().getUserByUuid(user.getUuid()));
+			captureLoadedRoles();
 			//update the stored location in the user's session
 			setUserLocation(false);
 			setUserLocale(false);
 		}
+	}
+
+	/** Records {@link #loadedRoles} from the user as just loaded */
+	private void captureLoadedRoles() {
+		loadedRolesOf = user;
+		loadedRoles = user == null || user.getRoles() == null ? Collections.emptySet()
+		        : user.getRoles().stream().map(Role::getRole).filter(Objects::nonNull).map(Role::new)
+		                .collect(Collectors.toUnmodifiableSet());
+	}
+
+	private Set<Role> getLoadedRoles() {
+		// a user put in place without being loaded here, as some tests do, is captured on first use
+		if (loadedRolesOf != user) {
+			captureLoadedRoles();
+		}
+		return loadedRoles;
+	}
+
+	/**
+	 * Without the cache, which is unavailable while the application context refreshes, privileges can
+	 * only come from the user's roles in memory. Only the roles the user held when loaded count, so a
+	 * role added in memory still grants nothing.
+	 */
+	private Collection<Role> getLoadedRolesInMemory() {
+		Set<String> loaded = getLoadedRoles().stream().map(Role::getRole).collect(Collectors.toSet());
+		Collection<Role> roles = getAuthenticatedUser().getRoles();
+		return roles == null ? Collections.emptySet()
+		        : roles.stream().filter(r -> loaded.contains(r.getRole())).collect(Collectors.toList());
+	}
+
+	/**
+	 * Initializes the user's lazy state, since the user is kept beyond the Hibernate session it was
+	 * loaded in.
+	 */
+	private static User hydrate(User user) {
+		if (user != null) {
+			user.getAllRoles().size();
+			user.getUserProperties().size();
+			user.getPrivileges().size();
+		}
+		return user;
 	}
 
 	/**
@@ -255,6 +312,7 @@ public class UserContext implements Serializable {
 		}
 
 		this.user = userToBecome;
+		captureLoadedRoles();
 
 		//update the user's location and locale
 		setUserLocation(false);
@@ -288,6 +346,7 @@ public class UserContext implements Serializable {
 		log.debug("setting user to null on logout");
 		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
 		user = null;
+		captureLoadedRoles();
 		locationId = null;
 		locale = null;
 		proxies.clear();
@@ -545,9 +604,9 @@ public class UserContext implements Serializable {
 				return true;
 			}
 
-			User authenticatedUser = getAuthenticatedUser();
-			if (authenticatedUser.getRoles() != null) {
-				for (Role role : authenticatedUser.getRoles()) {
+			Collection<Role> roles = cache != null ? getLoadedRoles() : getLoadedRolesInMemory();
+			if (roles != null) {
+				for (Role role : roles) {
 					if (roleGrants(cache, role, privilege)) {
 						return true;
 					}
