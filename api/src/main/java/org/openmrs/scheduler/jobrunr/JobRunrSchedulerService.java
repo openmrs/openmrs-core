@@ -13,11 +13,15 @@ import org.jobrunr.jobs.Job;
 import org.jobrunr.jobs.JobDetails;
 import org.jobrunr.jobs.JobId;
 import org.jobrunr.jobs.RecurringJob;
+import org.jobrunr.jobs.states.EnqueuedState;
+import org.jobrunr.jobs.states.JobState;
 import org.jobrunr.jobs.states.StateName;
 import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.scheduling.JobScheduler;
+import org.jobrunr.scheduling.interval.Interval;
 import org.jobrunr.storage.JobNotFoundException;
 import org.jobrunr.storage.PageRequest;
+import org.jobrunr.storage.StorageException;
 import org.jobrunr.storage.StorageProvider;
 import org.jspecify.annotations.NonNull;
 import org.openmrs.User;
@@ -27,7 +31,6 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.RecurringTaskDetails;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskData;
 import org.openmrs.scheduler.TaskDefinition;
@@ -45,15 +48,16 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -89,35 +93,132 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		this.jobRunrServerLifecycle = jobRunrServerLifecycle;
 	}
 	
+	/**
+	 * JobRunr rejects recurring intervals shorter than this.
+	 */
+	private static final long MIN_INTERVAL_SECONDS = 5;
+	
 	@Override
 	public void onStartup() {
 		jobRunrServerLifecycle.openmrsStarted();
+		int registered = 0;
+		int failed = 0;
 		for (TaskDefinition taskDefinition: schedulerDAO.getTasks()) {
-			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
-				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId() : "daemon";
-				JobId jobId = jobRequestScheduler.enqueue(UUID.fromString(taskDefinition.getUuid()),
-					new JobRequestAdapter(taskDefinition, scheduledBy));
-				String name = taskDefinition.getName();
-				if (name == null) {
-					name = taskDefinition.getTaskClass();
-				}
-				updateJobWithName(jobId, name);
-				log.info("Scheduled legacy task {} [{}] to run on startup", name, taskDefinition.getUuid());
+			// Isolate failures: one misconfigured task must not leave every later task unregistered (defect 3)
+			try {
+				registerOnStartup(taskDefinition);
+				registered++;
 			}
-			
-			Optional<RecurringTaskDetails> recurringTask = getRecurringTask(taskDefinition.getUuid());
-			if (!recurringTask.isPresent()) {
-				Optional<TaskDetails> task = getTask(taskDefinition.getUuid());
-				if (!task.isPresent()) {
-					try {
-						scheduleTask(taskDefinition);
-						log.info("Scheduled legacy task {} [{}] to run on schedule", taskDefinition.getName(), taskDefinition.getUuid());
-					} catch (SchedulerException e) {
-						throw new APIException(e);
-					}
-				}
+			catch (Exception e) {
+				failed++;
+				log.error("Failed to register task {} [{}] on startup; continuing with remaining tasks",
+					taskDefinition.getName(), taskDefinition.getUuid(), e);
 			}
 		}
+		log.info("Scheduler startup: {} task definitions processed, {} failed to register", registered, failed);
+	}
+	
+	private void registerOnStartup(TaskDefinition taskDefinition) throws SchedulerException {
+		String name = taskDefinition.getName() != null ? taskDefinition.getName() : taskDefinition.getTaskClass();
+		
+		if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
+			enqueueStartupRun(taskDefinition, name);
+		}
+		
+		// 2.8.x scheduled tasks flagged start_on_startup at boot; 2.9.0 also tracks started. Leave tasks that are
+		// neither alone, so a task an administrator stopped is not silently restarted by a deploy.
+		if (!Boolean.TRUE.equals(taskDefinition.getStarted()) && !Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
+			return;
+		}
+		
+		if (isRecurring(taskDefinition)) {
+			// Decide on the recurring registration alone. The startup run above uses the task uuid as its job id,
+			// so looking the task up as a one-off job would always find it and skip registration (defect 4).
+			Optional<RecurringJob> existing = getRecurringJob(taskDefinition.getUuid());
+			if (!existing.isPresent()) {
+				scheduleTask(taskDefinition);
+				log.info("Scheduled legacy task {} [{}] to run every {}s", name, taskDefinition.getUuid(),
+					taskDefinition.getRepeatInterval());
+			} else if (!hasExpectedInterval(existing.get(), taskDefinition)) {
+				// Heal registrations written by earlier 2.9.0 builds with a placeholder period
+				log.warn("Recurring task {} [{}] is registered with schedule {} instead of every {}s; re-registering",
+					name, taskDefinition.getUuid(), existing.get().getScheduleExpression(),
+					taskDefinition.getRepeatInterval());
+				deleteRecurringTask(taskDefinition.getUuid());
+				scheduleTask(taskDefinition);
+			}
+		} else if (!Boolean.TRUE.equals(taskDefinition.getStartOnStartup())
+			&& !getTask(taskDefinition.getUuid()).isPresent()) {
+			scheduleTask(taskDefinition);
+			log.info("Scheduled one-off legacy task {} [{}]", name, taskDefinition.getUuid());
+		}
+	}
+	
+	/**
+	 * Enqueues the run-on-startup execution, at most once across replicas booting at the same time.
+	 * <p>
+	 * The task uuid is the job id, so every replica targets the same {@code jobrunr_jobs} row. The row is
+	 * written with JobRunr's optimistic locking rather than read, deleted and re-inserted: a finished run
+	 * from a previous boot is replaced by an update conditional on the version just read, and a missing
+	 * row by an insert that fails on the primary key if another replica got there first. Whichever replica
+	 * loses the race sees the conflict and leaves the other's run alone, so a queued or running job is
+	 * never deleted and the task does not run twice.
+	 */
+	private void enqueueStartupRun(TaskDefinition taskDefinition, String name) {
+		UUID id = UUID.fromString(taskDefinition.getUuid());
+		String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId() : "daemon";
+		JobDetails jobDetails = new JobDetails(new JobRequestAdapter(taskDefinition, scheduledBy));
+		
+		Job run;
+		try {
+			Job previous = storageProvider.getJobById(id);
+			StateName state = previous.getState();
+			if (state == StateName.ENQUEUED || state == StateName.PROCESSING || state == StateName.SCHEDULED) {
+				log.debug("Startup run of {} already queued by another node ({})", name, state);
+				return;
+			}
+			// Same id and version as the finished run, so the save only succeeds if no other node changed it
+			List<JobState> history = new ArrayList<>(previous.getJobStates());
+			history.add(new EnqueuedState());
+			run = new Job(id, previous.getVersion(), jobDetails, history, new ConcurrentHashMap<>());
+		}
+		catch (JobNotFoundException e) {
+			run = new Job(id, 0, jobDetails, new ArrayList<>(Collections.singletonList(new EnqueuedState())),
+				new ConcurrentHashMap<>());
+		}
+		run.setJobName(name);
+		
+		try {
+			storageProvider.save(run);
+			log.info("Scheduled legacy task {} [{}] to run on startup", name, taskDefinition.getUuid());
+		}
+		catch (StorageException e) {
+			// ConcurrentJobModificationException on the versioned update, or a duplicate key on the insert:
+			// another node wrote this row after we read it, so its run stands
+			if (jobExists(id)) {
+				log.debug("Startup run of {} was queued concurrently by another node", name, e);
+			} else {
+				throw e;
+			}
+		}
+	}
+	
+	private boolean jobExists(UUID id) {
+		try {
+			storageProvider.getJobById(id);
+			return true;
+		}
+		catch (JobNotFoundException e) {
+			return false;
+		}
+	}
+	
+	private static boolean isRecurring(TaskDefinition task) {
+		return task.getRepeatInterval() != null && task.getRepeatInterval() > 0;
+	}
+	
+	private static boolean hasExpectedInterval(RecurringJob recurringJob, TaskDefinition task) {
+		return Duration.ofSeconds(task.getRepeatInterval()).toString().equals(recurringJob.getScheduleExpression());
 	}
 
 	@Override
@@ -155,23 +256,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 				}
 				String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
 				
-				if (task.getRepeatInterval() != null && task.getRepeatInterval() > 0) {
-					if (task.getStartTime() == null) {
-						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
-							Duration.ofSeconds(task.getRepeatInterval()),
-							new JobRequestAdapter(task, scheduledBy));
-						updateRecurringJobWithName(recurringJobId, name);
-					} else {
-						Date nextExecution = SchedulerUtil.getNextExecution(task);
-						JobId jobId = jobScheduler.schedule(UuidUtil.newUuid(), nextExecution.toInstant(),
-							(JobRunrSchedulerService service) -> service.scheduleRecurrently(task.getUuid()));
-						updateJobWithName(jobId, task.getName());
-						// Create a placeholder recurring task that will be updated by the above task to the correct interval
-						String recurringJobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(),
-							Duration.between(Instant.now(), nextExecution.toInstant()).plus(1, ChronoUnit.DAYS),
-							new JobRequestAdapter(task, scheduledBy));
-						updateRecurringJobWithName(recurringJobId, name);
-					}
+				if (isRecurring(task)) {
+					registerRecurring(task, name, scheduledBy);
 				} else if (task.getStartTime() != null){
 					Instant runAt = task.getStartTime().toInstant();
 					JobId jobId = jobRequestScheduler.schedule(UUID.fromString(task.getUuid()), runAt, 
@@ -197,16 +283,56 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	}
 
 	/**
-	 * Helper task to schedule recurrently at a given time.
-	 * @param uuid
+	 * Registers a recurring job that always repeats at the task's configured interval.
+	 * <p>
+	 * JobRunr computes interval runs as {@code createdAt + n * interval}, so anchoring {@code createdAt} at the
+	 * task's start time keeps the 2.8.x semantics of {@code start_time} (it fixes the phase of the schedule,
+	 * e.g. "daily at 02:00") without the placeholder period and fix-up job used previously, which could never
+	 * run because the fix-up executed without a Hibernate session.
 	 */
+	private void registerRecurring(TaskDefinition task, String name, String scheduledBy) {
+		long intervalSeconds = task.getRepeatInterval();
+		if (intervalSeconds < MIN_INTERVAL_SECONDS) {
+			throw new IllegalArgumentException("Task " + name + " has repeat interval " + intervalSeconds
+				+ "s; the minimum supported interval is " + MIN_INTERVAL_SECONDS + "s");
+		}
+		Instant anchor = task.getStartTime() != null ? task.getStartTime().toInstant() : Instant.now();
+		RecurringJob recurringJob = new RecurringJob(task.getUuid(),
+			new JobDetails(new JobRequestAdapter(task, scheduledBy)),
+			new Interval(Duration.ofSeconds(intervalSeconds)), ZoneId.systemDefault(), anchor);
+		recurringJob.setJobName(name);
+		storageProvider.saveRecurringJob(recurringJob);
+	}
+	
+	/**
+	 * Fix-up job target created by earlier 2.9.0 builds. Retained only so that jobs already serialized in
+	 * {@code jobrunr_jobs} still resolve; new registrations no longer schedule it.
+	 * <p>
+	 * It is invoked by JobRunr directly on the service target, outside the transactional proxy and outside
+	 * {@link org.openmrs.api.context.Daemon}, so it opens its own session.
+	 *
+	 * @param uuid the task uuid
+	 * @deprecated recurring tasks are now registered with their real interval directly; kept only for jobs
+	 *             already serialized by earlier 2.9.0-SNAPSHOT builds
+	 */
+	@Deprecated
 	public void scheduleRecurrently(String uuid) {
-		TaskDefinition task = getTaskByUuid(uuid);
-		if (task != null) {
-			String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
-			String jobId = jobRequestScheduler.scheduleRecurrently(task.getUuid(), Duration.ofSeconds(task.getRepeatInterval()),
-				new JobRequestAdapter(task, scheduledBy));
-			updateRecurringJobWithName(jobId, task.getName());
+		Context.openSession();
+		try {
+			TaskDefinition task = getTaskByUuid(uuid);
+			// Fix-up jobs from earlier builds have random ids, so shutdownTask() does not delete them. Do not let
+			// one re-create the recurring job of a task that has since been stopped or deleted.
+			if (task == null || !Boolean.TRUE.equals(task.getStarted())) {
+				log.info("Ignoring obsolete fix-up job for task [{}]: the task is not started", uuid);
+				return;
+			}
+			if (isRecurring(task)) {
+				String scheduledBy = task.getCreator() != null ? task.getCreator().getSystemId() : "daemon";
+				registerRecurring(task, task.getName() != null ? task.getName() : task.getTaskClass(), scheduledBy);
+			}
+		}
+		finally {
+			Context.closeSession();
 		}
 	}
 
@@ -594,4 +720,4 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		User user = Context.getAuthenticatedUser();
 		return user != null ? user.getSystemId() : "daemon";
 	}
-}	
+}
