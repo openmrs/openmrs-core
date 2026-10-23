@@ -28,6 +28,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergy;
@@ -62,6 +64,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -89,6 +92,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -2896,6 +2900,32 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
 
 		assertNotNull(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()));
+	}
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldReturnEncounterOnDaemonThreadWithoutViewPrivilege() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		EncounterService encounterService = Context.getEncounterService();
+		String uuid = encounter.getUuid();
+
+		// system work such as a scheduled report runs on a daemon thread, which is granted every privilege
+		try (MockedStatic<Daemon> daemon = mockStatic(Daemon.class, Mockito.CALLS_REAL_METHODS)) {
+			daemon.when(Daemon::isDaemonThread).thenReturn(true);
+
+			assertNotNull(encounterService.getEncounterByUuid(uuid));
+		}
 	}
 
 	/**
