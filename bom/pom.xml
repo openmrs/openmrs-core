@@ -109,7 +109,6 @@
 		<mariadbClientVersion>3.5.10</mariadbClientVersion>
 		<postgresqlVersion>42.7.14</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
-		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
 		<!-- Other Runtime -->
 		<javassistVersion>3.33.0-GA</javassistVersion>
@@ -489,6 +488,7 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4jVersion}</version>
 			</dependency>
+			<!-- Declared by the liquibase module: dom4j needs it for the XPath queries in CoreDataTuner and SchemaOnlyTuner -->
 			<dependency>
 				<groupId>jaxen</groupId>
 				<artifactId>jaxen</artifactId>
@@ -545,11 +545,6 @@
 						<artifactId>logback-classic</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>type-converter</artifactId>
-				<version>${liquibaseExtTypeConverterVersion}</version>
 			</dependency>
 
 			<!-- AspectJ -->
@@ -693,6 +688,9 @@
 				<artifactId>dbunit</artifactId>
 				<version>${dbunitVersion}</version>
 			</dependency>
+			<!-- Used as a listener dependency for the jacoco-maven-plugin / Sonar
+     coverage integration configured in the root pom.xml, not declared
+     as a direct project dependency by any module -->
 			<dependency>
 				<groupId>org.codehaus.sonar-plugins.java</groupId>
 				<artifactId>sonar-jacoco-listeners</artifactId>
@@ -730,6 +728,7 @@
 			</dependency>
 
 			<!-- Netty -->
+			<!-- Pins the Netty version pulled in transitively by the AWS SDK S3 client -->
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-bom</artifactId>
