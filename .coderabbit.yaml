@@ -3,7 +3,7 @@ early_access: false
 tone_instructions: |
   Be encouraging to first-time and student contributors — OpenMRS has many. Explain *why*
   a change matters, not just *what* to change. Suggest concrete code rather than abstract
-  principles. Skip nits that checkstyle/SpotBugs already enforce.
+  principles. Skip nits that Spotless/SpotBugs already enforce.
 reviews:
   profile: chill
   request_changes_workflow: false
@@ -24,8 +24,8 @@ reviews:
   path_instructions:
     - path: "**/*.java"
       instructions: |
-        Include the license header from license-header.txt on new files. Style is enforced
-        by checkstyle.xml — focus on semantic issues, not formatting nits.
+        Include the license header from license-header.txt on new files. Formatting is handled
+        by Spotless — focus on semantic issues, not formatting nits.
     - path: "**/src/main/**/*.java"
       instructions: |
         Flag missing @since tags on new public API in the api/ module, Hibernate/JPA misuse,
