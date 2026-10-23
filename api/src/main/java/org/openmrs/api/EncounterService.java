@@ -849,7 +849,9 @@ public interface EncounterService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> return true if user can edit encounter<br/>
 	 * <strong>Should</strong> return false if user can not edit encounter<br/>
-	 * <strong>Should</strong> fail if encounter is null
+	 * <strong>Should</strong> fail if encounter is null<br/>
+	 * <strong>Should</strong> return false if user is not supposed to edit encounters of saved type
+	 * when type is changed
 	 *
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests edit access
