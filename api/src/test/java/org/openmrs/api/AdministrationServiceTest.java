@@ -784,6 +784,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
 		// not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		// privileges come from the user's roles as loaded, so the added role applies once the user is reloaded
+		Context.refreshAuthenticatedUser();
 		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
 		try {
 			assertNotNull(adminService.getGlobalProperty(property.getProperty()));
@@ -907,6 +909,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
 		// not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		// privileges come from the user's roles as loaded, so the added role applies once the user is reloaded
+		Context.refreshAuthenticatedUser();
 		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
 		try {
 			assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
@@ -952,6 +956,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// Grant the edit + view privileges via the authoritative cache; role privileges resolve by role
 		// name, not from the in-memory role object, so no proxy privilege is involved.
 		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		// privileges come from the user's roles as loaded, so the added role applies once the user is reloaded
+		Context.refreshAuthenticatedUser();
 		RolePrivilegeCacheTestUtil.seed("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
 		    PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		try {

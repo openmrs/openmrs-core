@@ -270,6 +270,9 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	}
 
 	/**
+	 * Child roles are read-only: saving a role never writes them. To make a role inherit from this one,
+	 * add this role to that role's {@link #getInheritedRoles() inherited roles} and save that role.
+	 *
 	 * @since 1.9
 	 * @param childRoles the immediate children to set
 	 */

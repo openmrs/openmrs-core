@@ -12,11 +12,13 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -27,6 +29,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.Person;
@@ -38,6 +41,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -106,19 +110,23 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 
-		// Ensure referenced Roles are managed. The User->Role cascade includes
-		// PERSIST, so detached Roles would cause constraint violations in Hibernate 7.
-		if (user.getRoles() != null) {
+		// Attach only stored Roles. User->Role has no cascade, so saving a user never creates or
+		// rewrites a role; a role name that isn't stored is dropped. The set is left alone when every
+		// role is already managed, so Hibernate doesn't rewrite an unchanged user_role collection.
+		if (user.getRoles() != null && !user.getRoles().stream().allMatch(currentSession::contains)) {
 			Set<Role> managedRoles = new LinkedHashSet<>();
 			for (Role role : user.getRoles()) {
 				if (!currentSession.contains(role)) {
 					Role managedRole = currentSession.get(Role.class, role.getRole());
-					managedRoles.add(managedRole != null ? managedRole : role);
+					if (managedRole != null) {
+						managedRoles.add(managedRole);
+					}
 				} else {
 					managedRoles.add(role);
 				}
 			}
-			user.setRoles(managedRoles);
+			user.getRoles().clear();
+			user.getRoles().addAll(managedRoles);
 		}
 
 		user = HibernateUtil.saveOrUpdate(currentSession, user);
@@ -348,6 +356,42 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public Role getRole(String r) throws DAOException {
 		return sessionFactory.getCurrentSession().get(Role.class, r);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRole(String)
+	 */
+	@Override
+	public StoredRole getStoredRole(String roleName) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		if (UserServiceImpl.RoleWriteGuard.isPermitted(Role.class, roleName)) {
+			Role saved = session.get(Role.class, roleName);
+			if (saved != null) {
+				return new StoredRole(saved.getRole(),
+				        saved.getPrivileges().stream().map(Privilege::getPrivilege).collect(Collectors.toSet()),
+				        saved.getInheritedRoles().stream().map(Role::getRole).collect(Collectors.toSet()));
+			}
+		}
+
+		// privilege checks run in the middle of arbitrary unsaved changes, so reading must not flush them
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			String name = session.createQuery("select r.role from Role r where r.role = :name", String.class)
+			        .setParameter("name", roleName).uniqueResult();
+			if (name == null) {
+				return null;
+			}
+			List<String> privileges = session
+			        .createQuery("select p.privilege from Role r join r.privileges p where r.role = :name", String.class)
+			        .setParameter("name", name).getResultList();
+			List<String> parentRoles = session
+			        .createQuery("select i.role from Role r join r.inheritedRoles i where r.role = :name", String.class)
+			        .setParameter("name", name).getResultList();
+			return new StoredRole(name, new HashSet<>(privileges), new HashSet<>(parentRoles));
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
 	}
 
 	/**

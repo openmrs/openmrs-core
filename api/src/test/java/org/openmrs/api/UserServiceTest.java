@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -54,6 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -74,6 +76,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
 
+	/**
+	 * Roles and privileges no test caller holds, for the role-assignment checks; loaded after
+	 * {@link #XML_FILENAME}
+	 */
+	private static final String ROLE_ASSIGNMENT_XML = "org/openmrs/api/include/UserServiceTest-roleAssignment.xml";
+
 	protected static final String XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION = "org/openmrs/api/include/UserServiceTest-changePasswordAction.xml";
 
 	protected static final String SOME_VALID_PASSWORD = "s0mePassword";
@@ -90,6 +98,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private UserDAO dao;
+
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	@BeforeEach
 	public void setup() {
@@ -272,6 +283,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void createUser_shouldNotAllowCreatingUserWithPrivilegeCurrentUserDoesNotHave() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
 		//setup the currently logged in user
 		User currentUser = new User();
 		Role userRole = new Role("User Adder");
@@ -284,11 +297,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// assigned to the new user
 		// set current user to the user defined above
 		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
-			// create a role to assign to the new user
-			Role role = new Role();
-			role.setRole(RoleConstants.AUTHENTICATED);
-			// add a privilege to the role
-			role.addPrivilege(new Privilege("Custom Privilege"));
+			// a stub of a stored role: the stored role's privileges are checked, not the stub's empty set
+			Role role = new Role("Restricted Role");
 
 			// create our new user object with the required fields
 			User u = new User();
@@ -315,6 +325,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void createUser_shouldNotAllowCreatingUserWithPrivilegesCurrentUserDoesNotHave() throws IllegalAccessException {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
 		//setup the currently logged in user
 		User currentUser = new User();
 		Role userRole = new Role("User Adder");
@@ -327,12 +339,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// assigned to the new user
 		// set current user to the user defined above
 		APIException exception = assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> {
-			// create a role to assign to the new user
-			Role role = new Role();
-			role.setRole(RoleConstants.AUTHENTICATED);
-			// add privileges to the role
-			role.addPrivilege(new Privilege("Custom Privilege"));
-			role.addPrivilege(new Privilege("Another Privilege"));
+			// a stub of a stored role: the stored role's privileges are checked, not the stub's empty set
+			Role role = new Role("Doubly Restricted Role");
 
 			// create our new user object with the required fields
 			User u = new User();
@@ -354,8 +362,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 				Context.removeProxyPrivilege(PrivilegeConstants.ADD_USERS);
 			}
 		}));
-		assertThat(exception.getMessage(),
-		    is("You must have the following privileges in order to assign them: Another Privilege, Custom Privilege"));
+		assertThat(exception.getMessage(), is(
+		    "You must have the following privileges in order to assign them: Another Restricted Privilege, Restricted Privilege"));
 	}
 
 	@Test
@@ -1201,18 +1209,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveRole_shouldThrowErrorIfRoleInheritsFromItself() {
-		Role parentRole = new Role("parent role");
-
-		// Have child inherit parent role
-		Role childRole = new Role("child role");
-		Set<Role> inheritsFromParent = new HashSet<>();
-		inheritsFromParent.add(parentRole);
-		childRole.setInheritedRoles(inheritsFromParent);
-
-		// Now have parent try to inherit the child role.
-		Set<Role> inheritsFromChild = new HashSet<>();
-		inheritsFromChild.add(childRole);
-		parentRole.setInheritedRoles(inheritsFromChild);
+		executeDataSet(XML_FILENAME);
+		// "Some Role" already inherits "Parent", so "Parent" inheriting "Some Role" is a cycle
+		Role parentRole = userService.getRole("Parent");
+		parentRole.getInheritedRoles().add(new Role("Some Role"));
 
 		APIException exception = assertThrows(APIException.class, () -> userService.saveRole(parentRole));
 		assertThat(exception.getMessage(), is(messages.getMessage("Role.cannot.inherit.descendant")));
@@ -1847,6 +1847,257 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 		}
+	}
+
+	@Test
+	public void saveRole_shouldNotAllowInheritingSystemDeveloperWithoutAssignSystemDeveloperRole() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Role role = detachedRole("Some Role");
+		role.getInheritedRoles().add(new Role(RoleConstants.SUPERUSER));
+
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> withCurrentUserAs(new User(), () -> userService.saveRole(role)));
+			assertThat(exception.getMessage(), containsString("must have the role"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		}
+
+		assertThat(storedParentRoleNames("Some Role"), not(hasItem(RoleConstants.SUPERUSER)));
+	}
+
+	@Test
+	public void saveRole_shouldNotAllowInheritingARoleWhoseInheritedPrivilegesCurrentUserLacks() throws Exception {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		Role role = detachedRole("Some Role");
+		// "Inherits Restricted Role" grants nothing itself; the restricted privilege comes from its parent
+		role.getInheritedRoles().add(new Role("Inherits Restricted Role"));
+
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> withCurrentUserAs(new User(), () -> userService.saveRole(role)));
+			assertThat(exception.getMessage(), containsString("Restricted Privilege"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		}
+
+		assertThat(storedParentRoleNames("Some Role"), not(hasItem("Inherits Restricted Role")));
+	}
+
+	@Test
+	public void saveRole_shouldNotWriteChildRoles() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Role superuser = userService.getRole(RoleConstants.SUPERUSER);
+		superuser.getChildRoles().add(userService.getRole("Some Role"));
+
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		try {
+			withCurrentUserAs(new User(), () -> userService.saveRole(superuser));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		}
+
+		assertThat(storedParentRoleNames("Some Role"), not(hasItem(RoleConstants.SUPERUSER)));
+	}
+
+	@Test
+	public void saveRole_shouldIgnoreAnInheritedRoleThatIsNotStored() {
+		executeDataSet(XML_FILENAME);
+		Role role = detachedRole("Some Role");
+		role.getInheritedRoles().add(new Role("No Such Role"));
+
+		userService.saveRole(role);
+
+		assertThat(storedParentRoleNames("Some Role"), not(hasItem("No Such Role")));
+		assertNull(userService.getRole("No Such Role"));
+	}
+
+	@Test
+	public void saveUser_shouldNotAllowAssigningARoleWhoseInheritedPrivilegesCurrentUserLacks() throws Exception {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		User toSave = userService.getUser(5505);
+		toSave.addRole(new Role("Inherits Restricted Role"));
+
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class,
+			    () -> withCurrentUserAs(new User(), () -> userService.saveUser(toSave)));
+			assertThat(exception.getMessage(), containsString("must have privilege"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+
+	@Test
+	public void saveUser_shouldIgnoreARoleThatIsNotStored() {
+		executeDataSet(XML_FILENAME);
+		User toSave = userService.getUser(5505);
+		toSave.addRole(new Role("No Such Role"));
+
+		userService.saveUser(toSave);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(userService.getRole("No Such Role"));
+		assertThat(userService.getUser(5505).getRoles().stream().map(Role::getRole).collect(Collectors.toSet()),
+		    not(hasItem("No Such Role")));
+	}
+
+	/**
+	 * Covers the requirement that purging a user never removes their roles. The cascade on User.roles
+	 * never included REMOVE, so this guards against one being added rather than reproducing a past bug.
+	 */
+	@Test
+	public void purgeUser_shouldNotDeleteTheUsersRoles() {
+		User user = userService.getUser(502);
+		assertThat(user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()), hasItem("Provider"));
+
+		userService.purgeUser(user);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNotNull(userService.getRole("Provider"));
+	}
+
+	@Test
+	public void saveUserProperty_shouldNotRestoreRolesOrUnretireAUserChangedSinceLogin() {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		Context.authenticate(getTestUserCredentials());
+		// a session's user was loaded by an earlier request, so it is detached from this one
+		User sessionUser = Context.getAuthenticatedUser();
+		Context.evictFromSession(sessionUser);
+
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			User stored = userService.getUser(5511);
+			stored.removeRole(userService.getRole("Revocable Role"));
+			userService.retireUser(stored, "testing");
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		}
+		Context.flushSession();
+		Context.clearSession();
+
+		userService.saveUserProperty("test-key", "test-value");
+		Context.flushSession();
+		Context.clearSession();
+
+		assertEquals("test-value", sessionUser.getUserProperty("test-key"));
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+		try {
+			User stored = userService.getUser(5511);
+			assertTrue(stored.getRetired());
+			assertThat(stored.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()),
+			    not(hasItem("Revocable Role")));
+			assertEquals("test-value", stored.getUserProperty("test-key"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		}
+	}
+
+	@Test
+	public void saveUser_shouldNotLetUsersGrantThemselvesRolesTheyCouldNotAssign() {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		Context.authenticate(getTestUserCredentials());
+		User me = Context.getAuthenticatedUser();
+		me.addRole(new Role("Doubly Restricted Role"));
+
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class, () -> userService.saveUser(me));
+			assertThat(exception.getMessage(), containsString("Restricted Privilege"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+
+	@Test
+	public void saveUser_shouldNotLetUsersGrantThemselvesSystemDeveloper() {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		Context.authenticate(getTestUserCredentials());
+		User me = Context.getAuthenticatedUser();
+		me.addRole(new Role(RoleConstants.SUPERUSER));
+
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			APIException exception = assertThrows(APIException.class, () -> userService.saveUser(me));
+			assertThat(exception.getMessage(), containsString("must have the role"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+
+	@Test
+	public void saveUser_shouldNotWriteChangesMadeInMemoryToARole() {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		Role restricted = userService.getRole("Restricted Role");
+		restricted.getPrivileges().clear();
+		User target = userService.getUser(5505);
+		target.addRole(restricted);
+
+		assertThrows(APIException.class, () -> {
+			userService.saveUser(target);
+			Context.flushSession();
+		});
+	}
+
+	@Test
+	public void saveRole_shouldNotLetAHolderGrantTheirRoleAPrivilegeAddedInMemory() {
+		executeDataSet(XML_FILENAME);
+		executeDataSet(ROLE_ASSIGNMENT_XML);
+		// a role written earlier in the transaction makes privilege checks read roles through the session
+		userService.saveRole(userService.getRole("Some Role"));
+		Context.authenticate(getTestUserCredentials());
+
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_PRIVILEGES);
+		try {
+			Role mine = userService.getRole("Revocable Role");
+			mine.addPrivilege(userService.getPrivilege("Restricted Privilege"));
+
+			assertFalse(Context.hasPrivilege("Restricted Privilege"));
+			APIException exception = assertThrows(APIException.class, () -> userService.saveRole(mine));
+			assertThat(exception.getMessage(), containsString("Restricted Privilege"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_PRIVILEGES);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ROLES);
+		}
+	}
+
+	private Role detachedRole(String name) {
+		Role role = userService.getRole(name);
+		Context.evictFromSession(role);
+		return role;
+	}
+
+	/** Reads role_role directly, since writes through one side of it don't refresh the other's cache */
+	private Set<String> storedParentRoleNames(String name) {
+		Context.flushSession();
+		Context.clearSession();
+		List<String> parents = sessionFactory.getCurrentSession()
+		        .createNativeQuery("select parent_role from role_role where child_role = :child", String.class)
+		        .setParameter("child", name).getResultList();
+		return new HashSet<>(parents);
 	}
 
 }

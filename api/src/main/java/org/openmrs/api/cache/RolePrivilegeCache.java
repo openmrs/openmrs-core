@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +28,7 @@ import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
@@ -51,10 +54,10 @@ import org.springframework.stereotype.Component;
  * <p>
  * If the load fails, the caller is interrupted while waiting for it, or the cache was evicted while
  * the caller waited, so that the load may have read the role from before a change, the role is
- * instead read once through the caller's own session, without caching it. That read sees committed
- * data and the caller's own changes, but a role the session has already loaded is served as the
- * session first loaded it. If that read fails too, the role grants nothing, so a privilege check
- * denies rather than throws.
+ * instead read once from the database through the caller's own session, without caching it. That
+ * read sees committed data and the changes the caller has saved, but not unsaved changes to a copy
+ * of the role loaded in the session. If that read fails too, the role grants nothing, so a
+ * privilege check denies rather than throws.
  * <p>
  * The daemon only sees committed data. Evictions go through {@link CacheInvalidation}, so a load
  * only keeps its entry if nothing was evicted, on any node, while it ran, and a miss never waits on
@@ -68,10 +71,11 @@ import org.springframework.stereotype.Component;
  * <p>
  * {@link org.openmrs.api.UserService} clears the cache when it saves or purges a role or privilege,
  * and {@link org.openmrs.api.db.hibernate.RolePrivilegeCacheInterceptor} clears it whenever
- * Hibernate flushes a change to one, which covers code that changes a loaded {@link Role} or
- * {@link Privilege} directly. Changes to the tables made outside Hibernate, for example with SQL,
- * are not detected, but the {@code role-privileges} cache template's lifespan limits how long they
- * can be served stale.
+ * Hibernate flushes a change to one. A change made to a loaded {@link Role} or {@link Privilege}
+ * without saving it through the service is rejected when flushed (see
+ * {@link org.openmrs.api.db.hibernate.RoleWriteGuardListener}). Changes to the tables made outside
+ * Hibernate, for example with SQL, are not detected, but the {@code role-privileges} cache
+ * template's lifespan limits how long they can be served stale.
  *
  * @since 2.8.9
  */
@@ -339,14 +343,32 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Reads the role through the caller's own session and flattens it, without caching it. If the read
-	 * fails, the role grants nothing.
+	 * Reads the role and its inherited roles from the database through the caller's own session and
+	 * flattens them, without caching the result. The roles are read as stored, not as the session's
+	 * copies, which may hold unsaved changes. If the read fails, the role grants nothing.
 	 *
 	 * @param loadFailure why the load failed, if it did, which is recorded on any failure of this read
 	 */
 	private RolePrivileges resolveInCurrentSession(String roleName, Exception loadFailure) {
 		try {
-			return computeRolePrivileges(dao.getRole(roleName));
+			Set<String> privileges = new HashSet<>();
+			Set<String> visited = new HashSet<>();
+			Deque<String> pending = new ArrayDeque<>();
+			pending.push(roleName);
+			boolean grantsSuperuser = false;
+			while (!pending.isEmpty()) {
+				String name = pending.pop();
+				if (!visited.add(RolePrivileges.normalize(name))) {
+					continue;
+				}
+				StoredRole stored = dao.getStoredRole(name);
+				if (stored != null) {
+					grantsSuperuser |= RoleConstants.SUPERUSER.equalsIgnoreCase(stored.getName());
+					privileges.addAll(stored.getPrivileges());
+					stored.getParentRoles().forEach(pending::push);
+				}
+			}
+			return new RolePrivileges(privileges, grantsSuperuser);
 		} catch (RuntimeException e) {
 			if (loadFailure != null) {
 				e.addSuppressed(loadFailure);
