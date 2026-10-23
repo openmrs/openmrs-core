@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -397,6 +398,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setChangedBy(changedByUser);
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());
+		credentials.setActivationKey(null);
 		
 		sessionFactory.getCurrentSession().merge(credentials);
 		
@@ -755,6 +757,16 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public void setUserActivationKey(LoginCredential credentials) {		
 			sessionFactory.getCurrentSession().merge(credentials);	
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredentialForUpdate(org.openmrs.User)
+	 */
+	@Override
+	public LoginCredential getLoginCredentialForUpdate(User user) {
+		LoginCredential credentials = getLoginCredential(user);
+		sessionFactory.getCurrentSession().refresh(credentials, LockModeType.PESSIMISTIC_WRITE);
+		return credentials;
 	}
 
 	/**
