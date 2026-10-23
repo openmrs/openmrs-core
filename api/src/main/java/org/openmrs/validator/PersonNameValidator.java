@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonName;
 import org.openmrs.annotation.Handler;
@@ -56,12 +57,13 @@ public class PersonNameValidator implements Validator {
 			// Validate that the person name object is not null
 			if (personName == null) {
 				errors.reject("error.name");
-			} else if (!personName.getVoided()) {
+			} else if (BooleanUtils.isNotTrue(personName.getVoided())) {
 				// TODO - the following method should be made private in a major release
 				validatePersonName(personName, errors, false, true);
 			}
 		} catch (Exception e) {
-			errors.reject(e.getMessage());
+			log.error("Unexpected error during person name validation", e);
+			errors.reject("error.general");
 		}
 	}
 
