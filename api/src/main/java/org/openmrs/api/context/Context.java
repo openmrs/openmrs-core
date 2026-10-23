@@ -931,6 +931,18 @@ public class Context {
 	}
 
 	/**
+	 * Releases the current thread's session unconditionally. Used by {@link Daemon} at the boundary of
+	 * work executed on pooled threads.
+	 *
+	 * @see org.openmrs.api.db.ContextDAO#releaseThreadSession()
+	 * @since 2.9.0
+	 */
+	static boolean releaseThreadSession() {
+		clearUserContext();
+		return getContextDAO().releaseThreadSession();
+	}
+
+	/**
 	 * Used when the a unit of work which started with a call for openSessionWithCurrentUser has
 	 * finished. This should be in a, preferably, finally block.
 	 *
