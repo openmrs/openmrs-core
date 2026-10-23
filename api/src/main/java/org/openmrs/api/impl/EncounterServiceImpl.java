@@ -1017,7 +1017,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (privilege == null) {
 			return true;
 		}
-
+		if (user == null || user.equals(Context.getAuthenticatedUser())) {
+			return Context.hasPrivilege(privilege.getPrivilege(), false);
+		}
 		return user.hasPrivilege(privilege.getPrivilege());
 	}
 
