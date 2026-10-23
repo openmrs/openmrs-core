@@ -83,6 +83,20 @@ public class HibernateUtil {
 		}
 	}
 
+	/**
+	 * Gets the entity of the given type and id, resolving to the existing session-managed instance if
+	 * one is already in the session's persistence context instead of always issuing a fresh fetch.
+	 *
+	 * @param session the Hibernate session
+	 * @param entityClass the entity's class
+	 * @param id the entity's identifier
+	 * @return the managed entity, or null if no such entity exists
+	 * @since 2.9.0
+	 */
+	public static <T> T getManaged(Session session, Class<T> entityClass, Object id) {
+		return session.get(entityClass, id);
+	}
+
 	private static Dialect dialect = null;
 
 	private static Boolean isHSQLDialect = null;
