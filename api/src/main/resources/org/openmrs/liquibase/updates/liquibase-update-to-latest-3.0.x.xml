@@ -325,4 +325,5 @@
 		<comment>Report concept reference range criteria that can no longer be evaluated because they call methods the criteria sandbox refuses</comment>
 		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
 	</changeSet>
+
 </databaseChangeLog>

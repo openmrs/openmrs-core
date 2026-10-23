@@ -570,18 +570,12 @@ public class ObsArchiveHelper {
 				// Purge complex obs data before deleting database rows
 				purgeComplexDataFromArchive(session, obsId);
 
-				// Ensure FK order: delete reference range archive first
-				session.createNativeQuery("DELETE FROM obs_reference_range_archive WHERE obs_id = :obsId")
-				        .setParameter("obsId", obsId).executeUpdate();
-
-				// Delete from main archive table
-				session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter("obsId", obsId)
-				        .executeUpdate();
-
-				// Evict from L1 cache if it was loaded during this session
-				ObsArchive cached = session.get(ObsArchive.class, obsId);
-				if (cached != null) {
-					session.evict(cached);
+				// remove through the session so Envers records the purge, as it does for a live obs, and flush
+				// so archive lookups later in this transaction, like purgeEncounter's own check, no longer see it
+				ObsArchive archive = session.get(ObsArchive.class, obsId);
+				if (archive != null) {
+					session.remove(archive);
+					session.flush();
 				}
 				return null;
 			});
