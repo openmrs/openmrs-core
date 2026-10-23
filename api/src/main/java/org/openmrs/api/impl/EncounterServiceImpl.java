@@ -675,9 +675,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Transactional(readOnly = true)
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
 		Map<Integer, List<Encounter>> encountersByPatient = dao.getAllEncounters(patients);
-		EncounterService encounterService = Context.getEncounterService();
+		User user = Context.getAuthenticatedUser();
 		for (List<Encounter> encounters : encountersByPatient.values()) {
-			encounterService.filterEncountersByViewPermissions(encounters, null);
+			removeEncountersUserCannotView(encounters, user);
 		}
 		encountersByPatient.values().removeIf(List::isEmpty);
 		return encountersByPatient;
@@ -893,18 +893,28 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			if (user == null) {
 				user = Context.getAuthenticatedUser();
 			}
-			for (Iterator<Encounter> iterator = encounters.iterator(); iterator.hasNext();) {
-				Encounter encounter = iterator.next();
-				// determine whether it's need to include this encounter into result or not
-				// as it can be not accessed by current user due to permissions lack
-				EncounterType et = encounter.getEncounterType();
-				if (et != null && !userHasEncounterPrivilege(et.getViewPrivilege(), user)) {
-					// exclude this encounter from result
-					iterator.remove();
-				}
-			}
+			removeEncountersUserCannotView(encounters, user);
 		}
 		return encounters;
+	}
+
+	/**
+	 * Removes from the given list the encounters whose type has a view privilege the user lacks
+	 *
+	 * @param encounters the encounters to filter in place
+	 * @param user the user to check
+	 */
+	private void removeEncountersUserCannotView(List<Encounter> encounters, User user) {
+		for (Iterator<Encounter> iterator = encounters.iterator(); iterator.hasNext();) {
+			Encounter encounter = iterator.next();
+			// determine whether it's need to include this encounter into result or not
+			// as it can be not accessed by current user due to permissions lack
+			EncounterType et = encounter.getEncounterType();
+			if (et != null && !userHasEncounterPrivilege(et.getViewPrivilege(), user)) {
+				// exclude this encounter from result
+				iterator.remove();
+			}
+		}
 	}
 
 	/**
