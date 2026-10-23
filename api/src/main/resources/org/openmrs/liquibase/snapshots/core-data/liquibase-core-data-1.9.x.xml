@@ -19,7 +19,7 @@
     	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog 
     	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
-	<changeSet author="ben" id="disable-foreign-key-checks" runAlways="true" dbms="mysql">
+	<changeSet author="ben" id="disable-foreign-key-checks" runAlways="true" dbms="mysql,mariadb">
 	<sql>SET FOREIGN_KEY_CHECKS=0</sql>
     </changeSet>
     
@@ -1380,7 +1380,7 @@
         </customChange>
     </changeSet>
     
-    <changeSet author="ben" id="enable-foreign-key-checks" runAlways="true" dbms="mysql">
+    <changeSet author="ben" id="enable-foreign-key-checks" runAlways="true" dbms="mysql,mariadb">
 	<sql>SET FOREIGN_KEY_CHECKS=1</sql>
     </changeSet>
 </databaseChangeLog>
