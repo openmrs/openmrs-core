@@ -11,6 +11,7 @@ package org.openmrs.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
@@ -66,7 +68,7 @@ public class DateUtil {
 			        .optionalStart().appendPattern("XXX").optionalEnd() // e.g. +05:00 or Z
 			        .optionalStart().appendPattern("XX").optionalEnd() // e.g. +0500
 			        .optionalStart().appendPattern("X").optionalEnd() // e.g. +05
-			        .toFormatter();
+			        .toFormatter().withResolverStyle(ResolverStyle.STRICT);
 			// Returns a TemporalAccessor — the common supertype for all java.time datetime types
 			TemporalAccessor parsed = isoFormatter.parse(str);
 			// If the string included a timezone/offset, convert using that offset; otherwise assume system timezone
@@ -74,8 +76,20 @@ public class DateUtil {
 			        : LocalDateTime.from(parsed).atZone(ZoneId.systemDefault()).toInstant();
 			return Date.from(instant);
 		} else {
-			DateFormat legacyFormat = new SimpleDateFormat(DATETIME_PATTERN);
-			return legacyFormat.parse(str);
+			// Try the seconds-aware pattern first so that values like "2023-06-15 10:30:45" keep
+			// their seconds, then fall back to the existing pattern. Both formatters are
+			// non-lenient and the whole string must be consumed, so invalid or partially
+			// matching input throws a ParseException instead of being silently changed.
+			for (String pattern : new String[] { DATETIME_PATTERN + ":ss", DATETIME_PATTERN }) {
+				DateFormat legacyFormat = new SimpleDateFormat(pattern);
+				legacyFormat.setLenient(false);
+				ParsePosition position = new ParsePosition(0);
+				Date parsed = legacyFormat.parse(str, position);
+				if (parsed != null && position.getIndex() == str.length()) {
+					return parsed;
+				}
+			}
+			throw new ParseException("Unable to parse datetime string: " + str, 0);
 		}
 	}
 
