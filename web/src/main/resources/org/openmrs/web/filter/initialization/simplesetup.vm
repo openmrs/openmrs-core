@@ -50,7 +50,6 @@
                     <div class="password-input-container" id="passwordInputContainer">
                         <input type="password" 
                                name="database_root_password" 
-                               value="${databaseRootPassword}" 
                                class="form-input"
                                autocomplete="new-password"
                                onKeyPress="return submitenter(this,event);" />

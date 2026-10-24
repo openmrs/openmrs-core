@@ -10,26 +10,41 @@
 package org.openmrs.web.filter.initialization;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.filter.StartupFilter;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -47,32 +62,67 @@ class InitializationFilterE2ETest {
 
 	private Properties originalRuntimeProperties;
 
+	private String originalApplicationDataDirectory;
+
+	private MockServletContext servletContext;
+
+	@TempDir
+	Path applicationDataDirectory;
+
 	/**
 	 * Testable subclass that overrides renderTemplate to capture which template was rendered instead of
 	 * actually invoking Velocity, and stubs startInstallation so the real InitializationCompletion
 	 * background thread (which performs the real setup and overwrites Context.runtimeProperties with
-	 * wizard-defaulted values) doesn't race with subsequent tests in the same JVM.
+	 * wizard-defaulted values) doesn't race with subsequent tests in the same JVM. It takes a scripted
+	 * install from the test rather than from the environment of the machine running it.
 	 */
 	static class TestableInitializationFilter extends InitializationFilter {
 
 		String lastRenderedTemplate;
 
+		final Properties installationScript = new Properties();
+
+		/**
+		 * The model of the last install this filter was asked to start
+		 */
+		InitializationWizardModel installed;
+
+		/**
+		 * Configures the filter without init, which checks the database of any runtime properties this
+		 * machine has
+		 */
+		TestableInitializationFilter(ServletContext servletContext) {
+			filterConfig = new MockFilterConfig(servletContext);
+		}
+
 		@Override
 		protected void renderTemplate(String templateName, Map<String, Object> referenceMap,
-		        HttpServletResponse httpResponse) throws IOException {
+		        HttpServletResponse httpResponse, Object model, Map<String, Object[]> errors, Map<String, Object[]> msgs)
+		        throws IOException {
 			this.lastRenderedTemplate = templateName;
 		}
 
 		@Override
-		protected void startInstallation() {
+		protected void startInstallation(InitializationWizardModel model) {
+			installed = model;
 			setInstallationStarted(true);
+		}
+
+		@Override
+		protected Properties getInstallationScript() {
+			return installationScript;
+		}
+
+		@Override
+		protected Map<String, String> getEnvironmentVariables() {
+			return Collections.emptyMap();
 		}
 	}
 
 	@BeforeEach
 	void setup() {
-		filter = new TestableInitializationFilter();
-		filter.wizardModel = new InitializationWizardModel();
+		servletContext = new MockServletContext();
+		filter = new TestableInitializationFilter(servletContext);
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		// Save and clear runtime properties to avoid state leaking from other test classes.
@@ -80,6 +130,8 @@ class InitializationFilterE2ETest {
 		// since SchedulerConfig.dataSource() reads them at bean-creation time.
 		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
+		originalApplicationDataDirectory = System.getProperty(OpenmrsConstants.KEY_OPENMRS_APPLICATION_DATA_DIRECTORY);
+		OpenmrsUtil.setApplicationDataDirectory(applicationDataDirectory.toString());
 		filter.setInitializationComplete(false);
 		InitializationFilter.setInstallationStarted(false);
 	}
@@ -89,6 +141,7 @@ class InitializationFilterE2ETest {
 		InitializationFilter.setInstallationStarted(false);
 		filter.setInitializationComplete(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
+		OpenmrsUtil.setApplicationDataDirectory(originalApplicationDataDirectory);
 	}
 
 	// ========== Language Selection (chooselang.vm) ==========
@@ -122,7 +175,7 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("simple", filter.wizardModel.installMethod);
+		assertEquals("simple", model().installMethod);
 		assertEquals("simplesetup.vm", filter.lastRenderedTemplate);
 	}
 
@@ -133,9 +186,9 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("advanced", filter.wizardModel.installMethod);
-		assertEquals(1, filter.wizardModel.currentStepNumber);
-		assertEquals(5, filter.wizardModel.numberOfSteps);
+		assertEquals("advanced", model().installMethod);
+		assertEquals(1, model().currentStepNumber);
+		assertEquals(5, model().numberOfSteps);
 		assertEquals("databasesetup.vm", filter.lastRenderedTemplate);
 	}
 
@@ -146,8 +199,8 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("testing", filter.wizardModel.installMethod);
-		assertEquals(1, filter.wizardModel.currentStepNumber);
+		assertEquals("testing", model().installMethod);
+		assertEquals(1, model().currentStepNumber);
 		assertEquals("remotedetails.vm", filter.lastRenderedTemplate);
 	}
 
@@ -192,14 +245,14 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("mysql", filter.wizardModel.databaseType);
-		assertEquals("rootpass", filter.wizardModel.databaseRootPassword);
-		assertFalse(filter.wizardModel.hasCurrentOpenmrsDatabase);
-		assertTrue(filter.wizardModel.createTables);
-		assertTrue(filter.wizardModel.createDatabaseUser);
-		assertTrue(filter.wizardModel.moduleWebAdmin);
-		assertFalse(filter.wizardModel.autoUpdateDatabase);
-		assertEquals(InitializationWizardModel.ADMIN_DEFAULT_PASSWORD, filter.wizardModel.adminUserPassword);
+		assertEquals("mysql", model().databaseType);
+		assertEquals("rootpass", model().databaseRootPassword);
+		assertFalse(model().hasCurrentOpenmrsDatabase);
+		assertTrue(model().createTables);
+		assertTrue(model().createDatabaseUser);
+		assertTrue(model().moduleWebAdmin);
+		assertFalse(model().autoUpdateDatabase);
+		assertEquals(InitializationWizardModel.ADMIN_DEFAULT_PASSWORD, model().adminUserPassword);
 	}
 
 	@Test
@@ -210,8 +263,8 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("postgresql", filter.wizardModel.databaseType);
-		assertEquals(InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, filter.wizardModel.databaseConnection);
+		assertEquals("postgresql", model().databaseType);
+		assertEquals(InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, model().databaseConnection);
 	}
 
 	// ========== Database Setup - Advanced (databasesetup.vm) ==========
@@ -221,7 +274,7 @@ class InitializationFilterE2ETest {
 	        "simple, wizardcomplete.vm, simplesetup.vm", "advanced, wizardcomplete.vm, implementationidsetup.vm" })
 	void backNavigation_shouldReturnToCorrectPageForInstallMethod(String installMethod, String page, String expectedTemplate)
 	        throws Exception {
-		filter.wizardModel.installMethod = installMethod;
+		model().installMethod = installMethod;
 		request.setParameter("page", page);
 		request.setParameter("back", "Back");
 
@@ -251,8 +304,8 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("openmrs_existing", filter.wizardModel.databaseName);
-		assertTrue(filter.wizardModel.hasCurrentOpenmrsDatabase);
+		assertEquals("openmrs_existing", model().databaseName);
+		assertTrue(model().hasCurrentOpenmrsDatabase);
 	}
 
 	@Test
@@ -267,11 +320,11 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("openmrs_new", filter.wizardModel.databaseName);
-		assertFalse(filter.wizardModel.hasCurrentOpenmrsDatabase);
-		assertTrue(filter.wizardModel.createTables);
-		assertEquals("admin", filter.wizardModel.createDatabaseUsername);
-		assertEquals("adminpass", filter.wizardModel.createDatabasePassword);
+		assertEquals("openmrs_new", model().databaseName);
+		assertFalse(model().hasCurrentOpenmrsDatabase);
+		assertTrue(model().createTables);
+		assertEquals("admin", model().createDatabaseUsername);
+		assertEquals("adminpass", model().createDatabasePassword);
 	}
 
 	@Test
@@ -300,12 +353,12 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 
 		assertEquals("databasetablesanduser.vm", filter.lastRenderedTemplate);
-		assertEquals(2, filter.wizardModel.currentStepNumber);
+		assertEquals(2, model().currentStepNumber);
 	}
 
 	@Test
 	void databaseSetup_shouldSetStepNumber3ForTestingInstall() throws Exception {
-		filter.wizardModel.installMethod = "testing";
+		model().installMethod = "testing";
 		request.setParameter("page", "databasesetup.vm");
 		request.setParameter("database_connection", "jdbc:h2:mem:test");
 		request.setParameter("database_driver", "org.h2.Driver");
@@ -315,7 +368,7 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 
 		assertEquals("databasetablesanduser.vm", filter.lastRenderedTemplate);
-		assertEquals(3, filter.wizardModel.currentStepNumber);
+		assertEquals(3, model().currentStepNumber);
 	}
 
 	// ========== Database Tables and User (databasetablesanduser.vm) ==========
@@ -332,7 +385,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void databaseTablesAndUser_shouldSetCreateTablesWhenYesSelected() throws Exception {
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("create_tables", "yes");
 		request.setParameter("current_database_user", "yes");
@@ -341,16 +394,16 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertTrue(filter.wizardModel.createTables);
-		assertEquals("openmrs_user", filter.wizardModel.currentDatabaseUsername);
-		assertEquals("openmrs_pass", filter.wizardModel.currentDatabasePassword);
-		assertTrue(filter.wizardModel.hasCurrentDatabaseUser);
-		assertFalse(filter.wizardModel.createDatabaseUser);
+		assertTrue(model().createTables);
+		assertEquals("openmrs_user", model().currentDatabaseUsername);
+		assertEquals("openmrs_pass", model().currentDatabasePassword);
+		assertTrue(model().hasCurrentDatabaseUser);
+		assertFalse(model().createDatabaseUser);
 	}
 
 	@Test
 	void databaseTablesAndUser_shouldSetCreateUserWhenNoExistingUser() throws Exception {
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("create_tables", "yes");
 		request.setParameter("current_database_user", "no");
@@ -359,15 +412,15 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertFalse(filter.wizardModel.hasCurrentDatabaseUser);
-		assertTrue(filter.wizardModel.createDatabaseUser);
-		assertEquals("new_user", filter.wizardModel.createUserUsername);
-		assertEquals("new_pass", filter.wizardModel.createUserPassword);
+		assertFalse(model().hasCurrentDatabaseUser);
+		assertTrue(model().createDatabaseUser);
+		assertEquals("new_user", model().createUserUsername);
+		assertEquals("new_pass", model().createUserPassword);
 	}
 
 	@Test
 	void databaseTablesAndUser_shouldRequireUsernameWhenExistingUserSelected() throws Exception {
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
 		request.setParameter("current_database_username", "");
@@ -380,7 +433,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void databaseTablesAndUser_shouldRequirePasswordWhenExistingUserSelected() throws Exception {
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
 		request.setParameter("current_database_username", "user");
@@ -393,8 +446,8 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void databaseTablesAndUser_shouldNavigateToOtherRuntimePropsForAdvancedInstall() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().installMethod = "advanced";
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
 		request.setParameter("current_database_username", "user");
@@ -407,8 +460,8 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void databaseTablesAndUser_shouldNavigateToWizardCompleteForTestingInstall() throws Exception {
-		filter.wizardModel.installMethod = "testing";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().installMethod = "testing";
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "yes");
 		request.setParameter("current_database_username", "user");
@@ -433,33 +486,33 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void otherRuntimeProps_shouldSetModuleWebAdminWhenYes() throws Exception {
-		filter.wizardModel.createTables = true;
+		model().createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
 		request.setParameter("auto_update_database", "no");
 
 		filter.doPost(request, response);
 
-		assertTrue(filter.wizardModel.moduleWebAdmin);
-		assertFalse(filter.wizardModel.autoUpdateDatabase);
+		assertTrue(model().moduleWebAdmin);
+		assertFalse(model().autoUpdateDatabase);
 	}
 
 	@Test
 	void otherRuntimeProps_shouldSetAutoUpdateDatabaseWhenYes() throws Exception {
-		filter.wizardModel.createTables = true;
+		model().createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "no");
 		request.setParameter("auto_update_database", "yes");
 
 		filter.doPost(request, response);
 
-		assertFalse(filter.wizardModel.moduleWebAdmin);
-		assertTrue(filter.wizardModel.autoUpdateDatabase);
+		assertFalse(model().moduleWebAdmin);
+		assertTrue(model().autoUpdateDatabase);
 	}
 
 	@Test
 	void otherRuntimeProps_shouldNavigateToAdminUserSetupWhenCreatingTables() throws Exception {
-		filter.wizardModel.createTables = true;
+		model().createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
 		request.setParameter("auto_update_database", "no");
@@ -470,15 +523,15 @@ class InitializationFilterE2ETest {
 	}
 
 	@Test
-	void otherRuntimeProps_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
-		filter.wizardModel.createTables = false;
+	void otherRuntimeProps_shouldNavigateToAdminUserSetupWhenNotCreatingTables() throws Exception {
+		model().createTables = false;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
 		request.setParameter("auto_update_database", "no");
 
 		filter.doPost(request, response);
 
-		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
+		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
 	}
 
 	// ========== Admin User Setup (adminusersetup.vm) ==========
@@ -516,7 +569,7 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("Admin123", filter.wizardModel.adminUserPassword);
+		assertEquals("Admin123", model().adminUserPassword);
 		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
 	}
 
@@ -524,7 +577,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void implementationIdSetup_shouldGoBackToAdminUserSetupWhenCreatingTables() throws Exception {
-		filter.wizardModel.createTables = true;
+		model().createTables = true;
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("back", "Back");
 
@@ -534,14 +587,14 @@ class InitializationFilterE2ETest {
 	}
 
 	@Test
-	void implementationIdSetup_shouldGoBackToOtherRuntimePropsWhenNotCreatingTables() throws Exception {
-		filter.wizardModel.createTables = false;
+	void implementationIdSetup_shouldGoBackToAdminUserSetupWhenNotCreatingTables() throws Exception {
+		model().createTables = false;
 		request.setParameter("page", "implementationidsetup.vm");
 		request.setParameter("back", "Back");
 
 		filter.doPost(request, response);
 
-		assertEquals("otherruntimeproperties.vm", filter.lastRenderedTemplate);
+		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
 	}
 
 	@Test
@@ -554,10 +607,10 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("Test Clinic", filter.wizardModel.implementationIdName);
-		assertEquals("TESTCLINIC", filter.wizardModel.implementationId);
-		assertEquals("secret", filter.wizardModel.implementationIdPassPhrase);
-		assertEquals("A test clinic implementation", filter.wizardModel.implementationIdDescription);
+		assertEquals("Test Clinic", model().implementationIdName);
+		assertEquals("TESTCLINIC", model().implementationId);
+		assertEquals("secret", model().implementationIdPassPhrase);
+		assertEquals("A test clinic implementation", model().implementationIdDescription);
 		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
 	}
 
@@ -605,62 +658,72 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void wizardComplete_shouldBuildCorrectTaskListForAdvancedWithNewDatabase() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = false;
-		filter.wizardModel.createDatabaseUser = true;
-		filter.wizardModel.createTables = true;
+		model().installMethod = "advanced";
+		model().databaseName = "openmrs";
+		model().hasCurrentOpenmrsDatabase = false;
+		model().createDatabaseUser = true;
+		model().createTables = true;
+		model().wizardCompletePageShown = true;
 		request.setParameter("page", "wizardcomplete.vm");
 
 		filter.doPost(request, response);
 
-		assertNotNull(filter.wizardModel.tasksToExecute);
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.CREATE_SCHEMA));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.CREATE_DB_USER));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.CREATE_TABLES));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.ADD_CORE_DATA));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
+		assertNotNull(model().tasksToExecute);
+		assertTrue(model().tasksToExecute.contains(WizardTask.CREATE_SCHEMA));
+		assertTrue(model().tasksToExecute.contains(WizardTask.CREATE_DB_USER));
+		assertTrue(model().tasksToExecute.contains(WizardTask.CREATE_TABLES));
+		assertTrue(model().tasksToExecute.contains(WizardTask.ADD_CORE_DATA));
+		assertTrue(model().tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
 	}
 
 	@Test
 	void wizardComplete_shouldBuildCorrectTaskListForExistingDatabase() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
-		filter.wizardModel.createDatabaseUser = false;
-		filter.wizardModel.createTables = false;
+		model().installMethod = "advanced";
+		model().databaseName = "openmrs";
+		model().hasCurrentOpenmrsDatabase = true;
+		model().createDatabaseUser = false;
+		model().createTables = false;
+		model().wizardCompletePageShown = true;
 		request.setParameter("page", "wizardcomplete.vm");
 
 		filter.doPost(request, response);
 
-		assertNotNull(filter.wizardModel.tasksToExecute);
-		assertFalse(filter.wizardModel.tasksToExecute.contains(WizardTask.CREATE_SCHEMA));
-		assertFalse(filter.wizardModel.tasksToExecute.contains(WizardTask.CREATE_DB_USER));
-		assertFalse(filter.wizardModel.tasksToExecute.contains(WizardTask.CREATE_TABLES));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
+		assertNotNull(model().tasksToExecute);
+		assertFalse(model().tasksToExecute.contains(WizardTask.CREATE_SCHEMA));
+		assertFalse(model().tasksToExecute.contains(WizardTask.CREATE_DB_USER));
+		assertFalse(model().tasksToExecute.contains(WizardTask.CREATE_TABLES));
+		assertTrue(model().tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
 	}
 
 	@Test
 	void wizardComplete_shouldSetTestingTasksForTestingInstall() throws Exception {
-		filter.wizardModel.installMethod = "testing";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = false;
-		filter.wizardModel.createDatabaseUser = false;
+		model().installMethod = "testing";
+		model().databaseName = "openmrs";
+		model().hasCurrentOpenmrsDatabase = false;
+		model().createDatabaseUser = false;
+		model().wizardCompletePageShown = true;
 		request.setParameter("page", "wizardcomplete.vm");
 
 		filter.doPost(request, response);
 
-		assertTrue(filter.wizardModel.importTestData);
-		assertFalse(filter.wizardModel.createTables);
-		assertNotNull(filter.wizardModel.tasksToExecute);
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.IMPORT_TEST_DATA));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.ADD_MODULES));
-		assertTrue(filter.wizardModel.tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
+		assertTrue(model().importTestData);
+		assertFalse(model().createTables);
+		// the testing install has no admin password page, so it sets no admin password, not even ADMIN_DEFAULT_PASSWORD
+		assertEquals("", model().adminUserPassword);
+		assertNotNull(model().tasksToExecute);
+		assertTrue(model().tasksToExecute.contains(WizardTask.IMPORT_TEST_DATA));
+		assertTrue(model().tasksToExecute.contains(WizardTask.ADD_MODULES));
+		assertTrue(model().tasksToExecute.contains(WizardTask.UPDATE_TO_LATEST));
 	}
 
 	@Test
 	void wizardComplete_shouldRenderProgressPage() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
-		filter.wizardModel.createDatabaseUser = false;
-		filter.wizardModel.createTables = false;
+		model().installMethod = "advanced";
+		model().databaseName = "openmrs";
+		model().hasCurrentOpenmrsDatabase = true;
+		model().createDatabaseUser = false;
+		model().createTables = false;
+		model().wizardCompletePageShown = true;
 		request.setParameter("page", "wizardcomplete.vm");
 
 		filter.doPost(request, response);
@@ -668,7 +731,125 @@ class InitializationFilterE2ETest {
 		assertEquals("progress.vm", filter.lastRenderedTemplate);
 	}
 
+	@Test
+	void wizardComplete_shouldNotStartAnInstallOnceTheWizardWasStartedAgain() throws Exception {
+		request.setParameter("page", "implementationidsetup.vm");
+		request.setParameter("implementation_name", "");
+		request.setParameter("implementation_id", "");
+		request.setParameter("pass_phrase", "");
+		request.setParameter("description", "");
+		filter.doPost(request, response);
+		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
+
+		resetRequest();
+		filter.doGet(request, response);
+		assertEquals("chooselang.vm", filter.lastRenderedTemplate);
+
+		resetRequest();
+		request.setParameter("page", "wizardcomplete.vm");
+		filter.doPost(request, response);
+
+		assertEquals("chooselang.vm", filter.lastRenderedTemplate);
+		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
+	@Test
+	void wizardComplete_shouldNotStartAnInstallWithAnInvalidDatabaseName() throws Exception {
+		// the simple install has no database name field, so a scripted name is first checked on confirmation
+		filter.installationScript.setProperty("database_name", "open mrs");
+		filter.doGet(request, response);
+		resetRequest();
+		request.setParameter("page", "installmethod.vm");
+		request.setParameter("install_method", "simple");
+		filter.doPost(request, response);
+		resetRequest();
+		request.setParameter("page", "simplesetup.vm");
+		request.setParameter("database_type", "mysql");
+		request.setParameter("database_root_password", "rootpass");
+		filter.doPost(request, response);
+		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
+		resetRequest();
+		request.setParameter("page", "wizardcomplete.vm");
+
+		filter.doPost(request, response);
+
+		assertTrue(getErrors().containsKey("install.error.dbNameInvalid"));
+		assertEquals("wizardcomplete.vm", filter.lastRenderedTemplate);
+		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
 	// ========== Installation Already Started ==========
+
+	@Test
+	void startInstallation_shouldNotStartASecondInstallWhileOneIsRunning() {
+		InitializationFilter.setInstallationStarted(true);
+		InitializationFilter otherFilter = new InitializationFilter();
+		InitializationWizardModel model = new InitializationWizardModel();
+		// a database that does not exist, so an install started by mistake ends at its first connection
+		model.databaseConnection = "jdbc:h2:mem:" + UUID.randomUUID() + ";IFEXISTS=TRUE";
+		model.hasCurrentOpenmrsDatabase = true;
+		model.createDatabaseUser = false;
+
+		try {
+			otherFilter.startInstallation(model);
+
+			assertNull(otherFilter.initJob);
+			assertTrue(InitializationFilter.isInstallationStarted());
+		} finally {
+			if (otherFilter.initJob != null) {
+				otherFilter.initJob.waitForCompletion();
+			}
+		}
+	}
+
+	@Test
+	void startInstallation_shouldIgnoreAnotherStartUntilTheRunningInstallEnds() throws Exception {
+		CountDownLatch installRunning = new CountDownLatch(1);
+		CountDownLatch release = new CountDownLatch(1);
+		InitializationFilter installingFilter = new InitializationFilter() {
+
+			@Override
+			protected boolean isCurrentDatabase(InitializationWizardModel wizardModel, String database) {
+				// holds the install at its first step
+				installRunning.countDown();
+				try {
+					release.await();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+				return super.isCurrentDatabase(wizardModel, database);
+			}
+		};
+		installingFilter.startInstallation(installEndingAtItsFirstConnection());
+		InitializationFilter.InitializationCompletion job = installingFilter.initJob;
+		assertNotNull(job);
+		try {
+			assertTrue(installRunning.await(30, TimeUnit.SECONDS));
+			assertTrue(InitializationFilter.isInstallationStarted());
+			installingFilter.startInstallation(installEndingAtItsFirstConnection());
+			assertSame(job, installingFilter.initJob);
+		} finally {
+			release.countDown();
+			job.waitForCompletion();
+			if (installingFilter.initJob != job) {
+				installingFilter.initJob.waitForCompletion();
+			}
+		}
+
+		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
+	/**
+	 * A model for an install on a database that does not exist, which ends at its first connection
+	 */
+	private InitializationWizardModel installEndingAtItsFirstConnection() {
+		InitializationWizardModel model = new InitializationWizardModel();
+		model.databaseConnection = "jdbc:h2:mem:" + UUID.randomUUID() + ";IFEXISTS=TRUE";
+		model.databaseName = "openmrs";
+		model.hasCurrentOpenmrsDatabase = false;
+		model.createDatabaseUser = false;
+		return model;
+	}
 
 	@Test
 	void doPost_shouldRenderProgressWhenInstallationAlreadyStarted() throws Exception {
@@ -698,8 +879,8 @@ class InitializationFilterE2ETest {
 		clearErrors();
 		filter.doPost(request, response);
 		assertEquals("databasesetup.vm", filter.lastRenderedTemplate);
-		assertEquals(1, filter.wizardModel.currentStepNumber);
-		assertEquals(5, filter.wizardModel.numberOfSteps);
+		assertEquals(1, model().currentStepNumber);
+		assertEquals(5, model().numberOfSteps);
 
 		// Step 3: Database Setup -> Database Tables and User
 		resetRequest();
@@ -724,7 +905,6 @@ class InitializationFilterE2ETest {
 
 		// Step 5: Other Runtime Props -> Admin User Setup
 		resetRequest();
-		filter.wizardModel.createTables = true;
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
 		request.setParameter("auto_update_database", "no");
@@ -794,10 +974,10 @@ class InitializationFilterE2ETest {
 	// ========== Full Flow: Advanced with Existing DB (no table creation) ==========
 
 	@Test
-	void advancedExistingDb_shouldSkipAdminSetupWhenNotCreatingTables() throws Exception {
-		filter.wizardModel.installMethod = "advanced";
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
-		filter.wizardModel.createTables = false;
+	void advancedExistingDb_shouldNavigateToAdminUserSetupWhenNotCreatingTables() throws Exception {
+		model().installMethod = "advanced";
+		model().hasCurrentOpenmrsDatabase = true;
+		model().createTables = false;
 
 		request.setParameter("page", "otherruntimeproperties.vm");
 		request.setParameter("module_web_admin", "yes");
@@ -805,7 +985,7 @@ class InitializationFilterE2ETest {
 
 		filter.doPost(request, response);
 
-		assertEquals("implementationidsetup.vm", filter.lastRenderedTemplate);
+		assertEquals("adminusersetup.vm", filter.lastRenderedTemplate);
 	}
 
 	// ========== Wizard Model State Preservation ==========
@@ -816,7 +996,7 @@ class InitializationFilterE2ETest {
 		request.setParameter("page", "installmethod.vm");
 		request.setParameter("install_method", "advanced");
 		filter.doPost(request, response);
-		assertEquals("advanced", filter.wizardModel.installMethod);
+		assertEquals("advanced", model().installMethod);
 
 		// Step 2: Database setup
 		resetRequest();
@@ -829,24 +1009,24 @@ class InitializationFilterE2ETest {
 		filter.doPost(request, response);
 
 		// Verify state from both steps
-		assertEquals("advanced", filter.wizardModel.installMethod);
-		assertEquals("jdbc:h2:mem:test", filter.wizardModel.databaseConnection);
-		assertEquals("my_openmrs", filter.wizardModel.databaseName);
-		assertTrue(filter.wizardModel.hasCurrentOpenmrsDatabase);
+		assertEquals("advanced", model().installMethod);
+		assertEquals("jdbc:h2:mem:test", model().databaseConnection);
+		assertEquals("my_openmrs", model().databaseName);
+		assertTrue(model().hasCurrentOpenmrsDatabase);
 	}
 
 	@Test
 	void isCurrentDatabase_shouldReturnTrueForMariaDBUrl() {
-		filter.wizardModel.databaseConnection = "jdbc:mariadb://localhost:3306/openmrs";
-		assertTrue(filter.isCurrentDatabase("mariadb"));
-		assertFalse(filter.isCurrentDatabase("mysql"));
+		model().databaseConnection = "jdbc:mariadb://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase(model(), "mariadb"));
+		assertFalse(filter.isCurrentDatabase(model(), "mysql"));
 	}
 
 	@Test
 	void isCurrentDatabase_shouldReturnTrueForMySQLUrl() {
-		filter.wizardModel.databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
-		assertTrue(filter.isCurrentDatabase("mysql"));
-		assertFalse(filter.isCurrentDatabase("mariadb"));
+		model().databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase(model(), "mysql"));
+		assertFalse(filter.isCurrentDatabase(model(), "mariadb"));
 	}
 
 	// ========== goBack via image click (back.x / back.y) ==========
@@ -866,7 +1046,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void databaseTablesAndUser_shouldRequireCreateUserUsernameWhenCreatingNewUser() throws Exception {
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "no");
 		request.setParameter("create_user_username", "");
@@ -879,7 +1059,7 @@ class InitializationFilterE2ETest {
 
 	@Test
 	void databaseTablesAndUser_shouldRequireCreateUserPasswordWhenCreatingNewUser() throws Exception {
-		filter.wizardModel.hasCurrentOpenmrsDatabase = true;
+		model().hasCurrentOpenmrsDatabase = true;
 		request.setParameter("page", "databasetablesanduser.vm");
 		request.setParameter("current_database_user", "no");
 		request.setParameter("create_user_username", "user");
@@ -1002,16 +1182,137 @@ class InitializationFilterE2ETest {
 		assertTrue(filter.skipFilter(req));
 	}
 
+	// ========== Database names ==========
+
+	static Stream<String> invalidDatabaseNames() {
+		return Stream.of("open`mrs", "open'mrs", "open\"mrs", "openmrs--x", "openmrs/*x", "openmrs#x", "openmrs;x",
+		    "open$mrs", "open\\mrs", "open mrs", "-openmrs", "openmrs-", "openmrs..db", ".openmrs", "openmrs.",
+		    "openmrs.-db", "a".repeat(65));
+	}
+
+	@ParameterizedTest
+	@MethodSource("invalidDatabaseNames")
+	void databaseSetup_shouldRejectAnInvalidNewDatabaseName(String databaseName) throws Exception {
+		request.setParameter("page", "databasesetup.vm");
+		request.setParameter("database_connection", "jdbc:h2:mem:test");
+		request.setParameter("database_driver", "org.h2.Driver");
+		request.setParameter("current_openmrs_database", "no");
+		request.setParameter("openmrs_new_database_name", databaseName);
+		request.setParameter("create_database_username", "root");
+		request.setParameter("create_database_password", "secret");
+
+		filter.doPost(request, response);
+
+		assertTrue(getErrors().containsKey("install.error.dbNameInvalid"));
+		assertEquals("databasesetup.vm", filter.lastRenderedTemplate);
+	}
+
+	@ParameterizedTest
+	@MethodSource("invalidDatabaseNames")
+	void databaseSetup_shouldRejectAnInvalidCurrentDatabaseName(String databaseName) throws Exception {
+		request.setParameter("page", "databasesetup.vm");
+		request.setParameter("database_connection", "jdbc:h2:mem:test");
+		request.setParameter("database_driver", "org.h2.Driver");
+		request.setParameter("current_openmrs_database", "yes");
+		request.setParameter("openmrs_current_database_name", databaseName);
+
+		filter.doPost(request, response);
+
+		assertTrue(getErrors().containsKey("install.error.dbNameInvalid"));
+		assertEquals("databasesetup.vm", filter.lastRenderedTemplate);
+	}
+
+	@ParameterizedTest
+	@MethodSource("validDatabaseNames")
+	void databaseSetup_shouldAcceptAValidDatabaseName(String databaseName) throws Exception {
+		request.setParameter("page", "databasesetup.vm");
+		request.setParameter("database_connection", "jdbc:h2:mem:test");
+		request.setParameter("database_driver", "org.h2.Driver");
+		request.setParameter("current_openmrs_database", "no");
+		request.setParameter("openmrs_new_database_name", databaseName);
+		request.setParameter("create_database_username", "root");
+		request.setParameter("create_database_password", "secret");
+
+		filter.doPost(request, response);
+
+		assertTrue(getErrors().isEmpty());
+		assertEquals("databasetablesanduser.vm", filter.lastRenderedTemplate);
+	}
+
+	static Stream<String> validDatabaseNames() {
+		// the OpenMRS SDK names a server's database openmrs-<server id>
+		return Stream.of("openmrs", "openmrs_2", "openmrs-server", "openmrs-my-server_1", "openmrs.db",
+		    "openmrs-refapp-2.13", "a".repeat(64));
+	}
+
+	// ========== Scripted (auto) install ==========
+
+	@Test
+	void autoInstall_shouldStartWhenTheScriptedValuesAreValid() throws Exception {
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("database_name", "openmrs-server");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+
+		filter.doGet(request, response);
+
+		assertTrue(InitializationFilter.isInstallationStarted());
+		assertTrue(getErrors().isEmpty());
+		assertSame(model(), filter.installed);
+		assertEquals("openmrs-server", filter.installed.databaseName);
+	}
+
+	@Test
+	void autoInstall_shouldNotStartWithAnInvalidScriptedDatabaseName() throws Exception {
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("database_name", "open mrs");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+
+		filter.doGet(request, response);
+
+		assertFalse(InitializationFilter.isInstallationStarted());
+		assertTrue(getErrors().containsKey("install.error.dbNameInvalid"));
+	}
+
+	@Test
+	void autoInstall_shouldNotStartOnceAnEarlierInstallFailedWhileStartingOpenmrs() throws Exception {
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("database_name", "openmrs");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+		// what an earlier install that started OpenMRS and then failed leaves behind
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+
+		filter.doGet(request, response);
+
+		assertFalse(InitializationFilter.isInstallationStarted());
+		assertTrue(getErrors().containsKey("install.error.restartRequired"));
+	}
+
+	@Test
+	void autoInstall_shouldNotStartWithAnAdminPasswordThePasswordPolicyRejects() throws Exception {
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("database_name", "openmrs");
+		filter.installationScript.setProperty("admin_user_password", "weak");
+
+		filter.doGet(request, response);
+
+		assertFalse(InitializationFilter.isInstallationStarted());
+		assertTrue(getErrors().containsKey("install.error.adminPswdWeak"));
+	}
+
 	// ========== Helper Methods ==========
 
 	/**
-	 * Access the errors map from the filter via reflection since it is protected in StartupFilter.
+	 * The wizard model of the session the current request belongs to.
 	 */
-	@SuppressWarnings("unchecked")
-	private Map<String, Object[]> getErrors() throws Exception {
-		Field errorsField = StartupFilter.class.getDeclaredField("errors");
-		errorsField.setAccessible(true);
-		return (Map<String, Object[]>) errorsField.get(filter);
+	private InitializationWizardModel model() {
+		return filter.getWizardModel(request.getSession());
+	}
+
+	/**
+	 * The errors shown to the session the current request belongs to.
+	 */
+	private Map<String, Object[]> getErrors() {
+		return model().errors;
 	}
 
 	/**
@@ -1022,10 +1323,13 @@ class InitializationFilterE2ETest {
 	}
 
 	/**
-	 * Reset request and response objects for the next step in a multi-step test.
+	 * Reset request and response objects for the next step in a multi-step test, in the same session.
 	 */
 	private void resetRequest() {
+		HttpSession session = request.getSession();
 		request = new MockHttpServletRequest();
+		request.setSession(session);
 		response = new MockHttpServletResponse();
+		filter.lastRenderedTemplate = null;
 	}
 }
