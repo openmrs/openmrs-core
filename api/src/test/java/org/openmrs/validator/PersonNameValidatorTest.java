@@ -70,6 +70,18 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		assertThat(errors, hasGlobalErrors("error.name"));
 	}
 
+	@Test
+	public void validate_shouldNotThrowExceptionWhenPersonNameVoidedIsNull() {
+		PersonName name = new PersonName();
+		name.setGivenName("John");
+		name.setFamilyName("Doe");
+		name.setVoided(null);
+
+		validator.validate(name, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+
 	/**
 	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
 	 *      org.springframework.validation.Errors, boolean, boolean)
