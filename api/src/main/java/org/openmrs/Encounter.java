@@ -39,7 +39,10 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ObsArchiveHelper;
+import org.springframework.dao.DataAccessException;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -284,6 +287,30 @@ public class Encounter extends BaseChangeableOpenmrsData {
 
 		if (this.obs != null) {
 			ret = this.obs.stream().filter(o -> includeVoided || !o.getVoided()).collect(Collectors.toSet());
+		}
+		return ret;
+	}
+
+	/**
+	 * Returns a union of the live observations and the archived observations for this encounter.
+	 *
+	 * @return all observations including archived ones
+	 * @since 3.0.0
+	 */
+	public Set<Obs> getAllObsIncludingArchived() {
+		Set<Obs> ret = new LinkedHashSet<>();
+		if (this.obs != null) {
+			ret.addAll(this.obs);
+		}
+		if (this.getEncounterId() != null) {
+			try {
+				ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+				if (archiveHelper != null) {
+					ret.addAll(archiveHelper.getArchivedObsByEncounterId(this.getEncounterId()));
+				}
+			} catch (APIException | DataAccessException e) {
+				// archive table may not exist yet or context not available, degrade gracefully
+			}
 		}
 		return ret;
 	}

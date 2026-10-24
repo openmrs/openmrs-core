@@ -162,6 +162,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					obs.setPerson(p);
 				}
 			}
+
+			// Sync any archived obs that belong to this encounter as well
+			Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class)
+			        .syncArchivedObsWithEncounter(encounter, originalDate, originalLocation);
 		}
 		// same goes for Orders
 		for (Order o : encounter.getOrders()) {
@@ -513,6 +517,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new APIException("Encounter.error.privilege.required.purge",
 			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
 		}
+
+		Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class).handleArchivedDataOnPurge(encounter,
+		    false);
+
 		dao.deleteEncounter(encounter);
 	}
 
@@ -527,6 +535,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new APIException("Encounter.error.privilege.required.purge",
 			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
 		}
+
+		Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class).handleArchivedDataOnPurge(encounter,
+		    cascade);
 
 		if (cascade) {
 			ObsService obsService = Context.getObsService();
