@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * ImmutableEntityInterceptor for Orders, ensures that orders fields don't get edited except for
- * dateStopped, voided, dateVoided, voidedBy, voidReason
+ * those in {@code MUTABLE_PROPERTY_NAMES}, whether or not the order is voided. An order only moves
+ * to another patient to follow its encounter or in a patient merge.
  *
  * @see ImmutableEntityInterceptor
  * @since 1.10
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class ImmutableOrderInterceptor extends ImmutableEntityInterceptor {
 
 	private static final String[] MUTABLE_PROPERTY_NAMES = new String[] { "dateStopped", "voided", "dateVoided", "voidedBy",
-	        "changedBy", "dateChanged", "voidReason", "patient", "fulfillerStatus", "fulfillerComment", "accessionNumber" };
+	        "changedBy", "dateChanged", "voidReason", "fulfillerStatus", "fulfillerComment", "accessionNumber" };
 
 	/**
 	 * @see ImmutableEntityInterceptor#getSupportedType()
@@ -42,10 +43,14 @@ public class ImmutableOrderInterceptor extends ImmutableEntityInterceptor {
 	}
 
 	/**
-	 * @see ImmutableEntityInterceptor#ignoreVoidedOrRetiredObjects()
+	 * Lets an order move to another patient only to the patient of its encounter, or in a patient
+	 * merge.
+	 *
+	 * @see ImmutableEntityInterceptor#isAllowedChange(Object, String, Object, Object)
 	 */
 	@Override
-	protected boolean ignoreVoidedOrRetiredObjects() {
-		return true;
+	protected boolean isAllowedChange(Object entity, String property, Object previousValue, Object currentValue) {
+		return "patient".equals(property) && isAllowedPersonChange(((Order) entity).getEncounter(),
+		    toPersonId(previousValue), toPersonId(currentValue));
 	}
 }

@@ -90,6 +90,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.test.TestUtil.containsId;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -153,6 +154,171 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(o3);
 		assertFalse(o3.getVoided());
 		assertEquals("Obs value updated", o3.getValueText());
+	}
+
+	/**
+	 * An obs moved into an encounter from another one leaves its voided version in the encounter it
+	 * came from, and saveEncounter's refresh leaves that version out of the encounter's obs in the
+	 * session; moving the encounter to another patient afterwards leaves it with the encounter and
+	 * patient it had.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldLeaveTheVoidedVersionOfAnObsMovedInWithTheEncounterItCameFrom() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Encounter source = es.getEncounter(15);
+		Obs obs = new Obs(source.getPatient(), Context.getConceptService().getConcept(5089), source.getEncounterDatetime(),
+		        source.getLocation());
+		obs.setEncounter(source);
+		obs.setValueNumeric(70.0);
+		os.saveObs(obs, null);
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter target = es.getEncounter(1);
+		target.addObs(os.getObs(obs.getObsId()));
+		es.saveEncounter(target);
+		assertFalse(containsId(target.getAllObs(true), obs.getObsId()));
+		target.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(target);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs earlierVersion = os.getObs(obs.getObsId());
+		assertTrue(earlierVersion.getVoided());
+		assertEquals(15, earlierVersion.getEncounter().getEncounterId());
+		assertEquals(3, earlierVersion.getPerson().getPersonId());
+	}
+
+	/**
+	 * A group moved into an encounter from another one is saved as a new version whose copies of its
+	 * voided members are in that encounter, so the encounter can later be moved to another patient with
+	 * the whole group.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldMoveAnEncounterHoldingAGroupMovedInWithAVoidedMember() {
+		voidAMemberOfTheHierarchyGroup();
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+
+		Encounter target = es.getEncounter(1);
+		target.addObs(os.getObs(100));
+		es.saveEncounter(target);
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter moved = es.getEncounter(1);
+		moved.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(moved);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertGroupMembersBelongTo(es.getEncounter(1), 2);
+	}
+
+	/**
+	 * A group moved into an encounter of another patient leaves its earlier version's voided members
+	 * with the encounter and patient they had, and its new version takes copies of them.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldKeepTheVoidedMembersOfAGroupMovedInFromAnotherPatientWithTheirEncounter() {
+		voidAMemberOfTheHierarchyGroup();
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+
+		Encounter target = es.getEncounter(6);
+		target.addObs(os.getObs(100));
+		es.saveEncounter(target);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs earlierMember = os.getObs(101);
+		assertEquals(100, earlierMember.getEncounter().getEncounterId());
+		assertEquals(3, earlierMember.getPerson().getPersonId());
+		assertGroupMembersBelongTo(es.getEncounter(6), 2);
+	}
+
+	/**
+	 * A voided obs cannot change its encounter, so adding one to another encounter and saving that
+	 * encounter is rejected, and the obs stays where it was.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldRejectAVoidedObsMovedInFromAnotherEncounter() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(1), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter target = es.getEncounter(15);
+		target.addObs(os.getObs(1));
+		assertThrows(UnchangeableObjectException.class, () -> {
+			es.saveEncounter(target);
+			Context.flushSession();
+		});
+		Context.clearSession();
+
+		Obs stored = os.getObs(1);
+		assertTrue(stored.getVoided());
+		assertEquals(1, stored.getEncounter().getEncounterId());
+	}
+
+	/**
+	 * A new voided obs that an encounter reaches through one of its groups is saved with the
+	 * encounter's patient even when it names another encounter, since it is not yet a row that could be
+	 * changed in place.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldGiveANewVoidedObsOfAnotherEncounterTheEncountersPatient() {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Encounter encounter = es.getEncounter(100);
+		Encounter other = es.getEncounter(6);
+		Obs member = new Obs(other.getPatient(), Context.getConceptService().getConcept(3), encounter.getEncounterDatetime(),
+		        encounter.getLocation());
+		member.setEncounter(other);
+		member.setValueText("a voided member");
+		member.setVoided(true);
+		member.setVoidReason("testing");
+		os.getObs(100).addGroupMember(member);
+
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertEquals(3, os.getObs(member.getObsId()).getPerson().getPersonId());
+	}
+
+	/**
+	 * After a group member is edited and its encounter saved, the encounter's obs in the session hold
+	 * the member's new version rather than the replaced one.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldUpdateTheObsOfTheEncounterInTheSessionWhenAGroupMemberIsEdited() {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		EncounterService es = Context.getEncounterService();
+		Encounter enc = es.getEncounter(100);
+		Context.getObsService().getObs(101).setValueText("Obs value updated");
+
+		es.saveEncounter(enc);
+
+		Set<Obs> liveObs = enc.getAllObs(false);
+		assertFalse(containsId(liveObs, 101));
+		assertTrue(
+		    liveObs.stream().anyMatch(o -> o.getPreviousVersion() != null && o.getPreviousVersion().getObsId() == 101));
 	}
 
 	@Test
@@ -781,6 +947,216 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A voided obs keeps the datetime and location it was voided with when its encounter's datetime and
+	 * location change.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldNotChangeTheDatetimeOrLocationOfVoidedObs() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(1), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		Date originalDatetime = encounter.getEncounterDatetime();
+		Location originalLocation = encounter.getLocation();
+		encounter.setEncounterDatetime(DateUtils.addDays(originalDatetime, -10));
+		encounter.setLocation(Context.getLocationService().getLocation(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs voided = os.getObs(1);
+		assertTrue(voided.getVoided());
+		assertEquals(originalDatetime, voided.getObsDatetime());
+		assertEquals(originalLocation, voided.getLocation());
+	}
+
+	/**
+	 * Moving an encounter to another patient moves a voided obs of the encounter too. A voided group
+	 * member without an encounter of its own stays with the earlier version of its group, and the
+	 * group's new version holds a copy of it on the new patient, without an encounter either.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldMoveVoidedObsWithTheEncounterToItsNewPatient() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(1), "testing");
+		Obs member = os.voidObs(saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1)), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs moved = os.getObs(1);
+		assertEquals(2, moved.getPerson().getPersonId());
+		assertTrue(moved.getVoided());
+		assertEquals(3, os.getObs(member.getObsId()).getPerson().getPersonId());
+		Obs group = liveGroupOf(es.getEncounter(1));
+		Obs memberCopy = group.getGroupMembers(true).stream().filter(Obs::getVoided).findFirst().orElseThrow();
+		assertNull(memberCopy.getEncounter());
+		assertEquals(2, memberCopy.getPerson().getPersonId());
+	}
+
+	/**
+	 * A voided group keeps its patient, with its voided members, when its encounter moves to another
+	 * patient and one of those members has no encounter of its own, since that member cannot move in
+	 * place. Unvoiding the group afterwards is rejected, because its person is not its encounter's
+	 * patient, so the member does not come back as a live obs of another patient than its group's.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldLeaveAVoidedGroupWithItsVoidedMemberThatHasNoEncounter() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(1), "testing");
+		Obs group = os.voidObs(saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1)).getObsGroup(), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertEquals(2, os.getObs(1).getPerson().getPersonId());
+		assertVoidedGroupBelongsTo(os.getObs(group.getObsId()), 3);
+		assertThrows(UnchangeableObjectException.class, () -> {
+			os.unvoidObs(os.getObs(group.getObsId()));
+			Context.flushSession();
+		});
+		Context.clearSession();
+		assertVoidedGroupBelongsTo(os.getObs(group.getObsId()), 3);
+	}
+
+	/**
+	 * A voided group moves with its encounter when its voided member that has no encounter of its own
+	 * already belongs to the encounter's new patient.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldMoveAVoidedGroupWhoseMemberWithoutAnEncounterHasTheNewPatient() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs member = saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1));
+		Obs group = os.voidObs(member.getObsGroup(), "testing");
+		Context.flushSession();
+		Context.getAdministrationService().executeSQL("update obs set person_id = 2 where obs_id = " + member.getObsId(),
+		    false);
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertVoidedGroupBelongsTo(os.getObs(group.getObsId()), 2);
+	}
+
+	/**
+	 * A live member of a voided group is saved as a new version on the encounter's new patient, so a
+	 * live member without an encounter of its own does not keep the group on its patient.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldMoveAVoidedGroupWhoseLiveMemberHasNoEncounter() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs member = saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1));
+		Obs group = os.voidObs(member.getObsGroup(), "testing");
+		Context.flushSession();
+		Context.clearSession();
+		os.unvoidObs(os.getObs(member.getObsId()));
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs storedGroup = os.getObs(group.getObsId());
+		assertTrue(storedGroup.getVoided());
+		assertEquals(2, storedGroup.getPerson().getPersonId());
+		assertEquals(1, storedGroup.getGroupMembers().size());
+		Obs newVersion = storedGroup.getGroupMembers().iterator().next();
+		assertEquals(member.getObsId(), newVersion.getPreviousVersion().getObsId());
+		assertEquals(2, newVersion.getPerson().getPersonId());
+	}
+
+	/**
+	 * A live group is saved as a new version on the encounter's new patient rather than moved, so a
+	 * voided member of it that belongs to the encounter moves with the encounter even when another
+	 * voided member of the group, without an encounter of its own, keeps its patient.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldMoveAVoidedMemberOfALiveGroupThatBelongsToTheEncounter() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs memberWithoutEncounter = saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1));
+		Obs memberOnEncounter = memberWithoutEncounter.getObsGroup().getGroupMembers().stream()
+		        .filter(o -> o.getEncounter() != null).findFirst().orElseThrow();
+		os.voidObs(memberWithoutEncounter, "testing");
+		os.voidObs(memberOnEncounter, "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs movedMember = os.getObs(memberOnEncounter.getObsId());
+		assertTrue(movedMember.getVoided());
+		assertEquals(2, movedMember.getPerson().getPersonId());
+		assertEquals(3, os.getObs(memberWithoutEncounter.getObsId()).getPerson().getPersonId());
+	}
+
+	/**
+	 * A voided obs stored as a member of its own group, which the obs validator does not let a save
+	 * make, still moves with its encounter.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldMoveAVoidedObsThatIsInItsOwnGroup() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(1), "testing");
+		Context.flushSession();
+		Context.getAdministrationService().executeSQL("update obs set obs_group_id = 1 where obs_id = 1", false);
+		Context.clearSession();
+
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs moved = os.getObs(1);
+		assertEquals(1, moved.getObsGroup().getObsId());
+		assertEquals(2, moved.getPerson().getPersonId());
+	}
+
+	/**
 	 * @see EncounterService#saveEncounter(Encounter)
 	 */
 	@Test
@@ -1246,6 +1622,229 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertThat(o1.isActive(e2.getEncounterDatetime()), is(true));
 		assertThat(o1.getDateStopped(), is(nullValue()));
 		assertThat(o2.getVoided(), is(true));
+	}
+
+	/**
+	 * Voiding an encounter leaves the obs it holds that are already voided as they are, including a
+	 * missing location and a group member without an encounter of its own.
+	 *
+	 * @see EncounterService#voidEncounter(Encounter, String)
+	 */
+	@Test
+	public void voidEncounter_shouldNotChangeTheVoidedObsItHolds() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs withoutLocation = os.voidObs(saveObsWithoutLocation(es.getEncounter(1)), "testing");
+		Obs member = os.voidObs(saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1)), "testing");
+		Context.flushSession();
+		Context.clearSession();
+		assertNull(os.getObs(withoutLocation.getObsId()).getLocation());
+		assertNull(os.getObs(member.getObsId()).getEncounter());
+
+		es.voidEncounter(es.getEncounter(1), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(os.getObs(withoutLocation.getObsId()).getLocation());
+		assertNull(os.getObs(member.getObsId()).getEncounter());
+	}
+
+	/**
+	 * Voiding an encounter leaves the text of its orders as it was saved, surrounding whitespace
+	 * included.
+	 *
+	 * @see EncounterService#voidEncounter(Encounter, String)
+	 */
+	@Test
+	public void voidEncounter_shouldNotTrimTheTextOfAnOrderItVoids() {
+		EncounterService es = Context.getEncounterService();
+		OrderService orderService = Context.getOrderService();
+		Order discontinuation = orderService.discontinueOrder(orderService.getOrder(10002), "Patient refused ", null,
+		    Context.getProviderService().getProvider(1), es.getEncounter(1));
+		Context.flushSession();
+		Context.clearSession();
+		assertEquals("Patient refused ", orderService.getOrder(discontinuation.getOrderId()).getOrderReasonNonCoded());
+
+		es.voidEncounter(es.getEncounter(1), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		Order stored = orderService.getOrder(discontinuation.getOrderId());
+		assertTrue(stored.getVoided());
+		assertEquals("Patient refused ", stored.getOrderReasonNonCoded());
+	}
+
+	/**
+	 * Voiding an encounter and unvoiding it again leaves its obs as they were, including a missing
+	 * location and a group member without an encounter of its own.
+	 *
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldNotChangeTheObsItUnvoids() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs withoutLocation = saveObsWithoutLocation(es.getEncounter(1));
+		Obs member = saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1));
+		Context.flushSession();
+		Context.clearSession();
+		es.voidEncounter(es.getEncounter(1), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		es.unvoidEncounter(es.getEncounter(1));
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs storedWithoutLocation = os.getObs(withoutLocation.getObsId());
+		assertFalse(storedWithoutLocation.getVoided());
+		assertNull(storedWithoutLocation.getLocation());
+		Obs storedMember = os.getObs(member.getObsId());
+		assertFalse(storedMember.getVoided());
+		assertNull(storedMember.getEncounter());
+	}
+
+	/**
+	 * A voided encounter moved to another patient leaves a voided group whose member has no encounter
+	 * of its own on the patient it had. Unvoiding the encounter then saves a new version of the group,
+	 * with its members, on the encounter's patient, and leaves the group voided where it was.
+	 *
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldSaveANewVersionOfAVoidedGroupLeftOnItsPatientByAMove() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs group = saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1)).getObsGroup();
+		Context.flushSession();
+		Context.clearSession();
+		es.voidEncounter(es.getEncounter(1), "testing");
+		Context.flushSession();
+		Context.clearSession();
+		Encounter encounter = es.getEncounter(1);
+		encounter.setPatient(Context.getPatientService().getPatient(2));
+		es.saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		es.unvoidEncounter(es.getEncounter(1));
+		Context.flushSession();
+		Context.clearSession();
+
+		assertVoidedGroupBelongsTo(os.getObs(group.getObsId()), 3);
+		Obs newGroup = liveGroupOf(es.getEncounter(1));
+		assertEquals(group.getObsId(), newGroup.getPreviousVersion().getObsId());
+		assertEquals(2, newGroup.getPerson().getPersonId());
+		assertEquals(2, newGroup.getGroupMembers().size());
+		for (Obs member : newGroup.getGroupMembers()) {
+			assertEquals(2, member.getPerson().getPersonId());
+		}
+	}
+
+	/**
+	 * Saving an encounter again leaves the obs it holds as they were saved, including a missing
+	 * location and a group member without an encounter of its own.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldLeaveTheObsItHoldsAsTheyWereSaved() {
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+		Obs withoutLocation = saveObsWithoutLocation(es.getEncounter(1));
+		Obs member = saveGroupWithAMemberThatHasNoEncounter(es.getEncounter(1));
+		Context.flushSession();
+		Context.clearSession();
+
+		es.saveEncounter(es.getEncounter(1));
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(os.getObs(withoutLocation.getObsId()).getLocation());
+		assertNull(os.getObs(member.getObsId()).getEncounter());
+	}
+
+	/**
+	 * Saves, through the obs service, an obs on the given encounter that has no location.
+	 */
+	private static Obs saveObsWithoutLocation(Encounter encounter) {
+		Obs obs = new Obs(encounter.getPatient(), Context.getConceptService().getConcept(5089),
+		        encounter.getEncounterDatetime(), null);
+		obs.setEncounter(encounter);
+		obs.setValueNumeric(70.0);
+		return Context.getObsService().saveObs(obs, null);
+	}
+
+	/**
+	 * Saves, through the obs service, a group on the given encounter with one member on the encounter
+	 * and one without an encounter of its own.
+	 *
+	 * @return the member without an encounter
+	 */
+	static Obs saveGroupWithAMemberThatHasNoEncounter(Encounter encounter) {
+		Concept weight = Context.getConceptService().getConcept(5089);
+		Obs group = new Obs(encounter.getPatient(), Context.getConceptService().getConcept(23),
+		        encounter.getEncounterDatetime(), encounter.getLocation());
+		group.setEncounter(encounter);
+		Obs member = new Obs(encounter.getPatient(), weight, encounter.getEncounterDatetime(), encounter.getLocation());
+		member.setEncounter(encounter);
+		member.setValueNumeric(70.0);
+		group.addGroupMember(member);
+		Obs memberWithoutEncounter = new Obs(encounter.getPatient(), weight, encounter.getEncounterDatetime(),
+		        encounter.getLocation());
+		memberWithoutEncounter.setValueNumeric(71.0);
+		group.addGroupMember(memberWithoutEncounter);
+		Context.getObsService().saveObs(group, null);
+		return memberWithoutEncounter;
+	}
+
+	/**
+	 * @return the first live obs group at the top level of the given encounter
+	 */
+	private static Obs liveGroupOf(Encounter encounter) {
+		return encounter.getObsAtTopLevel(false).stream().filter(Obs::isObsGrouping).findFirst().orElseThrow();
+	}
+
+	/**
+	 * Loads the obs hierarchy dataset and voids member 101 of its group 100, which is in encounter 100
+	 * of patient 3.
+	 */
+	private void voidAMemberOfTheHierarchyGroup() {
+		executeDataSet(ENC_OBS_HIERARCHY_DATA_XML);
+		ObsService os = Context.getObsService();
+		os.voidObs(os.getObs(101), "testing");
+		Context.flushSession();
+		Context.clearSession();
+	}
+
+	/**
+	 * Asserts that the first live group of the given encounter has a voided member and that all of its
+	 * members are in the encounter and belong to the given person.
+	 *
+	 * @return the voided member
+	 */
+	private static Obs assertGroupMembersBelongTo(Encounter encounter, int personId) {
+		Obs group = liveGroupOf(encounter);
+		for (Obs member : group.getGroupMembers(true)) {
+			assertEquals(encounter.getEncounterId(), member.getEncounter().getEncounterId());
+			assertEquals(personId, member.getPerson().getPersonId());
+		}
+		return group.getGroupMembers(true).stream().filter(Obs::getVoided).findFirst().orElseThrow();
+	}
+
+	/**
+	 * Asserts that the given group, saved by
+	 * {@link #saveGroupWithAMemberThatHasNoEncounter(Encounter)}, and its two members are voided and
+	 * belong to the given person.
+	 */
+	static void assertVoidedGroupBelongsTo(Obs group, int personId) {
+		assertTrue(group.getVoided());
+		assertEquals(personId, group.getPerson().getPersonId());
+		assertEquals(2, group.getGroupMembers(true).size());
+		for (Obs member : group.getGroupMembers(true)) {
+			assertTrue(member.getVoided());
+			assertEquals(personId, member.getPerson().getPersonId());
+		}
 	}
 
 	/**
@@ -3319,6 +3918,31 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Context.getEncounterService().transferEncounter(sourceEncounter, anyPatient);
 		Visit visit = Context.getVisitService().getVisit(200);
 		assertTrue(visit.getVoided());
+	}
+
+	/**
+	 * Transferring an encounter copies its groups with their voided members, and the copies of the
+	 * voided members go with their group to the encounter and patient it is transferred to, so
+	 * unvoiding one later keeps it with that patient.
+	 *
+	 * @see EncounterService#transferEncounter(Encounter, Patient)
+	 */
+	@Test
+	public void transferEncounter_shouldTransferTheCopiesOfVoidedGroupMembersWithTheirGroup() {
+		voidAMemberOfTheHierarchyGroup();
+		EncounterService es = Context.getEncounterService();
+		ObsService os = Context.getObsService();
+
+		Encounter transferred = es.transferEncounter(es.getEncounter(100), Context.getPatientService().getPatient(2));
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs memberCopy = assertGroupMembersBelongTo(es.getEncounter(transferred.getEncounterId()), 2);
+
+		os.unvoidObs(memberCopy);
+		Context.flushSession();
+		Context.clearSession();
+		assertEquals(2, os.getObs(memberCopy.getObsId()).getPerson().getPersonId());
 	}
 
 	private EncounterSearchCriteria encounterSearchForVoidedWithDateChanged(String dateChanged) throws ParseException {

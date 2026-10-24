@@ -27,8 +27,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -3059,6 +3061,107 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNull(order.getDateVoided());
 		assertNull(order.getVoidedBy());
 		assertNull(order.getVoidReason());
+	}
+
+	/**
+	 * Checking the order for changes when its void is flushed leaves the associations that did not
+	 * change unloaded.
+	 *
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldNotLoadTheAssociationsOfTheOrder() {
+		Context.clearSession();
+		Order order = orderService.getOrder(7);
+
+		orderService.voidOrder(order, "testing");
+		Context.flushSession();
+
+		assertFalse(Hibernate.isInitialized(order.getConcept()));
+		assertFalse(Hibernate.isInitialized(order.getEncounter()));
+		assertFalse(Hibernate.isInitialized(order.getPatient()));
+	}
+
+	/**
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldRejectAChangedPatientConceptOrDose() {
+		assertPatientConceptAndDoseChangesAreRejected(order -> orderService.voidOrder(order, "testing"));
+	}
+
+	/**
+	 * @see OrderService#unvoidOrder(org.openmrs.Order)
+	 */
+	@Test
+	public void unvoidOrder_shouldRejectAChangedPatientConceptOrDose() {
+		orderService.voidOrder(orderService.getOrder(3), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		assertPatientConceptAndDoseChangesAreRejected(orderService::unvoidOrder);
+	}
+
+	/**
+	 * @see OrderService#updateOrderFulfillerStatus(org.openmrs.Order, Order.FulfillerStatus, String)
+	 */
+	@Test
+	public void updateOrderFulfillerStatus_shouldRejectAChangedPatientConceptOrDose() {
+		assertPatientConceptAndDoseChangesAreRejected(
+		    order -> orderService.updateOrderFulfillerStatus(order, Order.FulfillerStatus.IN_PROGRESS, "testing"));
+	}
+
+	/**
+	 * A voided order keeps the values it was voided with: a save that edits it is rejected, and
+	 * unvoiding it brings back the original values.
+	 *
+	 * @see OrderService#voidOrder(org.openmrs.Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldNotChangeAVoidedOrder() {
+		orderService.voidOrder(orderService.getOrder(3), "testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		assertChangeIsRejected(order -> order.setDose(99.0), order -> orderService.voidOrder(order, "testing"));
+
+		orderService.unvoidOrder(orderService.getOrder(3));
+		Context.flushSession();
+		Context.clearSession();
+		DrugOrder unvoided = (DrugOrder) orderService.getOrder(3);
+		assertFalse(unvoided.getVoided());
+		assertEquals(2.0, unvoided.getDose());
+	}
+
+	/**
+	 * Asserts that the given call rejects a change to the patient, the concept or the dose of drug
+	 * order 3, each made on its own.
+	 */
+	private void assertPatientConceptAndDoseChangesAreRejected(Consumer<DrugOrder> save) {
+		assertChangeIsRejected(order -> order.setPatient(Context.getPatientService().getPatient(7)), save);
+		assertChangeIsRejected(order -> order.setConcept(Context.getConceptService().getConcept(88)), save);
+		assertChangeIsRejected(order -> order.setDose(99.0), save);
+	}
+
+	/**
+	 * Applies the change to drug order 3, saves it through the given call and asserts that the flush
+	 * rejects it and the stored order keeps its patient, concept and dose.
+	 */
+	private void assertChangeIsRejected(Consumer<DrugOrder> change, Consumer<DrugOrder> save) {
+		DrugOrder order = (DrugOrder) orderService.getOrder(3);
+		boolean voided = order.getVoided();
+		change.accept(order);
+		assertThrows(UnchangeableObjectException.class, () -> {
+			save.accept(order);
+			Context.flushSession();
+		});
+
+		Context.clearSession();
+		DrugOrder stored = (DrugOrder) orderService.getOrder(3);
+		assertEquals(voided, stored.getVoided());
+		assertEquals(2, stored.getPatient().getPatientId());
+		assertEquals(792, stored.getConcept().getConceptId());
+		assertEquals(2.0, stored.getDose());
 	}
 
 	/**
