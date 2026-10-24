@@ -39,10 +39,8 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
-import org.openmrs.annotation.DisableHandlers;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.api.impl.ObsArchiveHelper;
 import org.springframework.dao.DataAccessException;
 
@@ -111,7 +109,6 @@ public class Encounter extends BaseChangeableOpenmrsData {
 
 	@OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL)
 	@OrderBy("provider_id")
-	@DisableHandlers(handlerTypes = { VoidHandler.class })
 	private Set<EncounterProvider> encounterProviders = new LinkedHashSet<>();
 
 	@OneToMany(mappedBy = "encounter")
