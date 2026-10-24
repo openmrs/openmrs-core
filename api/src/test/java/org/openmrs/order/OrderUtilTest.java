@@ -212,6 +212,25 @@ public class OrderUtilTest {
 	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
 	 */
 	@Test
+	public void checkScheduleOverlap_shouldReturnTrueIfOrder1HasNoEndDateAndStartsBeforeOrder2() {
+		Date date = new Date();
+		Order order1 = new Order();
+		order1.setDateActivated(date); //Order1 started today without stop date
+
+		Order order2 = new Order();
+		order2.setDateActivated(date);
+		order2.setScheduledDate(DateUtils.addDays(date, 4)); //Order2 scheduled after 4 days getting expired after 10 days
+		order2.setAutoExpireDate(DateUtils.addDays(date, 10));
+		order2.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+
+		assertTrue(OrderUtil.checkScheduleOverlap(order1, order2));
+		assertTrue(OrderUtil.checkScheduleOverlap(order2, order1));
+	}
+
+	/**
+	 * @see OrderUtil#checkScheduleOverlap(Order,Order)
+	 */
+	@Test
 	public void checkScheduleOverlap_shouldReturnTrueIfOrder1StartsBeforeOrder2AndEndsAfterOrder2() {
 		Date date = new Date();
 		Order order1 = new Order();
