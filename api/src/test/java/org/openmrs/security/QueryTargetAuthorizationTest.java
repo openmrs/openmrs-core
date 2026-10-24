@@ -29,7 +29,6 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,28 +56,35 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 	@Autowired
 	private OpenmrsPermissionEvaluator evaluator;
 
+	private final RuleRecorder recorder = new RuleRecorder();
+
+	private final PersonRule personRule = new PersonRule(recorder);
+
+	private final PatientRule patientRule = new PatientRule(recorder);
+
+	private final EncounterRule encounterRule = new EncounterRule(recorder);
+
 	@BeforeEach
-	public void startRecording() {
-		RuleRecorder.recording = true;
+	public void registerRules() {
+		AuthorizationRules.register(evaluator, personRule, patientRule, encounterRule);
 	}
 
 	@AfterEach
-	public void disarmRules() {
-		RuleRecorder.reset();
-		RuleRecorder.recording = false;
+	public void unregisterRules() {
+		AuthorizationRules.unregister(evaluator, personRule, patientRule, encounterRule);
 	}
 
 	@Test
 	public void shouldConsultARuleForEachPersonACriteriaNames() {
 		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(List.of(Context.getPersonService().getPerson(2)))
 		        .createObsSearchCriteria();
-		RuleRecorder.reset();
+		recorder.reset();
 
 		Context.getObsService().getObservations(criteria);
 
 		// one target per element, never the collection itself
-		assertFalse(RuleRecorder.targets.isEmpty(), "a rule should have been consulted for the criteria's whom");
-		for (Object target : RuleRecorder.targets) {
+		assertFalse(recorder.targets.isEmpty(), "a rule should have been consulted for the criteria's whom");
+		for (Object target : recorder.targets) {
 			assertInstanceOf(Person.class, target);
 		}
 	}
@@ -89,7 +95,7 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 		// already-denying rule would stop the fixture rather than the call under test
 		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(List.of(Context.getPersonService().getPerson(2)))
 		        .createObsSearchCriteria();
-		RuleRecorder.deny = true;
+		recorder.deny = true;
 
 		assertThrows(AccessDeniedException.class, () -> Context.getObsService().getObservations(criteria));
 	}
@@ -99,7 +105,7 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 		Context.getObsService().getObservations(new ObsSearchCriteriaBuilder().createObsSearchCriteria());
 
 		// a null target is authorized on the privilege alone
-		assertTrue(RuleRecorder.targets.isEmpty());
+		assertTrue(recorder.targets.isEmpty());
 	}
 
 	@Test
@@ -123,7 +129,7 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldDenyWhenARuleRefusesOneElementOfACollectionTarget() {
 		List<Encounter> encounters = new ArrayList<>(List.of(new Encounter(1), new Encounter(2)));
-		RuleRecorder.deny = true;
+		recorder.deny = true;
 
 		assertThrows(AccessDeniedException.class,
 		    () -> Context.getEncounterService().filterEncountersByViewPermissions(encounters, null));
@@ -135,16 +141,16 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 
 		// one target per id, never the collection itself - and judged as the named type, since a
 		// List<Integer> carries nothing to infer "Patient" from
-		assertFalse(RuleRecorder.targets.isEmpty(), "a rule should have been consulted for each patient id");
-		for (Object target : RuleRecorder.targets) {
+		assertFalse(recorder.targets.isEmpty(), "a rule should have been consulted for each patient id");
+		for (Object target : recorder.targets) {
 			assertInstanceOf(Integer.class, target);
 		}
-		assertTrue(RuleRecorder.targets.containsAll(List.of(2, 6)));
+		assertTrue(recorder.targets.containsAll(List.of(2, 6)));
 	}
 
 	@Test
 	public void shouldDenyWhenARuleRefusesOneIdOfACollectionOfIds() {
-		RuleRecorder.deny = true;
+		recorder.deny = true;
 
 		assertThrows(AccessDeniedException.class,
 		    () -> Context.getProgramWorkflowService().getPatientProgramAttributeByAttributeName(List.of(2, 6), "any"));
@@ -155,69 +161,63 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 		// not Serializable, so it cannot reach the rule's id-and-type method at all; authorizing is the
 		// same choice an unresolvable targetType makes, since a rule can only restrict and never grant
 		Object unserializable = new Object();
-		RuleRecorder.deny = true;
+		recorder.deny = true;
 
 		assertTrue(evaluator.hasPermission(null, new ArrayList<>(List.of(unserializable)), "Patient",
 		    PrivilegeConstants.GET_PATIENT_PROGRAMS));
-		assertTrue(RuleRecorder.targets.isEmpty(), "no rule can be consulted for an id it cannot be given");
+		assertTrue(recorder.targets.isEmpty(), "no rule can be consulted for an id it cannot be given");
 	}
 
 	/**
-	 * Shared state, so each rule stays a trivial type-specific bean.
-	 * <p>
-	 * Recording is off outside this class, and that is load-bearing rather than tidiness. The rules
-	 * below are {@code @Component}s, so they are in every context that scans {@code org.openmrs} - the
-	 * rest of core's suite, and every module's test context by way of the {@code openmrs-api} test-jar
-	 * - where nothing would ever clear {@link #targets}. Left recording, the list grows for the life of
-	 * the JVM and the assertions here that read it become order-dependent on whatever ran first.
+	 * What the rules record, shared between them so each stays a trivial type-specific rule. One per
+	 * test, like the rules themselves, so nothing a previous test recorded can be read here.
 	 */
 	static final class RuleRecorder {
 
-		static final Collection<Object> targets = new CopyOnWriteArrayList<>();
+		final Collection<Object> targets = new CopyOnWriteArrayList<>();
 
-		static volatile boolean deny = false;
+		volatile boolean deny = false;
 
-		static volatile boolean recording = false;
-
-		private RuleRecorder() {
-		}
-
-		static boolean record(Object target) {
-			if (!recording) {
-				return true;
-			}
-
+		boolean record(Object target) {
 			targets.add(target);
 			return !deny;
 		}
 
-		static void reset() {
+		void reset() {
 			targets.clear();
 			deny = false;
 		}
 	}
 
 	/**
-	 * Authorizes everything unless a test arms it, so sharing the application context with every other
-	 * test is harmless. Registered per type because a rule is selected by the target's runtime type -
-	 * {@code List<Person>} of patients is judged as {@code "Patient"}.
+	 * Authorizes everything unless a test arms it. Registered per type because a rule is selected by
+	 * the target's runtime type - {@code List<Person>} of patients is judged as {@code "Patient"}.
 	 */
 	abstract static class RecordingRule implements DomainObjectAuthorizationRule {
 
+		private final RuleRecorder recorder;
+
+		RecordingRule(RuleRecorder recorder) {
+			this.recorder = recorder;
+		}
+
 		@Override
 		public boolean isAuthorized(Authentication authentication, Object targetDomainObject, Object permission) {
-			return RuleRecorder.record(targetDomainObject);
+			return recorder.record(targetDomainObject);
 		}
 
 		@Override
 		public boolean isAuthorized(Authentication authentication, Serializable targetId, Class<?> targetType,
 		        Object permission) {
-			return RuleRecorder.record(targetId);
+			return recorder.record(targetId);
 		}
 	}
 
-	@Component
 	public static class PersonRule extends RecordingRule {
+
+		PersonRule(RuleRecorder recorder) {
+			super(recorder);
+		}
 
 		@Override
 		public Class<?> getTargetType() {
@@ -225,8 +225,11 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 		}
 	}
 
-	@Component
 	public static class PatientRule extends RecordingRule {
+
+		PatientRule(RuleRecorder recorder) {
+			super(recorder);
+		}
 
 		@Override
 		public Class<?> getTargetType() {
@@ -234,8 +237,11 @@ public class QueryTargetAuthorizationTest extends BaseContextSensitiveTest {
 		}
 	}
 
-	@Component
 	public static class EncounterRule extends RecordingRule {
+
+		EncounterRule(RuleRecorder recorder) {
+			super(recorder);
+		}
 
 		@Override
 		public Class<?> getTargetType() {

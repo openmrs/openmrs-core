@@ -133,6 +133,30 @@ public class DomainObjectAuthorizationRuleTest extends BaseContextSensitiveTest 
 	}
 
 	@Test
+	public void addRule_shouldApplyToATypeAlreadyJudgedWithoutIt() {
+		OpenmrsPermissionEvaluator evaluator = new OpenmrsPermissionEvaluator(
+		        List.of(new FakeRule(AnotherTestTarget.class, false)));
+		assertTrue(evaluator.hasPermission(null, new TestTarget(), PRIVILEGE), "the premise: nothing refuses it yet");
+
+		evaluator.addRule(new FakeRule(TestTarget.class, false));
+
+		// the rules a type resolves to are cached on first sight, so adding one has to drop that cache
+		assertFalse(evaluator.hasPermission(null, new TestTarget(), PRIVILEGE));
+	}
+
+	@Test
+	public void removeRule_shouldLeaveTheTypeJudgedByNothing() {
+		FakeRule denies = new FakeRule(TestTarget.class, false);
+		OpenmrsPermissionEvaluator evaluator = new OpenmrsPermissionEvaluator(
+		        List.of(denies, new FakeRule(AnotherTestTarget.class, false)));
+		assertFalse(evaluator.hasPermission(null, new TestTarget(), PRIVILEGE), "the premise: the rule refuses it");
+
+		evaluator.removeRule(denies);
+
+		assertTrue(evaluator.hasPermission(null, new TestTarget(), PRIVILEGE));
+	}
+
+	@Test
 	public void hasPermission_shouldDenyWhenTheSupportingRuleDenies() {
 		FakeRule denies = new FakeRule(TestTarget.class, false);
 		OpenmrsPermissionEvaluator evaluator = new OpenmrsPermissionEvaluator(List.of(denies));
