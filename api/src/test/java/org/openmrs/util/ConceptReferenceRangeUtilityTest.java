@@ -10,9 +10,7 @@
 package org.openmrs.util;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -450,32 +448,28 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void testTimeOfDay_shouldReturnTrueIfTimeOfDayMatches() {
-		// Fixed clock for deterministic testing
-		Clock fixedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+		Clock fixedClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 14, 30).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
 		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(fixedClock);
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		int fixedHour = LocalTime.now(fixedClock).getHour();
-
-		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == " + fixedHour, obs));
-
+		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 14", obs));
 	}
 
 	@Test
 	public void testTimeOfDay_shouldReturnFalseIfTimeOfDayDoesNotMatch() {
-		// Fixed clock for deterministic testing
-		Clock fixedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+		Clock fixedClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 14, 30).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
 		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(fixedClock);
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		int fixedHour = LocalTime.now(fixedClock).getHour();
-		int differentHour = (fixedHour + 1) % 24;
-		assertFalse(utility.evaluateCriteria("$fn.getCurrentHour() == " + differentHour, obs));
-
+		assertFalse(utility.evaluateCriteria("$fn.getCurrentHour() == 15", obs));
 	}
 
 	@Test
