@@ -9,11 +9,15 @@
  */
 package org.openmrs.module.web;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +39,7 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.web.DispatcherServlet;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -62,6 +67,11 @@ public class WebModuleUtilTest {
 
 	@AfterEach
 	public void tearDown() {
+		for (ModuleFilterMapping mapping : new ArrayList<>(WebModuleUtil.getFilterMappings())) {
+			if (mapping.getModule() != null) {
+				WebModuleUtil.unloadFilters(mapping.getModule());
+			}
+		}
 		ModuleFactory.getLoadedModules().clear();
 		ModuleFactory.getStartedModulesMap().clear();
 		ModuleFactory.getModuleClassLoaderMap().clear();
@@ -442,6 +452,71 @@ public class WebModuleUtilTest {
 		public void setInitParams(Map<String, String> initParams) {
 			this.initParams = initParams;
 		}
+	}
+
+	private Module createDummyModuleWithMappings(String moduleId, String... filterNames) throws Exception {
+		Module module = new Module(moduleId);
+		module.setModuleId(moduleId);
+		StringBuilder xml = new StringBuilder("<module>");
+		for (String name : filterNames) {
+			xml.append("<filter-mapping><filter-name>").append(name).append("</filter-name><url-pattern>/").append(name)
+			        .append("/*</url-pattern></filter-mapping>");
+		}
+		xml.append("</module>");
+		module.setConfig(DocumentBuilderFactory.newInstance().newDocumentBuilder()
+		        .parse(new ByteArrayInputStream(xml.toString().getBytes(StandardCharsets.UTF_8))));
+		return module;
+	}
+
+	@Test
+	public void getFilterMappings_shouldReflectRuntimeLifecycleChangesOnLiveCollection() throws Exception {
+		Collection<ModuleFilterMapping> liveMappings = WebModuleUtil.getFilterMappings();
+		assertTrue(liveMappings.isEmpty());
+		Module module = createDummyModuleWithMappings("testModule", "testFilter");
+		ServletContext servletContext = mock(ServletContext.class);
+		WebModuleUtil.loadFilters(module, servletContext);
+		assertEquals(1, liveMappings.size());
+		assertEquals("testFilter", liveMappings.iterator().next().getFilterName());
+		WebModuleUtil.unloadFilters(module);
+		assertTrue(liveMappings.isEmpty());
+	}
+
+	@Test
+	public void loadFilters_shouldPrependNewModuleMappingsPreservingDeclaredOrder() throws Exception {
+		Module moduleA = createDummyModuleWithMappings("moduleA", "filterA1", "filterA2");
+		Module moduleB = createDummyModuleWithMappings("moduleB", "filterB1", "filterB2");
+		ServletContext servletContext = mock(ServletContext.class);
+
+		WebModuleUtil.loadFilters(moduleA, servletContext);
+		WebModuleUtil.loadFilters(moduleB, servletContext);
+
+		List<ModuleFilterMapping> mappings = new ArrayList<>(WebModuleUtil.getFilterMappings());
+		assertEquals(4, mappings.size());
+		// Module B was loaded second, so its filters appear first: [B1, B2, A1, A2]
+		assertEquals("filterB1", mappings.get(0).getFilterName());
+		assertEquals("filterB2", mappings.get(1).getFilterName());
+		assertEquals("filterA1", mappings.get(2).getFilterName());
+		assertEquals("filterA2", mappings.get(3).getFilterName());
+	}
+
+	@Test
+	public void unloadFilters_shouldRemoveTargetModuleAndKeepOtherModuleMappingsIntact() throws Exception {
+		Module moduleA = createDummyModuleWithMappings("moduleA", "filterA1", "filterA2");
+		Module moduleB = createDummyModuleWithMappings("moduleB", "filterB1", "filterB2");
+		ServletContext servletContext = mock(ServletContext.class);
+
+		WebModuleUtil.loadFilters(moduleA, servletContext);
+		WebModuleUtil.loadFilters(moduleB, servletContext);
+
+		assertEquals(4, WebModuleUtil.getFilterMappings().size());
+
+		// Unload only module A
+		WebModuleUtil.unloadFilters(moduleA);
+
+		List<ModuleFilterMapping> remaining = new ArrayList<>(WebModuleUtil.getFilterMappings());
+		assertEquals(2, remaining.size());
+		assertEquals("filterB1", remaining.get(0).getFilterName());
+		assertEquals("filterB2", remaining.get(1).getFilterName());
 	}
 
 	static class ServletClass1 extends HttpServlet {}
