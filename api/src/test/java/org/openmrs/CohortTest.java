@@ -36,11 +36,16 @@ public class CohortTest {
 
 	private Integer[] ids = { 1, 2, 3 };
 
+	private boolean containsPatientId(Cohort cohort, Integer patientId) {
+		return cohort.getMemberships().stream().filter(m -> !m.getVoided())
+		        .anyMatch(m -> m.getPatientId().equals(patientId));
+	}
+
 	@Test
 	public void constructorWithIntegers_shouldAddMembersToCohort() {
 
 		Cohort cohort = new Cohort("name", "description", ids);
-		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
+		Arrays.stream(ids).forEach(id -> assertTrue(containsPatientId(cohort, id)));
 
 	}
 
@@ -51,7 +56,7 @@ public class CohortTest {
 		Arrays.stream(ids).forEach(id -> patients.add(new Patient(id)));
 
 		Cohort cohort = new Cohort("name", "description", patients);
-		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
+		Arrays.stream(ids).forEach(id -> assertTrue(containsPatientId(cohort, id)));
 
 	}
 
@@ -59,7 +64,7 @@ public class CohortTest {
 	public void constructorWithCommaSeparatedIntegers_shouldAddMembersToCohort() {
 
 		Cohort cohort = new Cohort("1,2,3");
-		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
+		Arrays.stream(ids).forEach(id -> assertTrue(containsPatientId(cohort, id)));
 
 	}
 
@@ -71,7 +76,11 @@ public class CohortTest {
 
 		Cohort cohort = new Cohort("name", "description", patients);
 
-		String[] actualIds = StringUtils.split(cohort.getCommaSeparatedPatientIds(), ',');
+		List<Integer> patientIds = cohort.getActiveMemberships().stream().map(CohortMembership::getPatientId)
+		        .collect(Collectors.toList());
+		String commaSeparated = StringUtils.join(patientIds, ',');
+
+		String[] actualIds = StringUtils.split(commaSeparated, ',');
 		Set<Integer> actualIdSet = Arrays.stream(actualIds).map(Integer::valueOf).collect(Collectors.toSet());
 		assertEquals(new HashSet<>(Arrays.asList(ids)), actualIdSet);
 
@@ -158,17 +167,17 @@ public class CohortTest {
 	}
 
 	@Test
-	public void setMemberIds_shouldSupportLargeCohorts() {
+	public void setMemberships_shouldSupportLargeCohorts() {
 		int cohortSize = 100000;
 		Cohort c = new Cohort();
-		Set<Integer> ids = new HashSet<>();
+		Set<CohortMembership> memberships = new HashSet<>();
 		for (int i = 0; i < cohortSize; i++) {
-			ids.add(i);
+			memberships.add(new CohortMembership(i));
 		}
 		long startTime = System.currentTimeMillis();
-		c.setMemberIds(ids);
+		c.setMemberships(memberships);
 		long endTime = System.currentTimeMillis();
-		double secondsToSet = (endTime - startTime) / 1000;
+		double secondsToSet = (endTime - startTime) / 1000.0;
 		assertTrue(secondsToSet < 5, "Setting cohort of size " + cohortSize + " took " + secondsToSet + " seconds");
 	}
 
@@ -185,8 +194,8 @@ public class CohortTest {
 
 		Object[] allIds = ArrayUtils.add(ids, 12);
 
-		Arrays.stream(allIds).forEach(id -> assertTrue(cohort.contains((Integer) id)));
-		assertEquals(cohort.size(), allIds.length);
+		Arrays.stream(allIds).forEach(id -> assertTrue(containsPatientId(cohort, (Integer) id)));
+		assertEquals(cohort.getMemberships().size(), allIds.length);
 	}
 
 	@Test
@@ -199,8 +208,8 @@ public class CohortTest {
 		cohortMembershipOne.setVoided(true);
 		cohort.addMembership(cohortMembershipOne);
 
-		Arrays.stream(ids).forEach(id -> assertTrue(cohort.contains(id)));
-		assertFalse(cohort.contains(12));
+		Arrays.stream(ids).forEach(id -> assertTrue(containsPatientId(cohort, id)));
+		assertFalse(containsPatientId(cohort, 12));
 	}
 
 	@Test
@@ -213,7 +222,8 @@ public class CohortTest {
 		cohortMembershipOne.setVoided(true);
 		cohort.addMembership(cohortMembershipOne);
 
-		assertEquals(cohort.size(), ids.length);
+		long nonVoidedCount = cohort.getMemberships().stream().filter(m -> !m.getVoided()).count();
+		assertEquals(nonVoidedCount, ids.length);
 	}
 
 	@Test

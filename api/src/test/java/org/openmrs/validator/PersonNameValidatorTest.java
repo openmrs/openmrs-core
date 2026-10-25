@@ -60,7 +60,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see PatientNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameObjectIsNull() {
@@ -71,144 +71,139 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsNull() {
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsEmpty() {
 
 		personName.setGivenName("");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsJustSpaces() {
 
 		personName.setGivenName("    ");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsSpacesSurroundedByQuotationMarks() {
 
 		personName.setGivenName("\"   \"");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName", "Patient.names.required.given.family"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsNotBlank() {
 
 		personName.setGivenName("Fred");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsNull() {
 
-		validator.validatePersonName(personName, errors, false, true);
+		personName.setGivenName("Fred");
+
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsEmpty() {
 
+		personName.setGivenName("Fred");
 		personName.setFamilyName("");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsJustSpaces() {
 
+		personName.setGivenName("Fred");
 		personName.setFamilyName("    ");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyNameIsSpacesSurroundedByQuotationMarks() {
 
+		personName.setGivenName("Fred");
 		personName.setFamilyName("\"   \"");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName", "FamilyName.invalid"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsNotBlank() {
 
+		personName.setGivenName("Fred");
 		personName.setFamilyName("Rogers");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNamePrefixIsTooLong() {
@@ -217,126 +212,122 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		personName.setFamilyName("familyName");
 		personName.setPrefix(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("prefix", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNamePrefixIsExactlyMaxLength() {
 
-		personName.setPrefix("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setGivenName("givenName");
+		personName.setPrefix("12345678901234567890123456789012345678901234567890");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("prefix")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNamePrefixIsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setPrefix("1234567890");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("prefix")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsTooLong() {
 
 		personName.setGivenName(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsExactlyMaxLength() {
 
 		personName.setGivenName(STRING_OF_50);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsLessThanMaxFieldLength() {
 
 		personName.setGivenName("abcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameMiddleNameIsTooLong() {
 
+		personName.setGivenName("givenName");
 		personName.setMiddleName(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("middleName", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameMiddleNameIsExactlyMaxLength() {
 
-		personName.setMiddleName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setGivenName("givenName");
+		personName.setMiddleName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("middleName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameMiddleNameIsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setMiddleName("abcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("middleName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyNamePrefixIsTooLong() {
@@ -345,126 +336,125 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		personName.setFamilyName("familyName");
 		personName.setFamilyNamePrefix(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyNamePrefix", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNamePrefixIsExactlyMaxLength() {
 
-		personName.setFamilyNamePrefix("12345678901234567890123456789012345678901234567890"); // exactly 50 characters long
+		personName.setGivenName("givenName");
+		personName.setFamilyNamePrefix("12345678901234567890123456789012345678901234567890");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyNamePrefix")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNamePrefixIsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyNamePrefix("1234567890");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyNamePrefix")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyNameIsTooLong() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsExactlyMaxLength() {
 
-		personName.setFamilyName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setGivenName("givenName");
+		personName.setFamilyName("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName("abcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyName2IsTooLong() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName2(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName2", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyName2IsExactlyMaxLength() {
 
-		personName.setFamilyName2("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"); // exactly 50 characters long
+		personName.setGivenName("givenName");
+		personName.setFamilyName2("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName2")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyName2IsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName2("abcdefghij");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName2")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyNameSuffixIsTooLong() {
@@ -473,42 +463,41 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		personName.setFamilyName("familyName");
 		personName.setFamilyNameSuffix(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyNameSuffix", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameSuffixIsExactlyMaxLength() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyNameSuffix(STRING_OF_50);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyNameSuffix")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameSuffixIsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyNameSuffix("1234567890");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyNameSuffix")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameDegreeIsTooLong() {
@@ -517,170 +506,167 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		personName.setFamilyName("familyName");
 		personName.setDegree(STRING_OF_51);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("degree", "error.exceededMaxLengthOfField"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameDegreeIsExactlyMaxLength() {
 
+		personName.setGivenName("givenName");
 		personName.setDegree(STRING_OF_50);
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("degree")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameDegreeIsLessThanMaxFieldLength() {
 
+		personName.setGivenName("givenName");
 		personName.setDegree("1234567890");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("degree")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameGivenNameIsInvalid() {
 
 		personName.setGivenName("34dfgd");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName", "GivenName.invalid"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameGivenNameIsValid() {
 
 		personName.setGivenName("alex");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameMiddleNameIsInvalid() {
 
+		personName.setGivenName("givenName");
 		personName.setMiddleName("34dfgd");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("middleName", "MiddleName.invalid"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameMiddleNameIsValid() {
 
+		personName.setGivenName("givenName");
 		personName.setMiddleName("de");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("middleName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyNameIsInvalid() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName("34dfgd");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName", "FamilyName.invalid"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyNameIsValid() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName("souza");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfPersonNameFamilyName2IsInvalid() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName2("34dfgd");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName2", "FamilyName2.invalid"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldPassValidationIfPersonNameFamilyName2IsValid() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName2("souza-");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName2")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldSkipRegexValidationIfValidationStringIsNull() {
 
 		Context.getAdministrationService()
 		        .saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, null));
+		personName.setGivenName("givenName");
 		personName.setFamilyName("asd123");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("familyName")));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldSkipRegexValidationIfValidationStringIsEmpty() {
@@ -689,23 +675,23 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		        .saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX, ""));
 		personName.setGivenName("123asd");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, not(hasFieldErrors("givenName")));
 	}
 
 	/**
-	 * @see PersonNameValidator#validatePersonName(PersonName,Errors,null,null)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
-	public void validatePersonName_shouldNotValidateAgainstRegexForBlankNames() {
+	public void validate_shouldNotValidateAgainstRegexForBlankNames() {
 
 		personName.setGivenName("given");
 		personName.setFamilyName("family");
 		personName.setMiddleName("");
 		personName.setFamilyName2("");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertFalse(errors.hasErrors());
 	}
@@ -770,21 +756,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see PersonNameValidator#validatePersonName(PersonName, Errors, Boolean, Boolean)
-	 */
-	@Test
-	public void validatePersonName_shouldReportErrorsWithNonStandardPrefixWhenCalledInHistoricWay() {
-
-		PersonName personName = new PersonName("", "reb", "feb");
-		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "personName");
-
-		validator.validatePersonName(personName, errors, true, false);
-
-		assertThat(errors, hasFieldErrors("names[0]." + "givenName"));
-	}
-
-	/**
-	 * @see PersonNameValidator#validate(Object, Errors)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	public void validate_shouldReportErrorsOnCorrectFieldNames() {
@@ -798,8 +770,7 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
@@ -807,14 +778,13 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 
 		personName.setGivenName(" alex");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
@@ -822,97 +792,97 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 
 		personName.setGivenName("alex ");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("givenName"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameMiddleNameHasLeadingSpaces() {
 
+		personName.setGivenName("givenName");
 		personName.setMiddleName(" de");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("middleName"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameMiddleNameHasTrailingSpaces() {
 
+		personName.setGivenName("givenName");
 		personName.setMiddleName("de ");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("middleName"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyNameHasLeadingSpaces() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName(" souza");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyNameHasTrailingSpaces() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName("souza ");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyName2HasLeadingSpaces() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName2(" souza-");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName2"));
 	}
 
 	/**
-	 * @see PatientNameValidator#validatePersonName(java.lang.Object,
-	 *      org.springframework.validation.Errors, boolean, boolean)
+	 * @see PersonNameValidator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Test
 	@Disabled("Unignore after investigating and fixing - RA-543")
 	public void validate_shouldFailValidationIfPersonNameFamilyName2HasTrailingSpaces() {
 
+		personName.setGivenName("givenName");
 		personName.setFamilyName2("souza- ");
 
-		validator.validatePersonName(personName, errors, false, true);
+		validator.validate(personName, errors);
 
 		assertThat(errors, hasFieldErrors("familyName2"));
 	}
