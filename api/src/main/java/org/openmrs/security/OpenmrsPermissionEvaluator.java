@@ -417,7 +417,7 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 		}
 
 		String privilege = permission.toString();
-		if (FilterPassPrivilegeCache.holdsPrivilege(privilege, PrivilegeResolution::holdsPrivilege)) {
+		if (FilterPassPrivilegeCache.holdsPrivilege(privilege, Context::hasPrivilege)) {
 			return true;
 		}
 
