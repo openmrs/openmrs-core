@@ -243,4 +243,30 @@ public class NameTemplateTest extends BaseContextSensitiveTest {
 		assertEquals("Ranidu Rathnayaka", nameTemplate.format(personName));
 	}
 
+	@Test
+	public void shouldResolveNestedCustomTokenViaFallback() {
+		List<String> customTokens = new ArrayList<>(nameSupport.getSpecialTokens());
+		customTokens.add("person.uuid");
+		nameSupport.setSpecialTokens(customTokens);
+
+		NameTemplate nameTemplate = new NameTemplate();
+		nameTemplate.setLineByLineFormat(Collections.singletonList("person.uuid"));
+
+		Map<String, String> nameMappings = new HashMap<>();
+		nameMappings.put("person.uuid", "person.uuid");
+		nameTemplate.setNameMappings(nameMappings);
+
+		Map<String, String> sizeMappings = new HashMap<>();
+		sizeMappings.put("person.uuid", "40");
+		nameTemplate.setSizeMappings(sizeMappings);
+
+		nameSupport.setLayoutTemplates(Collections.singletonList(nameTemplate));
+
+		Person person = new Person();
+		person.setUuid("person-uuid");
+		PersonName personName = new PersonName();
+		personName.setPerson(person);
+
+		assertEquals("person-uuid", nameTemplate.format(personName));
+	}
 }

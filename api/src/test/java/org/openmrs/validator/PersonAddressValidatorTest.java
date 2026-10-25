@@ -24,6 +24,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -300,6 +301,26 @@ public class PersonAddressValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(personAddress, "personAddress");
 		validator.validate(personAddress, errors);
 		assertTrue(errors.hasErrors());
+	}
+
+	/**
+	 * @see PersonAddressValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfARequiredElementIsNotAPersonAddressProperty() {
+		Context.getAdministrationService()
+		        .saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE,
+		                REQUIRED_ADDRESS_TEMPLATE_XML.replace("<requiredElements>\n      <string>address1</string>",
+		                    "<requiredElements>\n      <string>notAnAddressField</string>")));
+
+		PersonAddress personAddress = new PersonAddress();
+		personAddress.setAddress1("Address1");
+
+		Errors errors = new BindException(personAddress, "personAddress");
+		validator.validate(personAddress, errors);
+		assertEquals(1, errors.getErrorCount());
+		assertEquals(Context.getMessageSourceService().getMessage("AddressTemplate.error.fieldNotDeclaredInTemplate",
+		    new Object[] { "notAnAddressField" }, Context.getLocale()), errors.getGlobalError().getCode());
 	}
 
 	private String escapeXml(String xml) {

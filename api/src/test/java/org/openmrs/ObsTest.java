@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
@@ -700,14 +701,16 @@ public class ObsTest {
 		obs.setGroupMembers(new LinkedHashSet<>());
 		obs.getConcept().setDatatype(new ConceptDatatype());
 		assertFalse(obs.isDirty());
-		BeanUtils.copyProperties(obs, BeanUtils.cloneBean(obs));
+		Obs clone = copyProperties(obs, new Obs());
+		copyProperties(clone, obs);
 		assertFalse(obs.isDirty());
 
 		obs = createObs(null);
 		obs.setGroupMembers(new LinkedHashSet<>());
 		obs.getConcept().setDatatype(new ConceptDatatype());
 		assertFalse(obs.isDirty());
-		BeanUtils.copyProperties(obs, BeanUtils.cloneBean(obs));
+		clone = copyProperties(obs, new Obs());
+		copyProperties(clone, obs);
 		assertFalse(obs.isDirty());
 	}
 
@@ -731,6 +734,25 @@ public class ObsTest {
 		updateImmutableFieldsAndAssert(obs, false);
 	}
 
+	private static Obs copyProperties(Obs source, Obs target) throws Exception {
+		for (PropertyDescriptor property : Introspector.getBeanInfo(Obs.class).getPropertyDescriptors()) {
+			if (property.getReadMethod() != null && property.getWriteMethod() != null) {
+				property.getWriteMethod().invoke(target, property.getReadMethod().invoke(source));
+			}
+		}
+		return target;
+	}
+
+	private static void setProperty(Obs obs, String propertyName, Object value) throws Exception {
+		for (PropertyDescriptor property : Introspector.getBeanInfo(Obs.class).getPropertyDescriptors()) {
+			if (property.getName().equals(propertyName) && property.getWriteMethod() != null) {
+				property.getWriteMethod().invoke(obs, value);
+				return;
+			}
+		}
+		throw new NoSuchMethodException("No setter for Obs property " + propertyName);
+	}
+
 	private void updateImmutableFieldsAndAssert(Obs obs, boolean assertion) throws Exception {
 		//Set all fields to some random values via reflection
 		List<Field> fields = Reflect.getAllFields(Obs.class);
@@ -744,10 +766,10 @@ public class ObsTest {
 			}
 
 			if ("personId".equals(fieldName)) {
-				//call setPersonId because it is protected so BeanUtils.setProperty won't work
+				//call setPersonId because it is protected so it is not a writable bean property
 				obs.setPersonId((Integer) generateValue(field, true));
 			} else {
-				BeanUtils.setProperty(obs, fieldName, generateValue(field, true));
+				setProperty(obs, fieldName, generateValue(field, true));
 			}
 			assertEquals(obs.isDirty(), assertion, "Obs was not marked as dirty after changing: " + fieldName);
 			if ("person".equals(fieldName)) {

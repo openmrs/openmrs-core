@@ -12,13 +12,14 @@ package org.openmrs.layout.name;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.layout.LayoutSupport;
 import org.openmrs.layout.LayoutTemplate;
+import org.openmrs.util.Reflect;
 
 /**
  * @since 1.12
@@ -85,7 +86,7 @@ public class NameTemplate extends LayoutTemplate {
 			case "familyNameSuffix" -> pn.getFamilyNameSuffix();
 			case "degree" -> pn.getDegree();
 			// custom-configured token: keep old behavior as a rare fallback
-			default -> BeanUtils.getProperty(pn, codeName);
+			default -> Objects.toString(Reflect.getPropertyValue(pn, codeName), null);
 		};
 	}
 }
