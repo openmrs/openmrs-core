@@ -11,6 +11,7 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
+import org.openmrs.parameter.ConceptSearchCriteria;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1223,7 +1225,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void findPossibleValues_shouldReturnListOfConceptsFromMatchingResults() throws Exception {
+	public void getConcepts_shouldReturnListOfConceptsFromMatchingResults() throws Exception {
 		Concept concept = new Concept(1);
 		concept.addName(new ConceptName("findPossibleValueTest", Context.getLocale()));
 		concept.addDescription(new ConceptDescription("en desc", Context.getLocale()));
@@ -1243,7 +1245,9 @@ public class ConceptTest extends BaseContextSensitiveTest {
 
 		Context.updateSearchIndexForType(ConceptName.class);
 
-		List<Concept> resultConcepts = newConcept.findPossibleValues("findPossibleValueTest");
+		ConceptSearchCriteria criteria = new ConceptSearchCriteria(null, null, null,
+		        Collections.singleton("findPossibleValueTest"), false);
+		List<Concept> resultConcepts = Context.getConceptService().getConcepts(criteria);
 		assertEquals(expectedConcepts, resultConcepts);
 	}
 
@@ -1272,5 +1276,18 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(21);
 		ConceptAnswer answer = concept.getAnswers().iterator().next();
 		assertFalse(Hibernate.isInitialized(answer.getAnswerConcept()), "Answer Concept should be loaded lazily");
+	}
+
+	/**
+	 * @see Concept#serialize()
+	 * @see Concept#hydrate(String)
+	 */
+	@Test
+	public void serializeAndHydrate_shouldRoundTripConcept() {
+		Concept originalConcept = new Concept(5089);
+		String serialized = originalConcept.serialize();
+		Concept hydratedConcept = originalConcept.hydrate(serialized);
+		assertEquals("5089", serialized);
+		assertEquals(originalConcept.getConceptId(), hydratedConcept.getConceptId());
 	}
 }
