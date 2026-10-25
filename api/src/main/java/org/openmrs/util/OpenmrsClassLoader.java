@@ -477,7 +477,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 							}
 						}
 					}
-				} catch (Exception t) {
+				} catch (Exception | LinkageError t) {
+					// a LinkageError here means a field type came from a module whose classloader is gone
 					log.debug("Could not clean fields for class {}", clazz.getName(), t);
 				}
 			}
