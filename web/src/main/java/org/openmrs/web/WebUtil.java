@@ -278,8 +278,8 @@ public class WebUtil implements GlobalPropertyListener {
 
 	/**
 	 * This method checks if input locale string contains control characters and tries to clean up
-	 * actually contained ones. Also it parses locale object from string representation and validates it
-	 * object.
+	 * actually contained ones. Also, it parses locale object from string representation and validates
+	 * it object.
 	 * <p>
 	 * <strong>Should</strong> ignore leading spaces<br/>
 	 * <strong>Should</strong> accept language only locales<br/>
@@ -379,7 +379,7 @@ public class WebUtil implements GlobalPropertyListener {
 	}
 
 	public static String formatDate(Date date, Locale locale, FORMAT_TYPE type) {
-		log.debug("Formatting date: " + date + " with locale " + locale);
+		log.debug("Formatting date: {} with locale {}", date, locale);
 
 		DateFormat dateFormat = null;
 
