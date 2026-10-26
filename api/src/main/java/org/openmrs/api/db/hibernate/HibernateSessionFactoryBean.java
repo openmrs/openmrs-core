@@ -34,6 +34,7 @@ import org.jspecify.annotations.NonNull;
 import org.openmrs.api.APIException;
 import org.openmrs.api.cache.CacheConfig;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.search.elasticsearch.PrefixIndexLayoutStrategy;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.EnversAuditTableInitializer;
@@ -181,6 +182,10 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean impleme
 		} catch (IOException e) {
 			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load default hibernate properties", e);
 		}
+
+		// Register the prefixing index layout strategy when a search index prefix is configured for the
+		// Elasticsearch backend; a no-op otherwise. See PrefixIndexLayoutStrategy.
+		PrefixIndexLayoutStrategy.configureIndexLayout(config);
 
 		log.debug("Replacing variables in hibernate properties");
 		final String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
