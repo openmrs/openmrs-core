@@ -288,9 +288,11 @@ public abstract class StartupFilter implements Filter {
 		}
 
 		// put each field of the model into the template for convenience, except the instance fields named
-		// like a password, which no page renders back
+		// like a password or passphrase, which no page renders back
 		for (Field field : model.getClass().getDeclaredFields()) {
-			if (!Modifier.isStatic(field.getModifiers()) && field.getName().toLowerCase(Locale.ROOT).contains("password")) {
+			String fieldName = field.getName().toLowerCase(Locale.ROOT);
+			if (!Modifier.isStatic(field.getModifiers())
+			        && (fieldName.contains("password") || fieldName.contains("passphrase"))) {
 				continue;
 			}
 			try {
