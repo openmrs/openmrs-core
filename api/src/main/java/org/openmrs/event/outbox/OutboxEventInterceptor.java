@@ -11,6 +11,7 @@ package org.openmrs.event.outbox;
 
 import java.util.Date;
 
+import org.openmrs.event.EntityEvent;
 import org.openmrs.event.EventPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,11 @@ public class OutboxEventInterceptor {
 
 	@EventListener
 	public void interceptAndSaveToOutbox(OutboxableEvent event) throws OutboxException {
+		// Saving an OutboxEvent publishes a DB event about it, so putting that event in the outbox would
+		// save another OutboxEvent, and so on until the heap runs out
+		if (event instanceof EntityEvent && ((EntityEvent<?>) event).getEntity() instanceof OutboxEvent) {
+			return;
+		}
 		if (!outboxEventRegistry.hasOutboxListeners(event)) {
 			return;
 		}

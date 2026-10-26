@@ -17,6 +17,7 @@ import java.util.Locale;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -63,7 +64,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@DocumentId
 	private Integer conceptNameId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
@@ -76,7 +77,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@KeywordField(valueBridge = @ValueBridgeRef(type = LocaleValueBridge.class))
 	private Locale locale;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
@@ -87,7 +88,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@GenericField
 	private Boolean voided = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 
@@ -111,7 +112,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@GenericField
 	private Boolean localePreferred = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 

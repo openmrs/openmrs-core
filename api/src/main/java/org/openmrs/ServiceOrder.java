@@ -12,6 +12,7 @@ package org.openmrs;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -38,7 +39,7 @@ public abstract class ServiceOrder extends Order {
 
 	public static final long serialVersionUID = 1L;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "specimen_source")
 	public Concept specimenSource;
 
@@ -50,14 +51,14 @@ public abstract class ServiceOrder extends Order {
 	@Column(name = "clinical_history", columnDefinition = "TEXT")
 	private String clinicalHistory;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
 	@Column(name = "number_of_repeats")
 	private Integer numberOfRepeats;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location")
 	private Concept location;
 
