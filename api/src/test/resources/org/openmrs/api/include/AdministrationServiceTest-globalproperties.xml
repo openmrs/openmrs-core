@@ -20,6 +20,12 @@
   <global_property property="fake.moduleabcd" property_value="EPIC FAIL" uuid="b7225607-d0c4-4e44-8be5-31e1ac7e1dda"/>
   <global_property property="valid.integer" property_value="1234" uuid="b7225607-d0c4-4e44-8be5-31e1ac7e1fda"/>
   <global_property property="valid.double" property_value="1234.54" uuid="b7225607-d0c4-4e44-8be6-31e1ac7e1fda"/>
+  <global_property property="valid.string" property_value="test-string" uuid="1b1c1b1c-1111-4111-8111-111111111111"/>
+  <global_property property="valid.boolean" property_value="true" uuid="2c2d2c2d-2222-4222-8222-222222222222"/>
+  <global_property property="valid.long" property_value="1234567890123" uuid="3d3e3d3e-3333-4333-8333-333333333333"/>
+  <global_property property="valid.float" property_value="1234.56" uuid="4e4f4e4f-4444-4444-8444-444444444444"/>
+  <global_property property="valid.enum" property_value="SECOND" uuid="5f5a5f5a-5555-4555-8555-555555555555"/>
+  <global_property property="invalid.integer" property_value="not-a-number" uuid="6a6b6a6b-6666-4666-8666-666666666666"/>
 
 	<privilege privilege="Get Global Properties" description="This is a test privilege for view global properties" uuid="d979d066-15e6-467c-9d4b-cb575ef12345" creator="1" retired="false" date_created="2025-09-14 12:00:00.0" name="Privilege Name" />
 	<privilege privilege="Manage Global Properties" description="This is a test privilege for edit global properties" uuid="d979d066-15e6-467c-9d4b-cb575ef54321" creator="1" retired="false" date_created="2025-09-14 12:00:00.0" name="Privilege Name" />
