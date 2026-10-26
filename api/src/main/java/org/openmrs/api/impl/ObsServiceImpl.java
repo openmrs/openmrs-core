@@ -113,8 +113,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		ensureRequirePrivilege(obs);
 
-		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
-		//otherwise operations like merge patients won't be possible when to moving voided obs
+		//A voided Obs is saved in place, where the immutable obs interceptor only lets its void fields
+		//change and lets it move to another person with its own encounter or in a patient merge
 		if (obs.getObsId() == null || obs.getVoided()) {
 			return saveNewOrVoidedObs(obs, changeMessage);
 		} else if (!obs.isDirty()) {
@@ -162,6 +162,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		// database. This allows us to create a new row and new obs_id
 		// this method doesn't copy the obs_id
 		Obs newObs = Obs.newInstance(obs);
+		keepVoidedMembersWithTheirGroup(newObs);
 
 		unsetVoidedAndCreationProperties(newObs, obs);
 		handleObsWithComplexConcept(newObs);
@@ -180,6 +181,27 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 
 		return newObs;
 
+	}
+
+	/**
+	 * Gives the new voided members of a group, such as the copies {@link Obs#newInstance(Obs)} makes of
+	 * a group's voided members, the encounter and person of the group; each member does the same for
+	 * its own members when it is saved. {@link Encounter#addObs(Obs)} moves only the live members of a
+	 * group to an encounter, so a copied voided member still has the encounter its original had, and
+	 * would stay there. A member without an encounter of its own keeps having none.
+	 */
+	private void keepVoidedMembersWithTheirGroup(Obs group) {
+		if (!group.hasGroupMembers(true)) {
+			return;
+		}
+		for (Obs member : group.getGroupMembers(true)) {
+			if (member.getObsId() == null && member.getVoided()) {
+				if (member.getEncounter() != null && group.getEncounter() != null) {
+					member.setEncounter(group.getEncounter());
+				}
+				member.setPerson(group.getPerson());
+			}
+		}
 	}
 
 	private void updateStatusIfNecessary(Obs newObs, Obs.Status originalStatus) {
@@ -222,7 +244,12 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	}
 
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
-		handleObsWithComplexConcept(obs);
+		// a new group takes its new voided members with it, such as the copies a transferred encounter's
+		// group holds, while a saved voided obs keeps its value, so its complex data is not stored again
+		if (obs.getObsId() == null) {
+			keepVoidedMembersWithTheirGroup(obs);
+			handleObsWithComplexConcept(obs);
+		}
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret, changeMessage);
 		return ret;
