@@ -127,7 +127,6 @@
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.5.252</h2Version>
 		<dbunitVersion>3.5.2</dbunitVersion>
-		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
 		<s3mockVersion>5.2.3</s3mockVersion>
@@ -681,14 +680,6 @@
 				<groupId>org.dbunit</groupId>
 				<artifactId>dbunit</artifactId>
 				<version>${dbunitVersion}</version>
-			</dependency>
-			<!-- Used as a listener dependency for the jacoco-maven-plugin / Sonar
-     coverage integration configured in the root pom.xml, not declared
-     as a direct project dependency by any module -->
-			<dependency>
-				<groupId>org.codehaus.sonar-plugins.java</groupId>
-				<artifactId>sonar-jacoco-listeners</artifactId>
-				<version>${sonarJacocoListenersVersion}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
