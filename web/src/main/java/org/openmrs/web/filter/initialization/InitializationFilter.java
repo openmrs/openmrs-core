@@ -276,8 +276,7 @@ public class InitializationFilter extends StartupFilter {
 		// the confirmation holds only for the values the confirmation page showed
 		wizardModel.wizardCompletePageShown = false;
 
-		if (InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)
-		        || httpRequest.getServletPath().equals("/" + AUTO_RUN_OPENMRS)) {
+		if (InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)) {
 			autoRunOpenMRS(httpRequest, wizardModel);
 			referenceMap.put("isInstallationStarted", true);
 			httpResponse.setContentType("text/html");
@@ -1109,14 +1108,6 @@ public class InitializationFilter extends StartupFilter {
 	private void autoRunOpenMRS(HttpServletRequest httpRequest, InitializationWizardModel wizardModel) {
 		File runtimeProperties = getRuntimePropertiesFile();
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
-
-		if (!InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)) {
-			if (httpRequest.getParameter("database_user_name") != null) {
-				wizardModel.createDatabaseUsername = httpRequest.getParameter("database_user_name");
-			}
-
-			createSimpleSetup(wizardModel, httpRequest.getParameter("database_root_password"));
-		}
 
 		checkLocaleAttributes(httpRequest, wizardModel);
 		try {

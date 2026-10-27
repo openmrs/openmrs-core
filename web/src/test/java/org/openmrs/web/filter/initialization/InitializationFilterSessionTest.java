@@ -44,6 +44,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
+import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -227,6 +228,21 @@ class InitializationFilterSessionTest {
 		MockHttpSession second = startSession();
 		post(second, "wizardcomplete.vm");
 
+		assertThat(filter.installsStarted, empty());
+		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
+	@Test
+	void shouldSendARequestForAutoRunOpenmrsToTheWizardRatherThanInstall() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/auto_run_openmrs");
+		request.setServletPath("/auto_run_openmrs");
+		request.setSession(new MockHttpSession());
+		request.setParameter("database_root_password", "RootPassword1");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		filter.doFilter(request, response, new MockFilterChain());
+
+		assertEquals("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL, response.getRedirectedUrl());
 		assertThat(filter.installsStarted, empty());
 		assertFalse(InitializationFilter.isInstallationStarted());
 	}
