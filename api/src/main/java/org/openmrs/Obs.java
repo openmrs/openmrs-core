@@ -13,7 +13,18 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -82,6 +93,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	}
 	
 	private static final String TIME_PATTERN = "HH:mm";
+	
+	private static final String TIME_PATTERN_WITH_SECONDS = "HH:mm:ss";
 	
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
 	
@@ -1103,10 +1116,41 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					setValueNumeric(Double.valueOf(s));
 				} else if ("DT".equals(abbrev)) {
 					DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-					setValueDatetime(dateFormat.parse(s));
+					dateFormat.setLenient(false);
+					// ParsePosition tracks how much of the string was consumed, so trailing characters
+					// are rejected instead of ignored, and its index locates the failure in the exception.
+					ParsePosition position = new ParsePosition(0);
+					Date parsedDate = dateFormat.parse(s, position);
+					if (parsedDate == null || position.getIndex() != s.length()) {
+						// Some clients post a full ISO 8601 datetime for a date obs (the O3
+						// registration form posts a JavaScript Date, for example), so accept
+						// that form too, parsed strictly so invalid dates are still rejected.
+						Date isoDate = parseIsoDatetime(s);
+						if (isoDate == null) {
+							int errorOffset = parsedDate == null ? position.getErrorIndex() : position.getIndex();
+							throw new ParseException("Unable to parse date: " + s, errorOffset);
+						}
+						parsedDate = isoDate;
+					}
+					setValueDatetime(parsedDate);
 				} else if ("TM".equals(abbrev)) {
 					DateFormat timeFormat = new SimpleDateFormat(TIME_PATTERN);
-					setValueDatetime(timeFormat.parse(s));
+					timeFormat.setLenient(false);
+					ParsePosition position = new ParsePosition(0);
+					Date parsedTime = timeFormat.parse(s, position);
+					if (parsedTime == null || position.getIndex() != s.length()) {
+						// Times may also carry seconds (HH:mm:ss), the usual ISO 8601 and FHIR form.
+						DateFormat secondsFormat = new SimpleDateFormat(TIME_PATTERN_WITH_SECONDS);
+						secondsFormat.setLenient(false);
+						ParsePosition secondsPosition = new ParsePosition(0);
+						Date parsedTimeWithSeconds = secondsFormat.parse(s, secondsPosition);
+						if (parsedTimeWithSeconds == null || secondsPosition.getIndex() != s.length()) {
+							int errorOffset = parsedTime == null ? position.getErrorIndex() : position.getIndex();
+							throw new ParseException("Unable to parse time: " + s, errorOffset);
+						}
+						parsedTime = parsedTimeWithSeconds;
+					}
+					setValueDatetime(parsedTime);
 				} else if ("TS".equals(abbrev)) {
 					setValueDatetime(DateUtil.parseDatetimeString(s));
 				}  else {
@@ -1124,6 +1168,32 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 		}
 	}
 	
+	/**
+	 * Parses an ISO 8601 datetime string, with or without a timezone offset, using strict resolution so
+	 * that invalid values such as February 30 are rejected instead of being rolled over to a different
+	 * day. Uses the same formatter shape as {@link DateUtil#parseDatetimeString(String)}, whose default
+	 * resolution is not strict.
+	 *
+	 * @param s the string to parse
+	 * @return the parsed date, or null if the string is not a valid ISO 8601 datetime
+	 */
+	private static Date parseIsoDatetime(String s) {
+		if (!s.contains("T")) {
+			return null;
+		}
+		DateTimeFormatter isoFormatter = new DateTimeFormatterBuilder().append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+		        .optionalStart().appendPattern("XXX").optionalEnd().optionalStart().appendPattern("XX").optionalEnd()
+		        .optionalStart().appendPattern("X").optionalEnd().toFormatter().withResolverStyle(ResolverStyle.STRICT);
+		try {
+			TemporalAccessor parsed = isoFormatter.parse(s);
+			Instant instant = parsed.isSupported(ChronoField.OFFSET_SECONDS) ? OffsetDateTime.from(parsed).toInstant()
+			        : LocalDateTime.from(parsed).atZone(ZoneId.systemDefault()).toInstant();
+			return Date.from(instant);
+		} catch (DateTimeException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
