@@ -24,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,8 +55,8 @@ public class ObsTest {
 	private static final String FORM_NAMESPACE_PATH_SEPARATOR = "^";
 	
 	//ignore these fields, groupMembers and formNamespaceAndPath field are taken care of by other tests
-	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID",
-	    "DATE_TIME_PATTERN", "TIME_PATTERN", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
+	private static final List<String> IGNORED_FIELDS = Arrays.asList("dirty", "log", "serialVersionUID", "DATE_TIME_PATTERN",
+	    "TIME_PATTERN", "TIME_PATTERN_WITH_SECONDS", "DATE_PATTERN", "FORM_NAMESPACE_PATH_SEPARATOR",
 	    "FORM_NAMESPACE_PATH_MAX_LENGTH", "obsId", "groupMembers", "uuid", "changedBy", "dateChanged", "voided", "voidedBy",
 	    "voidReason", "dateVoided", "formNamespaceAndPath", "$jacocoData", "referenceRange");
 	
@@ -513,6 +515,191 @@ public class ObsTest {
 		assertEquals(30, cal.get(Calendar.MINUTE));
 	}
 
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseValidDateIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(obs.getValueDatetime());
+		assertEquals(2023, cal.get(Calendar.YEAR));
+		assertEquals(Calendar.JUNE, cal.get(Calendar.MONTH));
+		assertEquals(15, cal.get(Calendar.DAY_OF_MONTH));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfDateIsInvalidIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-02-30"));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfDateHasTrailingCharactersIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-06-15garbage"));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseValidTimeIfTypeIsTM() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("13:45");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(obs.getValueDatetime());
+		assertEquals(13, cal.get(Calendar.HOUR_OF_DAY));
+		assertEquals(45, cal.get(Calendar.MINUTE));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfTimeIsInvalidIfTypeIsTM() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("25:70"));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfTimeHasTrailingCharactersIfTypeIsTM() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("13:45garbage"));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15T21:00:00.000Z");
+
+		assertEquals(Date.from(OffsetDateTime.parse("2023-06-15T21:00:00.000Z").toInstant()), obs.getValueDatetime());
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfIsoDateIsInvalidIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-02-30T10:00:00"));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldReportErrorOffsetIfDateIsInvalidIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		ParseException exception = assertThrows(ParseException.class, () -> obs.setValueAsString("2023-ab-15"));
+		assertEquals(5, exception.getErrorOffset());
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseTimeWithSecondsIfTypeIsTM() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("13:45:00");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(obs.getValueDatetime());
+		assertEquals(13, cal.get(Calendar.HOUR_OF_DAY));
+		assertEquals(45, cal.get(Calendar.MINUTE));
+		assertEquals(0, cal.get(Calendar.SECOND));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfTimeHasInvalidSecondsIfTypeIsTM() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TM");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("13:45:60"));
+	}
 
 	/**
 	 * @see Obs#getValueAsBoolean()
