@@ -120,7 +120,7 @@ The root `pom.xml` configures the Maven Enforcer `requireReleaseDeps` rule with 
 
 - While the project version ends in `-SNAPSHOT` (as on `master`), the rule is skipped, so normal development builds are unaffected.
 - Once the project version is a release version (for example after `mvn versions:set` in the release workflow), the build fails if any dependency still resolves to a `-SNAPSHOT` version.
-- The rule does not check optional dependencies or version ranges.
+- The rule does not check optional dependencies.
 - Other pre-release qualifiers (`-M`, `-alpha`, `-beta`, `-RC`) are not checked yet. That is tracked in TRUNK-6855.
 
 Entries in `bom/pom.xml` should be declared by at least one module. If an entry is kept for another reason, for example because a module only needs it transitively, add a comment above it explaining why.
