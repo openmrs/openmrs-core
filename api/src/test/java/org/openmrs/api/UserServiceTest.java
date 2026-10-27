@@ -723,7 +723,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllPrivileges_shouldReturnAllPrivilegesInTheSystem() {
 		executeDataSet(XML_FILENAME);
 		List<Privilege> privileges = userService.getAllPrivileges();
-		assertEquals(1, privileges.size());
+		assertEquals(2, privileges.size());
 	}
 	
 	/**
