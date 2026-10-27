@@ -213,6 +213,15 @@ public interface UserDAO {
 	public void setUserActivationKey(LoginCredential credentials);
 
 	/**
+	 * Gets the user's login credential with its row locked for update until the transaction ends
+	 *
+	 * @param user the user whose login credential to lock
+	 * @return the locked, freshly loaded login credential
+	 * @since 3.0.0
+	 */
+	public LoginCredential getLoginCredentialForUpdate(User user);
+
+	/**
 	 * @see UserService#getLastLoginTime(User)
 	 */
 	String getLastLoginTime(User user);
