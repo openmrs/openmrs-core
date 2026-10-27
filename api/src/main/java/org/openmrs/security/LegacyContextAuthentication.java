@@ -44,10 +44,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * session either {@link Context#getUserContext()} raises its usual
  * {@link org.openmrs.api.APIException} - deliberately, rather than letting Spring Security's
  * {@link AuthenticationCredentialsNotFoundException} escape. That is the exception every other
- * OpenMRS privilege path raises with no session open, {@code hasAuthority} included (by way of the
- * {@code Context.addProxyPrivilege} in {@link PrivilegeResolution}), and callers are written
- * against it: {@code PersonName.getFullName()} catches {@code APIException} to fall back to an
- * unformatted name, and an {@code AuthenticationException} would sail straight through it.
+ * OpenMRS privilege path raises with no session open, {@code hasAuthority} included: it delegates
+ * to {@link Context#hasPrivilege(String)}, which needs the {@code UserContext} too. Callers are
+ * written against it: {@code PersonName.getFullName()} catches {@code APIException} to fall back to
+ * an unformatted name, and an {@code AuthenticationException} would sail straight through it.
  *
  * @since 3.0.0
  */
