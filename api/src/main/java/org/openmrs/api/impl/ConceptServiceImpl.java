@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hibernate.Hibernate;
@@ -167,7 +166,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			}
 		}
 
-		if (CollectionUtils.isNotEmpty(changedConceptNames)) {
+		if (changedConceptNames != null && !changedConceptNames.isEmpty()) {
 			for (ConceptName changedName : changedConceptNames) {
 				// void old concept name
 				changedName.setVoided(true);
@@ -249,7 +248,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				//do nothing yet, but stick around to setLocalePreferred(true)
 			} else if (concept.getFullySpecifiedName(locale) != null) {
 				possiblePreferredName = concept.getFullySpecifiedName(locale);
-			} else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale))) {
+			} else if (!concept.getSynonyms(locale).isEmpty()) {
 				concept.getSynonyms(locale).iterator().next().setLocalePreferred(true);
 			}
 			//index terms are never used as preferred name
