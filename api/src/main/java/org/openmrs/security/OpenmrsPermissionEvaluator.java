@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 import org.hibernate.proxy.HibernateProxy;
@@ -110,7 +111,7 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 	 */
 	private static final Class<?> UNRESOLVED = Void.class;
 
-	private final List<DomainObjectAuthorizationRule> rules;
+	private final List<DomainObjectAuthorizationRule> rules = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Which rules apply to a type, derived on first sight and kept - {@code hasPermission(...)} may run
@@ -129,7 +130,25 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 
 	@Autowired
 	public OpenmrsPermissionEvaluator(List<DomainObjectAuthorizationRule> rules) {
-		this.rules = List.copyOf(rules);
+		this.rules.addAll(rules);
+	}
+
+	/**
+	 * Adds a rule to the ones injected at startup. Visible for tests: a registered rule changes which
+	 * path a read takes even while it refuses nothing, so core's own tests register theirs for the test
+	 * that needs them rather than as beans every context would pick up.
+	 */
+	void addRule(DomainObjectAuthorizationRule rule) {
+		rules.add(rule);
+		rulesByClass.clear();
+	}
+
+	/**
+	 * Undoes {@link #addRule(DomainObjectAuthorizationRule)}.
+	 */
+	void removeRule(DomainObjectAuthorizationRule rule) {
+		rules.remove(rule);
+		rulesByClass.clear();
 	}
 
 	@Override
