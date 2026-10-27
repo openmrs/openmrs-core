@@ -956,7 +956,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	public void forcePasswordChange(User user) {
 		if (user == null) {
-			return;
+			throw new APIException("bootstrap.user.null", (Object[]) null);
 		}
 		if (user.getUserId() == null) {
 			throw new APIException("forcepasswordchange.user.not.saved", (Object[]) null);
