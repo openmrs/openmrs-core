@@ -3171,7 +3171,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 
 		// discard the rejected change and reload the encounter from the database
 		Context.evictFromSession(encounter);
@@ -3202,7 +3203,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 	}
 
 	/**
@@ -3268,7 +3270,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.voidEncounter(encounter, "test"));
+		APIException e = assertThrows(APIException.class, () -> encounterService.voidEncounter(encounter, "test"));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 	}
 
 	/**
@@ -3290,7 +3293,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.unvoidEncounter(encounter));
+		APIException e = assertThrows(APIException.class, () -> encounterService.unvoidEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 	}
 
 	/**
@@ -3312,7 +3316,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter));
+		APIException e = assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 	}
 
 	/**
@@ -3334,7 +3339,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		EncounterService encounterService = Context.getEncounterService();
 
-		assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter, Boolean.TRUE));
+		APIException e = assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter, Boolean.TRUE));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
 	}
 
 	@Test
