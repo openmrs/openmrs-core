@@ -58,12 +58,12 @@
 		<!-- infinispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>15.2.6.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.22.3</jacksonVersion>
+		<jacksonVersion>2.22.4</jacksonVersion>
 		<slf4jVersion>1.7.36</slf4jVersion>
 		<log4jVersion>2.26.1</log4jVersion>
 		<jbossLoggingVersion>3.6.3.Final</jbossLoggingVersion>
 		<owaspCsrfGuardVersion>4.5.0-jakarta</owaspCsrfGuardVersion>
-		<owaspEncoderVersion>1.5.1</owaspEncoderVersion>
+		<owaspEncoderVersion>1.6.0</owaspEncoderVersion>
 		<bouncyCastleVersion>1.86</bouncyCastleVersion>
 		<graalJsVersion>25.4.4.1.1</graalJsVersion>
 		<nettyVersion>4.2.19.Final</nettyVersion>
@@ -120,7 +120,7 @@
 		<guavaVersion>33.7.2-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
-		<jobrunrVersion>9.0.1</jobrunrVersion>
+		<jobrunrVersion>9.0.2</jobrunrVersion>
 		<shedlockVersion>7.10.1</shedlockVersion>
 
 		<!-- Testing -->
