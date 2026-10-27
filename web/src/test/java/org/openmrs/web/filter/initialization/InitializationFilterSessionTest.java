@@ -29,6 +29,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -68,6 +70,12 @@ class InitializationFilterSessionTest {
 	 */
 	private static final Pattern PREFILLED_PASSWORD_INPUT = Pattern
 	        .compile("<input(?=[^>]*\\stype=\"password\")(?=[^>]*\\svalue=)[^>]*>");
+
+	/**
+	 * A reference to a password or passphrase field, which the template data leaves out, so Velocity
+	 * shows the reference as written
+	 */
+	private static final Pattern PASSWORD_FIELD_REFERENCE = Pattern.compile("\\$!?\\{?\\w*(?i:password|passphrase)");
 
 	@TempDir
 	Path applicationDataDirectory;
@@ -251,7 +259,7 @@ class InitializationFilterSessionTest {
 	@Test
 	void shouldNotShowTheConnectionOfAFailedInstallToAnotherSession() throws Exception {
 		// what a standalone launcher's runtime properties file gives the wizard when OpenMRS starts
-		writeExistingRuntimeProperties("StandalonePassword1");
+		writeExistingRuntimeProperties("jdbc:mysql://localhost:3306/openmrs", "StandalonePassword1");
 		Properties runtimePropertiesBeforeInstall = Context.getRuntimeProperties();
 		filter.runInstalls = true;
 		// test data with no server to import it from, so the install fails at the step after the one that checks
@@ -406,17 +414,24 @@ class InitializationFilterSessionTest {
 		sentinels.put("environment remote_password", "SentinelEnvRemote1");
 		sentinels.put("environment admin_user_password", "SentinelEnvAdmin1");
 		sentinels.put("runtime properties connection.password", "SentinelRuntimeConnection1");
+		sentinels.put("runtime properties connection.url password", "SentinelRuntimeUrl1");
 		sentinels.put("form database_root_password", "SentinelFormRoot1");
 		sentinels.put("form create_database_password", "SentinelFormCreateDb1");
 		sentinels.put("form create_user_password", "SentinelFormCreateUser1");
 		sentinels.put("form current_database_password", "SentinelFormCurrent1");
 		sentinels.put("form new_admin_password", "SentinelFormAdmin1");
+		sentinels.put("form database_connection password", "SentinelFormUrl1");
+		sentinels.put("form pass_phrase", "SentinelFormPassPhrase1");
 
 		filter.environment.put("CREATE_DATABASE_PASSWORD", sentinels.get("environment create_database_password"));
 		filter.environment.put("CREATE_USER_PASSWORD", sentinels.get("environment create_user_password"));
 		filter.environment.put("REMOTE_PASSWORD", sentinels.get("environment remote_password"));
 		filter.environment.put("ADMIN_USER_PASSWORD", sentinels.get("environment admin_user_password"));
-		writeExistingRuntimeProperties(sentinels.get("runtime properties connection.password"));
+		writeExistingRuntimeProperties(
+		    "jdbc:mysql://localhost:3306/openmrs?password=" + sentinels.get("runtime properties connection.url password"),
+		    sentinels.get("runtime properties connection.password"));
+		String connectionWithPassword = "jdbc:mysql://localhost:3306/@DBNAME@?password="
+		        + sentinels.get("form database_connection password");
 
 		Map<String, String> pages = new LinkedHashMap<>();
 		MockHttpSession session = new MockHttpSession();
@@ -433,14 +448,14 @@ class InitializationFilterSessionTest {
 		pages.put("installmethod.vm reloaded", get(session, "installmethod.vm"));
 		pages.put("databasesetup.vm", post(session, "installmethod.vm", "install_method", "advanced"));
 		pages.put("databasesetup.vm with an error",
-		    post(session, "databasesetup.vm", "database_connection", "jdbc:mysql://localhost:3306/@DBNAME@",
-		        "database_driver", "com.mysql.cj.jdbc.Driver", "current_openmrs_database", "no", "openmrs_new_database_name",
-		        "", "create_database_username", "root", "create_database_password",
+		    post(session, "databasesetup.vm", "database_connection", connectionWithPassword, "database_driver",
+		        "com.mysql.cj.jdbc.Driver", "current_openmrs_database", "no", "openmrs_new_database_name", "",
+		        "create_database_username", "root", "create_database_password",
 		        sentinels.get("form create_database_password")));
 		pages.put(TABLES_AND_USER_PAGE,
-		    post(session, "databasesetup.vm", "database_connection", "jdbc:mysql://localhost:3306/@DBNAME@",
-		        "database_driver", "com.mysql.cj.jdbc.Driver", "current_openmrs_database", "no", "openmrs_new_database_name",
-		        "openmrs_walk", "create_database_username", "root", "create_database_password",
+		    post(session, "databasesetup.vm", "database_connection", connectionWithPassword, "database_driver",
+		        "com.mysql.cj.jdbc.Driver", "current_openmrs_database", "no", "openmrs_new_database_name", "openmrs_walk",
+		        "create_database_username", "root", "create_database_password",
 		        sentinels.get("form create_database_password")));
 		pages.put(TABLES_AND_USER_PAGE + " with an error",
 		    post(session, TABLES_AND_USER_PAGE, "current_database_user", "yes", "current_database_username", "",
@@ -457,7 +472,10 @@ class InitializationFilterSessionTest {
 		    post(session, "adminusersetup.vm", "new_admin_password", sentinels.get("form new_admin_password"),
 		        "new_admin_password_confirm", sentinels.get("form new_admin_password")));
 		pages.put("wizardcomplete.vm", post(session, "implementationidsetup.vm", "implementation_name", "",
-		    "implementation_id", "", "pass_phrase", "", "description", ""));
+		    "implementation_id", "", "pass_phrase", sentinels.get("form pass_phrase"), "description", ""));
+		pages.put("implementationidsetup.vm after back", post(session, "wizardcomplete.vm", "back", "Back"));
+		pages.put("wizardcomplete.vm again", post(session, "implementationidsetup.vm", "implementation_name", "",
+		    "implementation_id", "", "pass_phrase", sentinels.get("form pass_phrase"), "description", ""));
 		pages.put("progress.vm", post(session, "wizardcomplete.vm"));
 		pages.put("progress.vm for another session", get(new MockHttpSession(), null));
 
@@ -471,11 +489,31 @@ class InitializationFilterSessionTest {
 			}
 			assertFalse(PREFILLED_PASSWORD_INPUT.matcher(page.getValue()).find(),
 			    page.getKey() + " fills in a password field");
+			assertFalse(PASSWORD_FIELD_REFERENCE.matcher(page.getValue()).find(),
+			    page.getKey() + " shows a reference to a password field");
 			for (Map.Entry<String, String> sentinel : sentinels.entrySet()) {
 				assertFalse(page.getValue().contains(sentinel.getValue()),
 				    page.getKey() + " rendered the " + sentinel.getKey());
 			}
 		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "jdbc:mysql://localhost:3306/openmrs?user=openmrs&password=Secret1",
+	        "jdbc:mysql://openmrs:Secret1@localhost:3306/openmrs", "jdbc:oracle:thin:openmrs/Secret1@localhost:1521/openmrs",
+	        "jdbc:h2:mem:openmrs;USER=openmrs;PASSWORD=Secret1",
+	        "jdbc:mysql://address=(host=localhost)(user=openmrs)(password=Secret1)/openmrs",
+	        "jdbc:mysql://localhost:3306/@DBNAME@?trustCertificateKeyStorePassword=Secret1",
+	        "jdbc:postgresql://localhost:5432/openmrs?sslpassword=Secret1" })
+	void shouldNotShowAConnectionUrlThatNamesAPasswordOrHoldsUserInfo(String connectionUrl) {
+		assertTrue(InitializationFilter.mayCarryCredentials(connectionUrl));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { InitializationWizardModel.DEFAULT_MYSQL_CONNECTION,
+	        InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, "jdbc:mysql://localhost:3306/openmrs?user=openmrs" })
+	void shouldShowAConnectionUrlWithoutCredentials(String connectionUrl) {
+		assertFalse(InitializationFilter.mayCarryCredentials(connectionUrl));
 	}
 
 	/**
@@ -495,9 +533,9 @@ class InitializationFilterSessionTest {
 		assertThat(confirmation, containsString("value=\"wizardcomplete.vm\""));
 	}
 
-	private void writeExistingRuntimeProperties(String connectionPassword) throws IOException {
+	private void writeExistingRuntimeProperties(String connectionUrl, String connectionPassword) throws IOException {
 		Properties runtimeProperties = new Properties();
-		runtimeProperties.setProperty("connection.url", "jdbc:mysql://localhost:3306/openmrs");
+		runtimeProperties.setProperty("connection.url", connectionUrl);
 		runtimeProperties.setProperty("connection.username", "openmrs");
 		runtimeProperties.setProperty("connection.password", connectionPassword);
 		File file = new File(applicationDataDirectory.toFile(), WebConstants.WEBAPP_NAME + "-runtime.properties");

@@ -244,7 +244,8 @@ public abstract class StartupFilter implements Filter {
 
 	/**
 	 * The fields of {@link #getUpdateFilterModel()} are returned to the template via the velocity
-	 * context and reflection, except the instance fields whose name contains "password", ignoring case
+	 * context and reflection, except the instance fields whose name contains "password" or
+	 * "passphrase", ignoring case
 	 *
 	 * @param templateName the name of the velocity file to render. This name is prepended with
 	 *            {@link #getTemplatePrefix()}
@@ -259,7 +260,8 @@ public abstract class StartupFilter implements Filter {
 	/**
 	 * Renders the template with the given model, errors and messages rather than the ones this filter
 	 * holds, for a filter that keeps them per client. The fields of the model are put into the
-	 * template, except the instance fields whose name contains "password", ignoring case.
+	 * template, except the instance fields whose name contains "password" or "passphrase", ignoring
+	 * case.
 	 *
 	 * @param templateName the name of the velocity file to render. This name is prepended with
 	 *            {@link #getTemplatePrefix()}

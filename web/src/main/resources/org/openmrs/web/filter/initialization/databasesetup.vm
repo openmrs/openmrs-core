@@ -15,7 +15,7 @@
                         <input type="text" 
                                name="database_connection" 
                                class="form-input" 
-                               value="${databaseConnection}" 
+                               value="${displayedDatabaseConnection}"
                                onKeyPress="return submitenter(this,event);" />
                         <span class="input-hint">$l10n.get("install.advanced.dbsetup.rep")</span>
                     </div>

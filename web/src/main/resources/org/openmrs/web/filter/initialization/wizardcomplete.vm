@@ -15,7 +15,7 @@
                     <div class="summary-grid">
                         <div class="summary-item">
                             <span class="summary-label">$l10n.get("install.complete.db.connection")</span>
-                            <span class="summary-value">${databaseConnection}</span>
+                            <span class="summary-value">#if( $displayedDatabaseConnection == "" ) ******** #else ${displayedDatabaseConnection} #end</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">$l10n.get("install.db.name")</span>
@@ -50,10 +50,6 @@
                         <div class="summary-item">
                             <span class="summary-label">$l10n.get("install.complete.impl.id")</span>
                             <span class="summary-value">${implementationId}</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">$l10n.get("install.complete.impl.pass")</span>
-                            <span class="summary-value">${implementationIdPassPhrase}</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">$l10n.get("install.complete.impl.desc")</span>

@@ -427,13 +427,17 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Renders the template with the given session model and its errors and messages. Rendering the page
 	 * that asks to confirm the install records that on the model, which an install from the wizard
-	 * requires.
+	 * requires. Pages show the connection URL as displayedDatabaseConnection, which is empty when the
+	 * URL may carry credentials.
 	 */
 	private void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
 	        InitializationWizardModel wizardModel) throws IOException {
 		if (WIZARD_COMPLETE.equals(templateName)) {
 			wizardModel.wizardCompletePageShown = true;
 		}
+		String databaseConnection = wizardModel.databaseConnection;
+		referenceMap.put("displayedDatabaseConnection",
+		    databaseConnection == null || mayCarryCredentials(databaseConnection) ? "" : databaseConnection);
 		renderTemplate(templateName, referenceMap, httpResponse, wizardModel, wizardModel.errors, wizardModel.msgs);
 	}
 
@@ -1409,6 +1413,19 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	/**
+	 * Drivers take credentials in a connection URL in several forms, such as a password parameter or
+	 * user info before an @, so rather than parse them out, the wizard shows no URL that names a
+	 * password or holds an @ other than the one in its @DBNAME@ placeholder.
+	 *
+	 * @param connectionUrl a connection URL
+	 * @return true if the URL contains "pass", ignoring case, or an @ outside @DBNAME@
+	 */
+	static boolean mayCarryCredentials(String connectionUrl) {
+		String url = connectionUrl.replace("@DBNAME@", "");
+		return url.toLowerCase(Locale.ROOT).contains("pass") || url.contains("@");
+	}
+
+	/**
 	 * Separate thread that will run through all tasks to complete the initialization. The database is
 	 * created, user's created, etc here
 	 */
@@ -1801,7 +1818,10 @@ public class InitializationFilter extends StartupFilter {
 							} catch (Exception e) {
 								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
 								    e.getMessage());
-								log.warn("Error while trying to create tables and demo data", e);
+								log.warn("Error while trying to create tables and demo data. If the database already "
+								        + "has the tables of an OpenMRS database, install again without creating them "
+								        + "(create_tables=false for an automatic install)",
+								    e);
 								return;
 							}
 						}
@@ -2045,6 +2065,7 @@ public class InitializationFilter extends StartupFilter {
 				if (isAdminPasswordSeeded()) {
 					reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE,
 					    "The admin user still has the seeded password.");
+					log.warn("The admin user still has the seeded password after replacing it");
 					return false;
 				}
 				log.warn("Replaced the password the core data gives the admin user with the admin password this install "
