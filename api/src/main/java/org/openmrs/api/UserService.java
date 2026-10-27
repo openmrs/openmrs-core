@@ -620,7 +620,7 @@ public interface UserService extends OpenmrsService {
 	 * Generating a new bootstrap password re-arms a consumed one.
 	 * <p>
 	 * Only the issuance flag is written; unflushed changes to the user are discarded, including
-	 * one already passed to {@link #saveUser(User, String)} in the same transaction.
+	 * one already passed to {@link #saveUser(User)} in the same transaction.
 	 *
 	 * @param user the user for whom to issue the bootstrap password
 	 * @return the issued bootstrap password
@@ -655,7 +655,7 @@ public interface UserService extends OpenmrsService {
 	 * Only the two properties of that one user are written, so the caller needs the Edit Users
 	 * privilege and nothing else. No other change to the user is written along with them, and
 	 * the user does not have to pass validation. A change to the user that has not been flushed
-	 * yet is discarded, including one already passed to {@link #saveUser(User, String)} in the same
+	 * yet is discarded, including one already passed to {@link #saveUser(User)} in the same
 	 * transaction.
 	 *
 	 * @param user the user whose password change should be forced
