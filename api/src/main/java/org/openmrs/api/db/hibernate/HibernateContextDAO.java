@@ -134,11 +134,11 @@ public class HibernateContextDAO implements ContextDAO {
 				        .setParameter(1, candidateUser.getUserId()).uniqueResult();
 			} catch (LockTimeoutException | PessimisticLockException | org.hibernate.PessimisticLockException e) {
 				log.warn("Could not lock the user row for login (login={}, userId={})", login, candidateUser.getUserId(), e);
-				throw new ContextAuthenticationException("Too many simultaneous login attempts. Please try again later.");
+				throw new ContextAuthenticationException(errorMsg);
 			} catch (RuntimeException e) {
 				log.error("Could not lock the user row for login (login={}, userId={})", login, candidateUser.getUserId(),
 				    e);
-				throw e;
+				throw new ContextAuthenticationException(errorMsg);
 			}
 			if (lockedUserId == null) {
 				log.info("Failed login attempt (login={}) - {}", login, errorMsg);
