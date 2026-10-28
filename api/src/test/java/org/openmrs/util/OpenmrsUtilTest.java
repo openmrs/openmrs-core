@@ -566,6 +566,42 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see OpenmrsUtil#getDateTimeFormat(Locale)
+	 */
+	@Test
+	public void getDateTimeFormat_shouldRejectMalformedDateTimes() {
+		assertThrows(ParseException.class, () -> OpenmrsUtil.getDateTimeFormat(Locale.UK).parse("01/02/24 10:30"));
+		assertThrows(ParseException.class, () -> OpenmrsUtil.getDateTimeFormat(Locale.UK).parse("32/01/2024 10:30"));
+		assertThrows(ParseException.class, () -> OpenmrsUtil.getDateTimeFormat(Locale.UK).parse("31/02/2024 10:30"));
+		assertThrows(ParseException.class, () -> OpenmrsUtil.getDateTimeFormat(Locale.UK).parse("13/45/2024 10:99"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#getDateTimeFormat(Locale)
+	 */
+	@Test
+	public void getDateTimeFormat_shouldParseValidDateTimes() throws ParseException {
+		SimpleDateFormat expected = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		assertEquals(expected.parse("2011-10-27 17:59:00"),
+		    OpenmrsUtil.getDateTimeFormat(Locale.UK).parse("27/10/2011 17:59"));
+		// trailing text after the pattern is ignored, as with any SimpleDateFormat
+		assertEquals(expected.parse("2008-09-26 09:24:00"),
+		    OpenmrsUtil.getDateTimeFormat(Locale.UK).parse("26/09/2008 09:24:10"));
+	}
+
+	/**
+	 * @see OpenmrsUtil#getDateTimeFormat(Locale)
+	 */
+	@Test
+	public void getDateTimeFormat_shouldNotAllowTheReturnedSimpleDateFormatToBeModified() {
+		SimpleDateFormat sdf = OpenmrsUtil.getDateTimeFormat(Locale.UK);
+		assertNotSame(OpenmrsUtil.getDateTimeFormat(Locale.UK), sdf);
+
+		sdf.applyPattern("yyyyMMdd");
+		assertEquals("dd/MM/yyyy HH:mm", OpenmrsUtil.getDateTimeFormat(Locale.UK).toPattern());
+	}
+
+	/**
 	 * @see OpenmrsUtil#shortenedStackTrace(String)
 	 */
 	@Test
