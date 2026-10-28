@@ -174,6 +174,26 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		return null;
 	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#consumeUserActivationKey(Integer, String)
+	 */
+	@Override
+	public boolean consumeUserActivationKey(Integer userId, String expectedActivationKey) {
+		Session session = sessionFactory.getCurrentSession();
+		int updated = session.createQuery(
+			"update LoginCredential set activationKey = null where userId = :userId and activationKey = :activationKey")
+			.setParameter("userId", userId)
+			.setParameter("activationKey", expectedActivationKey)
+			.executeUpdate();
+		if (updated == 1) {
+			LoginCredential credentials = session.get(LoginCredential.class, userId);
+			if (credentials != null) {
+				credentials.setActivationKey(null);
+			}
+		}
+		return updated == 1;
+	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
@@ -378,6 +398,7 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setUserId(userIdToChange);
 		credentials.setHashedPassword(newHashedPassword);
 		credentials.setSalt(salt);
+		credentials.setActivationKey(null);
 		credentials.setChangedBy(changedByUser);
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());

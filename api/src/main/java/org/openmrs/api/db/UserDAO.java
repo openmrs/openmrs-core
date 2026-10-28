@@ -185,6 +185,17 @@ public interface UserDAO {
 	 * @return LoginCredentail associated with activationKey 
 	 */
 	public LoginCredential getLoginCredentialByActivationKey(String activationKey);
+
+	/**
+	 * Clears the activation key only if it still matches the value previously read by the caller.
+	 * This makes password-reset token consumption atomic with respect to concurrent requests and
+	 * prevents an older reset request from clearing a newer token.
+	 *
+	 * @param userId the user whose activation key is being consumed
+	 * @param expectedActivationKey the full stored activation key value (hash:expiry)
+	 * @return true if the matching activation key was cleared
+	 */
+	public boolean consumeUserActivationKey(Integer userId, String expectedActivationKey);
 	
 	/**
 	 * @see org.openmrs.api.UserService#generateSystemId()

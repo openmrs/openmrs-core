@@ -22,7 +22,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -820,11 +819,26 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public User getUserByActivationKey(String activationKey) {
+		LoginCredential loginCred = getLoginCredentialByValidActivationKey(activationKey);
+		if (loginCred != null) {
+			return getUser(loginCred.getUserId());
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the login credential whose stored activation key matches the given key, if the key has
+	 * not expired.
+	 *
+	 * @param activationKey the cleartext activation key presented by the caller
+	 * @return the matching login credential, or null if the key is unknown or expired
+	 */
+	private LoginCredential getLoginCredentialByValidActivationKey(String activationKey) {
 		LoginCredential loginCred = dao.getLoginCredentialByActivationKey(activationKey);
 		if (loginCred != null) {
 			String[] credTokens = loginCred.getActivationKey().split(":");
 			if (System.currentTimeMillis() <= Long.parseLong(credTokens[1])) {
-				return getUser(loginCred.getUserId());
+				return loginCred;
 			}
 		}
 		return null;
@@ -837,7 +851,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	public User setUserActivationKey(User user) throws MessageException {
-		String token = RandomStringUtils.randomAlphanumeric(20);
+		String token = Security.getRandomToken();
 		long time = System.currentTimeMillis() + getValidTime();
 		String hashedKey = Security.encodeString(token);
 		String activationKey = hashedKey + ":" + time;
@@ -910,12 +924,24 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	@Override
 	public void changePasswordUsingActivationKey(String activationKey, String newPassword) {
-		User user = getUserByActivationKey(activationKey);
+		// Capture the credential that matched the presented key. Its stored value is the
+		// compare-and-swap expected by consumeUserActivationKey, so a replacement token issued
+		// meanwhile is not consumed by this request.
+		LoginCredential credentials = getLoginCredentialByValidActivationKey(activationKey);
+		if (credentials == null) {
+			throw new InvalidActivationKeyException("activation.key.not.correct");
+		}
+		User user = getUser(credentials.getUserId());
 		if (user == null) {
 			throw new InvalidActivationKeyException("activation.key.not.correct");
 		}
 		
-		updatePassword(user, newPassword);
+		// Validate before consuming the link so a password-policy error does not lock the user out.
+		OpenmrsUtil.validatePassword(user.getUsername(), newPassword, user.getSystemId());
+		if (!dao.consumeUserActivationKey(user.getUserId(), credentials.getActivationKey())) {
+			throw new InvalidActivationKeyException("activation.key.not.correct");
+		}
+		daoChangePassword(user, newPassword);
 	}
 
 	/**
