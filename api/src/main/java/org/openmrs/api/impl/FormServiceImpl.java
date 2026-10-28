@@ -112,9 +112,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService, 
 			formField.setUuid(null);
 			formField.setFormFieldId(null);
 		}
-		// this is required because Hibernate would recognize the original collection
-		form.setFormFields(new HashSet<>(form.getFormFields()));
-
 		form.setUuid(null);
 		form.setFormId(null);
 		form.setCreator(null);

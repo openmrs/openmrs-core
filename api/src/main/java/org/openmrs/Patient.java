@@ -185,7 +185,7 @@ public class Patient extends Person {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
-		this.identifiers = CollectionUtil.setCollection(this.identifiers, identifiers);
+		this.identifiers = CollectionUtil.setCollection(getIdentifiers(), identifiers);
 	}
 
 	/**

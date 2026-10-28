@@ -85,6 +85,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	private EncounterType encounterType;
 
 	@OneToMany(mappedBy = "encounter")
+	// getOrderGroups() derives order group positions from iteration order
 	@OrderBy("orderId")
 	private Set<Order> orders;
 

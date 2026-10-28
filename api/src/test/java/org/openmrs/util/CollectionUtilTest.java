@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -383,6 +384,42 @@ public class CollectionUtilTest {
 		CollectionUtil.setCollection(current, List.of(a, b, d));
 
 		assertEquals(1, current.mutations);
+	}
+
+	/**
+	 * @see CollectionUtil#setCollection(Collection, Collection)
+	 */
+	@Test
+	public void setCollection_shouldNotReorderListGivenAsCollection() {
+		TrackingList<Item> current = trackingList(a, b);
+
+		CollectionUtil.setCollection((Collection<Item>) current, List.of(b, a));
+
+		assertEquals(0, current.mutations);
+	}
+
+	/**
+	 * @see CollectionUtil#setCollection(Collection, Collection)
+	 */
+	@Test
+	public void setCollection_shouldNotAddDuplicatesToListGivenAsCollection() {
+		TrackingList<Item> current = trackingList(a);
+
+		CollectionUtil.setCollection((Collection<Item>) current, List.of(a, b, b));
+
+		assertEquals(List.of(a, b), current);
+	}
+
+	/**
+	 * @see CollectionUtil#setCollection(Collection, Collection)
+	 */
+	@Test
+	public void setCollection_shouldUpdateSetGivenAsCollectionInPlace() {
+		TrackingSet<Item> current = trackingSet(a, b);
+
+		Collection<Item> result = CollectionUtil.setCollection((Collection<Item>) current, List.of(b, c));
+
+		assertSame(current, result);
 	}
 
 	private TrackingSet<Item> trackingSet(Item... items) {

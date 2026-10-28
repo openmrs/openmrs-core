@@ -58,17 +58,7 @@ public class CollectionUtil {
 			        : new LinkedHashSet<>(replacement);
 		}
 
-		if (replacement == null) {
-			current.clear();
-			return current;
-		}
-
-		List<E> copy = new ArrayList<>(replacement);
-		Set<E> wanted = Collections.newSetFromMap(new IdentityHashMap<>());
-		wanted.addAll(copy);
-
-		current.removeIf(e -> !wanted.contains(e));
-		current.addAll(copy);
+		update(current, replacement);
 		return current;
 	}
 
@@ -109,19 +99,44 @@ public class CollectionUtil {
 	}
 
 	/**
-	 * Variant for fields declared as {@link Collection}: delegates to the {@link Set} or {@link List}
-	 * overload according to the runtime type of {@code current}.
+	 * Variant for fields declared as {@link Collection}, which Hibernate may back by a set or by a bag.
+	 * Behaves like {@link #setCollection(Set, Collection)}: elements are removed and added without
+	 * positional operations, so a bag is never reordered and never receives the same instance twice.
 	 *
 	 * @param current the collection the domain object holds, may be null
 	 * @param replacement the instances the collection should hold, may be null to empty it
 	 * @return the collection to assign to the field
 	 * @see #setCollection(Set, Collection)
-	 * @see #setCollection(List, Collection)
 	 */
 	public static <E> Collection<E> setCollection(Collection<E> current, Collection<? extends E> replacement) {
-		if (current instanceof List) {
-			return setCollection((List<E>) current, replacement);
+		if (current == null) {
+			return setCollection((Set<E>) null, replacement);
 		}
-		return setCollection((Set<E>) current, replacement);
+		update(current, replacement);
+		return current;
+	}
+
+	private static <E> void update(Collection<E> current, Collection<? extends E> replacement) {
+		if (replacement == null) {
+			current.clear();
+			return;
+		}
+
+		List<E> copy = new ArrayList<>(replacement);
+		Set<E> wanted = identitySet(copy);
+		current.removeIf(e -> !wanted.contains(e));
+
+		Set<E> present = identitySet(current);
+		for (E e : copy) {
+			if (present.add(e)) {
+				current.add(e);
+			}
+		}
+	}
+
+	private static <E> Set<E> identitySet(Collection<? extends E> elements) {
+		Set<E> set = Collections.newSetFromMap(new IdentityHashMap<>());
+		set.addAll(elements);
+		return set;
 	}
 }

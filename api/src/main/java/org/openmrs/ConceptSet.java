@@ -225,6 +225,9 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 		if (value == 0) {
 			value = OpenmrsUtil.compareWithNullAsLowest(this.getSortWeight(), cs.getSortWeight());
 		}
+		if (value == 0) {
+			value = OpenmrsUtil.compareWithNullAsLowest(this.getUuid(), cs.getUuid());
+		}
 		return value;
 	}
 

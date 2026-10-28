@@ -405,6 +405,18 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see Concept#setConceptSets(Collection)
+	 */
+	@Test
+	public void setConceptSets_shouldKeepMembersWithEqualSortWeights() {
+		Concept concept = new Concept();
+
+		concept.setConceptSets(List.of(new ConceptSet(new Concept(1), null), new ConceptSet(new Concept(2), null)));
+
+		assertEquals(2, concept.getConceptSets().size());
+	}
+
+	/**
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test

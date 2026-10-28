@@ -393,7 +393,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAddress
 	 */
 	public void setAddresses(Set<PersonAddress> addresses) {
-		this.addresses = CollectionUtil.setCollection(this.addresses, addresses);
+		this.addresses = CollectionUtil.setCollection(getAddresses(), addresses);
 	}
 
 	/**
@@ -416,7 +416,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonName
 	 */
 	public void setNames(Set<PersonName> names) {
-		this.names = CollectionUtil.setCollection(this.names, names);
+		this.names = CollectionUtil.setCollection(getNames(), names);
 	}
 
 	/**
@@ -457,7 +457,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAttribute
 	 */
 	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
+		this.attributes = CollectionUtil.setCollection(getAttributes(), attributes);
 		attributeMap = null;
 		allAttributeMap = null;
 	}
