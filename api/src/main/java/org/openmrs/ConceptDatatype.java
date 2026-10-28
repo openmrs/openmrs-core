@@ -19,6 +19,7 @@ import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.envers.Audited;
 
 /**
@@ -29,6 +30,7 @@ import org.hibernate.envers.Audited;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@NaturalIdCache
 public class ConceptDatatype extends BaseChangeableOpenmrsMetadata {
 
 	public static final long serialVersionUID = 473L;
