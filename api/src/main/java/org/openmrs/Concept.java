@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.Cacheable;
@@ -146,7 +145,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Concept() {
 		names = new HashSet<>();
 		answers = new HashSet<>();
-		conceptSets = new TreeSet<>();
+		conceptSets = new LinkedHashSet<>();
 		descriptions = new HashSet<>();
 		conceptMappings = new HashSet<>();
 	}

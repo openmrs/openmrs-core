@@ -672,9 +672,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept setMember = new Concept(3);
 		concept.addSetMember(setMember, 0);
 
-		ConceptSet firstConceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
-		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
-		assertTrue(firstConceptSet.getSortWeight() < secondConceptSet.getSortWeight());
+		assertEquals(setMember, concept.getSetMembers().get(0));
 	}
 
 	/**
@@ -711,8 +709,7 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept newThirdSetMember = new Concept(5);
 		concept.addSetMember(newThirdSetMember, 2);
 
-		ConceptSet thirdConceptSet = (ConceptSet) concept.getConceptSets().toArray()[2];
-		assertEquals(newThirdSetMember, thirdConceptSet.getConcept());
+		assertEquals(newThirdSetMember, concept.getSetMembers().get(2));
 	}
 
 	/**
