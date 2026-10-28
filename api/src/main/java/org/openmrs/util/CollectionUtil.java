@@ -34,7 +34,7 @@ import java.util.TreeSet;
  * the current collection is null, a new one is created from the given collection. Setting a lazy
  * collection initializes it.
  *
- * @since 3.0.0
+ * @since 2.9.0, 3.0.0
  */
 public class CollectionUtil {
 
