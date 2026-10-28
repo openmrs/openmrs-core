@@ -86,9 +86,8 @@ public class UserContextTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void removeProxyPrivilege_shouldMatchCaseInsensitivelyAndRemoveOnlyOneInstance() {
-		// AuthorizationAdvice brackets every service call with an add/remove pair, so nested calls
-		// stack the same privilege and one remove must undo exactly one add - even now that the match
-		// ignores case
+		// a nested read can stack the same privilege on top of the one its caller added, so one remove
+		// must undo exactly one add - even now that the match ignores case
 		Context.getUserContext().logout();
 		Context.addProxyPrivilege("Proxy Case Test Privilege");
 		Context.addProxyPrivilege("Proxy Case Test Privilege");

@@ -25,12 +25,14 @@ import org.openmrs.PrivilegeListener;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -54,12 +56,14 @@ import static org.mockito.Mockito.mockStatic;
  * {@code hasAuthority(...)}/{@code hasRole(...)} agree with {@code Context.hasPrivilege(String)}
  * and {@link org.openmrs.User#hasRole(String)}.
  * <p>
- * Every privilege and role named here is deliberately <em>unregistered</em> - no row exists for it
- * anywhere, and none is created. That is the whole point. Without this factory the expressions
- * could only grant a name present in {@code OpenmrsAuthenticationToken#getAuthorities()}, which
- * enumerates registered names, so a superuser or {@code Daemon} thread would be denied something
- * {@code @Authorized} and {@code hasPermission(null, ...)} both allow. Core itself checks roughly
- * 50 such privileges (every {@code purge*}), so this is not a theoretical case.
+ * Every privilege and role named by the {@code hasAuthority} and {@code hasRole} tests is
+ * deliberately <em>unregistered</em> - no row exists for it anywhere, and none is created. That is
+ * the whole point. The exception is the {@code Get Roles} regression test, which deliberately uses
+ * a registered privilege. Without this factory the expressions could only grant a name present in
+ * {@code OpenmrsAuthenticationToken#getAuthorities()}, which enumerates registered names, so a
+ * superuser or {@code Daemon} thread would be denied something {@code @Authorized} and
+ * {@code hasPermission(null, ...)} both allow. Core itself checks roughly 50 such privileges (every
+ * {@code purge*}), so this is not a theoretical case.
  */
 public class OpenmrsAuthorizationManagerFactoryTest extends BaseContextSensitiveTest {
 
@@ -157,6 +161,25 @@ public class OpenmrsAuthorizationManagerFactoryTest extends BaseContextSensitive
 		} finally {
 			Context.authenticate("admin", "test");
 		}
+	}
+
+	@Test
+	public void authorized_shouldNotGrantGetRolesToALoggedOutCaller() {
+		// AuthorizationAdvice used to add Get Roles before checking the very privilege it had been asked
+		// to check, so a method guarded by Get Roles passed for every caller, logged out included
+		Context.getUserContext().logout();
+
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class, service::viaAuthorizedGetRoles);
+		assertEquals(expectedMessage(PrivilegeConstants.GET_ROLES), denial.getMessage());
+	}
+
+	@Test
+	public void hasAuthority_shouldNotGrantGetRolesToALoggedOutCaller() {
+		// the factory path had the same bracket; getRole's @PostAuthorize masks a regression end-to-end
+		Context.getUserContext().logout();
+
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class, service::viaHasAuthorityGetRoles);
+		assertEquals(expectedMessage(PrivilegeConstants.GET_ROLES), denial.getMessage());
 	}
 
 	@Test
@@ -390,6 +413,16 @@ public class OpenmrsAuthorizationManagerFactoryTest extends BaseContextSensitive
 
 		@Authorized(UNREGISTERED)
 		public String viaAuthorized() {
+			return "ok";
+		}
+
+		@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ROLES + "')")
+		public String viaHasAuthorityGetRoles() {
+			return "ok";
+		}
+
+		@Authorized(PrivilegeConstants.GET_ROLES)
+		public String viaAuthorizedGetRoles() {
 			return "ok";
 		}
 

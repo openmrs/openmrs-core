@@ -49,6 +49,15 @@ import org.springframework.security.core.Authentication;
  * expression. Read it through a DAO or the Hibernate session instead, or guard the re-entrant call
  * with a thread-local.
  * <p>
+ * A rule is asked under one of two vocabularies, and both reach the same {@code isAuthorized}
+ * methods. An annotation names the privilege its method requires, so a rule sees
+ * {@code Get Patients} or {@code Edit Patients} and can tell a read from a write.
+ * {@link Authorize}, which a presentation layer calls on its way to serializing what a service
+ * already returned, names {@link Authorize#GET} instead: what it decides is not whether the call
+ * was allowed but how much of the result may be written out, and that is one question however the
+ * object was reached. A rule that branches on the permission should treat anything it does not
+ * recognize as a read rather than assuming a privilege name.
+ * <p>
  * A rule is only ever asked about the object. {@link OpenmrsPermissionEvaluator} has already
  * confirmed the current user holds the named privilege by the time any rule runs - a rule reached
  * at all means the privilege check passed - so an implementation must not re-check it, and
@@ -79,7 +88,9 @@ public interface DomainObjectAuthorizationRule {
 	 *            {@code hasPermission(targetDomainObject, permission)} expression
 	 * @param permission the privilege named by the expression, supplied so this rule can distinguish
 	 *            which operation is being attempted; already confirmed to be held, so it is not to be
-	 *            re-checked (see this interface's javadoc)
+	 *            re-checked (see this interface's javadoc). {@link Authorize#GET} rather than a
+	 *            privilege name when the question comes from {@link Authorize} - see this interface's
+	 *            javadoc
 	 * @return true if this rule authorizes access to {@code targetDomainObject}
 	 */
 	boolean isAuthorized(Authentication authentication, Object targetDomainObject, Object permission);
