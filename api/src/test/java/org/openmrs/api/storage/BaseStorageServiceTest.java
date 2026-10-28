@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -92,6 +93,23 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 				throw new UncheckedIOException(e);
 			}
 		});
+	}
+
+	@Test
+	public void getDataWithMetadata_shouldReturnDataAndMetadataWhenFileExists() throws IOException {
+		saveTestData(null, "key", (key) -> {
+			try (DataWithMetadata dwm = storageService.getDataWithMetadata(key)) {
+				assertEquals(testFileContent, IOUtils.toString(dwm.data(), Charset.defaultCharset()));
+				assertThat(dwm.metadata().getLength(), is((long) testFileContent.length()));
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		});
+	}
+
+	@Test
+	public void getDataWithMetadata_shouldThrowNoSuchFileExceptionWhenFileDoesNotExist() {
+		assertThrows(NoSuchFileException.class, () -> storageService.getDataWithMetadata("none"));
 	}
 
 	public void saveTestData(String moduleId, String keySuffix, Consumer<String> verify) throws IOException {
