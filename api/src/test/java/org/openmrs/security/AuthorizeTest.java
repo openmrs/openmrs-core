@@ -18,14 +18,15 @@ import java.util.UUID;
 
 import org.hibernate.proxy.HibernateProxy;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -50,15 +51,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * whole approach safe: a mask is still the declared type, it discloses only its identifiers, a
  * collection keeps its size, and a mask is refused by the write path instead of reaching Hibernate.
  * <p>
- * {@link MaskingPatientRule} is registered for the whole suite, like the other rules in these
- * tests, and refuses nothing until a test names a patient.
+ * {@link MaskingPatientRule} is registered with the evaluator for each test here and removed
+ * afterward, rather than being a bean (see {@link AuthorizationRules}) - without a rule registered,
+ * {@code maskIfDenied} takes the early return every other test and every rule-free server takes,
+ * covered by {@link AuthorizeWithoutRulesTest}.
  */
 public class AuthorizeTest extends BaseContextSensitiveTest {
 
+	@Autowired
+	private OpenmrsPermissionEvaluator evaluator;
+
+	private final MaskingPatientRule rule = new MaskingPatientRule();
+
+	@BeforeEach
+	public void registerRule() {
+		AuthorizationRules.register(evaluator, rule);
+	}
+
 	@AfterEach
-	public void disarmRule() {
-		MaskingPatientRule.deniedPatientId = null;
-		MaskingPatientRule.timesAsked = 0;
+	public void unregisterRule() {
+		AuthorizationRules.unregister(evaluator, rule);
 	}
 
 	private Patient patient(int id) {
@@ -68,7 +80,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldMaskTheObjectWhenARuleRefusesIt() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		Patient masked = Authorize.maskIfDenied(patient);
 
@@ -83,7 +95,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 		Patient patient = patient(2);
 		String uuid = patient.getUuid();
 		assertNotNull(patient.getPersonName(), "the premise: this patient has a name to hide");
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		Patient masked = Authorize.maskIfDenied(patient);
 
@@ -103,7 +115,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldReportOneStableIdentityPerMaskAndNoneAcrossMasks() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		Patient masked = Authorize.maskIfDenied(patient);
 		Patient maskedAgain = Authorize.maskIfDenied(patient);
@@ -117,7 +129,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldReportAUuidAFhirIdAccepts() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		String uuid = Authorize.maskIfDenied(patient).getUuid();
 
@@ -135,7 +147,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	public void maskIfDenied_shouldSerializeAMaskedObject() {
 		// fetched before the rule is armed: getPatient is itself guarded by it
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 		Patient masked = Authorize.maskIfDenied(patient);
 
 		// the whole object through a serializer, not just a string off it: the point of masking rather
@@ -152,7 +164,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldPrintNothingIdentifyingAboutAMask() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		String printed = Authorize.maskIfDenied(patient).toString();
 
@@ -163,7 +175,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldAnswerEveryGetterOfAMaskWithoutThrowing() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 		Patient masked = Authorize.maskIfDenied(patient);
 
 		// a consumer walks whatever getters it likes; none of them may blow up on the stand-in
@@ -192,7 +204,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldRefuseAWriteToAMaskedObject() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 		Patient masked = Authorize.maskIfDenied(patient);
 
 		assertThrows(UnsupportedOperationException.class, () -> masked.setGender("F"));
@@ -206,7 +218,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldKeepTheSizeAndReplaceOnlyWhatARuleRefuses() {
 		List<Patient> patients = new ArrayList<>(List.of(patient(2), patient(6)));
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		Collection<Patient> filtered = Authorize.maskIfDenied(patients);
 
@@ -220,7 +232,7 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldNotMutateTheCollectionItWasGiven() {
 		List<Patient> patients = new ArrayList<>(List.of(patient(2)));
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		Authorize.maskIfDenied(patients);
 
@@ -238,9 +250,9 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void save_shouldRejectAMaskedObjectRatherThanPersistIt() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 		Patient masked = Authorize.maskIfDenied(patient);
-		MaskingPatientRule.deniedPatientId = null;
+		rule.deniedPatientId = null;
 
 		// the constraint the whole approach rests on: a mask carries no data, so saving one would blank
 		// the record it stands for, and as a proxy it would be inserted as new
@@ -251,9 +263,9 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void save_shouldRejectAMaskedObjectInsideACollectionArgument() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 		Patient masked = Authorize.maskIfDenied(patient);
-		MaskingPatientRule.deniedPatientId = null;
+		rule.deniedPatientId = null;
 
 		assertThrows(APIException.class, () -> Context.getPatientService().mergePatients(patient(6), List.of(masked)));
 	}
@@ -270,28 +282,28 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 	@Test
 	public void maskIfDenied_shouldNotWrapAMaskAgain() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 
 		Patient masked = Authorize.maskIfDenied(patient);
-		int askedToProduceTheMask = MaskingPatientRule.timesAsked;
+		int askedToProduceTheMask = rule.timesAsked;
 
 		assertSame(masked, Authorize.maskIfDenied(masked), "a mask is not wrapped again");
 		// not merely "came back unchanged": a rule asked about a mask is asked about a null id, which an
 		// allow-list rule reads as refused or throws on
-		assertEquals(askedToProduceTheMask, MaskingPatientRule.timesAsked, "a mask is not judged again");
+		assertEquals(askedToProduceTheMask, rule.timesAsked, "a mask is not judged again");
 	}
 
 	@Test
 	public void maskIfDenied_shouldNotJudgeACollectionElementThatIsAlreadyAMask() {
 		Patient patient = patient(2);
-		MaskingPatientRule.deniedPatientId = 2;
+		rule.deniedPatientId = 2;
 		Patient mask = Authorize.maskIfDenied(patient);
-		int askedToProduceTheMask = MaskingPatientRule.timesAsked;
+		int askedToProduceTheMask = rule.timesAsked;
 
 		Collection<Patient> judged = Authorize.maskIfDenied(List.of(mask));
 
 		assertSame(mask, judged.iterator().next(), "the mask is passed through");
-		assertEquals(askedToProduceTheMask, MaskingPatientRule.timesAsked, "and not judged again");
+		assertEquals(askedToProduceTheMask, rule.timesAsked, "and not judged again");
 	}
 
 	@Test
@@ -300,23 +312,22 @@ public class AuthorizeTest extends BaseContextSensitiveTest {
 		Context.clearSession();
 		Obs obs = Context.getObsService().getObs(7);
 		assertInstanceOf(HibernateProxy.class, obs.getPerson(), "the premise: a lazy proxy typed Person");
-		MaskingPatientRule.deniedPatientId = obs.getPersonId();
+		rule.deniedPatientId = obs.getPersonId();
 
 		assertTrue(Authorize.isMasked(Authorize.maskIfDenied(obs.getPerson())),
 		    "a Patient rule has to reach a Person-typed proxy of a patient it refuses");
 	}
 
 	/**
-	 * Refuses exactly one, test-selected patient, authorizing every other target. Off by default so
-	 * registering it does not change behavior for tests that do not use it.
+	 * Refuses exactly one, test-selected patient, authorizing every other target. One instance per
+	 * test, so nothing has to be reset between them.
 	 */
-	@Component
 	public static class MaskingPatientRule implements DomainObjectAuthorizationRule {
 
-		static volatile Integer deniedPatientId;
+		volatile Integer deniedPatientId;
 
 		/** How many times the rule has been consulted, so a test can pin that it was not. */
-		static volatile int timesAsked;
+		volatile int timesAsked;
 
 		@Override
 		public Class<?> getTargetType() {
