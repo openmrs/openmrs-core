@@ -4,7 +4,7 @@ version: "3.7"
 #    v. 2.0. If a copy of the MPL was not distributed with this file, You can
 #    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
 #    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
-#    
+#
 #    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
 #    graphic logo is a trademark of OpenMRS Inc.
 
@@ -21,7 +21,7 @@ services:
         image: openmrs/openmrs-core:${TAG:-dev}
         build:
             target: dev
-            context: .    
+            context: .
             cache_from:
                 -   openmrs/openmrs-core:${TAG:-dev}
         ports:
@@ -31,11 +31,11 @@ services:
         environment:
             OMRS_DEV_DEBUG_PORT: ${OMRS_DEV_DEBUG_PORT:-8000}
             OMRS_CREATE_TABLES: ${OMRS_CREATE_TABLES:-true}
-            
+
             OMRS_BUILD: ${OMRS_BUILD:-true}
             OMRS_BUILD_GOALS: ${OMRS_BUILD_GOALS:-}
             OMRS_BUILD_ARGS: ${OMRS_BUILD_ARGS:-}
-            
+
             OMRS_EXTRA_JOBRUNR_DASHBOARD_ENABLED: ${OMRS_EXTRA_JOBRUNR_DASHBOARD_ENABLED:-true}
             OMRS_EXTRA_JOBRUNR_DASHBOARD_PASSWORD: ${OMRS_EXTRA_JOBRUNR_DASHBOARD_PASSWORD:-Admin123}
             OMRS_EXTRA_JOBRUNR_DASHBOARD_PORT: ${OMRS_EXTRA_JOBRUNR_DASHBOARD_PORT:-9000}
