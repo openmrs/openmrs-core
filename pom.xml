@@ -598,22 +598,22 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>junit-jupiter</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.21.3</version>
+				<version>1.21.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.graalvm.js</groupId>
@@ -1246,7 +1246,7 @@
 		<luceneVersion>5.5.5</luceneVersion>
 		<aspectjVersion>1.9.22.1</aspectjVersion>
 		<jacksonVersion>2.18.2</jacksonVersion>
-		<junitVersion>5.11.3</junitVersion>
+		<junitVersion>5.11.4</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
