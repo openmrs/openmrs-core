@@ -21,6 +21,7 @@ import jakarta.persistence.Cacheable;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Defines a Patient in the system. A patient is simply an extension of a person and all that that
@@ -184,7 +185,7 @@ public class Patient extends Person {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
-		this.identifiers = identifiers;
+		this.identifiers = CollectionUtil.setCollection(this.identifiers, identifiers);
 	}
 
 	/**

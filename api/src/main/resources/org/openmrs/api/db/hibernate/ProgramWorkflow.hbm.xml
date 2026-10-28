@@ -43,7 +43,7 @@
 		<many-to-one name="changedBy" class="User" column="changed_by" />
 
 		<!-- bi-directional one-to-many association to ProgramWorkflowState -->
-		<set name="states" inverse="true" lazy="false" cascade="all-delete-orphan" order-by="date_created asc">
+		<set name="states" access="field" inverse="true" lazy="false" cascade="all-delete-orphan" order-by="date_created asc">
 			<key column="program_workflow_id" not-null="true"/>
 			<one-to-many class="ProgramWorkflowState" />
 		</set>

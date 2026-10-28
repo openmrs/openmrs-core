@@ -46,6 +46,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.search.bridge.OpenmrsObjectValueBridge;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -203,7 +204,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param answers The answers to set.
 	 */
 	public void setAnswers(Collection<ConceptAnswer> answers) {
-		this.answers = answers;
+		this.answers = CollectionUtil.setCollection(this.answers, answers);
 	}
 
 	/**
@@ -1077,7 +1078,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param names The names to set.
 	 */
 	public void setNames(Collection<ConceptName> names) {
-		this.names = names;
+		this.names = CollectionUtil.setCollection(this.names, names);
 	}
 
 	/**
@@ -1283,7 +1284,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param descriptions the collection of descriptions
 	 */
 	public void setDescriptions(Collection<ConceptDescription> descriptions) {
-		this.descriptions = descriptions;
+		this.descriptions = CollectionUtil.setCollection(this.descriptions, descriptions);
 	}
 
 	/**
@@ -1407,7 +1408,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param conceptSets The conceptSets to set.
 	 */
 	public void setConceptSets(Collection<ConceptSet> conceptSets) {
-		this.conceptSets = conceptSets;
+		this.conceptSets = CollectionUtil.setCollection(this.conceptSets, conceptSets);
 	}
 
 	/**
@@ -1434,7 +1435,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param conceptMappings the conceptMappings to set
 	 */
 	public void setConceptMappings(Collection<ConceptMap> conceptMappings) {
-		this.conceptMappings = conceptMappings;
+		this.conceptMappings = CollectionUtil.setCollection(this.conceptMappings, conceptMappings);
 	}
 
 	/**
@@ -1752,7 +1753,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param attributes the attributes to set
 	 */
 	public void setAttributes(Set<ConceptAttribute> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
 	}
 
 	/**

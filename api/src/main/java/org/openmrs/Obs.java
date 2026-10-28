@@ -39,6 +39,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
@@ -504,7 +505,7 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
 		//Copy over the entire list
-		this.groupMembers = groupMembers;
+		this.groupMembers = CollectionUtil.setCollection(this.groupMembers, groupMembers);
 
 	}
 

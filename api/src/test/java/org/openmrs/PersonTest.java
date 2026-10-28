@@ -22,7 +22,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.CollectionStatistics;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -911,6 +915,39 @@ public class PersonTest extends BaseContextSensitiveTest {
 	}
 
 	// helper class
+	/**
+	 * @see Person#setNames(Set)
+	 */
+	@Test
+	public void setNames_shouldNotRewriteRowsWhenGivenTheSameInstances() {
+		Person person = Context.getPersonService().getPerson(9);
+		Statistics statistics = ((SessionFactory) applicationContext.getBean("sessionFactory")).getStatistics();
+		statistics.clear();
+
+		person.setNames(new HashSet<>(person.getNames()));
+		Context.flushSession();
+
+		CollectionStatistics names = statistics.getCollectionStatistics("org.openmrs.Person.names");
+		assertEquals(0, names.getRecreateCount() + names.getRemoveCount() + names.getUpdateCount());
+	}
+
+	/**
+	 * @see Person#setNames(Set)
+	 */
+	@Test
+	public void setNames_shouldRemoveTheDroppedNameWithoutAnOrphanError() {
+		Person person = Context.getPersonService().getPerson(9);
+		Set<PersonName> kept = new HashSet<>(person.getNames());
+		PersonName dropped = kept.iterator().next();
+		kept.remove(dropped);
+
+		person.setNames(kept);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertNull(Context.getPersonService().getPersonName(dropped.getPersonNameId()));
+	}
+
 	private static class PersonNameBuilder {
 
 		private PersonName personName;
