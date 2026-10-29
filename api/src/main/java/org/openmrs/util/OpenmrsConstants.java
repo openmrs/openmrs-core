@@ -285,10 +285,6 @@ public final class OpenmrsConstants {
 
 	public static final String GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE = "ANYWHERE";
 
-	public static final String GLOBAL_PROPERTY_GZIP_ENABLED = "gzip.enabled";
-
-	public static final String GLOBAL_PROPERTY_GZIP_ACCEPT_COMPRESSED_REQUESTS_FOR_PATHS = "gzip.acceptCompressedRequestsForPaths";
-
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 
 	public static final String GLOBAL_PROPERTY_PROBLEM_LIST = "concept.problemList";
@@ -777,10 +773,6 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS,
 		        String.valueOf(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE),
 		        "The maximum number of results returned by patient searches"));
-
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED, "false",
-		        "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression.",
-		        BooleanDatatype.class, null));
 
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOG_LEVEL, "org.openmrs.api:" + LOG_LEVEL_INFO,
 		        "Logging levels for log4j2.xml. Valid format is class:level,class:level. If class not specified, 'org.openmrs.api' presumed. Valid levels are trace, debug, info, warn, error or fatal"));

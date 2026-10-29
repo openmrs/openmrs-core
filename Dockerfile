@@ -137,7 +137,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
     && chmod g+rx /usr/bin/tini 
 
-RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
+RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;" useSendfile="false" compression="on" compressionMinSize="1024" compressibleMimeType="text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml"' \
     /usr/local/tomcat/conf/server.xml \
     && chmod -R g+rx /usr/local/tomcat \
     && touch /usr/local/tomcat/bin/setenv.sh && chmod g+rw /usr/local/tomcat/bin/setenv.sh \

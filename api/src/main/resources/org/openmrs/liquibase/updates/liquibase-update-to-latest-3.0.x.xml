@@ -163,4 +163,11 @@
 		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
 	</changeSet>
 
+	<changeSet id="TRUNK-6858-2026-10-28" author="icypin">
+		<comment>Remove stored GZIP global properties for TRUNK-6858</comment>
+		<delete tableName="global_property">
+			<where>property IN ('gzip.enabled', 'gzip.acceptCompressedRequestsForPaths')</where>
+		</delete>
+	</changeSet>
+	
 </databaseChangeLog>
