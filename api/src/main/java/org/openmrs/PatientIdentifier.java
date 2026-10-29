@@ -225,9 +225,11 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * @return Returns the preferred.
+	 * @deprecated as of 2.0, use {@link #isPreferred()}
 	 */
+	@Deprecated
 	public Boolean getPreferred() {
-		return preferred;
+		return isPreferred();
 	}
 
 	/**
@@ -239,11 +241,9 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 
 	/**
 	 * @return the preferred status
-	 * @deprecated as of 2.0, use {@link #getPreferred()}
 	 */
-	@Deprecated
 	public Boolean isPreferred() {
-		return getPreferred();
+		return preferred;
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class PatientIdentifier extends BaseChangeableOpenmrsData implements java
 		public int compare(PatientIdentifier pi1, PatientIdentifier pi2) {
 			int retValue = 0;
 			if (pi2 != null) {
-				retValue = pi1.getVoided().compareTo(pi2.getVoided());
+				retValue = Boolean.compare(pi1.getVoided(), pi2.getVoided());
 				if (retValue == 0) {
 					retValue = pi1.getPreferred().compareTo(pi2.getPreferred());
 				}

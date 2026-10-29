@@ -1543,16 +1543,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() {
-		ConceptSource source = new ConceptSource();
-		source.setRetired(null);
-		assertNull(source.getRetired());
-
-		assertThrows(Exception.class, () -> conceptService.saveConceptSource(source));
-
-	}
-
-	@Test
 	public void saveConceptNameTag_shouldSaveAConceptNameTagIfATagDoesNotExist() {
 		ConceptNameTag nameTag = new ConceptNameTag();
 		nameTag.setTag("a new tag");
@@ -4315,5 +4305,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertTrue(criteria.getConceptIds().contains(0));
 		assertTrue(criteria.getUuids().isEmpty());
 		assertTrue(criteria.getMappings().isEmpty());
+	}
+
+	@Test
+	public void shouldPersistAndReloadConvertedBooleanFlagsOnConcept() {
+		Concept concept = Context.getConceptService().getConcept(3);
+		concept.setSet(true);
+		concept.setRetired(true);
+		concept.setRetireReason("testing primitive boolean persistence");
+		Context.getConceptService().saveConcept(concept);
+		Context.flushSession();
+		Context.clearSession();
+
+		Concept reloaded = Context.getConceptService().getConcept(3);
+		assertTrue(reloaded.isSet());
+		assertTrue(reloaded.isRetired());
 	}
 }

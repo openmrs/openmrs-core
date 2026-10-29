@@ -104,27 +104,6 @@ public class OrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see OrderValidator#validate(Object,Errors)
 	 */
 	@Test
-	public void validate_shouldFailValidationIfVoidedIsNull() {
-		Order order = new Order();
-		order.setVoided(null);
-		order.setConcept(Context.getConceptService().getConcept(88));
-		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setOrderer(Context.getProviderService().getProvider(1));
-
-		Errors errors = new BindException(order, "order");
-		new OrderValidator().validate(order, errors);
-
-		assertFalse(errors.hasFieldErrors("discontinued"));
-		assertTrue(errors.hasFieldErrors("voided"));
-		assertFalse(errors.hasFieldErrors("concept"));
-		assertFalse(errors.hasFieldErrors("patient"));
-		assertFalse(errors.hasFieldErrors("orderer"));
-	}
-
-	/**
-	 * @see OrderValidator#validate(Object,Errors)
-	 */
-	@Test
 	public void validate_shouldFailValidationIfConceptIsNull() {
 		Order order = new Order();
 		order.setPatient(Context.getPatientService().getPatient(2));
