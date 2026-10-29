@@ -914,7 +914,6 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertEquals(15, person.getAgeInDays(onDate.getTime()));
 	}
 
-	// helper class
 	/**
 	 * @see Person#setNames(Set)
 	 */
@@ -948,6 +947,24 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertNull(Context.getPersonService().getPersonName(dropped.getPersonNameId()));
 	}
 
+	/**
+	 * @see Person#setNames(Set)
+	 */
+	@Test
+	public void setNames_shouldAllowSavingANewPersonGivenAnUnsortedSet() {
+		Person person = new Person();
+		person.setGender("M");
+		PersonName name = new PersonName("Given", null, "Family");
+		name.setPerson(person);
+
+		person.setNames(Set.of(name));
+		Context.getPersonService().savePerson(person);
+		Context.flushSession();
+
+		assertNotNull(person.getPersonId());
+	}
+
+	// helper class
 	private static class PersonNameBuilder {
 
 		private PersonName personName;
