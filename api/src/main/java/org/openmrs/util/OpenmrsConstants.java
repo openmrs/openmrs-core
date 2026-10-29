@@ -573,7 +573,8 @@ public final class OpenmrsConstants {
 	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME  = "security.unlockAccountWaitingTime";
 
 	/**
-	 * Global property name for the maximum number of seconds to delay a failed login response.
+	 * Global property name for the maximum number of seconds a user must wait before another login
+	 * attempt is accepted after consecutive failed logins.
 	 *
 	 * @since 2.9.0
 	 */
@@ -1007,7 +1008,7 @@ public final class OpenmrsConstants {
 			"Waiting time for account to get automatically unlocked after getting locked due to multiple invalid login tries"));
 
 		props.add(new GlobalProperty(GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "8",
-			"Maximum number of seconds a failed login response is delayed after consecutive failed attempts. Set to 0 to disable the delay"));
+			"Maximum number of seconds a user must wait before another login attempt is accepted after consecutive failed attempts. Set to 0 to disable the back-off"));
 
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
@@ -1199,6 +1200,12 @@ public final class OpenmrsConstants {
 	 * attempts
 	 */
 	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP = "lockoutTimestamp";
+	
+	/**
+	 * Name of the user_property that stores the time before which login attempts are rejected after
+	 * consecutive failed logins
+	 */
+	public static final String USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP = "loginBackoffTimestamp";
 	
 	/**
 	 * A user property name. The value should be a comma-separated ordered list of fully qualified

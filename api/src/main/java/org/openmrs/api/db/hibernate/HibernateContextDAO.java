@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
@@ -53,10 +51,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -98,8 +94,6 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
-
-	private TransactionTemplate transactionTemplate;
 	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
@@ -115,38 +109,12 @@ public class HibernateContextDAO implements ContextDAO {
 		this.userDao = userDao;
 	}
 
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionTemplate = new TransactionTemplate(transactionManager);
-	}
-
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	@Override
+	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
-		AtomicReference<User> user = new AtomicReference<>();
-		AtomicReference<ContextAuthenticationException> authenticationException = new AtomicReference<>();
-		AtomicLong backoffMillis = new AtomicLong();
-
-		transactionTemplate.executeWithoutResult(status -> {
-			try {
-				user.set(authenticateInTransaction(login, password, backoffMillis));
-			}
-			catch (ContextAuthenticationException e) {
-				authenticationException.set(e);
-			}
-		});
-
-		if (authenticationException.get() != null) {
-			applyFailedLoginBackoff(login, backoffMillis.get());
-			throw authenticationException.get();
-		}
-
-		return user.get();
-	}
-
-	private User authenticateInTransaction(String login, String password, AtomicLong backoffMillis)
-	        throws ContextAuthenticationException {
 		String errorMsg = "Invalid username and/or password: " + login;
 
 		Session session = sessionFactory.getCurrentSession();
@@ -199,6 +167,7 @@ public class HibernateContextDAO implements ContextDAO {
 				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
@@ -206,6 +175,14 @@ public class HibernateContextDAO implements ContextDAO {
 					throw new ContextAuthenticationException(
 						"Invalid number of connection attempts. Please try again later.");
 				}
+			}
+
+			// reject attempts made before the back-off from previous failures has elapsed, without
+			// checking the password, so an existing account is not slower to reject than an unknown one
+			long backoffTime = getLoginBackoffTimestamp(candidateUser);
+			if (backoffTime > System.currentTimeMillis()) {
+				log.info("Rejected login attempt for {} because the failed-login back-off has not elapsed yet", login);
+				throw new ContextAuthenticationException(errorMsg);
 			}
 
 			Object[] passwordAndSalt = (Object[]) session
@@ -229,6 +206,7 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 				}
+				candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
 
@@ -264,8 +242,13 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
 
+				long backoffMillis = calculateFailedLoginBackoffMillis(attempts, getMaxFailedLoginBackoffSeconds());
+				if (backoffMillis > 0) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, String
+						.valueOf(System.currentTimeMillis() + backoffMillis));
+				}
+
 				saveUserProperties(candidateUser);
-				backoffMillis.set(calculateFailedLoginBackoffMillis(attempts, getMaxFailedLoginBackoffSeconds()));
 			}
 		}
 
@@ -375,30 +358,27 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Delays the failed authentication response by the given number of milliseconds. This is called
-	 * after the transaction that records the failed attempt has completed so that the delay does not
-	 * keep a database connection open.
+	 * Get the time before which login attempts for the given user must be rejected.
 	 *
-	 * @param login the login that failed
-	 * @param delayMillis the delay in milliseconds
+	 * @param user the user to check
+	 * @return the back-off timestamp in milliseconds, or a negative value if none is set
 	 */
-	private void applyFailedLoginBackoff(String login, long delayMillis) {
-		if (delayMillis <= 0) {
-			return;
+	private long getLoginBackoffTimestamp(User user) {
+		String backoffTimeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null);
+		if (StringUtils.isNotBlank(backoffTimeString) && !"0".equals(backoffTimeString)) {
+			try {
+				return Long.parseLong(backoffTimeString);
+			}
+			catch (NumberFormatException e) {
+				log.warn("bad value stored in {} user property: {}",
+				    OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, backoffTimeString);
+			}
 		}
-
-		log.debug("Delaying failed login response for login {} by {} ms", login, delayMillis);
-		try {
-			TimeUnit.MILLISECONDS.sleep(delayMillis);
-		}
-		catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			log.warn("Interrupted while delaying the response to a failed login attempt", e);
-		}
+		return -1L;
 	}
 
 	/**
-	 * Calculates the delay in milliseconds to apply after the given number of consecutive failed
+	 * Calculates the back-off in milliseconds to apply after the given number of consecutive failed
 	 * attempts. The first failed attempt is not delayed, the second is delayed by one second, the
 	 * third by two seconds, and so on. The delay is capped at {@code maxBackoffSeconds} to avoid
 	 * excessive waiting times and arithmetic overflow.
