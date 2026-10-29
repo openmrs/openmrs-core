@@ -88,9 +88,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 		this.comments = comments;
 
 		//we do not allow to be in a state where reactions is null
-		if (reactions != null) {
-			this.reactions = reactions;
-		}
+		this.reactions = CollectionUtil.setCollection(this.reactions, reactions);
 	}
 
 	/**

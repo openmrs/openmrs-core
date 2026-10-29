@@ -33,6 +33,11 @@ import java.util.TreeSet;
  * current collection, and changes made to it after the call do not affect the domain object. When
  * the current collection is null, a new one is created from the given collection. Setting a lazy
  * collection initializes it.
+ * <p>
+ * The collection must be mapped with field access ({@code access="field"} in hbm.xml, or
+ * {@code @Access(AccessType.FIELD)} or annotations placed on the field): with property access,
+ * Hibernate hands the collection it loads to the setter, and the entity keeps a copy that Hibernate
+ * does not track.
  *
  * @since 2.9.0, 3.0.0
  */
