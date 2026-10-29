@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
@@ -51,8 +53,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -66,6 +70,18 @@ public class HibernateContextDAO implements ContextDAO {
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
 	
 	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
+
+	/**
+	 * Maximum delay applied to a failed login response when the
+	 * {@link OpenmrsConstants#GP_MAX_FAILED_LOGIN_BACKOFF_TIME} global property is not configured.
+	 */
+	private static final long DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS = 8L;
+
+	/**
+	 * Highest exponent used when calculating the back-off delay. Keeps the shift below the point
+	 * where the result would overflow and lets the configured maximum cap the delay instead.
+	 */
+	private static final int MAX_FAILED_LOGIN_BACKOFF_EXPONENT = 30;
 
 	/**
 	 * The capability that proves to {@link Daemon} this class is allowed to act with daemon
@@ -82,6 +98,8 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
+
+	private TransactionTemplate transactionTemplate;
 	
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
@@ -97,12 +115,38 @@ public class HibernateContextDAO implements ContextDAO {
 		this.userDao = userDao;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionTemplate = new TransactionTemplate(transactionManager);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
+		AtomicReference<User> user = new AtomicReference<>();
+		AtomicReference<ContextAuthenticationException> authenticationException = new AtomicReference<>();
+		AtomicLong backoffMillis = new AtomicLong();
+
+		transactionTemplate.executeWithoutResult(status -> {
+			try {
+				user.set(authenticateInTransaction(login, password, backoffMillis));
+			}
+			catch (ContextAuthenticationException e) {
+				authenticationException.set(e);
+			}
+		});
+
+		if (authenticationException.get() != null) {
+			applyFailedLoginBackoff(login, backoffMillis.get());
+			throw authenticationException.get();
+		}
+
+		return user.get();
+	}
+
+	private User authenticateInTransaction(String login, String password, AtomicLong backoffMillis)
+	        throws ContextAuthenticationException {
 		String errorMsg = "Invalid username and/or password: " + login;
 
 		Session session = sessionFactory.getCurrentSession();
@@ -221,6 +265,7 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 
 				saveUserProperties(candidateUser);
+				backoffMillis.set(calculateFailedLoginBackoffMillis(attempts, getMaxFailedLoginBackoffSeconds()));
 			}
 		}
 
@@ -327,6 +372,74 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
+	}
+
+	/**
+	 * Delays the failed authentication response by the given number of milliseconds. This is called
+	 * after the transaction that records the failed attempt has completed so that the delay does not
+	 * keep a database connection open.
+	 *
+	 * @param login the login that failed
+	 * @param delayMillis the delay in milliseconds
+	 */
+	private void applyFailedLoginBackoff(String login, long delayMillis) {
+		if (delayMillis <= 0) {
+			return;
+		}
+
+		log.debug("Delaying failed login response for login {} by {} ms", login, delayMillis);
+		try {
+			TimeUnit.MILLISECONDS.sleep(delayMillis);
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			log.warn("Interrupted while delaying the response to a failed login attempt", e);
+		}
+	}
+
+	/**
+	 * Calculates the delay in milliseconds to apply after the given number of consecutive failed
+	 * attempts. The first failed attempt is not delayed, the second is delayed by one second, the
+	 * third by two seconds, and so on. The delay is capped at {@code maxBackoffSeconds} to avoid
+	 * excessive waiting times and arithmetic overflow.
+	 *
+	 * @param attempts the number of consecutive failed attempts
+	 * @param maxBackoffSeconds the maximum delay in seconds
+	 * @return the delay in milliseconds
+	 */
+	static long calculateFailedLoginBackoffMillis(int attempts, long maxBackoffSeconds) {
+		if (attempts < 2 || maxBackoffSeconds <= 0) {
+			return 0L;
+		}
+
+		int exponent = Math.min(attempts - 2, MAX_FAILED_LOGIN_BACKOFF_EXPONENT);
+		long delaySeconds = 1L << exponent;
+		return TimeUnit.SECONDS.toMillis(Math.min(delaySeconds, maxBackoffSeconds));
+	}
+
+	/**
+	 * Reads the maximum failed login back-off delay from the global property.
+	 *
+	 * @return the maximum delay in seconds, or zero if the delay is disabled
+	 */
+	private long getMaxFailedLoginBackoffSeconds() {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String maxBackoffProperty = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME);
+			if (StringUtils.isNotBlank(maxBackoffProperty)) {
+				long maxBackoffSeconds = Long.parseLong(maxBackoffProperty.trim());
+				return Math.max(maxBackoffSeconds, 0L);
+			}
+		}
+		catch (Exception ex) {
+			log.error("Unable to read the {} global property. Using the default of {} seconds.",
+			    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS, ex);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+		return DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS;
 	}
 	
 	/**

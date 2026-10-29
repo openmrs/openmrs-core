@@ -131,6 +131,7 @@
 	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO">
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="userDAO" ref="userDAO"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">

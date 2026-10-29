@@ -571,6 +571,13 @@ public final class OpenmrsConstants {
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 
 	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME  = "security.unlockAccountWaitingTime";
+
+	/**
+	 * Global property name for the maximum number of seconds to delay a failed login response.
+	 *
+	 * @since 2.9.0
+	 */
+	public static final String GP_MAX_FAILED_LOGIN_BACKOFF_TIME = "security.maxFailedLoginBackoffTime";
 	
 	/**
 	 * @since 1.9.9, 1.10.2, 1.11
@@ -998,6 +1005,9 @@ public final class OpenmrsConstants {
 
 		props.add(new GlobalProperty(GP_UNLOCK_ACCOUNT_WAITING_TIME, "5",
 			"Waiting time for account to get automatically unlocked after getting locked due to multiple invalid login tries"));
+
+		props.add(new GlobalProperty(GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "8",
+			"Maximum number of seconds a failed login response is delayed after consecutive failed attempts. Set to 0 to disable the delay"));
 
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));

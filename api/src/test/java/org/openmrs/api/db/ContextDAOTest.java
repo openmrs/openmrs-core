@@ -14,14 +14,17 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -34,6 +37,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -229,6 +233,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldLockoutUserAfterEightFailedAttempts() {
+		setMaxFailedLoginBackoffSeconds(0);
 		// logout after the base setup
 		Context.logout();
 		
@@ -258,6 +263,71 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
 	}
+
+	@Test
+	public void authenticate_shouldDelayConsecutiveFailedAttemptsAndCapThemAtTheConfiguredMaximum() {
+		setMaxFailedLoginBackoffSeconds(1);
+		Context.logout();
+
+		long start = System.nanoTime();
+		for (int i = 0; i < 4; i++) {
+			assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		}
+		long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+
+		// without a cap the four attempts would wait 0, 1, 2 and 4 seconds; capped at one second
+		// each they wait about three seconds in total
+		assertTrue(elapsedMillis >= 2900,
+		    "Expected the delayed attempts to take at least 2900 ms but they took " + elapsedMillis + " ms");
+		assertTrue(elapsedMillis < 6000,
+		    "Expected the delay to be capped at 1000 ms per attempt but the four attempts took " + elapsedMillis
+		            + " ms");
+	}
+
+	@Test
+	public void authenticate_shouldResetFailedLoginBackoffAfterSuccessfulLogin() {
+		setMaxFailedLoginBackoffSeconds(0);
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		User afterFailures = Context.getUserService().getUserByUsername("admin");
+		assertEquals("2", afterFailures.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "Should have recorded two consecutive failed attempts");
+
+		User afterSuccess = dao.authenticate("admin", "test");
+		assertEquals(OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE,
+		    afterSuccess.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "Should reset the consecutive failed attempts after a successful login");
+		assertNull(afterSuccess.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null),
+		    "Should not leave a lockout timestamp after a successful login");
+	}
+
+	@Test
+	public void authenticate_shouldStillLockoutUserWhenFailedLoginBackoffIsEnabled() {
+		setMaxFailedLoginBackoffSeconds(1);
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "1");
+
+		// the first failed attempt is not delayed
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		// the second failure exceeds the threshold, locks the account and still incurs the back-off
+		long start = System.nanoTime();
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+		assertTrue(elapsedMillis >= 1000,
+		    "Expected the locked out attempt to still be delayed by at least 1000 ms but it took "
+		            + elapsedMillis + " ms");
+
+		// the existing lockout still rejects the correct password
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+	}
+
+	private void setMaxFailedLoginBackoffSeconds(long seconds) {
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, String.valueOf(seconds));
+	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)
@@ -283,6 +353,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldPassRegressionTestFor1580() {
+		setMaxFailedLoginBackoffSeconds(0);
 		// logout after the base setup
 		Context.logout();
 		
