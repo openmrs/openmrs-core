@@ -48,6 +48,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.CollectionStatistics;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -1917,5 +1920,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		return userService.createUser(u, "Openmr5xy");
+	}
+	
+	/**
+	 * @see User#setRoles(Set)
+	 */
+	@Test
+	public void setRoles_shouldNotRewriteRowsWhenGivenTheSameInstances() {
+		User user = userService.getUser(501);
+		Statistics statistics = ((SessionFactory) applicationContext.getBean("sessionFactory")).getStatistics();
+		statistics.clear();
+	
+		user.setRoles(new HashSet<>(user.getRoles()));
+		Context.flushSession();
+	
+		CollectionStatistics roles = statistics.getCollectionStatistics("org.openmrs.User.roles");
+		assertEquals(0, roles.getRecreateCount() + roles.getRemoveCount() + roles.getUpdateCount());
 	}
 }

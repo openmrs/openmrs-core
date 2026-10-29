@@ -17,6 +17,7 @@ import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @param privileges The privileges to set.
 	 */
 	public void setPrivileges(Set<Privilege> privileges) {
-		this.privileges = privileges;
+		this.privileges = CollectionUtil.setCollection(this.privileges, privileges);
 	}
 	
 	@Override
@@ -182,7 +183,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @param inheritedRoles The inheritedRoles to set.
 	 */
 	public void setInheritedRoles(Set<Role> inheritedRoles) {
-		this.inheritedRoles = inheritedRoles;
+		this.inheritedRoles = CollectionUtil.setCollection(this.inheritedRoles, inheritedRoles);
 	}
 	
 	/**
@@ -271,7 +272,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @param childRoles the immediate children to set
 	 */
 	public void setChildRoles(Set<Role> childRoles) {
-		this.childRoles = childRoles;
+		this.childRoles = CollectionUtil.setCollection(this.childRoles, childRoles);
 	}
 	
 	/**
