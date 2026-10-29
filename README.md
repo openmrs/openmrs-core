@@ -32,6 +32,7 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
    1. [Code](#code)
    2. [Code Reviews](#code-reviews)
    3. [Translation](#translation)
+   4. [Dependency Updates](#dependency-updates)
 8. [Issues](#issues)
 9. [Community](#community)
 10. [Support](#support)
@@ -321,6 +322,12 @@ the `messages_es.properties` file.
 
 If you would like to know how to help with translations, see
 [the OpenMRS translation guide](https://om.rs/translate).
+
+### Dependency Updates
+
+Dependabot raises dependency update PRs against `master` and each maintained release branch. It only reads
+[`.github/dependabot.yml`](.github/dependabot.yml) from `master`, so when a release branch is cut or reaches end
+of life, its entries in that file need to be added or removed.
 
 ## Issues
 
