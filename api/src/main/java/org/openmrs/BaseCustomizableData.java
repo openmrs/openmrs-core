@@ -18,6 +18,7 @@ import java.util.Set;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined attributes.
@@ -40,7 +41,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	 * @param attributes the attributes to set
 	 */
 	public void setAttributes(Set<A> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
 	}
 	
 	/**

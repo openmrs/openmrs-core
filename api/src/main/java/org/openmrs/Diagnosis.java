@@ -97,6 +97,26 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	}
 	
 	/**
+	 * The attributes are mapped with property access, so Hibernate loads them through
+	 * {@link #setAttributes(Set)}, which must keep the collection it is given rather than copy it as
+	 * {@link BaseCustomizableData#setAttributes(Set)} does.
+	 *
+	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
+	 */
+	@Override
+	public Set<DiagnosisAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	/**
+	 * @param attributes the attributes to set
+	 */
+	@Override
+	public void setAttributes(Set<DiagnosisAttribute> attributes) {
+		this.attributes = attributes;
+	}
+	
+	/**
 	 * @param encounter the encounter for this diagnosis
 	 * @param diagnosis the diagnosis to set
 	 * @param certainty the certainty for the diagnosis
