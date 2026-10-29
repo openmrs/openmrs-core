@@ -50,13 +50,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "changed_by")
-	private User changedBy;
-
-	@Column(name = "date_changed")
-	private Date dateChanged;
-
 	@Column(name = "retired", nullable = false)
 	@GenericField
 	private Boolean retired = Boolean.FALSE;
@@ -143,46 +136,6 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	@Override
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#getChangedBy()
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public User getChangedBy() {
-		return changedBy;
-	}
-
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#setChangedBy(User)
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#getDateChanged()
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-
-	/**
-	 * @see org.openmrs.OpenmrsMetadata#setDateChanged(Date)
-	 * @deprecated as of version 2.2
-	 */
-	@Override
-	@Deprecated
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
 	}
 
 	/**

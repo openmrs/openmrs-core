@@ -29,7 +29,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "provider_role")
 @Audited
-public class ProviderRole extends BaseOpenmrsMetadata implements Serializable {
+public class ProviderRole extends BaseChangeableOpenmrsMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
