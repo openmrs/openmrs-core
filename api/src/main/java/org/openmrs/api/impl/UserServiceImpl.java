@@ -345,12 +345,21 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void purgePrivilege(Privilege privilege) throws APIException {
-		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
+		if (privilege == null || privilege.getPrivilege() == null) {
+			return;
+		}
+
+		if (isCorePrivilege(privilege)) {
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 
 		dao.deletePrivilege(privilege);
 		rolePrivilegeCache.clear();
+	}
+
+	private boolean isCorePrivilege(Privilege privilege) {
+		return OpenmrsUtil.getCorePrivileges().keySet().stream()
+		        .anyMatch(corePrivilege -> corePrivilege.equalsIgnoreCase(privilege.getPrivilege()));
 	}
 
 	/**
@@ -390,7 +399,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			return;
 		}
 
-		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole())) {
+		if (isCoreRole(role)) {
 			throw new APIException("Role.cannot.delete.core", (Object[]) null);
 		}
 
@@ -400,6 +409,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		dao.deleteRole(role);
 		rolePrivilegeCache.clear();
+	}
+
+	private boolean isCoreRole(Role role) {
+		return OpenmrsUtil.getCoreRoles().keySet().stream().anyMatch(coreRole -> coreRole.equalsIgnoreCase(role.getRole()));
 	}
 
 	/**

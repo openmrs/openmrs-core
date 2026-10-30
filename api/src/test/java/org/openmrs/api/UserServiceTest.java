@@ -1019,6 +1019,26 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#purgePrivilege(Privilege)
+	 */
+	@Test
+	public void purgePrivilege_shouldReturnIfPrivilegeIsNull() {
+		userService.purgePrivilege(null);
+		userService.purgePrivilege(new Privilege());
+	}
+
+	/**
+	 * @see UserService#purgePrivilege(Privilege)
+	 */
+	@Test
+	public void purgePrivilege_shouldThrowErrorWhenPrivilegeMatchesCorePrivilegeWithDifferentCase() {
+		assertThrows(APIException.class,
+		    () -> userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS.toLowerCase())));
+		assertThrows(APIException.class,
+		    () -> userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS.toUpperCase())));
+	}
+
+	/**
 	 * @see UserService#purgeRole(Role)
 	 */
 	@Test
@@ -1045,6 +1065,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = new Role(RoleConstants.ANONYMOUS);
 
 		assertThrows(APIException.class, () -> userService.purgeRole(role));
+	}
+
+	/**
+	 * @see UserService#purgeRole(Role)
+	 */
+	@Test
+	public void purgeRole_shouldThrowErrorWhenRoleMatchesCoreRoleWithDifferentCase() {
+		assertThrows(APIException.class, () -> userService.purgeRole(new Role(RoleConstants.ANONYMOUS.toLowerCase())));
+		assertThrows(APIException.class, () -> userService.purgeRole(new Role(RoleConstants.ANONYMOUS.toUpperCase())));
 	}
 
 	/**
