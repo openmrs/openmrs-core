@@ -261,6 +261,139 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
 	}
+
+	@Test
+	public void authenticate_shouldLockAccountForInitialDurationAfterFailedAttempts() {
+		setAdminLockoutState("7", null, null);
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		User admin = Context.getUserService().getUserByUsername("admin");
+		assertNotNull(admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
+		assertEquals("1", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+
+		// just before the initial ten-minute lockout expires the correct password is still rejected
+		long lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)
+		        + TimeUnit.SECONDS.toMillis(30);
+		setAdminLockoutState("7", String.valueOf(lockoutTimestamp), "1");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+
+		// once the lockout expires the next attempt succeeds without administrative action
+		lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10) - TimeUnit.SECONDS.toMillis(1);
+		setAdminLockoutState("7", String.valueOf(lockoutTimestamp), "1");
+		assertNotNull(dao.authenticate("admin", "test"));
+	}
+
+	@Test
+	public void authenticate_shouldDoubleLockoutDurationForRepeatedLockouts() {
+		// Expiry resets failed attempts but must preserve the first lockout count.
+		long lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)
+		        - TimeUnit.SECONDS.toMillis(1);
+		setAdminLockoutState("7", String.valueOf(lockoutTimestamp), "1");
+
+		// This failed login passes through the expired-lockout path and restarts failed-attempt tracking.
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		User admin = Context.getUserService().getUserByUsername("admin");
+		assertEquals("1", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+		assertEquals("1", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+
+		// Seven failed attempts are allowed before the next one starts a new lockout.
+		for (int attempt = 1; attempt < 7; attempt++) {
+			assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		}
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		admin = Context.getUserService().getUserByUsername("admin");
+		assertEquals("2", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+
+		// the second lockout lasts twenty minutes, so eleven minutes is not enough
+		lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(11);
+		setAdminLockoutState("0", String.valueOf(lockoutTimestamp), "2");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+
+		// but twenty-one minutes is enough for the account to become available again
+		lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(21);
+		setAdminLockoutState("0", String.valueOf(lockoutTimestamp), "2");
+		assertNotNull(dao.authenticate("admin", "test"));
+	}
+
+	@Test
+	public void authenticate_shouldEnforceMaximumLockoutDuration() {
+		setGlobalProperty(OpenmrsConstants.GP_MAX_ACCOUNT_LOCKOUT_DURATION, "15");
+
+		// the third lockout would last forty minutes without the configured fifteen-minute maximum
+		setAdminLockoutState("7", null, "2");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		User admin = Context.getUserService().getUserByUsername("admin");
+		assertEquals("3", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+
+		long lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(14);
+		setAdminLockoutState("0", String.valueOf(lockoutTimestamp), "3");
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+
+		lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(16);
+		setAdminLockoutState("0", String.valueOf(lockoutTimestamp), "3");
+		assertNotNull(dao.authenticate("admin", "test"));
+	}
+
+	@Test
+	public void authenticate_shouldResetLockoutHistoryAfterSuccessfulLogin() {
+		setAdminLockoutState("3", null, "2");
+
+		assertNotNull(dao.authenticate("admin", "test"));
+
+		User admin = Context.getUserService().getUserByUsername("admin");
+		assertEquals("0", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+		assertEquals("", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
+		assertEquals("", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+	}
+
+	@Test
+	public void changePassword_shouldUnlockAccountAndResetLockoutHistory() {
+		setAdminLockoutState("7", String.valueOf(System.currentTimeMillis()), "3");
+
+		User admin = Context.getUserService().getUserByUsername("admin");
+		Context.getUserService().changePassword(admin, "test", "NewPassword123");
+
+		User unlocked = Context.getUserService().getUserByUsername("admin");
+		assertEquals("0", unlocked.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+		assertEquals("", unlocked.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
+		assertEquals("", unlocked.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+		assertNotNull(dao.authenticate("admin", "NewPassword123"));
+	}
+
+	private void setGlobalProperty(String property, String value) {
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		try {
+			Context.getAdministrationService().setGlobalProperty(property, value);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+		}
+	}
+
+	private void setAdminLockoutState(String loginAttempts, String lockoutTimestamp, String lockoutCount) {
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		try {
+			User admin = Context.getUserService().getUserByUsername("admin");
+			admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, loginAttempts);
+			if (lockoutTimestamp == null) {
+				admin.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+			} else {
+				admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, lockoutTimestamp);
+			}
+			if (lockoutCount == null) {
+				admin.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT);
+			} else {
+				admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT, lockoutCount);
+			}
+			Context.getUserService().saveUser(admin);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
 	
 	/**
 	 * @see ContextDAO#authenticate(String,String)

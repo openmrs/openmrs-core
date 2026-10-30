@@ -570,7 +570,22 @@ public final class OpenmrsConstants {
 	
 	public static final String GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT = "security.allowedFailedLoginsBeforeLockout";
 
+	/**
+	 * The initial duration, in minutes, that an account stays locked after too many failed login
+	 * attempts. Each consecutive lockout doubles this duration, up to
+	 * {@link #GP_MAX_ACCOUNT_LOCKOUT_DURATION}. The default is ten minutes.
+	 *
+	 * @since 2.7.0
+	 */
 	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME  = "security.unlockAccountWaitingTime";
+
+	/**
+	 * The maximum duration, in minutes, that an account can stay locked after repeated failed login
+	 * attempts. The default is 1440 minutes (24 hours).
+	 *
+	 * @since 2.9.0
+	 */
+	public static final String GP_MAX_ACCOUNT_LOCKOUT_DURATION = "security.maxAccountLockoutDuration";
 	
 	/**
 	 * @since 1.9.9, 1.10.2, 1.11
@@ -996,8 +1011,11 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "7",
 		        "Maximum number of failed logins allowed after which username is locked out"));
 
-		props.add(new GlobalProperty(GP_UNLOCK_ACCOUNT_WAITING_TIME, "5",
-			"Waiting time for account to get automatically unlocked after getting locked due to multiple invalid login tries"));
+		props.add(new GlobalProperty(GP_UNLOCK_ACCOUNT_WAITING_TIME, "10",
+			"Initial time in minutes an account is locked after too many failed login attempts. The duration doubles for each consecutive lockout."));
+
+		props.add(new GlobalProperty(GP_MAX_ACCOUNT_LOCKOUT_DURATION, "1440",
+			"Maximum time in minutes an account can be locked after repeated failed login attempts. Defaults to 1440 minutes (24 hours)."));
 
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));
@@ -1189,6 +1207,13 @@ public final class OpenmrsConstants {
 	 * attempts
 	 */
 	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP = "lockoutTimestamp";
+
+	/**
+	 * Name of the user_property that stores the number of consecutive lockouts this user has had.
+	 * The value determines the lockout duration and is reset after a successful login or an
+	 * administrative password reset.
+	 */
+	public static final String USER_PROPERTY_LOCKOUT_COUNT = "lockoutCount";
 	
 	/**
 	 * A user property name. The value should be a comma-separated ordered list of fully qualified
