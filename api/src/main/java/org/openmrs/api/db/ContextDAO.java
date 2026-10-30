@@ -27,7 +27,8 @@ import org.openmrs.util.OpenmrsConstants;
 public interface ContextDAO {
 	
 	/**
-	 * Authenticate user with the given username and password.
+	 * Authenticate user with the given username and password. Concurrent attempts for the same user are
+	 * serialized so that failed-attempt counting and lockout are atomic.
 	 * 
 	 * @param username user's username or systemId
 	 * @param password user's password
