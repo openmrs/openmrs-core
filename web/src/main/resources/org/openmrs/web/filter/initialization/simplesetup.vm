@@ -3,7 +3,6 @@
 <div class="content-container">
     <form method="post" autocomplete="off" class="setup-form">
         <input type="hidden" name="page" value="simplesetup.vm" />
-        <input type="hidden" name="database_connection" value="${databaseConnection}"/>
 
         <div class="form-container">
             <h2 class="form-title">$l10n.get("install.simple.caption")</h2>
@@ -50,7 +49,6 @@
                     <div class="password-input-container" id="passwordInputContainer">
                         <input type="password" 
                                name="database_root_password" 
-                               value="${databaseRootPassword}" 
                                class="form-input"
                                autocomplete="new-password"
                                onKeyPress="return submitenter(this,event);" />

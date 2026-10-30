@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -242,8 +243,9 @@ public abstract class StartupFilter implements Filter {
 	        throws IOException, ServletException;
 
 	/**
-	 * All private attributes on this class are returned to the template via the velocity context and
-	 * reflection
+	 * The fields of {@link #getUpdateFilterModel()} are returned to the template via the velocity
+	 * context and reflection, except the instance fields whose name contains "password" or
+	 * "passphrase", ignoring case
 	 *
 	 * @param templateName the name of the velocity file to render. This name is prepended with
 	 *            {@link #getTemplatePrefix()}
@@ -252,6 +254,26 @@ public abstract class StartupFilter implements Filter {
 	 */
 	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse)
 	        throws IOException {
+		renderTemplate(templateName, referenceMap, httpResponse, getUpdateFilterModel(), errors, msgs);
+	}
+
+	/**
+	 * Renders the template with the given model, errors and messages rather than the ones this filter
+	 * holds, for a filter that keeps them per client. The fields of the model are put into the
+	 * template, except the instance fields whose name contains "password" or "passphrase", ignoring
+	 * case.
+	 *
+	 * @param templateName the name of the velocity file to render. This name is prepended with
+	 *            {@link #getTemplatePrefix()}
+	 * @param referenceMap
+	 * @param httpResponse
+	 * @param model the model the template is rendered with
+	 * @param errors the errors to display
+	 * @param msgs the messages to display
+	 * @since 3.0.0
+	 */
+	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
+	        Object model, Map<String, Object[]> errors, Map<String, Object[]> msgs) throws IOException {
 		// first we should get velocity tools context for current client request (within
 		// his http session) and merge that tools context with basic velocity context
 		if (referenceMap == null) {
@@ -267,10 +289,14 @@ public abstract class StartupFilter implements Filter {
 			velocityContext.put(entry.getKey(), entry.getValue());
 		}
 
-		Object model = getUpdateFilterModel();
-
-		// put each of the private varibles into the template for convenience
+		// put each field of the model into the template for convenience, except the instance fields named
+		// like a password or passphrase, which no page renders back
 		for (Field field : model.getClass().getDeclaredFields()) {
+			String fieldName = field.getName().toLowerCase(Locale.ROOT);
+			if (!Modifier.isStatic(field.getModifiers())
+			        && (fieldName.contains("password") || fieldName.contains("passphrase"))) {
+				continue;
+			}
 			try {
 				field.setAccessible(true);
 				velocityContext.put(field.getName(), field.get(model));

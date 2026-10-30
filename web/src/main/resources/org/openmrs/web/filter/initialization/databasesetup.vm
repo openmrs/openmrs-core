@@ -15,7 +15,7 @@
                         <input type="text" 
                                name="database_connection" 
                                class="form-input" 
-                               value="${databaseConnection}" 
+                               value="${displayedDatabaseConnection}"
                                onKeyPress="return submitenter(this,event);" />
                         <span class="input-hint">$l10n.get("install.advanced.dbsetup.rep")</span>
                     </div>
@@ -96,7 +96,6 @@
                                             <label class="input-label">$l10n.get("install.simple.passwd")</label>
                                             <input type="password" 
                                                    name="create_database_password" 
-                                                   value="${createDatabasePassword}" 
                                                    class="form-input"
                                                    autocomplete="new-password"
                                                    onfocus="clickRadio('current_openmrs_database', 'no')" 
