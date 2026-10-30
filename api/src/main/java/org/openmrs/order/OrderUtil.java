@@ -65,6 +65,7 @@ public class OrderUtil {
 	 *         order2 starts <strong>Should</strong> return false if order1 starts after order2
 	 *         <strong>Should</strong> return true if order1 stops after the order2 has already been
 	 *         activated <strong>Should</strong> return true if order1 starts when the order2 is active
+	 *         <strong>Should</strong> return true if order1 has no end date and starts before order2
 	 *         <strong>Should</strong> return true if order1 starts before order2 and ends after order2
 	 *         <strong>Should</strong> return true if order2 starts before order1 and ends after order1
 	 *         <strong>Should</strong> return true if order1 starts on the stop date of order2
@@ -81,8 +82,7 @@ public class OrderUtil {
 		}
 
 		if (order1.getEffectiveStopDate() == null) {
-			return (OpenmrsUtil.compare(order1.getEffectiveStartDate(), order2.getEffectiveStartDate()) > -1)
-			        && (OpenmrsUtil.compare(order1.getEffectiveStartDate(), order2.getEffectiveStopDate()) < 1);
+			return OpenmrsUtil.compare(order1.getEffectiveStartDate(), order2.getEffectiveStopDate()) < 1;
 		}
 
 		return (OpenmrsUtil.compare(order1.getEffectiveStartDate(), order2.getEffectiveStopDate()) < 1)
