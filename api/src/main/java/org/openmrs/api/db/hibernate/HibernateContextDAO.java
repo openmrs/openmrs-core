@@ -72,6 +72,18 @@ public class HibernateContextDAO implements ContextDAO {
 	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
 
 	/**
+	 * Longest time, in seconds, that login attempts are refused after consecutive failures when
+	 * the {@link OpenmrsConstants#GP_MAX_FAILED_LOGIN_BACKOFF_TIME} global property is not configured.
+	 */
+	private static final long DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS = 8L;
+
+	/**
+	 * Highest exponent used when calculating the back-off delay. Keeps the shift below the point
+	 * where the result would overflow and lets the configured maximum cap the delay instead.
+	 */
+	private static final int MAX_FAILED_LOGIN_BACKOFF_EXPONENT = 30;
+
+	/**
 	 * The capability that proves to {@link Daemon} this class is allowed to act with daemon
      * permissions.
 	 */
@@ -180,6 +192,7 @@ public class HibernateContextDAO implements ContextDAO {
 				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
@@ -187,6 +200,14 @@ public class HibernateContextDAO implements ContextDAO {
 					throw new ContextAuthenticationException(
 						"Invalid number of connection attempts. Please try again later.");
 				}
+			}
+
+			// reject attempts made before the back-off from previous failures has elapsed, without
+			// checking the password, so an existing account is not slower to reject than an unknown one
+			long backoffTime = getLoginBackoffTimestamp(candidateUser);
+			if (backoffTime > System.currentTimeMillis()) {
+				log.info("Rejected login attempt for {} because the failed-login back-off has not elapsed yet", login);
+				throw new ContextAuthenticationException(errorMsg);
 			}
 
 			Object[] passwordAndSalt = (Object[]) session
@@ -210,6 +231,7 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 				}
+				candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
 
@@ -243,6 +265,12 @@ public class HibernateContextDAO implements ContextDAO {
 						.currentTimeMillis()));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+				}
+
+				long backoffMillis = calculateFailedLoginBackoffMillis(attempts, getMaxFailedLoginBackoffSeconds());
+				if (backoffMillis > 0) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, String
+						.valueOf(System.currentTimeMillis() + backoffMillis));
 				}
 
 				saveUserProperties(candidateUser);
@@ -352,6 +380,71 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
+	}
+
+	/**
+	 * Get the time before which login attempts for the given user must be rejected.
+	 *
+	 * @param user the user to check
+	 * @return the back-off timestamp in milliseconds, or a negative value if none is set
+	 */
+	private long getLoginBackoffTimestamp(User user) {
+		String backoffTimeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null);
+		if (StringUtils.isNotBlank(backoffTimeString) && !"0".equals(backoffTimeString)) {
+			try {
+				return Long.parseLong(backoffTimeString);
+			}
+			catch (NumberFormatException e) {
+				log.warn("bad value stored in {} user property: {}",
+				    OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, backoffTimeString);
+			}
+		}
+		return -1L;
+	}
+
+	/**
+	 * Calculates the back-off in milliseconds to apply after the given number of consecutive failed
+	 * attempts. The first failed attempt is not delayed, the second is delayed by one second, the
+	 * third by two seconds, and so on. The delay is capped at {@code maxBackoffSeconds} to avoid
+	 * excessive waiting times and arithmetic overflow.
+	 *
+	 * @param attempts the number of consecutive failed attempts
+	 * @param maxBackoffSeconds the maximum delay in seconds
+	 * @return the delay in milliseconds
+	 */
+	static long calculateFailedLoginBackoffMillis(int attempts, long maxBackoffSeconds) {
+		if (attempts < 2 || maxBackoffSeconds <= 0) {
+			return 0L;
+		}
+
+		int exponent = Math.min(attempts - 2, MAX_FAILED_LOGIN_BACKOFF_EXPONENT);
+		long delaySeconds = 1L << exponent;
+		return TimeUnit.SECONDS.toMillis(Math.min(delaySeconds, maxBackoffSeconds));
+	}
+
+	/**
+	 * Reads the maximum failed login back-off delay from the global property.
+	 *
+	 * @return the maximum delay in seconds, or zero if the delay is disabled
+	 */
+	private long getMaxFailedLoginBackoffSeconds() {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String maxBackoffProperty = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME);
+			if (StringUtils.isNotBlank(maxBackoffProperty)) {
+				long maxBackoffSeconds = Long.parseLong(maxBackoffProperty.trim());
+				return Math.max(maxBackoffSeconds, 0L);
+			}
+		}
+		catch (Exception ex) {
+			log.error("Unable to read the {} global property. Using the default of {} seconds.",
+			    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS, ex);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+		return DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS;
 	}
 	
 	/**

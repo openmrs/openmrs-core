@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
@@ -232,6 +233,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldLockoutUserAfterEightFailedAttempts() {
+		setMaxFailedLoginBackoffSeconds(0);
 		// logout after the base setup
 		Context.logout();
 		
@@ -260,6 +262,90 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// those were the first seven, now the eighth request
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
+	}
+
+	@Test
+	public void authenticate_shouldStartLoginBackoffAfterConsecutiveFailedAttempts() {
+		setMaxFailedLoginBackoffSeconds(60);
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		assertNull(getAdmin().getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null),
+		    "The first failed attempt should not start a back-off");
+
+		long before = System.currentTimeMillis();
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		long backoffTime = Long.parseLong(getAdmin()
+		        .getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP));
+		assertTrue(backoffTime > before, "The second failed attempt should start a back-off");
+		assertTrue(backoffTime <= System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(60),
+		    "The back-off should not exceed the configured maximum");
+	}
+
+	@Test
+	public void authenticate_shouldRejectLoginAttemptsBeforeTheBackoffExpires() {
+		User user = getAdmin();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1)));
+		Context.getUserService().saveUser(user);
+
+		// the correct password must be rejected without being checked while the back-off is active
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+
+		User afterRejection = getAdmin();
+		assertEquals("2", afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "A rejected attempt should not change the failed attempt count");
+		assertTrue(Long.parseLong(afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP)) >
+		        System.currentTimeMillis(),
+		    "A rejected attempt should not shorten the back-off");
+	}
+
+	@Test
+	public void authenticate_shouldResetFailedLoginBackoffAfterSuccessfulLogin() {
+		User user = getAdmin();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - 1));
+		Context.getUserService().saveUser(user);
+
+		User afterSuccess = dao.authenticate("admin", "test");
+		assertEquals(OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE,
+		    afterSuccess.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "Should reset the consecutive failed attempts after a successful login");
+		assertNull(afterSuccess.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null),
+		    "Should not leave a lockout timestamp after a successful login");
+		assertNull(afterSuccess.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null),
+		    "Should not leave a login back-off timestamp after a successful login");
+	}
+
+	@Test
+	public void authenticate_shouldStillLockoutUserWhenFailedLoginBackoffIsEnabled() {
+		setMaxFailedLoginBackoffSeconds(60);
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "1");
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		User lockedOut = getAdmin();
+		assertNotNull(lockedOut.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null),
+		    "The second failure should lock the user out when only one failure is allowed");
+
+		// the existing lockout still rejects the correct password, even while the back-off is active
+		ContextAuthenticationException exception = assertThrows(ContextAuthenticationException.class,
+		    () -> dao.authenticate("admin", "test"));
+		assertTrue(exception.getMessage().contains("Invalid number of connection attempts"),
+		    "The lockout should reject the attempt before the back-off is considered");
+	}
+
+	private User getAdmin() {
+		return Context.getUserService().getUserByUsername("admin");
+	}
+
+	private void setMaxFailedLoginBackoffSeconds(long seconds) {
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, String.valueOf(seconds));
 	}
 	
 	/**
@@ -319,6 +405,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldPassRegressionTestFor1580() {
+		setMaxFailedLoginBackoffSeconds(0);
 		// logout after the base setup
 		Context.logout();
 		
