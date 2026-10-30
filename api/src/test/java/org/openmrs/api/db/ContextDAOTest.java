@@ -352,6 +352,39 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
+	public void authenticate_shouldAuthenticateWithCorrectPasswordAfterTheLockoutWindowExpires() {
+		lockOutAdminSixMinutesAgo();
+
+		User user = dao.authenticate("admin", "test");
+
+		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldCountFailedAttemptsFromOneAgainAfterTheLockoutWindowExpires() {
+		lockOutAdminSixMinutesAgo();
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		assertEquals("1",
+		    Context.getUserService().getUser(1).getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+	}
+
+	private void lockOutAdminSixMinutesAgo() {
+		User admin = Context.getUserService().getUser(1);
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
+		Context.flushSession();
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
 	public void authenticate_shouldAuthenticateWithCorrectHashedPassword() {
 		dao.authenticate("correct", "test");
 	}
