@@ -384,12 +384,32 @@ public class UserContext implements Serializable {
 	 * <strong>Should</strong> not authorize if anonymous user does not have specified privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
-		// check proxied privileges
-		for (String s : new ArrayList<>(proxies)) {
-			if (s.equals(privilege)) {
-				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-				return true;
+		return hasPrivilege(privilege, true);
+	}
+	
+	/**
+	 * Tests whether the current user has a particular privilege, optionally excluding proxy privileges.
+	 * <p>
+	 * Passing <code>false</code> resolves the privilege only from the user's roles (and the anonymous
+	 * and authenticated roles), ignoring any {@link #addProxyPrivilege(String...) proxy privileges}.
+	 * This is intended for per-resource access checks that must reflect the user's actual granted roles
+	 * and must not be satisfied by a proxy privilege added merely to invoke the surrounding service
+	 * method.
+	 *
+	 * @param privilege The privilege to check if it's available
+	 * @param includeProxyPrivileges whether proxy privileges may satisfy the check
+	 * @return true if the current user has the given privilege
+	 * @since 2.7.10
+	 */
+	public boolean hasPrivilege(String privilege, boolean includeProxyPrivileges) {
+		if (includeProxyPrivileges) {
+			log.debug("Checking '{}' against proxies: {}", privilege, proxies);
+			// check proxied privileges
+			for (String s : new ArrayList<>(proxies)) {
+				if (s.equals(privilege)) {
+					notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+					return true;
+				}
 			}
 		}
 		

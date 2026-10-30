@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
@@ -31,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -80,6 +83,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -1848,6 +1852,57 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see EncounterService#getAllEncounters(Cohort)
+	 */
+	@Test
+	public void getAllEncounters_shouldNotReturnEncountersTheUserIsNotAllowedToView() {
+		// sets a view privilege on encounter type 1; patient 7 has two encounters of that type and one of type 2
+		getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getAllEncounters(Cohort) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		Cohort cohort = new Cohort();
+		cohort.addMember(7);
+		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
+
+		assertEquals(Collections.singletonList(3),
+		    allEncounters.get(7).stream().map(Encounter::getId).collect(Collectors.toList()));
+	}
+
+	/**
+	 * @see EncounterService#getAllEncounters(Cohort)
+	 */
+	@Test
+	public void getAllEncounters_shouldNotReturnAPatientWhoseEncountersTheUserIsNotAllowedToView() {
+		// sets a view privilege on encounter type 1; every encounter of patient 3 is of that type
+		getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getAllEncounters(Cohort) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		Cohort cohort = new Cohort();
+		cohort.addMember(3);
+		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
+
+		assertFalse(allEncounters.containsKey(3));
+	}
+
+	/**
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
 	 *      boolean)
@@ -2615,6 +2670,22 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see EncounterService#canEditEncounter(Encounter, User)
+	 */
+	@Test
+	public void canEditEncounter_shouldReturnFalseIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		// get encounter whose saved type has an edit privilege, changed in memory to a type without one
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left user as is - i.e. without required privilege
+
+		assertFalse(Context.getEncounterService().canEditEncounter(encounter, user));
+	}
+
+	/**
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
@@ -2809,7 +2880,318 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE));
 	}
-	
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldFailIfUserIsNotAllowedToViewEncounterByGivenUuid() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getEncounterByUuid(String) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+		String uuid = encounter.getUuid();
+
+		assertThrows(APIException.class, () -> encounterService.getEncounterByUuid(uuid));
+	}
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldReturnEncounterIfUserIsAllowedToViewIt() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// add required privilege to role in which this user is
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		user.addRole(role);
+
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getEncounterByUuid(String) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		assertNotNull(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()));
+	}
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldReturnEncounterOnDaemonThreadWithoutViewPrivilege() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		EncounterService encounterService = Context.getEncounterService();
+		String uuid = encounter.getUuid();
+
+		// system work such as a scheduled report runs on a daemon thread, which is granted every privilege
+		ThreadLocal<Boolean> isDaemonThread = getDaemonThreadFlag();
+		isDaemonThread.set(true);
+		try {
+			assertNotNull(encounterService.getEncounterByUuid(uuid));
+		}
+		finally {
+			isDaemonThread.remove();
+		}
+	}
+
+	/**
+	 * Gives access to the thread-local flag behind {@link Daemon#isDaemonThread()} so a test can mark the
+	 * current thread as a daemon thread without starting a separate thread, which would not see this
+	 * test's uncommitted data.
+	 */
+	@SuppressWarnings("unchecked")
+	private ThreadLocal<Boolean> getDaemonThreadFlag() {
+		try {
+			Field field = Daemon.class.getDeclaredField("isDaemonThread");
+			field.setAccessible(true);
+			return (ThreadLocal<Boolean>) field.get(null);
+		}
+		catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call saveEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldNotChangeSavedTypeIfUserIsNotSupposedToEditEncountersOfSavedType() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+		EncounterType savedType = Context.getEncounterService().getEncounterType(1);
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call saveEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+
+		// discard the rejected change and reload the encounter from the database
+		Context.evictFromSession(encounter);
+
+		assertEquals(savedType, Context.getEncounterService().getEncounter(encounter.getId()).getEncounterType());
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfNewTypeWhenTypeIsChanged() {
+		// encounter 1 has an unrestricted type; move it to a type with an edit privilege the user lacks
+		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		EncounterType restrictedType = Context.getEncounterService().getEncounterType(2);
+		restrictedType.setEditPrivilege(Context.getUserService().getPrivilege("Some Privilege For Edit Encounter Types"));
+		encounter.setEncounterType(restrictedType);
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call saveEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldChangeTypeIfUserIsAllowedToEditEncountersOfBothTypes() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+		EncounterType newType = encounter.getEncounterType();
+		Privilege newTypeEditPrivilege = Context.getUserService().getPrivilege("Some Privilege For View Encounter Types");
+		newType.setEditPrivilege(newTypeEditPrivilege);
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// add edit privileges of both the saved and the new type to role in which this user is
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(Context.getUserService().getPrivilege("Some Privilege For Edit Encounter Types"));
+		role.addPrivilege(newTypeEditPrivilege);
+		user.addRole(role);
+
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privileges in order to be able to call saveEncounter(Encounter) method
+		// and the services it saves the encounter's obs and orders through
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_LOCATIONS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_OBS);
+		Context.addProxyPrivilege(PrivilegeConstants.ADD_OBS);
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_OBS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_CONCEPTS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_PATIENTS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_PERSONS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ORDERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTER_TYPES);
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_DIAGNOSES);
+
+		Context.getEncounterService().saveEncounter(encounter);
+		Context.flushSession();
+		Context.evictFromSession(encounter);
+
+		assertEquals(newType, Context.getEncounterService().getEncounter(encounter.getId()).getEncounterType());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter, String)
+	 */
+	@Test
+	public void voidEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call voidEncounter(Encounter,String) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.voidEncounter(encounter, "test"));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call unvoidEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.unvoidEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#purgeEncounter(Encounter)
+	 */
+	@Test
+	public void purgeEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call purgeEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#purgeEncounter(Encounter,Boolean)
+	 */
+	@Test
+	public void purgeEncounterCascade_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call purgeEncounter(Encounter,Boolean) method
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter, Boolean.TRUE));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
 	@Test
 	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
 		
@@ -2863,6 +3245,20 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		return encounter;
 	}
 	
+	/**
+	 * Gets encounter whose saved type has an edit privilege, then changes its type in memory to one
+	 * without any edit privilege, as a user trying to bypass the saved type's privilege would
+	 *
+	 * @return encounter whose saved type and in-memory type differ
+	 */
+	private Encounter getEncounterWithEditPrivilegeAndChangedType() {
+		Encounter encounter = getEncounterWithEditPrivilege();
+		EncounterType unrestrictedType = Context.getEncounterService().getEncounterType(2);
+		assertNull(unrestrictedType.getEditPrivilege());
+		encounter.setEncounterType(unrestrictedType);
+		return encounter;
+	}
+
 	/**
 	 * Gets encounter and adds view privilege to it
 	 *

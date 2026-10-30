@@ -219,6 +219,25 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterType(org.openmrs.Encounter)
+	 */
+	@Override
+	public EncounterType getSavedEncounterType(Encounter encounter) {
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			SQLQuery sql = session
+			        .createSQLQuery("select encounter_type from encounter where encounter_id = :encounterId");
+			sql.setInteger("encounterId", encounter.getEncounterId());
+			Integer encounterTypeId = (Integer) sql.uniqueResult();
+			return encounterTypeId == null ? null : getEncounterType(encounterTypeId);
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getAllEncounterTypes(java.lang.Boolean)
 	 */
 	@Override
