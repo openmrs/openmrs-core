@@ -44,8 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 /**
- * Tests {@link ModuleFileParser} with a database and file IO. Mostly deprecated methods are tested
- * but also contains one integration style test parsing the logic module from test resources.
+ * Tests {@link ModuleFileParser} with a database and file IO.
  */
 public class ModuleFileParserTest extends BaseContextSensitiveTest {
 
@@ -65,34 +64,37 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void moduleFileParser_shouldFailCreatingParserFromFileIfGivenNull() {
-		expectModuleExceptionWithTranslatedMessage(() -> new ModuleFileParser((File) null), "Module.error.fileCannotBeNull");
+	public void parse_shouldFailIfFileIsNull() {
+		ModuleFileParser parser = new ModuleFileParser(messageSourceService);
+		expectModuleExceptionWithTranslatedMessage(() -> parser.parse((File) null), "Module.error.fileCannotBeNull");
 	}
 
 	@Test
-	public void moduleFileParser_shouldFailCreatingParserFromFileIfNotEndingInOmod() {
-		expectModuleExceptionWithTranslatedMessage(() -> new ModuleFileParser(new File("reporting.jar")),
+	public void parse_shouldFailIfFileNotEndingInOmod() {
+		ModuleFileParser parser = new ModuleFileParser(messageSourceService);
+		expectModuleExceptionWithTranslatedMessage(() -> parser.parse(new File("reporting.jar")),
 		    "Module.error.invalidFileExtension");
 	}
 
 	@Test
-	public void moduleFileParser_shouldFailCreatingParserFromFileIfInputStreamClosed() throws IOException {
+	public void parse_shouldFailIfInputStreamClosed() throws IOException {
 		File moduleFile = new File(getClass().getClassLoader().getResource(LOGIC_MODULE_PATH).getPath());
+		ModuleFileParser parser = new ModuleFileParser(messageSourceService);
 
 		try (InputStream inputStream = new FileInputStream(moduleFile)) {
 			inputStream.close();
-			expectModuleExceptionWithTranslatedMessage(() -> new ModuleFileParser(inputStream),
-			    "Module.error.cannotCreateFile");
+			expectModuleExceptionWithTranslatedMessage(() -> parser.parse(inputStream), "Module.error.cannotCreateFile");
 		}
 	}
 
 	@Test
 	public void parse_shouldParseValidXmlConfigCreatedFromInputStream() throws IOException {
 		File moduleFile = new File(getClass().getClassLoader().getResource(LOGIC_MODULE_PATH).getPath());
+		ModuleFileParser parser = new ModuleFileParser(messageSourceService);
 
 		Module module;
 		try (FileInputStream moduleFileInputStream = new FileInputStream(moduleFile)) {
-			module = new ModuleFileParser().parse(moduleFileInputStream);
+			module = parser.parse(moduleFileInputStream);
 		}
 
 		assertThat(module.getModuleId(), is("logic"));
@@ -123,8 +125,8 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		configXml.appendChild(root);
 		configXml.getDocumentElement().setAttribute("configVersion", invalidConfigVersion);
 
-		expectModuleExceptionWithMessage(() -> new ModuleFileParser().parse(writeConfigXmlToFile(configXml)),
-		    expectedMessage);
+		expectModuleExceptionWithMessage(
+		    () -> new ModuleFileParser(messageSourceService).parse(writeConfigXmlToFile(configXml)), expectedMessage);
 	}
 
 	@Test
