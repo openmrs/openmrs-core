@@ -3101,6 +3101,31 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, rels.size(), "7->999 (type 1) was removed");
 	}
 
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldPreserveTheStartAndEndDatesOfCopiedRelationships() throws Exception {
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
+
+		// 502->2 (type 1) is copied to 502->999 by the merge; give it a start and an end date
+		Relationship relationship = personService.getRelationship(1);
+		Date startDate = new GregorianCalendar(2010, Calendar.JANUARY, 1).getTime();
+		Date endDate = new GregorianCalendar(2012, Calendar.JUNE, 30).getTime();
+		relationship.setStartDate(startDate);
+		relationship.setEndDate(endDate);
+		personService.saveRelationship(relationship);
+
+		patientService.mergePatients(preferred, notPreferred);
+
+		List<Relationship> rels = personService.getRelationships(new Person(502), preferred, new RelationshipType(1));
+		assertEquals(1, rels.size(), "502->999 (type 1) was not copied");
+		assertEquals(startDate, rels.get(0).getStartDate());
+		assertEquals(endDate, rels.get(0).getEndDate());
+	}
+
 	@Test
 	public void savePatient_shouldUpdateTheDateChangedAndChangedByOnUpdateOfThePersonAddress() throws Exception {
 
