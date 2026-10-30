@@ -41,6 +41,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,6 +60,7 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
  */
 @SkipBaseSetup
 @TestExecutionListeners(listeners = ContextDAOConcurrentLockoutIT.DiscardApplicationContextAroundClass.class, mergeMode = MERGE_WITH_DEFAULTS)
+@Testcontainers(disabledWithoutDocker = true)
 public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransactionalTest {
 
 	/**
