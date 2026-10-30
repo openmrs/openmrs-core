@@ -68,8 +68,8 @@ public class HibernateContextDAO implements ContextDAO {
 	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
 
 	/**
-	 * Maximum delay applied to a failed login response when the
-	 * {@link OpenmrsConstants#GP_MAX_FAILED_LOGIN_BACKOFF_TIME} global property is not configured.
+	 * Longest time, in seconds, that login attempts are refused after consecutive failures when
+	 * the {@link OpenmrsConstants#GP_MAX_FAILED_LOGIN_BACKOFF_TIME} global property is not configured.
 	 */
 	private static final long DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS = 8L;
 
