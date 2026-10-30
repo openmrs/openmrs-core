@@ -109,7 +109,6 @@
 		<mariadbClientVersion>3.5.10</mariadbClientVersion>
 		<postgresqlVersion>42.7.14</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
-		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
 
 		<!-- Other Runtime -->
 		<javassistVersion>3.33.0-GA</javassistVersion>
@@ -129,7 +128,6 @@
 		<hamcrestVersion>3.0</hamcrestVersion>
 		<h2Version>2.5.252</h2Version>
 		<dbunitVersion>3.5.2</dbunitVersion>
-		<sonarJacocoListenersVersion>3.2</sonarJacocoListenersVersion>
 		<testcontainersVersion>2.0.5</testcontainersVersion>
 		<testcontainersModulesVersion>1.21.4</testcontainersModulesVersion>
 		<s3mockVersion>5.2.3</s3mockVersion>
@@ -164,11 +162,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- OpenMRS Dependencies -->
-			<dependency>
-				<groupId>org.openmrs.tools</groupId>
-				<artifactId>openmrs-tools</artifactId>
-				<version>${project.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
@@ -489,6 +482,7 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4jVersion}</version>
 			</dependency>
+			<!-- Declared by the liquibase module: dom4j needs it for the XPath queries in CoreDataTuner and SchemaOnlyTuner -->
 			<dependency>
 				<groupId>jaxen</groupId>
 				<artifactId>jaxen</artifactId>
@@ -545,11 +539,6 @@
 						<artifactId>logback-classic</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.openmrs.liquibase.ext</groupId>
-				<artifactId>type-converter</artifactId>
-				<version>${liquibaseExtTypeConverterVersion}</version>
 			</dependency>
 
 			<!-- AspectJ -->
@@ -694,11 +683,6 @@
 				<version>${dbunitVersion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.codehaus.sonar-plugins.java</groupId>
-				<artifactId>sonar-jacoco-listeners</artifactId>
-				<version>${sonarJacocoListenersVersion}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers</artifactId>
 				<version>${testcontainersVersion}</version>
@@ -730,6 +714,7 @@
 			</dependency>
 
 			<!-- Netty -->
+			<!-- Pins the Netty version pulled in transitively by the AWS SDK S3 client -->
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-bom</artifactId>

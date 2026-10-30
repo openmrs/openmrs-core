@@ -19,6 +19,7 @@ The mission of OpenMRS is to improve health care delivery in resource-constraine
    1. [Prerequisites](#prerequisites)
    2. [Build Command](#build-command)
    3. [Deploy](#deploy)
+   4. [Release dependency check](#release-dependency-check)
 2. [Docker build](#docker-build)
 3. [Navigating the repository](#navigating-the-repository)
 4. [Software Development Kit](#software-development-kit)
@@ -113,6 +114,17 @@ If all goes well (check the console output) you can access the OpenMRS applicati
 
 Refer to [Getting Started as a Developer](https://wiki.openmrs.org/display/docs/Getting+Started+as+a+Developer) for some more information
 on useful Maven commands and build options.
+
+### Release dependency check
+
+The root `pom.xml` configures the Maven Enforcer `requireReleaseDeps` rule with `onlyWhenRelease` set to `true`. It runs on every build, with no profile or flag to remember.
+
+- While the project version ends in `-SNAPSHOT` (as on `master`), the rule is skipped, so normal development builds are unaffected.
+- Once the project version is a release version (for example after `mvn versions:set` in the release workflow), the build fails if any dependency still resolves to a `-SNAPSHOT` version.
+- The rule does not check optional dependencies.
+- Other pre-release qualifiers (`-M`, `-alpha`, `-beta`, `-RC`) are not checked yet. That is tracked in TRUNK-6855.
+
+Entries in `bom/pom.xml` should be declared by at least one module. If an entry is kept for another reason, for example because a module only needs it transitively, add a comment above it explaining why.
 
 ## Docker build
 
