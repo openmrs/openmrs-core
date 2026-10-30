@@ -231,6 +231,7 @@ public final class CacheInvalidation {
 	 * node are discarded too.
 	 */
 	private static void clearLocally(Cache<Object, Object> cache) {
+		cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).remove(GENERATION);
 		cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).clear();
 	}
 
