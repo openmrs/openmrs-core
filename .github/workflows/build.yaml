@@ -40,9 +40,6 @@ jobs:
             java-version: 21
           #- platform: windows-latest
           #  java-version: 24
-          # Do not run integration tests on Windows
-          - test-profile: '-Pintegration-test -Pskip-default-test'
-            platform: windows-latest
           # Do not run performance tests on PRs and older Java versions
           - test-profile: '-Pperformance-test -Pskip-default-test'
             isPR: true
