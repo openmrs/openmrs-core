@@ -579,10 +579,14 @@ public interface UserService extends OpenmrsService {
 	User setUserActivationKey(User user) throws MessageException;
 	
 	/**
-	 * Change user password given the activation key
+	 * Change user password given the activation key. The activation key is consumed on success, so
+	 * a reset link can only be used once. The key is left untouched if the new password fails
+	 * policy validation.
 	 * 
 	 * @param activationKey the activation for password reset
 	 * @param newPassword the new password
+	 * @throws InvalidActivationKeyException if the activation key is unknown, expired or already
+	 *             used
 	 */
 	void changePasswordUsingActivationKey(String activationKey, String newPassword);
 

@@ -697,7 +697,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void changePassword_shouldChangePasswordForTheGivenUserAndPassword() {
+		LoginCredential credentials = dao.getLoginCredential(userService.getUser(1));
+		credentials.setActivationKey("pending-reset-token:1900000000000");
+		dao.setUserActivationKey(credentials);
+
 		userService.changePassword("test", "Another new password1");
+		assertNull(dao.getLoginCredential(userService.getUser(1)).getActivationKey());
 		userService.changePassword("Another new password1", "Yet another new password1"); // try to change the password with the new one
 	}
 	
@@ -1607,7 +1612,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		    "http://localhost:8080/openmrs/admin/users/changePassword.form/{activationKey}");
 		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
 		assertThrows(MessageException.class, () -> userService.setUserActivationKey(createdUser));
-		assertNotNull(dao.getLoginCredential(createdUser).getActivationKey());
+		String storedActivationKey = dao.getLoginCredential(createdUser).getActivationKey();
+		assertNotNull(storedActivationKey);
+		String[] tokenParts = storedActivationKey.split(":");
+		assertEquals(2, tokenParts.length);
+		assertTrue(Long.parseLong(tokenParts[1]) > System.currentTimeMillis());
 	}
 	
 	@Test 
@@ -1633,6 +1642,35 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		dao.setUserActivationKey(credentials);
 		assertNull(userService.getUserByActivationKey(key));
 	}
+
+	@Test
+	public void consumeUserActivationKey_shouldNotClearAReplacementKey() {
+		User createdUser = createTestUser();
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		String oldKey = "old-hashed-key:1900000000000";
+		String replacementKey = "replacement-hashed-key:1900000000000";
+		credentials.setActivationKey(replacementKey);
+		dao.setUserActivationKey(credentials);
+
+		assertFalse(dao.consumeUserActivationKey(createdUser.getUserId(), oldKey));
+		assertEquals(replacementKey, dao.getLoginCredential(createdUser).getActivationKey());
+	}
+
+	@Test
+	public void getUserByActivationKey_shouldInvalidateOldKeyWhenReplaced() {
+		User createdUser = createTestUser();
+		String oldKey = "old-reset-link-token";
+		String replacementKey = "replacement-reset-link-token";
+		long tokenTime = System.currentTimeMillis() + 10 * 60 * 1000;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		credentials.setActivationKey(Security.encodeString(oldKey) + ":" + tokenTime);
+		dao.setUserActivationKey(credentials);
+		credentials.setActivationKey(Security.encodeString(replacementKey) + ":" + tokenTime);
+		dao.setUserActivationKey(credentials);
+
+		assertNull(userService.getUserByActivationKey(oldKey));
+		assertEquals(createdUser, userService.getUserByActivationKey(replacementKey));
+	}
 	
 	@Test
 	public void changePasswordUsingActivationKey_shouldUpdatePasswordIfActivationKeyIsCorrect() {
@@ -1652,7 +1690,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.changePasswordUsingActivationKey(key, PASSWORD);
 		Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		Context.authenticate(createdUser.getUsername(), PASSWORD);
+		assertNull(dao.getLoginCredential(createdUser).getActivationKey());
+		assertThrows(InvalidActivationKeyException.class,
+			() -> userService.changePasswordUsingActivationKey(key, "AnotherPassword123"));
 		
+	}
+
+	@Test
+	public void changePasswordUsingActivationKey_shouldKeepTokenWhenPasswordFailsPolicyValidation() {
+		User createdUser = createTestUser();
+		String key = "h4ph0fpNzQCIPSw8plJI";
+		long tokenTime = System.currentTimeMillis() + 10 * 60 * 1000;
+		LoginCredential credentials = dao.getLoginCredential(createdUser);
+		String storedKey = Security.encodeString(key) + ":" + tokenTime;
+		credentials.setActivationKey(storedKey);
+		dao.setUserActivationKey(credentials);
+
+		assertThrows(PasswordException.class, () -> userService.changePasswordUsingActivationKey(key, "short"));
+		assertEquals(storedKey, dao.getLoginCredential(createdUser).getActivationKey());
 	}
 	
 	@Test
