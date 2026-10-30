@@ -1813,7 +1813,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			messageService.setMessageSender(originalSender);
 			messageSourceService.setActiveMessageSource(originalSource);
 		}
-		return sent.getFirst().getContent();
+		return sent.get(0).getContent();
 	}
 
 	/**
