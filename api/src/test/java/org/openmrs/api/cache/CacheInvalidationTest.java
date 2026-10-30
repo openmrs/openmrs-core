@@ -116,15 +116,17 @@ public class CacheInvalidationTest {
 	public void merged_shouldRemoveTheGenerationTokenBeforeClearingThisNodesCache() {
 		Cache<Object, Object> cache = mockCache();
 		AdvancedCache<Object, Object> local = mockAdvancedCache();
+		AdvancedCache<Object, Object> unlocked = mockAdvancedCache();
 		when(cache.getAdvancedCache()).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
+		when(local.withFlags(Flag.CACHE_MODE_LOCAL, Flag.SKIP_LOCKING)).thenReturn(unlocked);
 		CacheInvalidation invalidation = new CacheInvalidation("the test cache", () -> cache,
 		        mock(EmbeddedCacheManager.class));
 
 		new CacheInvalidation.PartitionMergeListener(invalidation).merged(mock(MergeEvent.class));
 
-		InOrder inOrder = inOrder(local);
-		inOrder.verify(local).remove(CacheInvalidation.GENERATION);
+		InOrder inOrder = inOrder(unlocked, local);
+		inOrder.verify(unlocked).remove(CacheInvalidation.GENERATION);
 		inOrder.verify(local).clear();
 	}
 
