@@ -1370,6 +1370,80 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 	}
 
 	@Test
+	public void purgeObs_shouldCascadeToArchivedDescendantsWhenPurgingLiveParentWithMiddleGroup() throws Exception {
+		// Create parent -> middle group -> two leaf children
+		Obs parent = createSingleObs(null);
+		Obs middleGroup = createSingleObs(null);
+		Obs leaf1 = createSingleObs(10.0);
+		Obs leaf2 = createSingleObs(20.0);
+
+		middleGroup.addGroupMember(leaf1);
+		middleGroup.addGroupMember(leaf2);
+		parent.addGroupMember(middleGroup);
+
+		parent = obsService.saveObs(parent, "save 3-level tree with two leaves");
+		int parentId = parent.getObsId();
+
+		Obs savedMiddleGroup = null;
+		for (Obs member : parent.getGroupMembers(true)) {
+			savedMiddleGroup = member;
+			break;
+		}
+		assertNotNull(savedMiddleGroup);
+		int middleGroupId = savedMiddleGroup.getObsId();
+
+		List<Integer> leafIds = new ArrayList<>();
+		for (Obs leaf : savedMiddleGroup.getGroupMembers(true)) {
+			leafIds.add(leaf.getObsId());
+		}
+		assertEquals(2, leafIds.size());
+		int voidedLeafId = leafIds.get(0);
+		int liveLeafId = leafIds.get(1);
+
+		// Void only one leaf (not the parent or middle group), so it becomes archivable
+		Obs leafToVoid = obsService.getObs(voidedLeafId);
+		obsService.voidObs(leafToVoid, "test voiding one leaf");
+		Context.flushSession();
+		Context.clearSession();
+
+		// Run archiving sweep — only the voided leaf should be archived
+		ObsArchivingTaskHandler archivingTaskHandler = new ObsArchivingTaskHandler(sessionFactory, transactionManager);
+		archivingTaskHandler.execute(new ObsArchivingTaskData(), null);
+
+		// Verify: parent, middle group, and live leaf are still in obs; voided leaf is archived
+		assertActive(parentId);
+		assertActive(middleGroupId);
+		assertActive(liveLeafId);
+		assertArchived(voidedLeafId);
+
+		Context.clearSession();
+
+		// Purge the live parent — should cascade through middle group and purge the archived leaf
+		Obs liveParent = obsService.getObs(parentId);
+		assertNotNull(liveParent, "Live parent should be retrievable");
+		assertFalse(obsArchiveHelper.isArchived(parentId), "Parent should NOT be in archive");
+		obsService.purgeObs(liveParent);
+		Context.flushSession();
+		Context.clearSession();
+
+		// Verify: parent, middle group, and live leaf are gone from obs; archived leaf is gone from obs_archive
+		assertNull(obsService.getObs(parentId), "Parent should no longer be retrievable");
+		assertNull(obsService.getObs(middleGroupId), "Middle group should no longer be retrievable");
+		assertNull(obsService.getObs(liveLeafId), "Live leaf should no longer be retrievable");
+		assertNull(obsService.getObs(voidedLeafId), "Archived leaf should no longer be retrievable");
+
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, parentId),
+		    "Parent should be gone from active table");
+		assertEquals(0,
+		    jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, middleGroupId),
+		    "Middle group should be gone from active table");
+		assertEquals(0, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM obs WHERE obs_id = ?", Integer.class, liveLeafId),
+		    "Live leaf should be gone from active table");
+		assertFalse(obsArchiveHelper.isArchived(voidedLeafId),
+		    "Archived leaf " + voidedLeafId + " should be cascaded and purged from archive");
+	}
+
+	@Test
 	public void purgeEncounter_shouldThrowWhenEncounterHasArchivedObsAndCascadeIsFalse() throws Exception {
 		// Create a fresh encounter with one obs
 		Encounter encounter = new Encounter();

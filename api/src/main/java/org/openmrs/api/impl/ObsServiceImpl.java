@@ -420,7 +420,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 				getArchiveHelper().purgeObsFromArchive(obs.getObsId());
 				return;
 			}
-			getArchiveHelper().handleArchivedDataOnPurge(obs, true);
+			purgeArchivedMembers(obs);
 		}
 
 		if (!purgeComplexData(obs)) {
@@ -432,6 +432,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 		}
 
 		dao.deleteObs(obs);
+	}
+
+	private void purgeArchivedMembers(Obs obs) {
+		getArchiveHelper().handleArchivedDataOnPurge(obs, true);
+		if (obs.hasGroupMembers(true)) {
+			for (Obs member : obs.getGroupMembers(true)) {
+				purgeArchivedMembers(member);
+			}
+		}
 	}
 
 	/**

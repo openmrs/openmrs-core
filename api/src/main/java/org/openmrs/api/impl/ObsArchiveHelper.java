@@ -406,16 +406,9 @@ public class ObsArchiveHelper {
 		            + "low_critical, low_normal, uuid FROM obs_reference_range_archive WHERE obs_id = :obsId")
 		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
 
-		// 3. Delete from archive reference range
-		session.createNativeQuery("DELETE FROM obs_reference_range_archive WHERE obs_id = :obsId")
-		        .setParameter(PARAM_OBS_ID, obsId).executeUpdate();
-
-		// 4. Delete from archive obs
-		session.createNativeQuery("DELETE FROM obs_archive WHERE obs_id = :obsId").setParameter(PARAM_OBS_ID, obsId)
-		        .executeUpdate();
-
-		// Evict the stale entity since native SQL bypasses Hibernate's entity lifecycle
-		session.evict(archive);
+		// 3. Remove the archive rows through the session so Envers records the restore, as purge does
+		session.remove(archive);
+		session.flush();
 	}
 
 	private Obs convertToObs(ObsArchive archive) {
