@@ -73,3 +73,115 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+  is-branch-head:
+    needs: build
+    if: ${{ github.event_name == 'push' && github.repository == 'openmrs/openmrs-core' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      current: ${{ steps.check.outputs.current }}
+    steps:
+      - id: check
+        run: |
+          HEAD_SHA=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" "refs/heads/${GITHUB_REF_NAME}" | cut -f1)
+          if [[ "${HEAD_SHA}" == "${GITHUB_SHA}" ]]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::${GITHUB_REF_NAME} has moved on to ${HEAD_SHA}; its build publishes instead"
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-snapshot:
+    needs: is-branch-head
+    if: ${{ needs.is-branch-head.outputs.current == 'true' }}
+    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-maven.yml@main
+    with:
+      java_versions: '[8]'
+      main_java_version: '8'
+      maven_args: 'clean install -DskipTests'
+      upload_coverage: 'false'
+      deploy_branch: ${{ github.ref_name }}
+    secrets:
+      MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+      MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+
+  publish-images:
+    name: Publish ${{ matrix.tag_suffix || 'default' }} images
+    needs: is-branch-head
+    if: ${{ needs.is-branch-head.outputs.current == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    concurrency:
+      group: publish-images-${{ github.ref }}-${{ matrix.tag_suffix || 'default' }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag_suffix: ''
+            also_tag_suffix: -amazoncorretto-8
+            dev_jdk: amazoncorretto-8
+            runtime_jdk: jdk8-corretto
+          - tag_suffix: -amazoncorretto-11
+            dev_jdk: amazoncorretto-11
+            runtime_jdk: jdk11-corretto
+          - tag_suffix: -amazoncorretto-17
+            dev_jdk: amazoncorretto-17
+            runtime_jdk: jdk17-corretto
+          - tag_suffix: -amazoncorretto-21
+            dev_jdk: amazoncorretto-21
+            runtime_jdk: jdk21-corretto
+    env:
+      DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
+      # must be identical in both builds, so the production build reuses the dev build's layers
+      MVN_ARGS: clean install -DskipTests
+      DEV_JDK: ${{ matrix.dev_jdk }}
+      RUNTIME_JDK: ${{ matrix.runtime_jdk }}
+      IMAGE: openmrs/openmrs-core:${{ github.ref_name }}${{ matrix.tag_suffix }}
+      IMAGE_DEV: openmrs/openmrs-core:${{ github.ref_name }}-dev${{ matrix.tag_suffix }}
+      ALSO_IMAGE: ${{ matrix.also_tag_suffix && format('openmrs/openmrs-core:{0}{1}', github.ref_name, matrix.also_tag_suffix) || '' }}
+      ALSO_IMAGE_DEV: ${{ matrix.also_tag_suffix && format('openmrs/openmrs-core:{0}-dev{1}', github.ref_name, matrix.also_tag_suffix) || '' }}
+    steps:
+      # the dev image contains the checkout, .git included
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push the dev image
+        run: |
+          TAGS=(-t "${IMAGE_DEV}")
+          [[ -n "${ALSO_IMAGE_DEV}" ]] && TAGS+=(-t "${ALSO_IMAGE_DEV}")
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-to "type=registry,mode=max,ref=${IMAGE_DEV}-cache" \
+            --cache-from "${IMAGE_DEV}-cache" \
+            --target dev \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            "${TAGS[@]}" .
+
+      - name: Build and push the production image
+        run: |
+          TAGS=(-t "${IMAGE}")
+          [[ -n "${ALSO_IMAGE}" ]] && TAGS+=(-t "${ALSO_IMAGE}")
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-to "type=registry,mode=max,ref=${IMAGE}-cache" \
+            --cache-from "${IMAGE_DEV}-cache" \
+            --cache-from "${IMAGE}-cache" \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            "${TAGS[@]}" .
