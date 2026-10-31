@@ -243,12 +243,18 @@ jobs:
         # Bamboo only offers the Release stage on a green build; enforce the same here
         env:
           GH_TOKEN: ${{ github.token }}
+        # only the build matrix counts: the run's snapshot publishing jobs don't gate a release
         run: |
-          SUCCESSFUL_RUNS=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/build.yaml/runs?head_sha=${GITHUB_SHA}&status=success&exclude_pull_requests=true" --jq '.total_count')
-          if [[ "${SUCCESSFUL_RUNS}" -lt 1 ]]; then
-            echo "::error::No successful 'Build with Maven' run for ${GITHUB_SHA}; wait for CI to pass on ${GITHUB_REF_NAME} before releasing"
-            exit 1
-          fi
+          RUN_IDS=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/build.yaml/runs?head_sha=${GITHUB_SHA}&exclude_pull_requests=true" --jq '.workflow_runs[].id')
+          for RUN_ID in ${RUN_IDS}; do
+            GREEN=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+              --jq '[.jobs[] | select(.name | startswith("build ("))] | length > 0 and all(.conclusion == "success")')
+            if [[ "${GREEN}" == "true" ]]; then
+              exit 0
+            fi
+          done
+          echo "::error::No 'Build with Maven' run for ${GITHUB_SHA} whose build jobs all passed; wait for CI to pass on ${GITHUB_REF_NAME} before releasing"
+          exit 1
 
       - name: Set the release version
         run: |
@@ -412,9 +418,8 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      # Bamboo's Deploy stage (bamboo-specs/bamboo.yml) pushes per-JDK caches for
-      # 11/17/21 but not for 8 (it publishes the JDK 8 build under the unsuffixed
-      # tags), so the plain branch dev cache is a fallback; missing refs are non-fatal
+      # build.yaml's publish-images writes the per-JDK caches for 11/17/21 and the plain
+      # branch dev cache for 8, which is the fallback; missing refs are non-fatal
       - name: Build and push the dev image variant
         run: |
           docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \

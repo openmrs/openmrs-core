@@ -74,43 +74,79 @@ jobs:
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
 
-  is-branch-head:
+  deploy-snapshot:
+    name: Deploy SNAPSHOT to Maven
     needs: build
-    if: ${{ github.event_name == 'push' && github.repository == 'openmrs/openmrs-core' }}
+    if: >-
+      ${{ github.repository == 'openmrs/openmrs-core'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && contains(fromJSON('["2.8.x"]'), github.ref_name) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
-    outputs:
-      current: ${{ steps.check.outputs.current }}
+    concurrency:
+      group: deploy-snapshot-${{ github.ref }}
+      cancel-in-progress: false
     steps:
-      - id: check
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'maven'
+          server-id: openmrs-repo-snapshots
+          server-username: MAVEN_REPO_USERNAME
+          server-password: MAVEN_REPO_API_KEY
+      - name: Check project version is a SNAPSHOT
+        id: snapshot
         run: |
-          HEAD_SHA=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" "refs/heads/${GITHUB_REF_NAME}" | cut -f1)
-          if [[ "${HEAD_SHA}" == "${GITHUB_SHA}" ]]; then
+          set -e
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping deploy."
+          fi
+      - name: Check this commit is still the branch tip
+        id: freshness
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: |
+          set -e
+          git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
             echo "current=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::${GITHUB_REF_NAME} has moved on to ${HEAD_SHA}; its build publishes instead"
             echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping deploy: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit deploys instead."
           fi
-
-  deploy-snapshot:
-    needs: is-branch-head
-    if: ${{ needs.is-branch-head.outputs.current == 'true' }}
-    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-maven.yml@main
-    with:
-      java_versions: '[8]'
-      main_java_version: '8'
-      maven_args: 'clean install -DskipTests'
-      upload_coverage: 'false'
-      deploy_branch: ${{ github.ref_name }}
-    secrets:
-      MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
-      MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+      - name: Verify deploy credentials are available
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+        run: |
+          if [ -z "$MAVEN_REPO_USERNAME" ] || [ -z "$MAVEN_REPO_API_KEY" ]; then
+            echo "::error::The MAVEN_REPO_USERNAME / MAVEN_REPO_API_KEY secrets are not available to this repository. Scope the org secrets to openmrs-core to enable snapshot deployment."
+            exit 1
+          fi
+      - name: Deploy SNAPSHOT to Maven
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
+        run: mvn deploy -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --no-transfer-progress --file pom.xml
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
 
   publish-images:
     name: Publish ${{ matrix.tag_suffix || 'default' }} images
-    needs: is-branch-head
-    if: ${{ needs.is-branch-head.outputs.current == 'true' }}
+    needs: build
+    if: >-
+      ${{ github.repository == 'openmrs/openmrs-core'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && contains(fromJSON('["2.8.x"]'), github.ref_name) }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
@@ -151,16 +187,45 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Check project version is a SNAPSHOT
+        id: snapshot
+        run: |
+          set -e
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping publish."
+          fi
+
+      - name: Check this commit is still the branch tip
+        id: freshness
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: |
+          set -e
+          git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping publish: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit publishes instead."
+          fi
+
       - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+        if: ${{ steps.freshness.outputs.current == 'true' }}
 
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+        if: ${{ steps.freshness.outputs.current == 'true' }}
 
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        if: ${{ steps.freshness.outputs.current == 'true' }}
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build and push the dev image
+        if: ${{ steps.freshness.outputs.current == 'true' }}
         run: |
           TAGS=(-t "${IMAGE_DEV}")
           [[ -n "${ALSO_IMAGE_DEV}" ]] && TAGS+=(-t "${ALSO_IMAGE_DEV}")
@@ -174,6 +239,7 @@ jobs:
             "${TAGS[@]}" .
 
       - name: Build and push the production image
+        if: ${{ steps.freshness.outputs.current == 'true' }}
         run: |
           TAGS=(-t "${IMAGE}")
           [[ -n "${ALSO_IMAGE}" ]] && TAGS+=(-t "${ALSO_IMAGE}")
