@@ -73,3 +73,107 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+  # Publishes what Bamboo's Deploy stage (bamboo-specs/bamboo.yml) publishes for every 2.8.x
+  # commit, once the build matrix above has passed: the SNAPSHOT artifacts in the OpenMRS Maven
+  # repository and the openmrs/openmrs-core:2.8.x images (TRUNK-6864).
+
+  # The shared workflow builds once more on JDK 8, the Core 2.x baseline the release artifacts are
+  # also built on, and deploys from that build.
+  deploy-snapshot:
+    needs: build
+    if: ${{ github.event_name == 'push' && github.repository == 'openmrs/openmrs-core' }}
+    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-maven.yml@main
+    with:
+      java_versions: '[8]'
+      main_java_version: '8'
+      maven_args: 'clean install -DskipTests'
+      upload_coverage: 'false'
+      deploy_branch: ${{ github.ref_name }}
+    secrets:
+      MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+      MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+
+  # The branch's nightly images, tagged as Bamboo tags them: the unsuffixed <branch> and
+  # <branch>-dev on JDK 8, and <branch>[-dev]-amazoncorretto-NN per JDK, each with the registry
+  # cache release.yaml builds from. Unlike Bamboo, the amazoncorretto-8 variant is published too,
+  # as releases have it.
+  publish-images:
+    name: Publish ${{ matrix.tag_suffix || 'default' }} images
+    needs: build
+    if: ${{ github.event_name == 'push' && (github.repository == 'openmrs/openmrs-core' || vars.DOCKER_IMAGE_NAME != '') }}
+    runs-on: ubuntu-latest
+    # multi-arch maven builds under emulation are slow; release.yaml allows the same
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    # a newer push publishes over this one, so queuing is enough; never cancel a push midway
+    concurrency:
+      group: publish-images-${{ github.ref }}-${{ matrix.tag_suffix || 'default' }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag_suffix: ''
+            dev_jdk: amazoncorretto-8
+            runtime_jdk: jdk8-corretto
+          - tag_suffix: -amazoncorretto-8
+            dev_jdk: amazoncorretto-8
+            runtime_jdk: jdk8-corretto
+          - tag_suffix: -amazoncorretto-11
+            dev_jdk: amazoncorretto-11
+            runtime_jdk: jdk11-corretto
+          - tag_suffix: -amazoncorretto-17
+            dev_jdk: amazoncorretto-17
+            runtime_jdk: jdk17-corretto
+          - tag_suffix: -amazoncorretto-21
+            dev_jdk: amazoncorretto-21
+            runtime_jdk: jdk21-corretto
+    env:
+      DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
+      # byte-identical across the two builds, so the production build reuses the dev build's
+      # compile stages
+      MVN_ARGS: clean install -DskipTests
+      DEV_JDK: ${{ matrix.dev_jdk }}
+      RUNTIME_JDK: ${{ matrix.runtime_jdk }}
+      # overridable via a repository variable so forks can push test images to their own registry
+      IMAGE: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}:${{ github.ref_name }}${{ matrix.tag_suffix }}
+      IMAGE_DEV: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}:${{ github.ref_name }}-dev${{ matrix.tag_suffix }}
+    steps:
+      # never persist credentials: the Dockerfile copies the whole checkout (including .git)
+      # into the published dev image
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push the dev image
+        run: |
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-to "type=registry,mode=max,ref=${IMAGE_DEV}-cache" \
+            --cache-from "${IMAGE_DEV}-cache" \
+            --target dev \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            -t "${IMAGE_DEV}" .
+
+      - name: Build and push the production image
+        run: |
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-to "type=registry,mode=max,ref=${IMAGE}-cache" \
+            --cache-from "${IMAGE_DEV}-cache" \
+            --cache-from "${IMAGE}-cache" \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            -t "${IMAGE}" .
