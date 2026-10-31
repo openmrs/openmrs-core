@@ -74,9 +74,28 @@ jobs:
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
 
-  deploy-snapshot:
+  is-branch-head:
     needs: build
     if: ${{ github.event_name == 'push' && github.repository == 'openmrs/openmrs-core' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      current: ${{ steps.check.outputs.current }}
+    steps:
+      - id: check
+        run: |
+          HEAD_SHA=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" "refs/heads/${GITHUB_REF_NAME}" | cut -f1)
+          if [[ "${HEAD_SHA}" == "${GITHUB_SHA}" ]]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::${GITHUB_REF_NAME} has moved on to ${HEAD_SHA}; its build publishes instead"
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-snapshot:
+    needs: is-branch-head
+    if: ${{ needs.is-branch-head.outputs.current == 'true' }}
     uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-maven.yml@main
     with:
       java_versions: '[8]'
@@ -90,8 +109,8 @@ jobs:
 
   publish-images:
     name: Publish ${{ matrix.tag_suffix || 'default' }} images
-    needs: build
-    if: ${{ github.event_name == 'push' && (github.repository == 'openmrs/openmrs-core' || vars.DOCKER_IMAGE_NAME != '') }}
+    needs: is-branch-head
+    if: ${{ needs.is-branch-head.outputs.current == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
@@ -104,9 +123,7 @@ jobs:
       matrix:
         include:
           - tag_suffix: ''
-            dev_jdk: amazoncorretto-8
-            runtime_jdk: jdk8-corretto
-          - tag_suffix: -amazoncorretto-8
+            also_tag_suffix: -amazoncorretto-8
             dev_jdk: amazoncorretto-8
             runtime_jdk: jdk8-corretto
           - tag_suffix: -amazoncorretto-11
@@ -124,8 +141,10 @@ jobs:
       MVN_ARGS: clean install -DskipTests
       DEV_JDK: ${{ matrix.dev_jdk }}
       RUNTIME_JDK: ${{ matrix.runtime_jdk }}
-      IMAGE: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}:${{ github.ref_name }}${{ matrix.tag_suffix }}
-      IMAGE_DEV: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}:${{ github.ref_name }}-dev${{ matrix.tag_suffix }}
+      IMAGE: openmrs/openmrs-core:${{ github.ref_name }}${{ matrix.tag_suffix }}
+      IMAGE_DEV: openmrs/openmrs-core:${{ github.ref_name }}-dev${{ matrix.tag_suffix }}
+      ALSO_IMAGE: ${{ matrix.also_tag_suffix && format('openmrs/openmrs-core:{0}{1}', github.ref_name, matrix.also_tag_suffix) || '' }}
+      ALSO_IMAGE_DEV: ${{ matrix.also_tag_suffix && format('openmrs/openmrs-core:{0}-dev{1}', github.ref_name, matrix.also_tag_suffix) || '' }}
     steps:
       # the dev image contains the checkout, .git included
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -143,6 +162,8 @@ jobs:
 
       - name: Build and push the dev image
         run: |
+          TAGS=(-t "${IMAGE_DEV}")
+          [[ -n "${ALSO_IMAGE_DEV}" ]] && TAGS+=(-t "${ALSO_IMAGE_DEV}")
           docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
             --cache-to "type=registry,mode=max,ref=${IMAGE_DEV}-cache" \
             --cache-from "${IMAGE_DEV}-cache" \
@@ -150,10 +171,12 @@ jobs:
             --build-arg MVN_ARGS="${MVN_ARGS}" \
             --build-arg DEV_JDK="${DEV_JDK}" \
             --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
-            -t "${IMAGE_DEV}" .
+            "${TAGS[@]}" .
 
       - name: Build and push the production image
         run: |
+          TAGS=(-t "${IMAGE}")
+          [[ -n "${ALSO_IMAGE}" ]] && TAGS+=(-t "${ALSO_IMAGE}")
           docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
             --cache-to "type=registry,mode=max,ref=${IMAGE}-cache" \
             --cache-from "${IMAGE_DEV}-cache" \
@@ -161,4 +184,4 @@ jobs:
             --build-arg MVN_ARGS="${MVN_ARGS}" \
             --build-arg DEV_JDK="${DEV_JDK}" \
             --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
-            -t "${IMAGE}" .
+            "${TAGS[@]}" .
