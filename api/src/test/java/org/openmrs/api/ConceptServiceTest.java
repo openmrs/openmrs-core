@@ -732,6 +732,27 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ConceptName#setTags(Collection)
+	 */
+	@Test
+	public void setTags_shouldAcceptACopyOfTheCurrentTagsOfASavedName() {
+		ConceptService cs = Context.getConceptService();
+		ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
+		cn.addTag(cs.getConceptNameTagByName("short"));
+		Concept concept = new Concept();
+		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
+		cs.saveConcept(concept);
+
+		cn.setTags(new HashSet<>(cn.getTags()));
+		Context.flushSession();
+
+		assertEquals(1, cn.getTags().size());
+	}
+
+	/**
 	 * @see ConceptService#saveConceptSource(ConceptSource)
 	 */
 	@Test

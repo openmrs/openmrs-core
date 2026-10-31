@@ -26,7 +26,8 @@ import org.openmrs.util.OpenmrsConstants;
 public interface ContextDAO {
 
 	/**
-	 * Authenticate user with the given username and password.
+	 * Authenticate user with the given username and password. Concurrent attempts for the same user are
+	 * serialized so that failed-attempt counting and lockout are atomic.
 	 * <p>
 	 * <strong>Should</strong> authenticate given username and password<br/>
 	 * <strong>Should</strong> authenticate given systemId and password<br/>
@@ -50,7 +51,13 @@ public interface ContextDAO {
 	 * <strong>Should</strong> pass regression test for 1580<br/>
 	 * <strong>Should</strong> throw a ContextAuthenticationException if username is an empty
 	 * string<br/>
-	 * <strong>Should</strong> throw a ContextAuthenticationException if username is white space
+	 * <strong>Should</strong> throw a ContextAuthenticationException if username is white space<br/>
+	 * <strong>Should</strong> authenticate with correct password after the lockout window expires<br/>
+	 * <strong>Should</strong> count failed attempts from one again after the lockout window
+	 * expires<br/>
+	 * <strong>Should</strong> lock out user when concurrent failed attempts exceed the limit<br/>
+	 * <strong>Should</strong> not block other users while one users row is locked<br/>
+	 * <strong>Should</strong> count every attempt when concurrent attempts stay within the limit
 	 *
 	 * @param username user's username or systemId
 	 * @param password user's password

@@ -46,7 +46,7 @@
 		     of Hibernate Search. Similarly, our version of Hibernate Search must be
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
-		<springVersion>7.0.9</springVersion>
+		<springVersion>7.0.10</springVersion>
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
@@ -120,7 +120,7 @@
 		<guavaVersion>33.7.2-jre</guavaVersion>
 		<javaUuidGeneratorVersion>5.2.0</javaUuidGeneratorVersion>
 		<awsSdkS3Version>2.32.13</awsSdkS3Version>
-		<jobrunrVersion>9.0.1</jobrunrVersion>
+		<jobrunrVersion>9.0.2</jobrunrVersion>
 		<shedlockVersion>7.10.1</shedlockVersion>
 
 		<!-- Testing -->
