@@ -56,12 +56,12 @@ public class PersonNameValidator implements Validator {
 			// Validate that the person name object is not null
 			if (personName == null) {
 				errors.reject("error.name");
-			} else if (!personName.getVoided()) {
+			} else if (!Boolean.TRUE.equals(personName.getVoided())) {
 				// TODO - the following method should be made private in a major release
 				validatePersonName(personName, errors, false, true);
 			}
 		} catch (Exception e) {
-			errors.reject(e.getMessage());
+			errors.reject(e.getMessage() != null ? e.getMessage() : "error.general");
 		}
 	}
 
