@@ -1384,11 +1384,7 @@ public class ObsArchiveIntegrationTest extends BaseContextSensitiveNonTransactio
 		parent = obsService.saveObs(parent, "save 3-level tree with two leaves");
 		int parentId = parent.getObsId();
 
-		Obs savedMiddleGroup = null;
-		for (Obs member : parent.getGroupMembers(true)) {
-			savedMiddleGroup = member;
-			break;
-		}
+		Obs savedMiddleGroup = parent.getGroupMembers(true).iterator().next();
 		assertNotNull(savedMiddleGroup);
 		int middleGroupId = savedMiddleGroup.getObsId();
 
