@@ -74,12 +74,6 @@ jobs:
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
 
-  # Publishes what Bamboo's Deploy stage (bamboo-specs/bamboo.yml) publishes for every 2.8.x
-  # commit, once the build matrix above has passed: the SNAPSHOT artifacts in the OpenMRS Maven
-  # repository and the openmrs/openmrs-core:2.8.x images (TRUNK-6864).
-
-  # The shared workflow builds once more on JDK 8, the Core 2.x baseline the release artifacts are
-  # also built on, and deploys from that build.
   deploy-snapshot:
     needs: build
     if: ${{ github.event_name == 'push' && github.repository == 'openmrs/openmrs-core' }}
@@ -94,20 +88,14 @@ jobs:
       MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
       MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
 
-  # The branch's nightly images, tagged as Bamboo tags them: the unsuffixed <branch> and
-  # <branch>-dev on JDK 8, and <branch>[-dev]-amazoncorretto-NN per JDK, each with the registry
-  # cache release.yaml builds from. Unlike Bamboo, the amazoncorretto-8 variant is published too,
-  # as releases have it.
   publish-images:
     name: Publish ${{ matrix.tag_suffix || 'default' }} images
     needs: build
     if: ${{ github.event_name == 'push' && (github.repository == 'openmrs/openmrs-core' || vars.DOCKER_IMAGE_NAME != '') }}
     runs-on: ubuntu-latest
-    # multi-arch maven builds under emulation are slow; release.yaml allows the same
     timeout-minutes: 120
     permissions:
       contents: read
-    # a newer push publishes over this one, so queuing is enough; never cancel a push midway
     concurrency:
       group: publish-images-${{ github.ref }}-${{ matrix.tag_suffix || 'default' }}
       cancel-in-progress: false
@@ -132,17 +120,14 @@ jobs:
             runtime_jdk: jdk21-corretto
     env:
       DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
-      # byte-identical across the two builds, so the production build reuses the dev build's
-      # compile stages
+      # must be identical in both builds, so the production build reuses the dev build's layers
       MVN_ARGS: clean install -DskipTests
       DEV_JDK: ${{ matrix.dev_jdk }}
       RUNTIME_JDK: ${{ matrix.runtime_jdk }}
-      # overridable via a repository variable so forks can push test images to their own registry
       IMAGE: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}:${{ github.ref_name }}${{ matrix.tag_suffix }}
       IMAGE_DEV: ${{ vars.DOCKER_IMAGE_NAME || 'openmrs/openmrs-core' }}:${{ github.ref_name }}-dev${{ matrix.tag_suffix }}
     steps:
-      # never persist credentials: the Dockerfile copies the whole checkout (including .git)
-      # into the published dev image
+      # the dev image contains the checkout, .git included
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false

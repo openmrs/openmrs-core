@@ -380,8 +380,6 @@ repositories:
           scope: global
     - Release scripts:
           scope: global
-# No triggers: GitHub Actions builds, tests and publishes every 2.8.x commit (.github/workflows/
-# build.yaml) and cuts releases (release.yaml), so this plan no longer runs on its own (TRUNK-6864).
 triggers: []
 branches:
     create: manually
