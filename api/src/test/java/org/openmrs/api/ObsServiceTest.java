@@ -2454,6 +2454,45 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ObsService#purgeObs(Obs)
+	 */
+	@Test
+	public void purgeObs_shouldThrowWhenObsIsReferencedAsPreviousVersionByAnotherObs() {
+		executeDataSet(INITIAL_OBS_XML);
+		Obs existing = obsService.getObs(7);
+		Obs newObs = Obs.newInstance(existing);
+		newObs.setValueNumeric(25.0);
+		newObs.setPreviousVersion(existing);
+		newObs = obsService.saveObs(newObs, null);
+
+		APIException e = assertThrows(APIException.class, () -> obsService.purgeObs(existing));
+		assertEquals(Context.getMessageSourceService().getMessage("Obs.error.cannot.purge.referenced.as.previous.version",
+		    new Object[] { existing.getObsId() }, null), e.getMessage());
+		assertNotNull(obsService.getObs(existing.getObsId()));
+		assertEquals(existing.getObsId(), newObs.getPreviousVersion().getObsId());
+	}
+
+	/**
+	 * @see ObsService#purgeObs(Obs)
+	 */
+	@Test
+	public void purgeObs_shouldAllowPurgeWhenReferencingObsIsPurgedFirst() {
+		executeDataSet(INITIAL_OBS_XML);
+		Obs existing = obsService.getObs(7);
+		Obs newObs = Obs.newInstance(existing);
+		newObs.setValueNumeric(25.0);
+		newObs.setPreviousVersion(existing);
+		newObs = obsService.saveObs(newObs, null);
+
+		obsService.purgeObs(newObs);
+		assertNull(obsService.getObs(newObs.getObsId()));
+
+		assertDoesNotThrow(() -> obsService.purgeObs(existing));
+		Context.flushSession();
+		assertNull(obsService.getObs(existing.getObsId()));
+	}
+
+	/**
 	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test

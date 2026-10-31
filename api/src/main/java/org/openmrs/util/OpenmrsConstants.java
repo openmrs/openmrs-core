@@ -635,6 +635,35 @@ public final class OpenmrsConstants {
 	public static final String GP_DRUG_ORDER_DRUG_OTHER = "drugOrder.drugOther";
 
 	/**
+	 * Global property name for enabling or disabling observation archiving task.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GP_OBS_ARCHIVE_ENABLED = "obs.archive.enabled";
+
+	/**
+	 * Global property name for the batch size used when processing observations for archiving.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GP_OBS_ARCHIVE_BATCH_SIZE = "obs.archive.batch_size";
+
+	/**
+	 * Global property name for the number of days to retain voided observations before archiving.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GP_OBS_ARCHIVE_RETENTION_DAYS = "obs.archive.retention_days";
+
+	/**
+	 * Global property name for tracking the ID of the last observation processed by the observation
+	 * archiving task.
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID = "obs.archive.last_processed_obs_id";
+
+	/**
 	 * Global property that stores the base url for the application.
 	 *
 	 * @deprecated as of 2.6.0, replaced by {@link #GP_PASSWORD_RESET_URL}
@@ -1030,6 +1059,16 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GP_DRUG_ORDER_DRUG_OTHER, "",
 		        "Specifies the uuid of the concept which represents drug other non coded"));
 		props.add(new GlobalProperty(GP_LOGIN_URL, LOGIN_URL, "Responsible for defining the Authentication URL "));
+
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_ENABLED, "false",
+		        "Set to true to enable the background observation archiving task", BooleanDatatype.class, null));
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_BATCH_SIZE, "1000",
+		        "Number of observations to archive per batch in the archiving task"));
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_RETENTION_DAYS, "90",
+		        "Number of days to keep voided observations before archiving them"));
+		props.add(new GlobalProperty(GP_OBS_ARCHIVE_LAST_PROCESSED_OBS_ID, "-1",
+		        "Internal checkpoint for the archiving task. Do not modify manually unless you want to reset the sweep."));
+
 		props.addAll(ModuleFactory.getGlobalProperties());
 
 		return props;

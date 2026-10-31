@@ -46,6 +46,18 @@ public interface ObsDAO {
 	public void deleteObs(Obs obs) throws DAOException;
 
 	/**
+	 * Checks whether the given observation is referenced as the previous version of another
+	 * observation.
+	 *
+	 * @param obs the observation to check
+	 * @return true if another observation references this observation as its previous version, false
+	 *         otherwise
+	 * @throws DAOException
+	 * @since 3.0.0
+	 */
+	public boolean isObsReferencedAsPreviousVersion(Obs obs) throws DAOException;
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
 	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String)
