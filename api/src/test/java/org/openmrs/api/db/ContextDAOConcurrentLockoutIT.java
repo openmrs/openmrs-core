@@ -135,6 +135,9 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		authenticate();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT,
 		    String.valueOf(ALLOWED_FAILED_LOGINS));
+		// these tests are about lockout accounting, so keep the back-off out of the way unless a test
+		// turns it on explicitly
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "0");
 		Context.clearSession();
 	}
 
@@ -162,6 +165,28 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		String stillLocked = authenticateInSeparateSession(LOCKED_USERNAME, LOCKED_USER_PASSWORD);
 		assertTrue(stillLocked.contains(LOCKOUT_MESSAGE),
 		    "the correct password must not be checked while the account is locked; outcome: " + stillLocked);
+	}
+
+	/**
+	 * Attempts refused because the back-off has not elapsed must still be counted, otherwise a
+	 * concurrent burst of failures would never reach the lockout threshold.
+	 *
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	void authenticate_shouldStillLockOutUserWhenConcurrentAttemptsAreRefusedByTheBackoff() throws Exception {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "60");
+
+		List<String> outcomes = authenticateConcurrently(LOCKED_USERNAME, WRONG_PASSWORD, CONCURRENT_ATTEMPTS);
+
+		long lockedOut = outcomes.stream().filter(m -> m.contains(LOCKOUT_MESSAGE)).count();
+		assertEquals(CONCURRENT_ATTEMPTS - (ALLOWED_FAILED_LOGINS + 1), lockedOut,
+		    "attempts refused by the back-off must still count towards the lockout; outcomes: " + outcomes);
+
+		User user = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
+		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS),
+		    user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
 	}
 
 	/**

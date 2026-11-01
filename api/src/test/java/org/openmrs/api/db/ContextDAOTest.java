@@ -294,8 +294,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
 
 		User afterRejection = getAdmin();
-		assertEquals("2", afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
-		    "A rejected attempt should not change the failed attempt count");
+		assertEquals("3", afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "A rejected attempt must still be counted so it cannot bypass the lockout");
 		assertTrue(Long.parseLong(afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP)) >
 		        System.currentTimeMillis(),
 		    "A rejected attempt should not shorten the back-off");
@@ -371,6 +371,25 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		assertEquals("1",
 		    Context.getUserService().getUser(1).getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldClearFailedLoginBackoffAfterTheLockoutWindowExpires() {
+		User admin = Context.getUserService().getUser(1);
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1)));
+		Context.flushSession();
+
+		User user = dao.authenticate("admin", "test");
+
+		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null),
+		    "An expired lockout should clear the login back-off");
 	}
 
 	private void lockOutAdminSixMinutesAgo() {
