@@ -373,7 +373,7 @@ public class HibernateContextDAO implements ContextDAO {
 			String newHashedPassword, Integer changedBy, Date dateChanged) {
 		String sql = "UPDATE users SET password = :newHash, date_changed = :dateChanged, changed_by = :changedBy "
 				+ "WHERE user_id = :userId AND password = :oldHash";
-		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql)
+		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql).addSynchronizedQuerySpace("users")
 				.setParameter("newHash", newHashedPassword)
 				.setParameter("dateChanged", dateChanged)
 				.setParameter("changedBy", changedBy)
