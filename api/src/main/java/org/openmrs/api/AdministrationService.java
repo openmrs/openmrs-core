@@ -303,8 +303,10 @@ public interface AdministrationService extends OpenmrsService {
 	public void removeGlobalPropertyListener(GlobalPropertyListener listener);
 
 	/**
-	 * Runs the <code>sql</code> on the database. If <code>selectOnly</code> is flagged then any
-	 * non-select sql statements will be rejected.
+	 * Runs the <code>sql</code> on the database. If <code>selectOnly</code> is flagged then statements
+	 * are executed in a read-only context and statements other than read-only queries are rejected. The
+	 * read runs in a separate read-only transaction and does not see changes the caller has flushed
+	 * without committing.
 	 * <p>
 	 * <strong>Should</strong> execute sql containing group by
 	 *
