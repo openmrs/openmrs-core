@@ -100,9 +100,14 @@ public class AllergyValidator implements Validator {
 					Context.removeProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
 				}
 				if (existingAllergies.containsAllergen(allergy)) {
-					String key = "ui.i18n.Concept.name." + allergen.getCodedAllergen().getUuid();
-					String name = messageSourceService.getMessage(key);
-					if (key.equals(name)) {
+					String name = null;
+					if (allergen.getCodedAllergen() != null) {
+						String key = "ui.i18n.Concept.name." + allergen.getCodedAllergen().getUuid();
+						name = messageSourceService.getMessage(key);
+						if (key.equals(name)) {
+							name = allergen.toString();
+						}
+					} else {
 						name = allergen.toString();
 					}
 					errors.rejectValue("allergen", "allergyapi.message.duplicateAllergen", new Object[] { name }, null);
