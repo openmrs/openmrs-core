@@ -9,8 +9,12 @@
  */
 package org.openmrs.scheduler;
 
+import java.beans.PropertyVetoException;
 import java.util.Properties;
+
 import javax.sql.DataSource;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
@@ -21,7 +25,6 @@ import org.openmrs.api.context.Context;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -50,10 +53,19 @@ public class SchedulerConfig {
 						.build());
 	}
 
-	@Bean
-	public DataSource dataSource() {
+	/**
+	 * Connection pool shared by JobRunr's storage provider and ShedLock. It is separate from Hibernate's pool so
+	 * that scheduler polling and heartbeats can never be starved by, or starve, application work.
+	 * <p>
+	 * Previously an unpooled {@code DriverManagerDataSource}: every JobRunr poll, heartbeat and state change
+	 * opened and tore down a physical MySQL connection, per replica, every few seconds.
+	 * <p>
+	 * Tunable with runtime properties {@code scheduler.datasource.max_size} (default 10) and
+	 * {@code scheduler.datasource.min_size} (default 2).
+	 */
+	@Bean(destroyMethod = "close")
+	public DataSource dataSource() throws PropertyVetoException {
 		Properties properties = Context.getRuntimeProperties();
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		// Driver_class property may be blank
 		String driverClass = properties.getProperty("connection.driver_class");
 		if (StringUtils.isBlank(driverClass)) {
@@ -62,13 +74,23 @@ public class SchedulerConfig {
 				driverClass = "com.mysql.jdbc.Driver";
 			}
 		}
-		dataSource.setDriverClassName(driverClass);
-		dataSource.setUrl(properties.getProperty("connection.url",
+		ComboPooledDataSource dataSource = new ComboPooledDataSource();
+		dataSource.setDataSourceName("openmrs-scheduler");
+		dataSource.setDriverClass(driverClass);
+		dataSource.setJdbcUrl(properties.getProperty("connection.url",
 				properties.getProperty("hibernate.connection.url")));
-		dataSource.setUsername(properties.getProperty("connection.username",
+		dataSource.setUser(properties.getProperty("connection.username",
 				properties.getProperty("hibernate.connection.username")));
 		dataSource.setPassword(properties.getProperty("connection.password",
 				properties.getProperty("hibernate.connection.password")));
+		dataSource.setMinPoolSize(Integer.parseInt(properties.getProperty("scheduler.datasource.min_size", "2")));
+		dataSource.setMaxPoolSize(Integer.parseInt(properties.getProperty("scheduler.datasource.max_size", "10")));
+		dataSource.setAcquireRetryAttempts(5);
+		dataSource.setMaxIdleTime(300);
+		dataSource.setIdleConnectionTestPeriod(120);
+		dataSource.setTestConnectionOnCheckin(true);
+		// JobRunr and ShedLock manage their own commits; never let pending work survive a check-in
+		dataSource.setAutoCommitOnClose(false);
 		return dataSource;
 	}
 }

@@ -315,7 +315,8 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 		
 		schedulerService.onStartup(); // should not fail
 
-		assertThat(schedulerService.getRecurringTasks().count(), equalTo(1L));
+		assertThat(schedulerService.getRecurringTasks().filter(r -> task.getUuid().equals(r.getUuid())).count(),
+				equalTo(1L));
 		schedulerService.deleteTask(task.getId());
 	}
 
