@@ -69,7 +69,9 @@ public class HibernateContextDAO implements ContextDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
 	
-	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
+	private static final Long DEFAULT_INITIAL_LOCKOUT_DURATION_MS = TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES);
+
+	private static final Long DEFAULT_MAX_LOCKOUT_DURATION_MS = TimeUnit.MILLISECONDS.convert(24L, TimeUnit.HOURS);
 
 	/**
 	 * The capability that proves to {@link Daemon} this class is allowed to act with daemon
@@ -174,16 +176,16 @@ public class HibernateContextDAO implements ContextDAO {
 
 			// if they've been locked out, don't continue with the authentication
 			if (lockoutTime > 0) {
-				// unlock them after x mins, otherwise reset the timestamp
-				// to now and make them wait another x mins
-				final Long unlockTime = getUnlockTimeMs();
-				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
+				// the lockout duration depends on how many consecutive lockouts this account has had,
+				// and the lockout timestamp is left untouched while the account is locked so that it
+				// can expire automatically
+				final long lockoutDuration = getLockoutDurationMs(getLockoutCount(candidateUser));
+				if (System.currentTimeMillis() - lockoutTime > lockoutDuration) {
+					// keep the lockout count so that the next lockout doubles the duration
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				} else {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
-						.currentTimeMillis()));
 					throw new ContextAuthenticationException(
 						"Invalid number of connection attempts. Please try again later.");
 				}
@@ -203,6 +205,10 @@ public class HibernateContextDAO implements ContextDAO {
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();
 				candidateUser.getPrivileges().size();
+
+				// a successful login clears the lockout history, so the next lockout starts at the
+				// initial duration again
+				candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT);
 
 				// only clean up if the were some login failures, otherwise all should be clean
 				int attempts = getUsersLoginAttempts(candidateUser);
@@ -238,9 +244,12 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 
 				if (attempts > allowedFailedLoginCount) {
-					// set the user as locked out at this exact time
+					// set the user as locked out at this exact time and record the lockout so that
+					// each consecutive lockout lasts twice as long as the previous one
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 						.currentTimeMillis()));
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT, String
+						.valueOf(getLockoutCount(candidateUser) + 1));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
@@ -261,32 +270,88 @@ public class HibernateContextDAO implements ContextDAO {
 			String.valueOf(System.currentTimeMillis())
 		);
 	}
-	
-	private Long getUnlockTimeMs() {
+
+	/**
+	 * Calculates the duration of a lockout. The first lockout lasts {@code initialDurationMs}, and
+	 * every consecutive lockout doubles that duration until {@code maximumDurationMs} is reached.
+	 * The loop stops once the maximum is reached so that a corrupt or unusually large lockout count
+	 * cannot overflow the calculation.
+	 *
+	 * @param lockoutCount the number of consecutive lockouts, where the first lockout is 1
+	 * @param initialDurationMs the duration of the first lockout in milliseconds
+	 * @param maximumDurationMs the maximum lockout duration in milliseconds
+	 * @return the lockout duration in milliseconds
+	 */
+	static long calculateLockoutDurationMs(long lockoutCount, long initialDurationMs, long maximumDurationMs) {
+		if (initialDurationMs <= 0) {
+			return 0L;
+		}
+
+		long maximum = maximumDurationMs > 0 ? maximumDurationMs : initialDurationMs;
+		long durationMs = Math.min(initialDurationMs, maximum);
+
+		for (long lockout = 1; lockout < lockoutCount && durationMs < maximum; lockout++) {
+			durationMs = durationMs > maximum / 2 ? maximum : durationMs * 2;
+		}
+		return Math.min(durationMs, maximum);
+	}
+
+	private long getLockoutDurationMs(int lockoutCount) {
+		long initialDurationMs = DEFAULT_INITIAL_LOCKOUT_DURATION_MS;
+		long maximumDurationMs = DEFAULT_MAX_LOCKOUT_DURATION_MS;
+
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
-				OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
-			if (StringUtils.isNotBlank(unlockTimeGPValue)) {
-				return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
-			} else {
-				return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
-			}
+			initialDurationMs = getMinutesGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME,
+				initialDurationMs);
+			maximumDurationMs = getMinutesGlobalProperty(OpenmrsConstants.GP_MAX_ACCOUNT_LOCKOUT_DURATION,
+				maximumDurationMs);
+		}
+		catch (Exception e) {
+			log.error("Unable to read the account lockout global properties. Using the default initial duration "
+				+ "of 10 minutes and maximum duration of 24 hours.", e);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
+
+		return calculateLockoutDurationMs(lockoutCount, initialDurationMs, maximumDurationMs);
 	}
-	
-	private Long convertUnlockAccountWaitingTimeGP(String waitingTime) {
-		try {
-			return TimeUnit.MILLISECONDS.convert(Long.valueOf(waitingTime), TimeUnit.MINUTES);
-		} catch (Exception ex) {
-			log.error("Unable to convert the global property "
-					+ OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME
-					+ "to a valid Long. Using default value of 5");
-			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+
+	private long getMinutesGlobalProperty(String property, long defaultDurationMs) {
+		String configuredValue = Context.getAdministrationService().getGlobalProperty(property);
+		if (StringUtils.isNotBlank(configuredValue)) {
+			try {
+				long minutes = Long.parseLong(configuredValue.trim());
+				if (minutes >= 0) {
+					return TimeUnit.MINUTES.toMillis(minutes);
+				}
+			}
+			catch (NumberFormatException e) {
+				log.error("Unable to convert the global property {} to a valid number of minutes. Using the default.",
+					property, e);
+			}
 		}
+		return defaultDurationMs;
+	}
+
+	/**
+	 * Get the number of consecutive lockouts stored for the given user.
+	 *
+	 * @param user the user to check
+	 * @return the number of consecutive lockouts, defaulting to zero if none is defined
+	 */
+	private int getLockoutCount(User user) {
+		String lockoutCountString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT, "0");
+		int lockoutCount = 0;
+		try {
+			lockoutCount = Integer.parseInt(lockoutCountString);
+		}
+		catch (NumberFormatException e) {
+			log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT,
+				lockoutCountString);
+		}
+		return Math.max(lockoutCount, 0);
 	}
 	
 	/**
