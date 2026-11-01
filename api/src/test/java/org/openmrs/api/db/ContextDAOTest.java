@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
 import java.util.Collections;
-import java.util.function.Function;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
@@ -42,8 +42,8 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.spring.OpenmrsDelegatingPasswordEncoder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
-import org.openmrs.util.Security;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -448,7 +448,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertSame(boundSession, TransactionSynchronizationManager.getResource(sessionFactory));
 	}
 
-		@Test
+	@Test
 	public void authenticate_shouldUpgradeALegacyPasswordHashToTheConfiguredEncoder() throws Exception {
 		withStandInEncoder(rawPassword -> "stand-in:" + new StringBuilder(rawPassword).reverse(), hashBefore -> {
 			assertTrue(Security.needsUpgrade(hashBefore), "precondition: the stored hash must need an upgrade");

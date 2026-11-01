@@ -50,12 +50,14 @@ import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -87,10 +89,8 @@ public class HibernateContextDAO implements ContextDAO {
 	private UserDAO userDao;
 
 	@Autowired
-	@Lazy
-	@SuppressWarnings("java:S6813") // self-injection required for @Transactional(REQUIRES_NEW) proxy
-	private HibernateContextDAO self;
-	
+	private PlatformTransactionManager transactionManager;
+
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
@@ -197,10 +197,10 @@ public class HibernateContextDAO implements ContextDAO {
 				saveUserProperties(candidateUser);
 
 				// Lazy rehash: if the stored hash needs upgrading, re-encode transparently on login
-				if (passwordOnRecord != null && Security.needsUpgrade(passwordOnRecord)) {
+				if (Security.needsUpgrade(passwordOnRecord)) {
 					try {
 						String newHash = Security.encodePassword(password + saltOnRecord);
-						self.upgradePasswordHash(candidateUser, passwordOnRecord, newHash);
+						upgradePasswordHash(candidateUser, passwordOnRecord, newHash);
 					}
 					catch (Exception e) {
 						log.error("Failed to upgrade password hash for user {}",
@@ -351,27 +351,22 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Upgrades a user's stored password hash to the configured encoder in a separate transaction.
-	 *
-	 * @param user the authenticated user whose password needs upgrading
-	 * @param oldHash the hash currently stored for the user, used to skip the write if it has changed
-	 * @param newHash the re-encoded hash to store
-	 * @since 2.8.11
+	 * Upgrades a user's stored password hash to the configured encoder in its own transaction, so a failure
+	 * here cannot affect the login. Private on purpose: it changes a user's credential, so it must only be
+	 * reachable from {@link #authenticate(String, String)}.
 	 */
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void upgradePasswordHash(User user, String oldHash, String newHash) {
-		boolean upgraded = conditionallyUpdateUserPassword(
-			user.getUserId(),
-			oldHash,
-			newHash,
-			user.getUserId(),
-			new Date()
-		);
-		if (upgraded) {
-			log.info("Successfully upgraded password hash for user: {}", user.getUsername());
-		} else {
-			log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
-		}
+	private void upgradePasswordHash(User user, String oldHash, String newHash) {
+		new TransactionTemplate(transactionManager,
+				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> {
+					boolean upgraded = conditionallyUpdateUserPassword(user.getUserId(), oldHash, newHash,
+						user.getUserId(), new Date());
+					if (upgraded) {
+						log.info("Successfully upgraded password hash for user: {}", user.getUsername());
+					} else {
+						log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
+					}
+					return null;
+				});
 	}
 
 	private boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
