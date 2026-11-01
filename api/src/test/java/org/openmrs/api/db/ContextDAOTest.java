@@ -400,7 +400,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldAuthenticateWithCorrectPasswordAfterTheLockoutWindowExpires() {
-		lockOutAdminSixMinutesAgo();
+		lockOutAdminBeyondInitialWindow();
 
 		User user = dao.authenticate("admin", "test");
 
@@ -412,7 +412,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldCountFailedAttemptsFromOneAgainAfterTheLockoutWindowExpires() {
-		lockOutAdminSixMinutesAgo();
+		lockOutAdminBeyondInitialWindow();
 
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
 
@@ -420,11 +420,11 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		    Context.getUserService().getUser(1).getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
 	}
 
-	private void lockOutAdminSixMinutesAgo() {
+	private void lockOutAdminBeyondInitialWindow() {
 		User admin = Context.getUserService().getUser(1);
 		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
 		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
-		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(11)));
 		Context.flushSession();
 	}
 
