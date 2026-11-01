@@ -144,4 +144,110 @@ public class DatabaseUtilTest {
 		assertDoesNotThrow(() -> DatabaseUtil.executeSQL(conn, "WITH cte AS (SELECT 1) SELECT * FROM cte", true));
 		conn.close();
 	}
+
 }
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectInsertStatement() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro11;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.execute("CREATE TABLE t (id INT)");
+		st.close();
+
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, "INSERT INTO t VALUES (1)", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectUpdateStatement() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro12;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.execute("CREATE TABLE t (id INT)");
+		st.close();
+
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, "UPDATE t SET id=1", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectLoadData() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro13;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.execute("CREATE TABLE t (id INT)");
+		st.close();
+
+		assertThrows(IllegalArgumentException.class,
+		    () -> DatabaseUtil.executeSQL(conn, "LOAD DATA INFILE '/tmp/x' INTO TABLE t", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectLoadFile() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro14;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.close();
+
+		assertThrows(IllegalArgumentException.class,
+		    () -> DatabaseUtil.executeSQL(conn, "SELECT LOAD_FILE('/etc/passwd')", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectDrop() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro15;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.execute("CREATE TABLE t (id INT)");
+		st.close();
+
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, "DROP TABLE t", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectSet() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro16;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.close();
+
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, "SET autocommit=0", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldAllowValues() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro17;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.close();
+
+		assertDoesNotThrow(() -> DatabaseUtil.executeSQL(conn, "VALUES (1,2,3)", true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectNull() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro18;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.close();
+
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, null, true));
+		conn.close();
+	}
+
+	@Test
+	public void executeSQL_withSelectOnly_shouldRejectEmptyAfterComments() throws Exception {
+		Class.forName("org.h2.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:h2:mem:ro19;DB_CLOSE_DELAY=-1", "sa", "");
+		Statement st = conn.createStatement();
+		st.close();
+
+		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, "/* just a comment */", true));
+		conn.close();
+	}

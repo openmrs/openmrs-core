@@ -111,14 +111,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Qualifier("implementationIdHttpClient")
 	private HttpClient implementationIdHttpClient;
 
+	private org.springframework.transaction.PlatformTransactionManager transactionManager;
+
 	/**
 	 * Default empty constructor
 	 */
 	public AdministrationServiceImpl() {
 	}
-
-	@Autowired
-	private org.springframework.transaction.PlatformTransactionManager transactionManager;
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#setAdministrationDAO(org.openmrs.api.db.AdministrationDAO)
