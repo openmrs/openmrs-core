@@ -21,6 +21,9 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.persistence.LockTimeoutException;
+import javax.persistence.PessimisticLockException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -54,6 +57,7 @@ import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -109,7 +113,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@Transactional(noRollbackFor = ContextAuthenticationException.class)
+	@Transactional(noRollbackFor = ContextAuthenticationException.class, isolation = Isolation.READ_COMMITTED)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
 		String errorMsg = "Invalid username and/or password: " + login;
 
@@ -141,6 +145,27 @@ public class HibernateContextDAO implements ContextDAO {
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
 			log.debug("Candidate user id: {}", candidateUser.getUserId());
+
+			session.flush();
+			Integer lockedUserId;
+			try {
+				lockedUserId = (Integer) session
+				        .createNativeQuery("select user_id from users where user_id = ?1 for update")
+				        .addScalar("user_id", StandardBasicTypes.INTEGER)
+				        .setParameter(1, candidateUser.getUserId()).uniqueResult();
+			} catch (LockTimeoutException | PessimisticLockException | org.hibernate.PessimisticLockException e) {
+				log.warn("Could not lock the user row for login (login={}, userId={})", login, candidateUser.getUserId(), e);
+				throw new ContextAuthenticationException(errorMsg);
+			} catch (RuntimeException e) {
+				log.error("Could not lock the user row for login (login={}, userId={})", login, candidateUser.getUserId(),
+				    e);
+				throw new ContextAuthenticationException(errorMsg);
+			}
+			if (lockedUserId == null) {
+				log.info("Failed login attempt (login={}) - {}", login, errorMsg);
+				throw new ContextAuthenticationException(errorMsg);
+			}
+			session.refresh(candidateUser);
 
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			long lockoutTime = -1;

@@ -73,3 +73,181 @@ jobs:
           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
         run: mvn jacoco:report coveralls:report --batch-mode --file pom.xml --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+  deploy-snapshot:
+    name: Deploy SNAPSHOT to Maven
+    needs: build
+    if: >-
+      ${{ github.repository == 'openmrs/openmrs-core'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && contains(fromJSON('["2.8.x"]'), github.ref_name) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    concurrency:
+      group: deploy-snapshot-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: 8
+          cache: 'maven'
+          server-id: openmrs-repo-snapshots
+          server-username: MAVEN_REPO_USERNAME
+          server-password: MAVEN_REPO_API_KEY
+      - name: Check project version is a SNAPSHOT
+        id: snapshot
+        run: |
+          set -e
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping deploy."
+          fi
+      - name: Check this commit is still the branch tip
+        id: freshness
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: |
+          set -e
+          git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping deploy: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit deploys instead."
+          fi
+      - name: Verify deploy credentials are available
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+        run: |
+          if [ -z "$MAVEN_REPO_USERNAME" ] || [ -z "$MAVEN_REPO_API_KEY" ]; then
+            echo "::error::The MAVEN_REPO_USERNAME / MAVEN_REPO_API_KEY secrets are not available to this repository. Scope the org secrets to openmrs-core to enable snapshot deployment."
+            exit 1
+          fi
+      - name: Deploy SNAPSHOT to Maven
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' && steps.freshness.outputs.current == 'true' }}
+        run: mvn deploy -DskipTests=true -D"maven.javadoc.skip"=true --batch-mode --show-version --no-transfer-progress --file pom.xml
+        env:
+          MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
+          MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+
+  publish-images:
+    name: Publish ${{ matrix.tag_suffix || 'default' }} images
+    needs: build
+    if: >-
+      ${{ github.repository == 'openmrs/openmrs-core'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && contains(fromJSON('["2.8.x"]'), github.ref_name) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    concurrency:
+      group: publish-images-${{ github.ref }}-${{ matrix.tag_suffix || 'default' }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag_suffix: ''
+            also_tag_suffix: -amazoncorretto-8
+            dev_jdk: amazoncorretto-8
+            runtime_jdk: jdk8-corretto
+          - tag_suffix: -amazoncorretto-11
+            dev_jdk: amazoncorretto-11
+            runtime_jdk: jdk11-corretto
+          - tag_suffix: -amazoncorretto-17
+            dev_jdk: amazoncorretto-17
+            runtime_jdk: jdk17-corretto
+          - tag_suffix: -amazoncorretto-21
+            dev_jdk: amazoncorretto-21
+            runtime_jdk: jdk21-corretto
+    env:
+      DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
+      # must be identical in both builds, so the production build reuses the dev build's layers
+      MVN_ARGS: clean install -DskipTests
+      DEV_JDK: ${{ matrix.dev_jdk }}
+      RUNTIME_JDK: ${{ matrix.runtime_jdk }}
+      IMAGE: openmrs/openmrs-core:${{ github.ref_name }}${{ matrix.tag_suffix }}
+      IMAGE_DEV: openmrs/openmrs-core:${{ github.ref_name }}-dev${{ matrix.tag_suffix }}
+      ALSO_IMAGE: ${{ matrix.also_tag_suffix && format('openmrs/openmrs-core:{0}{1}', github.ref_name, matrix.also_tag_suffix) || '' }}
+      ALSO_IMAGE_DEV: ${{ matrix.also_tag_suffix && format('openmrs/openmrs-core:{0}-dev{1}', github.ref_name, matrix.also_tag_suffix) || '' }}
+    steps:
+      # the dev image contains the checkout, .git included
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check project version is a SNAPSHOT
+        id: snapshot
+        run: |
+          set -e
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping publish."
+          fi
+
+      - name: Check this commit is still the branch tip
+        id: freshness
+        if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+        run: |
+          set -e
+          git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping publish: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit publishes instead."
+          fi
+
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+        if: ${{ steps.freshness.outputs.current == 'true' }}
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+        if: ${{ steps.freshness.outputs.current == 'true' }}
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        if: ${{ steps.freshness.outputs.current == 'true' }}
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push the dev image
+        if: ${{ steps.freshness.outputs.current == 'true' }}
+        run: |
+          TAGS=(-t "${IMAGE_DEV}")
+          [[ -n "${ALSO_IMAGE_DEV}" ]] && TAGS+=(-t "${ALSO_IMAGE_DEV}")
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-to "type=registry,mode=max,ref=${IMAGE_DEV}-cache" \
+            --cache-from "${IMAGE_DEV}-cache" \
+            --target dev \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            "${TAGS[@]}" .
+
+      - name: Build and push the production image
+        if: ${{ steps.freshness.outputs.current == 'true' }}
+        run: |
+          TAGS=(-t "${IMAGE}")
+          [[ -n "${ALSO_IMAGE}" ]] && TAGS+=(-t "${ALSO_IMAGE}")
+          docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+            --cache-to "type=registry,mode=max,ref=${IMAGE}-cache" \
+            --cache-from "${IMAGE_DEV}-cache" \
+            --cache-from "${IMAGE}-cache" \
+            --build-arg MVN_ARGS="${MVN_ARGS}" \
+            --build-arg DEV_JDK="${DEV_JDK}" \
+            --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+            "${TAGS[@]}" .

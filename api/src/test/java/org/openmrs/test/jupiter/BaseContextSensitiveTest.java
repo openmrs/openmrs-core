@@ -922,7 +922,7 @@ public abstract class BaseContextSensitiveTest {
 			return "PUBLIC";
 		}
 		else {
-			return "public";
+			return isPostgreSQL() ? "public" : null;
 		}
 	}
 	

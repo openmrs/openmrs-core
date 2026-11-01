@@ -92,8 +92,9 @@ public class RolePrivilegeCacheLoadTest {
 	}
 
 	@AfterEach
-	public void tearDown() {
+	public void tearDown() throws InterruptedException {
 		executor.shutdownNow();
+		assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
 		nativeCache().clear();
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			TransactionSynchronizationManager.clearSynchronization();
