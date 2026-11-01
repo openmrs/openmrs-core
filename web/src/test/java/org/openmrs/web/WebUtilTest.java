@@ -11,13 +11,24 @@ package org.openmrs.web;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.Format.FORMAT_TYPE;
+import org.openmrs.util.OpenmrsConstants;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link WebUtil} class.
@@ -142,6 +153,86 @@ public class WebUtilTest {
 	@Test
 	public void sanitizeLocales_shouldNotFailWithEmptyString() {
 		assertNull(null, WebUtil.sanitizeLocales(""));
+	}
+
+	/**
+	 * @see WebUtil#formatDate(Date, Locale, FORMAT_TYPE)
+	 */
+	@Test
+	public void formatDate_shouldHonourConfiguredDateFormat() {
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("yyyy-MM-dd");
+			assertTrue(WebUtil.formatDate(new Date(0), Locale.US, FORMAT_TYPE.DATE).matches("\\d{4}-\\d{2}-\\d{2}"));
+		}
+	}
+
+	/**
+	 * @see WebUtil#formatDate(Date, Locale, FORMAT_TYPE)
+	 */
+	@Test
+	public void formatDate_shouldHonourConfiguredTimeFormat() {
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn("HH:mm");
+			assertTrue(WebUtil.formatDate(new Date(0), Locale.US, FORMAT_TYPE.TIME).matches("\\d{2}:\\d{2}"));
+		}
+	}
+
+	/**
+	 * @see WebUtil#formatDate(Date, Locale, FORMAT_TYPE)
+	 */
+	@Test
+	public void formatDate_shouldHonourConfiguredTimestampFormat() {
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT))
+			        .thenReturn("yyyy-MM-dd HH:mm");
+			assertTrue(WebUtil.formatDate(new Date(0), Locale.US, FORMAT_TYPE.TIMESTAMP)
+			        .matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"));
+		}
+	}
+
+	/**
+	 * @see WebUtil#formatDate(Date, Locale, FORMAT_TYPE)
+	 */
+	@Test
+	public void formatDate_shouldFormatDateWhenNoFormatPropertyIsSet() {
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn(null);
+			assertFalse(WebUtil.formatDate(new Date(0), Locale.US, FORMAT_TYPE.DATE).isEmpty());
+		}
+	}
+
+	/**
+	 * @see WebUtil#formatDate(Date, Locale, FORMAT_TYPE)
+	 */
+	@Test
+	public void formatDate_shouldFormatTimeWhenNoFormatPropertyIsSet() {
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn(null);
+			assertFalse(WebUtil.formatDate(new Date(0), Locale.US, FORMAT_TYPE.TIME).isEmpty());
+		}
+	}
+
+	/**
+	 * @see WebUtil#formatDate(Date, Locale, FORMAT_TYPE)
+	 */
+	@Test
+	public void formatDate_shouldFormatTimestampWhenNoFormatPropertyIsSet() {
+		try (MockedStatic<Context> mocked = mockStatic(Context.class)) {
+			AdministrationService adminService = mock(AdministrationService.class);
+			when(Context.getAdministrationService()).thenReturn(adminService);
+			when(adminService.getGlobalProperty(OpenmrsConstants.GP_SEARCH_DATE_DISPLAY_FORMAT)).thenReturn(null);
+			assertFalse(WebUtil.formatDate(new Date(0), Locale.US, FORMAT_TYPE.TIMESTAMP).isEmpty());
+		}
 	}
 
 	/**
