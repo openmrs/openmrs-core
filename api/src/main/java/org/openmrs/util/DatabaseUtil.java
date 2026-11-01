@@ -32,6 +32,17 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseUtil {
 
+	private static final String ILLEGAL_COMMAND = "Illegal command(s) found in query string";
+
+	private static final java.util.regex.Pattern EXECUTABLE_COMMENT_MYSQL = java.util.regex.Pattern
+	        .compile("^/\\*[M!][0-9].*");
+
+	private static final java.util.regex.Pattern LOAD_DATA = java.util.regex.Pattern.compile("\\bload\\s+data\\b");
+
+	private static final java.util.regex.Pattern INTO_OUTFILE = java.util.regex.Pattern.compile("\\binto\\s+outfile\\b");
+
+	private static final java.util.regex.Pattern INTO_DUMPFILE = java.util.regex.Pattern.compile("\\binto\\s+dumpfile\\b");
+
 	private DatabaseUtil() {
 	}
 
@@ -141,6 +152,10 @@ public class DatabaseUtil {
 	}
 
 	private static boolean checkQueryForManipulationCommands(String sql, boolean selectOnly) {
+		if (selectOnly) {
+			validateReadOnlyQuery(sql);
+		}
+
 		boolean dataManipulation = false;
 
 		String sqlLower = sql.toLowerCase();
@@ -154,6 +169,348 @@ public class DatabaseUtil {
 			throw new IllegalArgumentException("Illegal command(s) found in query string");
 		}
 		return dataManipulation;
+	}
+
+	private static void validateReadOnlyQuery(String sql) {
+		if (sql == null) {
+			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+		}
+
+		if (hasMultipleStatements(sql) || hasExecutableCommentPrefix(sql)) {
+			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+		}
+
+		if (!isReadOnlyStatement(sql)) {
+			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+		}
+
+		if (containsForbiddenPattern(sql)) {
+			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+		}
+	}
+
+	private static boolean isReadOnlyStatement(String sql) {
+		String normalized = stripLeadingCommentsAndWhitespace(sql);
+		if (!org.springframework.util.StringUtils.hasText(normalized)) {
+			return false;
+		}
+
+		normalized = stripLeadingParentheses(normalized);
+		if (!org.springframework.util.StringUtils.hasText(normalized)) {
+			return false;
+		}
+
+		String lower = normalized.toLowerCase();
+
+		if (lower.startsWith("with")) {
+			if (!lower.contains("select")) {
+				return false;
+			}
+			String withoutStrings = removeStringLiterals(normalized).toLowerCase();
+			if (containsStatementKeyword(withoutStrings, "delete") || containsStatementKeyword(withoutStrings, "update")
+			        || containsStatementKeyword(withoutStrings, "insert")
+			        || containsStatementKeyword(withoutStrings, "replace")
+			        || containsStatementKeyword(withoutStrings, "truncate")) {
+				return false;
+			}
+			return true;
+		}
+
+		return lower.startsWith("select") || lower.startsWith("values") || lower.startsWith("show")
+		        || lower.startsWith("explain") || lower.startsWith("describe") || lower.startsWith("desc");
+	}
+
+	private static String stripLeadingParentheses(String sql) {
+		String result = sql;
+		while (org.springframework.util.StringUtils.hasText(result)) {
+			String trimmed = result.trim();
+			if (trimmed.startsWith("(")) {
+				result = stripLeadingCommentsAndWhitespace(trimmed.substring(1).trim());
+			} else {
+				break;
+			}
+		}
+		return result;
+	}
+
+	private static String removeStringLiterals(String sql) {
+		StringBuilder sb = new StringBuilder(sql.length());
+		boolean inSingle = false;
+		boolean inDouble = false;
+		for (int i = 0; i < sql.length(); i++) {
+			char c = sql.charAt(i);
+			char next = i + 1 < sql.length() ? sql.charAt(i + 1) : 0;
+			if (inSingle) {
+				if (c == '\\') {
+					i++;
+					continue;
+				}
+				if (c == '\'') {
+					if (next == '\'') {
+						i++;
+						continue;
+					}
+					inSingle = false;
+				}
+				continue;
+			}
+			if (inDouble) {
+				if (c == '\\') {
+					i++;
+					continue;
+				}
+				if (c == '"') {
+					if (next == '"') {
+						i++;
+						continue;
+					}
+					inDouble = false;
+				}
+				continue;
+			}
+			if (c == '\'') {
+				inSingle = true;
+				continue;
+			}
+			if (c == '"') {
+				inDouble = true;
+				continue;
+			}
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
+	private static boolean containsStatementKeyword(String sql, String keyword) {
+		java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\b" + keyword + "\\b").matcher(sql);
+		while (m.find()) {
+			// Make sure it's not part of a function call
+			int end = m.end();
+			if (end < sql.length() && sql.charAt(end) == '(') {
+				continue;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean hasExecutableCommentPrefix(String sql) {
+		String trimmed = sql.trim();
+		return trimmed.startsWith("/*!") || EXECUTABLE_COMMENT_MYSQL.matcher(trimmed).matches();
+	}
+
+	private static boolean hasMultipleStatements(String sql) {
+		boolean inSingleQuote = false;
+		boolean inDoubleQuote = false;
+		boolean inLineComment = false;
+		boolean inBlockComment = false;
+
+		for (int i = 0; i < sql.length(); i++) {
+			char c = sql.charAt(i);
+			char nextChar = i + 1 < sql.length() ? sql.charAt(i + 1) : 0;
+
+			if (inLineComment) {
+				if (c == '\n' || c == '\r') {
+					inLineComment = false;
+				}
+				continue;
+			}
+
+			if (inBlockComment) {
+				if (c == '*' && nextChar == '/') {
+					inBlockComment = false;
+					i++; // skip /
+					continue;
+				}
+				continue;
+			}
+
+			if (inSingleQuote) {
+				if (c == '\\') {
+					i++; // skip escaped char
+					continue;
+				}
+				if (c == '\'') {
+					if (nextChar == '\'') {
+						i++; // skip escaped quote
+						continue;
+					}
+					inSingleQuote = false;
+				}
+				continue;
+			}
+
+			if (inDoubleQuote) {
+				if (c == '\\') {
+					i++; // skip escaped char
+					continue;
+				}
+				if (c == '"') {
+					if (nextChar == '"') {
+						i++; // skip escaped quote
+						continue;
+					}
+					inDoubleQuote = false;
+				}
+				continue;
+			}
+
+			if (c == '-' && nextChar == '-') {
+				inLineComment = true;
+				i++;
+				continue;
+			}
+			if (c == '#') {
+				inLineComment = true;
+				continue;
+			}
+			if (c == '/' && nextChar == '*') {
+				// Check if it's executable comment
+				if (i + 2 < sql.length() && (sql.charAt(i + 2) == '!' || sql.charAt(i + 2) == 'M')) {
+					// Executable comment - will be caught separately
+				}
+				inBlockComment = true;
+				i++;
+				continue;
+			}
+			if (c == '\'') {
+				inSingleQuote = true;
+				continue;
+			}
+			if (c == '"') {
+				inDoubleQuote = true;
+				continue;
+			}
+
+			if (c == ';') {
+				// Check if it's just trailing whitespace/comments
+				String after = sql.substring(i + 1).trim();
+				// Remove comments from after
+				after = stripCommentsAndWhitespace(after);
+				if (!after.isEmpty()) {
+					return true;
+				}
+				return false; // trailing semicolon is ok
+			}
+		}
+
+		return false;
+	}
+
+	private static String stripLeadingCommentsAndWhitespace(String sql) {
+		if (sql == null)
+			return "";
+		String result = sql;
+		boolean changed = true;
+		while (changed) {
+			changed = false;
+			String trimmed = result.trim();
+			if (trimmed.startsWith("--")) {
+				int idx = trimmed.indexOf('\n');
+				if (idx >= 0) {
+					result = trimmed.substring(idx + 1);
+					changed = true;
+				} else {
+					return "";
+				}
+			} else if (trimmed.startsWith("#")) {
+				int idx = trimmed.indexOf('\n');
+				if (idx >= 0) {
+					result = trimmed.substring(idx + 1);
+					changed = true;
+				} else {
+					return "";
+				}
+			} else if (trimmed.startsWith("/*")) {
+				// Check if executable comment
+				if (trimmed.startsWith("/*!") || trimmed.startsWith("/*M!")) {
+					return result; // will be caught
+				}
+				int idx = trimmed.indexOf("*/");
+				if (idx >= 0) {
+					result = trimmed.substring(idx + 2);
+					changed = true;
+				} else {
+					return "";
+				}
+			} else if (!trimmed.equals(result)) {
+				result = trimmed;
+				changed = true;
+			}
+		}
+		return result.trim();
+	}
+
+	private static String stripCommentsAndWhitespace(String sql) {
+		if (sql == null || sql.trim().isEmpty())
+			return "";
+		String result = stripLeadingCommentsAndWhitespace(sql);
+		// Also strip trailing comments
+		return result;
+	}
+
+	private static boolean containsForbiddenPattern(String sql) {
+		String lower = sql.toLowerCase();
+
+		int loadFileIdx = lower.indexOf("load_file");
+		if (loadFileIdx >= 0 && !isInStringLiteral(sql, loadFileIdx)) {
+			return true;
+		}
+
+		if (LOAD_DATA.matcher(lower).find()) {
+			int idx = lower.indexOf("load");
+			if (idx >= 0 && !isInStringLiteral(sql, idx)) {
+				return true;
+			}
+		}
+
+		if (INTO_OUTFILE.matcher(lower).find() || INTO_DUMPFILE.matcher(lower).find()) {
+			return true;
+		}
+
+		String stripped = stripLeadingParentheses(stripLeadingCommentsAndWhitespace(sql));
+		if (!org.springframework.util.StringUtils.hasText(stripped)) {
+			return true;
+		}
+		String sl = stripped.toLowerCase();
+		if (sl.startsWith("replace") || sl.startsWith("truncate")) {
+			if (sl.length() == 7 || Character.isWhitespace(sl.charAt(7)) || sl.charAt(7) == '(') {
+				if (sl.length() >= 8 && sl.charAt(7) == '(') {
+					return false;
+				}
+				return sl.length() == 7 || Character.isWhitespace(sl.charAt(7));
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean isInStringLiteral(String sql, int index) {
+		if (index < 0)
+			return false;
+		boolean inSingleQuote = false;
+		boolean inDoubleQuote = false;
+		for (int i = 0; i < index && i < sql.length(); i++) {
+			char c = sql.charAt(i);
+			if (c == '\\') {
+				i++;
+				continue;
+			}
+			if (c == '\'' && !inDoubleQuote) {
+				if (i + 1 < sql.length() && sql.charAt(i + 1) == '\'') {
+					i++;
+					continue;
+				}
+				inSingleQuote = !inSingleQuote;
+			} else if (c == '"' && !inSingleQuote) {
+				if (i + 1 < sql.length() && sql.charAt(i + 1) == '"') {
+					i++;
+					continue;
+				}
+				inDoubleQuote = !inDoubleQuote;
+			}
+		}
+		return inSingleQuote || inDoubleQuote;
 	}
 
 	private static void populateResultsFromSQLQuery(Connection conn, String sql, boolean dataManipulation,

@@ -117,12 +117,19 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public AdministrationServiceImpl() {
 	}
 
+	@Autowired
+	private org.springframework.transaction.PlatformTransactionManager transactionManager;
+
 	/**
 	 * @see org.openmrs.api.AdministrationService#setAdministrationDAO(org.openmrs.api.db.AdministrationDAO)
 	 */
 	@Override
 	public void setAdministrationDAO(AdministrationDAO dao) {
 		this.dao = dao;
+	}
+
+	public void setTransactionManager(org.springframework.transaction.PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	public void setEventListeners(EventListeners eventListeners) {
@@ -419,6 +426,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
 		if (sql == null || "".equals(sql.trim())) {
 			return null;
+		}
+
+		if (selectOnly && transactionManager != null) {
+			org.springframework.transaction.support.TransactionTemplate template = new org.springframework.transaction.support.TransactionTemplate(
+			        transactionManager);
+			template.setPropagationBehavior(org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRED);
+			template.setReadOnly(true);
+			return template.execute(status -> dao.executeSQL(sql, true));
 		}
 
 		return dao.executeSQL(sql, selectOnly);
