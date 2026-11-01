@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +55,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -86,7 +92,10 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
-	
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
@@ -212,6 +221,11 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
+
+				// Lazy rehash: if the stored hash needs upgrading, re-encode transparently on login
+				if (Security.needsUpgrade(passwordOnRecord)) {
+					scheduleUpgradePasswordHash(candidateUser, passwordOnRecord, password + saltOnRecord);
+				}
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
@@ -352,6 +366,66 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
+	}
+
+	/**
+	 * Re-encodes the password once the login transaction has committed. authenticate() holds a row lock on
+	 * the user until then, so a second transaction writing the new hash any earlier would only wait for that
+	 * lock. Failures are logged and never affect the login, which has already succeeded.
+	 */
+	private void scheduleUpgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
+		Runnable upgrade = () -> {
+			try {
+				String newHash = Security.encodePassword(rawPasswordWithSalt);
+				upgradePasswordHash(user, oldHash, newHash);
+			}
+			catch (Exception e) {
+				log.error("Failed to upgrade password hash for user {}", user.getUsername(), e);
+			}
+		};
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					upgrade.run();
+				}
+			});
+		} else {
+			upgrade.run();
+		}
+	}
+
+	/**
+	 * Upgrades a user's stored password hash to the configured encoder in its own transaction, so a failure
+	 * here cannot affect the login. Private on purpose: it changes a user's credential, so it must only be
+	 * reachable from {@link #authenticate(String, String)}.
+	 */
+	private void upgradePasswordHash(User user, String oldHash, String newHash) {
+		new TransactionTemplate(transactionManager,
+				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> {
+					boolean upgraded = conditionallyUpdateUserPassword(user.getUserId(), oldHash, newHash,
+						user.getUserId(), new Date());
+					if (upgraded) {
+						log.info("Successfully upgraded password hash for user: {}", user.getUsername());
+					} else {
+						log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
+					}
+					return null;
+				});
+	}
+
+	private boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
+			String newHashedPassword, Integer changedBy, Date dateChanged) {
+		String sql = "UPDATE users SET password = :newHash, date_changed = :dateChanged, changed_by = :changedBy "
+				+ "WHERE user_id = :userId AND password = :oldHash";
+		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql).addSynchronizedQuerySpace("users")
+				.setParameter("newHash", newHashedPassword)
+				.setParameter("dateChanged", dateChanged)
+				.setParameter("changedBy", changedBy)
+				.setParameter("userId", userId)
+				.setParameter("oldHash", oldHashedPassword)
+				.executeUpdate();
+		return rows > 0;
 	}
 	
 	/**
