@@ -60,6 +60,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -223,15 +224,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 				// Lazy rehash: if the stored hash needs upgrading, re-encode transparently on login
 				if (Security.needsUpgrade(passwordOnRecord)) {
-					try {
-						String newHash = Security.encodePassword(password + saltOnRecord);
-						upgradePasswordHash(candidateUser, passwordOnRecord, newHash);
-					}
-					catch (Exception e) {
-						log.error("Failed to upgrade password hash for user {}",
-							candidateUser.getUsername(), e);
-						// login still succeeds — upgrade failure is non-fatal
-					}
+					scheduleUpgradePasswordHash(candidateUser, passwordOnRecord, password + saltOnRecord);
 				}
 
 				// skip out of the method early (instead of throwing the exception)
@@ -373,6 +366,33 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
+	}
+
+	/**
+	 * Re-encodes the password once the login transaction has committed. authenticate() holds a row lock on
+	 * the user until then, so a second transaction writing the new hash any earlier would only wait for that
+	 * lock. Failures are logged and never affect the login, which has already succeeded.
+	 */
+	private void scheduleUpgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
+		Runnable upgrade = () -> {
+			try {
+				String newHash = Security.encodePassword(rawPasswordWithSalt);
+				upgradePasswordHash(user, oldHash, newHash);
+			}
+			catch (Exception e) {
+				log.error("Failed to upgrade password hash for user {}", user.getUsername(), e);
+			}
+		};
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					upgrade.run();
+				}
+			});
+		} else {
+			upgrade.run();
+		}
 	}
 
 	/**

@@ -25,10 +25,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
@@ -52,6 +54,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -488,101 +491,126 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldUpgradeALegacyPasswordHashToTheConfiguredEncoder() throws Exception {
 		withStandInEncoder(rawPassword -> "stand-in:" + new StringBuilder(rawPassword).reverse(), hashBefore -> {
 			assertTrue(Security.needsUpgrade(hashBefore), "precondition: the stored hash must need an upgrade");
-			
+
 			assertNotNull(dao.authenticate("admin", "test"));
 			String hashAfter = readStoredPassword();
 			assertNotEquals(hashBefore, hashAfter);
 			assertFalse(Security.needsUpgrade(hashAfter));
-			
+
 			assertNotNull(dao.authenticate("admin", "test"));
 			assertEquals(hashAfter, readStoredPassword());
 		});
 	}
-	
+
 	@Test
 	public void authenticate_shouldStillLogInWhenTheUpgradeFails() throws Exception {
 		// longer than users.password holds, so the UPDATE fails
 		withStandInEncoder(rawPassword -> StringUtils.repeat('x', 300), hashBefore -> {
 			assertNotNull(dao.authenticate("admin", "test"));
 			assertEquals(hashBefore, readStoredPassword());
-			assertFalse(sessionFactory.getCurrentSession().getTransaction().getRollbackOnly());
 		});
 	}
-	
+
 	@Test
 	public void authenticate_shouldNotOverwriteAHashThatChangedDuringTheLogin() throws Exception {
 		withStandInEncoder(rawPassword -> {
-			// encode() runs between authenticate's read and its UPDATE, so a change committed from here
-			// stands in for a concurrent one
+			// encode() runs after authenticate's transaction has committed and before the upgrade UPDATE, so a
+			// change committed from here stands in for a concurrent login or password change
 			inNewTransaction(() -> sessionFactory.getCurrentSession()
-			        .createNativeQuery("update users set password = 'changed meanwhile' where user_id = 1")
-			        .executeUpdate());
+					.createNativeQuery("update users set password = 'changed meanwhile' where user_id = 1")
+					.executeUpdate());
 			return "stand-in:" + rawPassword;
 		}, hashBefore -> {
 			assertNotNull(dao.authenticate("admin", "test"));
 			assertEquals("changed meanwhile", readStoredPassword());
 		});
 	}
-	
+
 	private interface StandInTest {
-		
+
 		void run(String hashBefore) throws Exception;
 	}
-	
+
 	/**
 	 * Swaps openmrsPasswordEncoder for one that writes with the given stand-in, runs the body, then puts the
-	 * encoder and admin's row back. The upgrade commits in its own transaction, so it has to be undone in one too.
+	 * encoder and admin's rows back.
+	 * <p>
+	 * authenticate() locks the user's row until its transaction commits, and the password upgrade only runs
+	 * after that commit. The test-managed transaction never commits and already holds admin's lock from the
+	 * login in the base class, so it is ended here (rolling back the test data) and the body runs against
+	 * the committed initial data. Whatever the body commits has to be undone by hand.
 	 */
+	@SuppressWarnings("unchecked")
 	private void withStandInEncoder(Function<CharSequence, String> standInEncode, StandInTest body) throws Exception {
 		DefaultListableBeanFactory factory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext)
-		        .getBeanFactory();
+				.getBeanFactory();
 		PasswordEncoder originalEncoder = applicationContext.getBean("openmrsPasswordEncoder", PasswordEncoder.class);
 		PasswordEncoder legacyEncoder = applicationContext.getBean("openmrsLegacyPasswordEncoder", PasswordEncoder.class);
 		PasswordEncoder standIn = new PasswordEncoder() {
-			
+
 			@Override
 			public String encode(CharSequence rawPassword) {
 				return standInEncode.apply(rawPassword);
 			}
-			
+
 			@Override
 			public boolean matches(CharSequence rawPassword, String encodedPassword) {
 				return standInEncode.apply(rawPassword).equals(encodedPassword);
 			}
 		};
-		
-		Object[] original = (Object[]) sessionFactory.getCurrentSession()
-		        .createNativeQuery("select password, date_changed, changed_by from users where user_id = 1")
-		        .uniqueResult();
-		
+
+		TestTransaction.end();
+
+		Object[] original = callInNewTransaction(() -> (Object[]) sessionFactory.getCurrentSession()
+				.createNativeQuery("select password, date_changed, changed_by from users where user_id = 1")
+				.uniqueResult());
+		List<Object[]> originalProperties = callInNewTransaction(() -> (List<Object[]>) sessionFactory.getCurrentSession()
+				.createNativeQuery("select property, property_value from user_property where user_id = 1")
+				.addScalar("property", StandardBasicTypes.STRING).addScalar("property_value", StandardBasicTypes.STRING)
+				.list());
+
 		factory.destroySingleton("openmrsPasswordEncoder");
 		factory.registerSingleton("openmrsPasswordEncoder", new OpenmrsDelegatingPasswordEncoder("modern",
-		        Collections.singletonMap("modern", standIn), legacyEncoder));
+				Collections.singletonMap("modern", standIn), legacyEncoder));
 		try {
 			body.run((String) original[0]);
 		}
 		finally {
 			factory.destroySingleton("openmrsPasswordEncoder");
 			factory.registerSingleton("openmrsPasswordEncoder", originalEncoder);
-			
-			inNewTransaction(() -> sessionFactory.getCurrentSession().createNativeQuery(
-			    "update users set password = ?1, date_changed = ?2, changed_by = ?3 where user_id = 1")
-			        .setParameter(1, original[0], StandardBasicTypes.STRING)
-			        .setParameter(2, original[1], StandardBasicTypes.TIMESTAMP)
-			        .setParameter(3, original[2], StandardBasicTypes.INTEGER).executeUpdate());
+
+			inNewTransaction(() -> {
+				sessionFactory.getCurrentSession()
+						.createNativeQuery("update users set password = ?1, date_changed = ?2, changed_by = ?3 where user_id = 1")
+						.setParameter(1, original[0], StandardBasicTypes.STRING)
+						.setParameter(2, original[1], StandardBasicTypes.TIMESTAMP)
+						.setParameter(3, original[2], StandardBasicTypes.INTEGER).executeUpdate();
+				sessionFactory.getCurrentSession().createNativeQuery("delete from user_property where user_id = 1")
+						.executeUpdate();
+				for (Object[] property : originalProperties) {
+					sessionFactory.getCurrentSession()
+							.createNativeQuery("insert into user_property (user_id, property, property_value) values (1, ?1, ?2)")
+							.setParameter(1, property[0], StandardBasicTypes.STRING)
+							.setParameter(2, property[1], StandardBasicTypes.STRING).executeUpdate();
+				}
+			});
 		}
 	}
-	
+
 	private void inNewTransaction(Runnable work) {
-		new TransactionTemplate(applicationContext.getBean(PlatformTransactionManager.class),
-		        new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> {
-			        work.run();
-			        return null;
-		        });
+		callInNewTransaction(() -> {
+			work.run();
+			return null;
+		});
 	}
-	
+
+	private <T> T callInNewTransaction(Supplier<T> work) {
+		return new TransactionTemplate(applicationContext.getBean(PlatformTransactionManager.class),
+				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> work.get());
+	}
+
 	private String readStoredPassword() {
-		return (String) sessionFactory.getCurrentSession()
-		        .createNativeQuery("select password from users where user_id = 1").uniqueResult();
+		return callInNewTransaction(() -> (String) sessionFactory.getCurrentSession()
+				.createNativeQuery("select password from users where user_id = 1").uniqueResult());
 	}
 }
