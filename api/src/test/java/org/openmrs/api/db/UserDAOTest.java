@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +27,7 @@ import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Security;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -166,6 +168,19 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		assertThat(caughtException.getMessage(), is("Illegal attempt to change user password from unknown caller"));
 	}
 	
+	@Test
+	public void changePassword_shouldClearTheFailedLoginBackoff() {
+		userJoe.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() + 60000));
+		Context.getUserService().saveUser(userJoe);
+
+		Context.getUserService().changePassword(userJoe, PASSWORD);
+
+		User updated = dao.getUser(userJoe.getId());
+		assertNull(updated.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null),
+		    "Changing the password should clear the failed login back-off");
+	}
+
 	@Test
 	public void changePassword_shouldNotOverwriteUserSecretQuestionOrAnswer() {
 		Context.getUserService().changePassword(userJoe, PASSWORD);
