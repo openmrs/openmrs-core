@@ -59,7 +59,7 @@
 		<property name="dateChanged" type="java.util.Date" 
 			column="date_changed" length="19" />
 
-		<set name="formFields" lazy="true" inverse="true" cascade="all-delete-orphan">
+		<set name="formFields" access="field" lazy="true" inverse="true" cascade="all-delete-orphan">
 			<key>
 				<column name="form_id" />
 			</key>

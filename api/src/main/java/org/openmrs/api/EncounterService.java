@@ -93,7 +93,14 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> void and create new obs when saving encounter<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
 	 * encounter<br/>
-	 * <strong>Should</strong> cascade save encounter allergies
+	 * <strong>Should</strong> cascade save encounter allergies<br/>
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of saved type when type
+	 * is changed<br/>
+	 * <strong>Should</strong> not change saved type if user is not supposed to edit encounters of saved
+	 * type<br/>
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of new type when type is
+	 * changed<br/>
+	 * <strong>Should</strong> change type if user is allowed to edit encounters of both types
 	 *
 	 * @param encounter to be saved
 	 * @throws APIException
@@ -124,7 +131,9 @@ public interface EncounterService extends OpenmrsService {
 	 * Get Encounter by its UUID
 	 * <p>
 	 * <strong>Should</strong> find object given valid uuid<br/>
-	 * <strong>Should</strong> return null if no object found with given uuid
+	 * <strong>Should</strong> return null if no object found with given uuid<br/>
+	 * <strong>Should</strong> fail if user is not allowed to view encounter by given uuid<br/>
+	 * <strong>Should</strong> return encounter if user is allowed to view it
 	 *
 	 * @param uuid
 	 * @return encounter or null
@@ -247,7 +256,9 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> not change the voided obs it holds<br/>
 	 * <strong>Should</strong> not trim the text of an order it voids<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
-	 * encounter
+	 * encounter<br/>
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of saved type when type
+	 * is changed
 	 *
 	 * @param encounter Encounter object to void
 	 * @param reason String reason that it's being voided
@@ -266,7 +277,9 @@ public interface EncounterService extends OpenmrsService {
 	 * <strong>Should</strong> not change the obs it unvoids<br/>
 	 * <strong>Should</strong> save a new version of a voided group left on its patient by a move<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
-	 * encounter
+	 * encounter<br/>
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of saved type when type
+	 * is changed
 	 *
 	 * @param encounter Encounter to be revived
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
@@ -281,7 +294,9 @@ public interface EncounterService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> purgeEncounter<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
-	 * encounter
+	 * encounter<br/>
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of saved type when type
+	 * is changed
 	 *
 	 * @param encounter encounter object to be purged
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
@@ -296,7 +311,9 @@ public interface EncounterService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> cascade purge to obs and orders<br/>
 	 * <strong>Should</strong> fail if user is not supposed to edit encounters of type of given
-	 * encounter
+	 * encounter<br/>
+	 * <strong>Should</strong> fail if user is not supposed to edit encounters of saved type when type
+	 * is changed
 	 *
 	 * @param encounter encounter object to be purged
 	 * @param cascade Purge any related observations as well?
@@ -562,7 +579,9 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get all encounters for a cohort of patients
 	 * <p>
-	 * <strong>Should</strong> get all encounters for a cohort of patients
+	 * <strong>Should</strong> get all encounters for a cohort of patients<br/>
+	 * <strong>Should</strong> not return encounters the user is not allowed to view<br/>
+	 * <strong>Should</strong> not return a patient whose encounters the user is not allowed to view
 	 *
 	 * @param patients Cohort of patients to search
 	 * @return Map of all encounters for specified patients.
@@ -854,11 +873,14 @@ public interface EncounterService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> return true if user can edit encounter<br/>
 	 * <strong>Should</strong> return false if user can not edit encounter<br/>
-	 * <strong>Should</strong> fail if encounter is null
+	 * <strong>Should</strong> fail if encounter is null<br/>
+	 * <strong>Should</strong> return false if user is not supposed to edit encounters of saved type
+	 * when type is changed
 	 *
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests edit access
-	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on encounter type
+	 * @return true if user has the <em>editPrivilege</em> of the encounter type saved in the database
+	 *         for the given encounter, if any, as well as that of the encounter type set on it
 	 */
 	public boolean canEditEncounter(Encounter encounter, User subject);
 

@@ -59,3 +59,184 @@ updates:
       - dependency-name: "org.liquibase:liquibase-maven-plugin"
         versions:
           - ">= 4.0"
+
+  # Maintenance branches. Dependabot only reads this file from the default branch, so each maintained
+  # release branch needs its own entries here, added when the branch is cut and removed when it reaches
+  # end of life (see "Dependency Updates" in the README). Security updates are only raised against the
+  # default branch, so released branches take patch updates as the closest substitute. All 2.x branches
+  # must stay on Java 8 and javax.servlet, so major updates are ignored; any minor update that breaks
+  # either fails the Java 8 CI build and should get an explicit ignore entry.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "2.9.x"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "github-actions"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "2.9.x"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "maven"
+      include: "scope"
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
+      hibernate:
+        patterns:
+          - "org.hibernate*"
+          - "org.infinispan*"
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson*"
+      logging:
+        patterns:
+          - "org.apache.logging.log4j*"
+          - "org.slf4j*"
+      test:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.testcontainers*"
+          - "org.hamcrest*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins*"
+          - "org.codehaus.mojo*"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "2.8.x"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "github-actions"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "2.8.x"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "maven"
+      include: "scope"
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
+      hibernate:
+        patterns:
+          - "org.hibernate*"
+          - "org.infinispan*"
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson*"
+      logging:
+        patterns:
+          - "org.apache.logging.log4j*"
+          - "org.slf4j*"
+      test:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.testcontainers*"
+          - "org.hamcrest*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins*"
+          - "org.codehaus.mojo*"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "2.7.x"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "github-actions"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "2.7.x"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "-"
+    reviewers:
+      - "openmrs/dev-4"
+      - "openmrs/dev-5"
+    commit-message:
+      prefix: "maven"
+      include: "scope"
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
+      hibernate:
+        patterns:
+          - "org.hibernate*"
+          - "org.infinispan*"
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson*"
+      logging:
+        patterns:
+          - "org.apache.logging.log4j*"
+          - "org.slf4j*"
+      test:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.testcontainers*"
+          - "org.hamcrest*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins*"
+          - "org.codehaus.mojo*"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

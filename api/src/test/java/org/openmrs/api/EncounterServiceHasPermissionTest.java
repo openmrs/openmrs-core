@@ -14,15 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.api.PatientServiceHasPermissionTest.DenyingPatientRule;
+import org.openmrs.security.AuthorizationRules;
 import org.openmrs.security.DomainObjectAuthorizationRule;
+import org.openmrs.security.OpenmrsPermissionEvaluator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,7 +43,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code Patient} rule at all, while the value is judged per encounter on its own runtime type.
  * <p>
  * {@link DenyingPatientRule} is reused rather than duplicated; both it and
- * {@link DenyingEncounterRule} deny nothing until a test arms them.
+ * {@link DenyingEncounterRule} are registered with the evaluator for each test here and removed
+ * afterward, rather than being beans (see {@link AuthorizationRules}), and deny nothing until a
+ * test arms them.
  */
 public class EncounterServiceHasPermissionTest extends BaseContextSensitiveTest {
 
@@ -53,16 +57,20 @@ public class EncounterServiceHasPermissionTest extends BaseContextSensitiveTest 
 	private EncounterService encounterService;
 
 	@Autowired
-	private DenyingPatientRule patientRule;
+	private OpenmrsPermissionEvaluator evaluator;
 
-	@Autowired
-	private DenyingEncounterRule encounterRule;
+	private final DenyingPatientRule patientRule = new DenyingPatientRule();
+
+	private final DenyingEncounterRule encounterRule = new DenyingEncounterRule();
+
+	@BeforeEach
+	public void registerRules() {
+		AuthorizationRules.register(evaluator, patientRule, encounterRule);
+	}
 
 	@AfterEach
-	public void resetRules() {
-		patientRule.setDeniedPatientId(null);
-		patientRule.setDeniedPatientUuid(null);
-		encounterRule.setDeniedEncounterId(null);
+	public void unregisterRules() {
+		AuthorizationRules.unregister(evaluator, patientRule, encounterRule);
 	}
 
 	private Map<Integer, List<Encounter>> encountersOfBothPatients() {
@@ -97,10 +105,8 @@ public class EncounterServiceHasPermissionTest extends BaseContextSensitiveTest 
 	}
 
 	/**
-	 * Denies exactly one, test-selected encounter, authorizing every other target. Off by default so
-	 * registering it does not change behavior for tests that do not use it.
+	 * Denies exactly one, test-selected encounter, authorizing every other target.
 	 */
-	@Component
 	public static class DenyingEncounterRule implements DomainObjectAuthorizationRule {
 
 		private volatile Integer deniedEncounterId;
