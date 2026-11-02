@@ -202,13 +202,13 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 			}
 
-			// reject attempts made before the back-off from previous failures has elapsed, without
-			// checking the password. The attempt is still recorded so a burst of failures cannot
-			// skip the attempt counter and bypass the account lockout.
+			// reject attempts made before the back-off from previous failures has elapsed. The password
+			// is not checked, so the attempt is not counted towards the lockout either. Counting it
+			// would lock out a user who retries faster than the back-off even though 2.9.x logged them
+			// in, and a refusal can never be an extra password guess.
 			long backoffTime = getLoginBackoffTimestamp(candidateUser);
 			if (backoffTime > System.currentTimeMillis()) {
 				log.info("Rejected login attempt for {} because the failed-login back-off has not elapsed yet", login);
-				recordFailedLoginAttempt(candidateUser);
 				throw new ContextAuthenticationException(errorMsg);
 			}
 

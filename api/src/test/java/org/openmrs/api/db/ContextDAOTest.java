@@ -285,20 +285,20 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldRejectLoginAttemptsBeforeTheBackoffExpires() {
 		User user = getAdmin();
+		String backoffTimestamp = String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
-		    String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1)));
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, backoffTimestamp);
 		Context.getUserService().saveUser(user);
 
 		// the correct password must be rejected without being checked while the back-off is active
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
 
 		User afterRejection = getAdmin();
-		assertEquals("3", afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
-		    "A rejected attempt must still be counted so it cannot bypass the lockout");
-		assertTrue(Long.parseLong(afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP)) >
-		        System.currentTimeMillis(),
-		    "A rejected attempt should not shorten the back-off");
+		assertEquals("2", afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "A rejected attempt checks no password, so it must not be counted towards the lockout");
+		assertEquals(backoffTimestamp,
+		    afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP),
+		    "A rejected attempt must not extend or shorten the back-off");
 	}
 
 	@Test
