@@ -42,6 +42,8 @@ import org.springframework.stereotype.Repository;
 @Repository("locationDAO")
 public class HibernateLocationDAO implements LocationDAO {
 
+	private static final String LOCATION_ID = "locationId";
+
 	private final SessionFactory sessionFactory;
 
 	@Autowired
@@ -407,7 +409,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		Join<Location, LocationTag> tagsJoin = subRoot.join("tags");
 
 		tagCountSubquery.select(cb.count(subRoot)).where(cb.and(tagsJoin.get("locationTagId").in(tagIds),
-		    cb.equal(subRoot.get("locationId"), locationRoot.get("locationId"))));
+		    cb.equal(subRoot.get(LOCATION_ID), locationRoot.get(LOCATION_ID))));
 
 		mainQuery.select(locationRoot).where(
 		    cb.and(cb.isFalse(locationRoot.get("retired")), cb.equal(cb.literal((long) tags.size()), tagCountSubquery)));
@@ -465,12 +467,12 @@ public class HibernateLocationDAO implements LocationDAO {
 
 		String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
 		String cteSql = "WITH RECURSIVE descendants (location_id) AS ("
-		        + " SELECT location_id FROM location WHERE parent_location = :locationId" + retiredFilter
+		        + " SELECT location_id FROM location WHERE parent_location = :" + LOCATION_ID + retiredFilter
 		        + " UNION ALL SELECT l.location_id FROM location l"
 		        + " INNER JOIN descendants d ON l.parent_location = d.location_id" + retiredFilter
 		        + ") SELECT location_id FROM descendants";
 		return session.createNativeQuery(cteSql, Integer.class)
-		        .setParameter("locationId", criteria.getDescendantOfLocation().getLocationId()).list();
+		        .setParameter(LOCATION_ID, criteria.getDescendantOfLocation().getLocationId()).list();
 	}
 
 	private List<Predicate> buildPredicates(CriteriaBuilder cb, CriteriaQuery<Location> cq, Root<Location> root,
@@ -482,7 +484,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		}
 
 		if (descendantIds != null) {
-			predicates.add(root.get("locationId").in(descendantIds));
+			predicates.add(root.get(LOCATION_ID).in(descendantIds));
 		}
 
 		addNameFragmentPredicate(cb, root, criteria, predicates);
