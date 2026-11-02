@@ -217,7 +217,7 @@ public interface UserDAO {
 	 *
 	 * @param user the user whose login credential to lock
 	 * @return the locked, freshly loaded login credential
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0
 	 */
 	public LoginCredential getLoginCredentialForUpdate(User user);
 
