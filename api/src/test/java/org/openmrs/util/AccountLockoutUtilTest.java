@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.api.db.hibernate;
+package org.openmrs.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-public class HibernateContextDAOLockoutTest {
+public class AccountLockoutUtilTest {
 
 	private static final long INITIAL_DURATION_MS = TimeUnit.MINUTES.toMillis(10);
 
@@ -24,40 +24,40 @@ public class HibernateContextDAOLockoutTest {
 	@Test
 	public void calculateLockoutDurationMs_shouldUseInitialDurationForFirstLockout() {
 		assertEquals(INITIAL_DURATION_MS,
-			HibernateContextDAO.calculateLockoutDurationMs(0, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
+			AccountLockoutUtil.calculateLockoutDurationMs(0, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
 		assertEquals(INITIAL_DURATION_MS,
-			HibernateContextDAO.calculateLockoutDurationMs(1, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
+			AccountLockoutUtil.calculateLockoutDurationMs(1, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
 	}
 
 	@Test
 	public void calculateLockoutDurationMs_shouldDoubleForEachConsecutiveLockout() {
 		assertEquals(TimeUnit.MINUTES.toMillis(20),
-			HibernateContextDAO.calculateLockoutDurationMs(2, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
+			AccountLockoutUtil.calculateLockoutDurationMs(2, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
 		assertEquals(TimeUnit.MINUTES.toMillis(40),
-			HibernateContextDAO.calculateLockoutDurationMs(3, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
+			AccountLockoutUtil.calculateLockoutDurationMs(3, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
 		assertEquals(TimeUnit.MINUTES.toMillis(80),
-			HibernateContextDAO.calculateLockoutDurationMs(4, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
+			AccountLockoutUtil.calculateLockoutDurationMs(4, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
 	}
 
 	@Test
 	public void calculateLockoutDurationMs_shouldEnforceMaximumDuration() {
 		long maximumDurationMs = TimeUnit.MINUTES.toMillis(60);
 		assertEquals(TimeUnit.MINUTES.toMillis(40),
-			HibernateContextDAO.calculateLockoutDurationMs(3, INITIAL_DURATION_MS, maximumDurationMs));
+			AccountLockoutUtil.calculateLockoutDurationMs(3, INITIAL_DURATION_MS, maximumDurationMs));
 		assertEquals(maximumDurationMs,
-			HibernateContextDAO.calculateLockoutDurationMs(4, INITIAL_DURATION_MS, maximumDurationMs));
+			AccountLockoutUtil.calculateLockoutDurationMs(4, INITIAL_DURATION_MS, maximumDurationMs));
 	}
 
 	@Test
 	public void calculateLockoutDurationMs_shouldNotOverflowForLargeLockoutCounts() {
 		assertEquals(MAXIMUM_DURATION_MS,
-			HibernateContextDAO.calculateLockoutDurationMs(Long.MAX_VALUE, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
+			AccountLockoutUtil.calculateLockoutDurationMs(Long.MAX_VALUE, INITIAL_DURATION_MS, MAXIMUM_DURATION_MS));
 	}
 
 	@Test
 	public void calculateLockoutDurationMs_shouldNotExceedMaximumWhenInitialDurationIsLarger() {
 		long maximumDurationMs = TimeUnit.MINUTES.toMillis(5);
 		assertEquals(maximumDurationMs,
-			HibernateContextDAO.calculateLockoutDurationMs(1, INITIAL_DURATION_MS, maximumDurationMs));
+			AccountLockoutUtil.calculateLockoutDurationMs(1, INITIAL_DURATION_MS, maximumDurationMs));
 	}
 }

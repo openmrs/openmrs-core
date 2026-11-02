@@ -43,6 +43,7 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.util.AccountLockoutUtil;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -275,6 +276,59 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		}
 
 		return daoSaveUser(user, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getAccountLockoutEndTime(org.openmrs.User)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Date getAccountLockoutEndTime(User user) {
+		if (user == null) {
+			return null;
+		}
+		
+		String lockoutTimestamp = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+		if (StringUtils.isBlank(lockoutTimestamp) || "0".equals(lockoutTimestamp)) {
+			return null;
+		}
+		
+		long lockoutStart;
+		try {
+			lockoutStart = Long.parseLong(lockoutTimestamp);
+		}
+		catch (NumberFormatException e) {
+			log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+				lockoutTimestamp);
+			return null;
+		}
+		if (lockoutStart <= 0) {
+			return null;
+		}
+		
+		long lockoutDuration = AccountLockoutUtil.getLockoutDurationMs(AccountLockoutUtil.getLockoutCount(user));
+		long lockoutEnd = lockoutDuration > Long.MAX_VALUE - lockoutStart ? Long.MAX_VALUE
+		        : lockoutStart + lockoutDuration;
+		if (lockoutEnd <= System.currentTimeMillis()) {
+			return null;
+		}
+		return new Date(lockoutEnd);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#unlockUser(org.openmrs.User)
+	 */
+	@Override
+	public User unlockUser(User user) throws APIException {
+		if (user == null) {
+			throw new IllegalArgumentException("user is required");
+		}
+		
+		Context.requirePrivilege(PrivilegeConstants.EDIT_USERS);
+		user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+		user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS);
+		user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT);
+		return saveUser(user);
 	}
 	
 	public User voidUser(User user, String reason) throws APIException {

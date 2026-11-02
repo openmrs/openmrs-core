@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import javax.persistence.LockTimeoutException;
 import javax.persistence.PessimisticLockException;
@@ -45,6 +44,7 @@ import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.util.AccountLockoutUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -68,10 +68,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class HibernateContextDAO implements ContextDAO {
 	
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
-	
-	private static final Long DEFAULT_INITIAL_LOCKOUT_DURATION_MS = TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES);
-
-	private static final Long DEFAULT_MAX_LOCKOUT_DURATION_MS = TimeUnit.MILLISECONDS.convert(24L, TimeUnit.HOURS);
 
 	/**
 	 * The capability that proves to {@link Daemon} this class is allowed to act with daemon
@@ -179,7 +175,8 @@ public class HibernateContextDAO implements ContextDAO {
 				// the lockout duration depends on how many consecutive lockouts this account has had,
 				// and the lockout timestamp is left untouched while the account is locked so that it
 				// can expire automatically
-				final long lockoutDuration = getLockoutDurationMs(getLockoutCount(candidateUser));
+				final long lockoutDuration = AccountLockoutUtil
+				        .getLockoutDurationMs(AccountLockoutUtil.getLockoutCount(candidateUser));
 				if (System.currentTimeMillis() - lockoutTime > lockoutDuration) {
 					// keep the lockout count so that the next lockout doubles the duration
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
@@ -249,7 +246,7 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
 						.currentTimeMillis()));
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT, String
-						.valueOf(getLockoutCount(candidateUser) + 1));
+						.valueOf(AccountLockoutUtil.getLockoutCount(candidateUser) + 1));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
@@ -271,89 +268,6 @@ public class HibernateContextDAO implements ContextDAO {
 		);
 	}
 
-	/**
-	 * Calculates the duration of a lockout. The first lockout lasts {@code initialDurationMs}, and
-	 * every consecutive lockout doubles that duration until {@code maximumDurationMs} is reached.
-	 * The loop stops once the maximum is reached so that a corrupt or unusually large lockout count
-	 * cannot overflow the calculation.
-	 *
-	 * @param lockoutCount the number of consecutive lockouts, where the first lockout is 1
-	 * @param initialDurationMs the duration of the first lockout in milliseconds
-	 * @param maximumDurationMs the maximum lockout duration in milliseconds
-	 * @return the lockout duration in milliseconds
-	 */
-	static long calculateLockoutDurationMs(long lockoutCount, long initialDurationMs, long maximumDurationMs) {
-		if (initialDurationMs <= 0) {
-			return 0L;
-		}
-
-		long maximum = maximumDurationMs > 0 ? maximumDurationMs : initialDurationMs;
-		long durationMs = Math.min(initialDurationMs, maximum);
-
-		for (long lockout = 1; lockout < lockoutCount && durationMs < maximum; lockout++) {
-			durationMs = durationMs > maximum / 2 ? maximum : durationMs * 2;
-		}
-		return Math.min(durationMs, maximum);
-	}
-
-	private long getLockoutDurationMs(int lockoutCount) {
-		long initialDurationMs = DEFAULT_INITIAL_LOCKOUT_DURATION_MS;
-		long maximumDurationMs = DEFAULT_MAX_LOCKOUT_DURATION_MS;
-
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			initialDurationMs = getMinutesGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME,
-				initialDurationMs);
-			maximumDurationMs = getMinutesGlobalProperty(OpenmrsConstants.GP_MAX_ACCOUNT_LOCKOUT_DURATION,
-				maximumDurationMs);
-		}
-		catch (Exception e) {
-			log.error("Unable to read the account lockout global properties. Using the default initial duration "
-				+ "of 10 minutes and maximum duration of 24 hours.", e);
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-
-		return calculateLockoutDurationMs(lockoutCount, initialDurationMs, maximumDurationMs);
-	}
-
-	private long getMinutesGlobalProperty(String property, long defaultDurationMs) {
-		String configuredValue = Context.getAdministrationService().getGlobalProperty(property);
-		if (StringUtils.isNotBlank(configuredValue)) {
-			try {
-				long minutes = Long.parseLong(configuredValue.trim());
-				if (minutes >= 0) {
-					return TimeUnit.MINUTES.toMillis(minutes);
-				}
-			}
-			catch (NumberFormatException e) {
-				log.error("Unable to convert the global property {} to a valid number of minutes. Using the default.",
-					property, e);
-			}
-		}
-		return defaultDurationMs;
-	}
-
-	/**
-	 * Get the number of consecutive lockouts stored for the given user.
-	 *
-	 * @param user the user to check
-	 * @return the number of consecutive lockouts, defaulting to zero if none is defined
-	 */
-	private int getLockoutCount(User user) {
-		String lockoutCountString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT, "0");
-		int lockoutCount = 0;
-		try {
-			lockoutCount = Integer.parseInt(lockoutCountString);
-		}
-		catch (NumberFormatException e) {
-			log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT,
-				lockoutCountString);
-		}
-		return Math.max(lockoutCount, 0);
-	}
-	
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUuid(java.lang.String)
 	 */

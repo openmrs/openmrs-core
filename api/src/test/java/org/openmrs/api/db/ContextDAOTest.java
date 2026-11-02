@@ -285,6 +285,17 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void authenticate_shouldNotExtendTheLockoutWhenTheAccountIsUsedWhileLocked() {
+		String lockoutTimestamp = String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(9));
+		setAdminLockoutState("7", lockoutTimestamp, "1");
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+
+		User admin = Context.getUserService().getUserByUsername("admin");
+		assertEquals(lockoutTimestamp, admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
+	}
+
+	@Test
 	public void authenticate_shouldDoubleLockoutDurationForRepeatedLockouts() {
 		// Expiry resets failed attempts but must preserve the first lockout count.
 		long lockoutTimestamp = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)
@@ -339,7 +350,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void authenticate_shouldResetLockoutHistoryAfterSuccessfulLogin() {
-		setAdminLockoutState("3", null, "2");
+		setAdminLockoutState("3", String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(21)), "2");
 
 		assertNotNull(dao.authenticate("admin", "test"));
 
@@ -347,6 +358,16 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		assertEquals("0", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
 		assertEquals("", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
 		assertEquals("", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+	}
+
+	@Test
+	public void unlockUser_shouldAllowAuthenticationBeforeTheLockoutExpires() {
+		setAdminLockoutState("7", String.valueOf(System.currentTimeMillis()), "3");
+
+		User admin = Context.getUserService().getUserByUsername("admin");
+		Context.getUserService().unlockUser(admin);
+
+		assertNotNull(dao.authenticate("admin", "test"));
 	}
 
 	@Test
