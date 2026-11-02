@@ -67,7 +67,7 @@
 			<one-to-many class="ConceptName" />
 		</set>
 
-		<set name="descriptions" lazy="true" inverse="true" cascade="all-delete-orphan"
+		<set name="descriptions" access="field" lazy="true" inverse="true" cascade="all-delete-orphan"
 			order-by="concept_description_id" batch-size="25">
 			<key column="concept_id" />
 			<one-to-many class="ConceptDescription" />
@@ -81,7 +81,7 @@
 		
 		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
 		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
-		<set name="conceptSets" table="concept_set" lazy="true"
+		<set name="conceptSets" access="field" table="concept_set" lazy="true"
 				cascade="all,delete-orphan" order-by="sort_weight asc" inverse="true" batch-size="25">
 			<key not-null="true">
 				<column name="concept_set" />
@@ -89,7 +89,7 @@
 			<one-to-many class="ConceptSet"/>
 		</set>
 		
-		<set name="conceptMappings" inverse="true" cascade="all,delete-orphan,evict" batch-size="25">
+		<set name="conceptMappings" access="field" inverse="true" cascade="all,delete-orphan,evict" batch-size="25">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptMap" />
 		</set>
@@ -109,7 +109,7 @@
 			<column name="creator" />
 		</many-to-one>
 		
-        <set name="attributes" lazy="true" inverse="true" batch-size="100"
+        <set name="attributes" access="field" lazy="true" inverse="true" batch-size="100"
              cascade="all-delete-orphan" order-by="voided asc">
             <key column="concept_id"/>
             <one-to-many class="ConceptAttribute"/>
@@ -126,7 +126,7 @@
 			<property name="units" type="java.lang.String" column="units" length="50" />
 			<property name="allowDecimal" type="java.lang.Boolean" column="allow_decimal" length="1" not-null="true"/>
 			<property name="displayPrecision" type="java.lang.Integer" column="display_precision" not-null="false"/>
-			<set name="referenceRanges" inverse="true" cascade="all,delete-orphan" order-by="concept_reference_range_id asc">
+			<set name="referenceRanges" access="field" inverse="true" cascade="all,delete-orphan" order-by="concept_reference_range_id asc">
 				<key column="concept_id" not-null="true" />
 				<one-to-many class="ConceptReferenceRange" />
 			</set>

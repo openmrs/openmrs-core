@@ -34,6 +34,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -392,7 +393,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAddress
 	 */
 	public void setAddresses(Set<PersonAddress> addresses) {
-		this.addresses = addresses;
+		this.addresses = CollectionUtil.setCollection(getAddresses(), addresses);
 	}
 
 	/**
@@ -415,7 +416,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonName
 	 */
 	public void setNames(Set<PersonName> names) {
-		this.names = names;
+		this.names = CollectionUtil.setCollection(getNames(), names);
 	}
 
 	/**
@@ -456,7 +457,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see org.openmrs.PersonAttribute
 	 */
 	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(getAttributes(), attributes);
 		attributeMap = null;
 		allAttributeMap = null;
 	}

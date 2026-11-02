@@ -42,6 +42,7 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleValueBridge;
 import org.openmrs.api.db.hibernate.type.StringEnumType;
+import org.openmrs.util.CollectionUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -325,7 +326,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tags the tags to set.
 	 */
 	public void setTags(Collection<ConceptNameTag> tags) {
-		this.tags = tags;
+		this.tags = CollectionUtil.setCollection(this.tags, tags);
 	}
 
 	/**

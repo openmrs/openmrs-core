@@ -76,7 +76,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PersonAddress -->
-		<set name="addresses" lazy="false" inverse="true" batch-size="1000"
+		<set name="addresses" access="field" lazy="false" inverse="true" batch-size="1000"
 			cascade="all-delete-orphan" sort="natural"
 			order-by="voided asc, preferred desc, date_created desc">
 			<cache usage="read-write"/>
@@ -85,7 +85,7 @@
 		</set>
 
 		<!-- bi-directional one-to-many association to PersonName -->
-		<set name="names" lazy="false" inverse="true" batch-size="1000"
+		<set name="names" access="field" lazy="false" inverse="true" batch-size="1000"
 			cascade="all-delete-orphan" sort="natural"
 			order-by="voided asc, preferred desc, date_created desc">
 			<cache usage="read-write"/>
@@ -93,7 +93,7 @@
 			<one-to-many class="PersonName" />
 		</set>
 		
-		<set name="attributes" lazy="false" inverse="true" batch-size="1000"
+		<set name="attributes" access="field" lazy="false" inverse="true" batch-size="1000"
 			cascade="all-delete-orphan" sort="natural">
 			<cache usage="read-write"/>
 			<key column="person_id" />
