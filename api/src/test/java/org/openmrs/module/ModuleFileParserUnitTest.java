@@ -58,6 +58,11 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
@@ -205,6 +210,22 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
 		expectModuleExceptionWithMessage(() -> parser.parse(file), messageKey);
+	}
+
+	@Test
+	public void parse_shouldFailIfModuleHasConfigWithInvalidConfigVersion() throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("0.0.1")
+		        .withModuleName("Reporting").withModuleId("reporting").withPackage("org.openmrs.module.reporting").build();
+
+		String messageKey = "Module.error.invalidConfigVersion";
+		MessageSourceService injected = mock(MessageSourceService.class);
+		when(injected.getMessage(eq(messageKey), any(), any())).thenReturn(messageKey);
+
+		expectModuleExceptionWithMessage(() -> new ModuleFileParser(injected).parse(writeConfigXmlToFile(config)),
+		    messageKey);
+		verify(injected).getMessage(eq(messageKey), any(), any());
+		verifyNoInteractions(messageSourceService);
 	}
 
 	@Test
