@@ -1383,7 +1383,7 @@
 		<jobrunrVersion>6.3.5</jobrunrVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.22.1</log4jVersion>
+		<log4jVersion>2.26.1</log4jVersion>
 		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
 		
 		<graalJsVersion>20.3.17</graalJsVersion>
