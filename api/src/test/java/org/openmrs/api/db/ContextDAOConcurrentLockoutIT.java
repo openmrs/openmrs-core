@@ -176,19 +176,32 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	 */
 	@Test
 	void authenticate_shouldNotCountAttemptsRefusedByTheBackoff() throws Exception {
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "60");
-		User user = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
-		String backoffTimestamp = String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
-		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, backoffTimestamp);
-		Context.getUserService().saveUser(user);
+		// build up the counter with the back-off disabled, so every attempt is really checked. The
+		// lockout limit is raised because the attempts are only needed to make the back-off long
+		// enough to outlast the burst below.
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "1000");
+		int countedAttempts = 11;
+		for (int i = 0; i < countedAttempts; i++) {
+			assertFalse(authenticateInSeparateSession(LOCKED_USERNAME, WRONG_PASSWORD).contains(LOCKOUT_MESSAGE));
+		}
+
+		// one more checked failure starts a back-off that cannot expire during the burst
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "600");
+		assertFalse(authenticateInSeparateSession(LOCKED_USERNAME, WRONG_PASSWORD).contains(LOCKOUT_MESSAGE));
+		countedAttempts++;
 		Context.clearSession();
+		String backoffTimestamp = Context.getUserService().getUserByUsername(LOCKED_USERNAME)
+		        .getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
+		assertTrue(Long.parseLong(backoffTimestamp) > System.currentTimeMillis(),
+		    "the seeded failure should have started an active back-off");
 
 		List<String> outcomes = authenticateConcurrently(LOCKED_USERNAME, WRONG_PASSWORD, CONCURRENT_ATTEMPTS);
 
 		assertTrue(outcomes.stream().noneMatch(m -> m.contains(LOCKOUT_MESSAGE)), outcomes.toString());
 		User afterRefusals = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
-		assertEquals("2", afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		assertEquals(String.valueOf(countedAttempts),
+		    afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
 		    "attempts refused by the back-off must not count towards the lockout; outcomes: " + outcomes);
 		assertEquals(backoffTimestamp,
 		    afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP),
