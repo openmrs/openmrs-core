@@ -116,7 +116,7 @@ public class WebModuleUtilTest {
 	@Test
 	public void startModule_shouldCreateDwrModulesXmlIfNotExists() throws ParserConfigurationException {
 		// create dummy module and start it
-		Module mod = buildModuleForMessageTest(buildModuleConfig());
+		Module mod = buildModule(buildModuleConfig());
 		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
 
 		ServletContext servletContext = mock(ServletContext.class);
@@ -144,7 +144,7 @@ public class WebModuleUtilTest {
 	public void startModule_dwrModuleXmlshouldContainModuleInfo()
 	        throws ParserConfigurationException, FileNotFoundException {
 		// create dummy module and start it
-		Module mod = buildModuleForMessageTest(buildModuleConfig());
+		Module mod = buildModule(buildModuleConfig());
 		ModuleFactory.getStartedModulesMap().put(mod.getModuleId(), mod);
 
 		ServletContext servletContext = mock(ServletContext.class);
@@ -184,7 +184,7 @@ public class WebModuleUtilTest {
 
 		List<ServletInfo> servletInfos = Arrays.asList(servletInfo1, servletInfo2);
 
-		Module mod = buildModuleForMessageTest(buildModuleConfigWithServlets(servletInfos));
+		Module mod = buildModule(buildModuleConfigWithServlets(servletInfos));
 		ServletContext servletContext = mock(ServletContext.class);
 		ModuleClassLoader moduleClassLoader = mock(ModuleClassLoader.class);
 
@@ -229,7 +229,7 @@ public class WebModuleUtilTest {
 
 		List<ServletInfo> servletInfos = Arrays.asList(servletInfo1, servletInfo2);
 
-		Module mod = buildModuleForMessageTest(buildModuleConfigWithServlets(servletInfos));
+		Module mod = buildModule(buildModuleConfigWithServlets(servletInfos));
 		ServletContext servletContext = mock(ServletContext.class);
 		ModuleClassLoader moduleClassLoader = mock(ModuleClassLoader.class);
 
@@ -259,7 +259,7 @@ public class WebModuleUtilTest {
 		WebModuleUtil.unloadServlets(mod);
 	}
 
-	private Module buildModuleForMessageTest(Document moduleConfig) throws ParserConfigurationException {
+	private Module buildModule(Document moduleConfig) throws ParserConfigurationException {
 		Module mod = new Module("My Module");
 		mod.setModuleId("mymodule");
 		mod.setFile(new File("sampleFile.jar"));
