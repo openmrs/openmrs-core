@@ -296,7 +296,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 			throw new IllegalArgumentException("Task " + name + " has repeat interval " + intervalSeconds
 				+ "s; the minimum supported interval is " + MIN_INTERVAL_SECONDS + "s");
 		}
-		Instant anchor = task.getStartTime() != null ? task.getStartTime().toInstant() : Instant.now();
+		// JobRunr's first interval run is createdAt + interval, so anchor one interval before start_time
+		Instant anchor = task.getStartTime() != null
+			? task.getStartTime().toInstant().minusSeconds(intervalSeconds) : Instant.now();
 		RecurringJob recurringJob = new RecurringJob(task.getUuid(),
 			new JobDetails(new JobRequestAdapter(task, scheduledBy)),
 			new Interval(Duration.ofSeconds(intervalSeconds)), ZoneId.systemDefault(), anchor);

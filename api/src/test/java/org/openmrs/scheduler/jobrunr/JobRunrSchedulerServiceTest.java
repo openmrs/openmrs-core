@@ -9,18 +9,28 @@
  */
 package org.openmrs.scheduler.jobrunr;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.jobrunr.jobs.Job;
+import org.jobrunr.jobs.JobDetails;
 import org.jobrunr.jobs.RecurringJob;
 import org.jobrunr.jobs.states.StateName;
 import org.jobrunr.scheduling.JobRequestScheduler;
 import org.jobrunr.scheduling.JobScheduler;
+import org.jobrunr.scheduling.interval.Interval;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.ConcurrentJobModificationException;
 import org.jobrunr.storage.JobNotFoundException;
+import org.jobrunr.storage.RecurringJobsResult;
 import org.jobrunr.storage.StorageProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +43,9 @@ import org.openmrs.scheduler.db.SchedulerDAO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -51,8 +63,10 @@ public class JobRunrSchedulerServiceTest {
 
 	private final SchedulerDAO schedulerDAO = mock(SchedulerDAO.class);
 
+	private final JobRequestScheduler jobRequestScheduler = mock(JobRequestScheduler.class);
+
 	private final JobRunrSchedulerService schedulerService = new JobRunrSchedulerService(storageProvider,
-	        mock(JobRequestScheduler.class), mock(JobScheduler.class), schedulerDAO);
+	        jobRequestScheduler, mock(JobScheduler.class), schedulerDAO);
 
 	@BeforeEach
 	public void setJobRunrServerLifecycle() {
@@ -175,6 +189,103 @@ public class JobRunrSchedulerServiceTest {
 		ArgumentCaptor<RecurringJob> saved = ArgumentCaptor.forClass(RecurringJob.class);
 		verify(storageProvider).saveRecurringJob(saved.capture());
 		assertEquals("PT1M", saved.getValue().getScheduleExpression());
+	}
+
+	@Test
+	public void onStartup_shouldReRegisterARecurringJobLeftWithAPlaceholderPeriod() {
+		// a started task whose recurring job was written by an earlier 2.9.0 build with a ~1 day placeholder
+		TaskDefinition task = recurringTask(60L);
+		when(schedulerDAO.getTasks()).thenReturn(Collections.singletonList(task));
+		RecurringJob placeholder = new RecurringJob(task.getUuid(),
+		        new JobDetails(new JobRequestAdapter(task, "daemon")), new Interval(Duration.ofHours(25)),
+		        ZoneId.systemDefault());
+		when(storageProvider.getRecurringJobs())
+		        .thenReturn(new RecurringJobsResult(Collections.singletonList(placeholder)));
+
+		try (MockedStatic<Context> context = mockStatic(Context.class)) {
+			context.when(() -> Context.hasPrivilege(anyString())).thenReturn(true);
+
+			schedulerService.onStartup();
+		}
+
+		verify(jobRequestScheduler).delete(task.getUuid());
+		ArgumentCaptor<RecurringJob> saved = ArgumentCaptor.forClass(RecurringJob.class);
+		verify(storageProvider).saveRecurringJob(saved.capture());
+		assertEquals(task.getUuid(), saved.getValue().getId());
+		assertEquals("PT1M", saved.getValue().getScheduleExpression());
+	}
+
+	@Test
+	public void onStartup_shouldLeaveARecurringJobWithTheConfiguredPeriodAlone() {
+		TaskDefinition task = recurringTask(60L);
+		when(schedulerDAO.getTasks()).thenReturn(Collections.singletonList(task));
+		RecurringJob current = new RecurringJob(task.getUuid(),
+		        new JobDetails(new JobRequestAdapter(task, "daemon")), new Interval(Duration.ofSeconds(60)),
+		        ZoneId.systemDefault());
+		when(storageProvider.getRecurringJobs()).thenReturn(new RecurringJobsResult(Collections.singletonList(current)));
+
+		schedulerService.onStartup();
+
+		verify(jobRequestScheduler, never()).delete(anyString());
+		verify(storageProvider, never()).saveRecurringJob(any(RecurringJob.class));
+	}
+
+	@Test
+	public void onStartup_shouldRegisterTasksListedAfterOneThatFailsToRegister() {
+		// JobRunr rejects intervals under 5s; the failure must not stop the tasks after it
+		TaskDefinition invalid = recurringTask(1L);
+		TaskDefinition valid = recurringTask(60L);
+		when(schedulerDAO.getTasks()).thenReturn(Arrays.asList(invalid, valid));
+		when(storageProvider.getRecurringJobs()).thenReturn(new RecurringJobsResult());
+
+		schedulerService.onStartup();
+
+		ArgumentCaptor<RecurringJob> saved = ArgumentCaptor.forClass(RecurringJob.class);
+		verify(storageProvider).saveRecurringJob(saved.capture());
+		assertEquals(valid.getUuid(), saved.getValue().getId());
+		assertEquals("PT1M", saved.getValue().getScheduleExpression());
+	}
+
+	@Test
+	public void scheduleTask_shouldFirstRunARecurringTaskAtAFutureStartTime() throws Exception {
+		Instant startTime = Instant.now().plus(30, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.SECONDS);
+		TaskDefinition task = recurringTask(3600L);
+		task.setStartTime(Date.from(startTime));
+
+		schedulerService.scheduleTask(task);
+
+		ArgumentCaptor<RecurringJob> saved = ArgumentCaptor.forClass(RecurringJob.class);
+		verify(storageProvider).saveRecurringJob(saved.capture());
+		// JobRunr's first interval run is createdAt + interval, so the anchor is one interval before start_time
+		assertEquals(startTime.minusSeconds(3600), saved.getValue().getCreatedAt());
+		assertEquals(startTime, saved.getValue().getNextRun(Instant.now()));
+	}
+
+	@Test
+	public void scheduleTask_shouldChangeTheAnchorWhenOnlyTheIntervalChanges() throws Exception {
+		Instant startTime = Instant.now().minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.SECONDS);
+		TaskDefinition task = recurringTask(3600L);
+		task.setStartTime(Date.from(startTime));
+		schedulerService.scheduleTask(task);
+		task.setRepeatInterval(7200L);
+		schedulerService.scheduleTask(task);
+
+		ArgumentCaptor<RecurringJob> saved = ArgumentCaptor.forClass(RecurringJob.class);
+		verify(storageProvider, times(2)).saveRecurringJob(saved.capture());
+		List<RecurringJob> registrations = saved.getAllValues();
+		assertEquals("PT2H", registrations.get(1).getScheduleExpression());
+		assertNotEquals(registrations.get(0).getCreatedAt(), registrations.get(1).getCreatedAt());
+	}
+
+	private TaskDefinition recurringTask(long repeatIntervalSeconds) {
+		TaskDefinition task = new TaskDefinition();
+		task.setUuid(UUID.randomUUID().toString());
+		task.setName("Recurring task " + repeatIntervalSeconds + "s");
+		task.setTaskClass("org.openmrs.scheduler.tasks.HelloWorldTask");
+		task.setStartOnStartup(false);
+		task.setStarted(true);
+		task.setRepeatInterval(repeatIntervalSeconds);
+		return task;
 	}
 
 	private TaskDefinition startupTask() {
