@@ -860,12 +860,19 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		String sender = mailProperties.getProperty("mail.from");
 		
 		String subject = messages.getMessage("mail.passwordreset.subject", null, locale);
-		
-		String msg = messages.getMessage("mail.passwordreset.content", null, locale)
-			.replace("{name}", user.getUsername())
-			.replace("{link}", link)
-			.replace("{time}", String.valueOf(getValidTime() / 60000));
-		
+
+		String body = messages.getMessage("mail.passwordreset.content", null, locale).replace("{name}", user.getUsername())
+		        .replace("{time}", String.valueOf(getValidTime() / 60000)).replace("{link}", "");
+
+		String msg;
+		if (mailProperties.getProperty("mail.default_content_type", "text/plain").startsWith("text/html")) {
+			String escapedLink = link.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"",
+			    "&quot;");
+			msg = body + "<br/><br/><a href=\"" + escapedLink + "\">" + escapedLink + "</a>";
+		} else {
+			msg = body + "\n\n" + link + "\n";
+		}
+
 		Context.getMessageService().sendMessage(user.getEmail(), sender, subject, msg);
 		
 		return user;
@@ -914,7 +921,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (user == null) {
 			throw new InvalidActivationKeyException("activation.key.not.correct");
 		}
-		
+
+		LoginCredential credentials = dao.getLoginCredentialForUpdate(user);
+		String storedKey = credentials.getActivationKey();
+		if (storedKey == null || !storedKey.startsWith(Security.encodeString(activationKey) + ":")) {
+			throw new InvalidActivationKeyException("activation.key.not.correct");
+		}
+
 		updatePassword(user, newPassword);
 	}
 
