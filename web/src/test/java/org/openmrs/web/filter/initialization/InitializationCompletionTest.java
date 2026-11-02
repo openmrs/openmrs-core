@@ -297,6 +297,97 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 	}
 
 	@Test
+	void completeSetup_shouldDeleteTheInstallIncompleteFileOnceItHasWrittenTheRuntimeProperties() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		assertTrue(job.markInstallIncomplete());
+		assertTrue(InitializationFilter.getInstallIncompleteFile().exists());
+		useAnonymousUserContext();
+
+		assertTrue(job.completeSetup(runtimeProperties()));
+
+		assertTrue(runtimePropertiesFile.exists());
+		assertFalse(InitializationFilter.getInstallIncompleteFile().exists());
+	}
+
+	@Test
+	void completeSetup_shouldKeepTheInstallIncompleteFileWhenTheSeededAdminPasswordHasNoReplacement() throws Exception {
+		writeExistingRuntimeProperties();
+		InitializationFilter.InitializationCompletion job = job("", true);
+		assertTrue(job.markInstallIncomplete());
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+		job.finishInstallation(false);
+
+		assertEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		assertEquals("yes", readRuntimeProperties(runtimePropertiesFile).getProperty("existing"));
+		assertTrue(InitializationFilter.getInstallIncompleteFile().exists());
+	}
+
+	@Test
+	void completeSetup_shouldKeepTheInstallIncompleteFileUntilTheRuntimePropertiesAreWritten() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		job.wizardModel.implementationId = "TESTID";
+		job.wizardModel.implementationIdName = "Test";
+		job.wizardModel.implementationIdPassPhrase = "secret";
+		// an id without a description is refused before the implementation id server is contacted
+		job.wizardModel.implementationIdDescription = "";
+		assertTrue(job.markInstallIncomplete());
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+
+		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		assertFalse(runtimePropertiesFile.exists());
+		assertTrue(InitializationFilter.getInstallIncompleteFile().exists());
+	}
+
+	@Test
+	void completeSetup_shouldKeepTheInstallIncompleteFileWhenItCannotWriteTheRuntimeProperties() throws Exception {
+		writeExistingRuntimeProperties();
+		// root can write a file whose write bit is cleared, so this runs only as another user
+		assumeTrue(runtimePropertiesFile.setWritable(false) && !runtimePropertiesFile.canWrite());
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		assertTrue(job.markInstallIncomplete());
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+
+		// replaced in this database, while the runtime properties still name the database they named before
+		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		assertTrue(InitializationFilter.getInstallIncompleteFile().exists());
+	}
+
+	@Test
+	void completeSetup_shouldTakeABlankImplementationIdForNone() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		job.wizardModel.implementationId = " ";
+		useAnonymousUserContext();
+
+		assertTrue(job.completeSetup(runtimeProperties()));
+
+		assertFalse(job.hasErrors());
+		assertTrue(runtimePropertiesFile.exists());
+	}
+
+	@Test
+	void markInstallIncomplete_shouldStopTheInstallWhenItCannotWriteTheFile() {
+		File directory = applicationDataDirectory.toFile();
+		// root can write to a directory whose write bit is cleared, so this runs only as another user
+		assumeTrue(directory.setWritable(false) && !directory.canWrite());
+		try {
+			InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+			assertFalse(job.markInstallIncomplete());
+
+			assertThat(job.getErrors(), hasKey(ErrorMessageConstants.ERROR_COMPLETE_STARTUP));
+			assertFalse(InitializationFilter.getInstallIncompleteFile().exists());
+		} finally {
+			directory.setWritable(true);
+		}
+	}
+
+	@Test
 	void completeSetup_shouldNotRunOnceAnEarlierStepOfTheInstallReportedAnError() throws Exception {
 		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
 		job.reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, "chooselang.vm", "no tables");

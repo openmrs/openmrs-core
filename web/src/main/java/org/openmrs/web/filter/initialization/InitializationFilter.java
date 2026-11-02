@@ -19,6 +19,8 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -884,6 +886,12 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 
+			// the page does not show a stored passphrase, so an id needs it entered again rather than failing the install
+			if (StringUtils.hasText(wizardModel.implementationId)) {
+				checkForEmptyValue(wizardModel.implementationIdPassPhrase, wizardModel.errors,
+				    "ImplementationId.passphrase.empty");
+			}
+
 			if (wizardModel.errors.isEmpty()) { // go to next page
 				page = WIZARD_COMPLETE;
 			}
@@ -1224,7 +1232,7 @@ public class InitializationFilter extends StartupFilter {
 		return file;
 	}
 
-	private String getRuntimePropertiesFileName() {
+	private static String getRuntimePropertiesFileName() {
 		String fileName = OpenmrsUtil.getRuntimePropertiesFileNameInTestMode();
 		if (fileName == null) {
 			fileName = WebConstants.WEBAPP_NAME + "-runtime.properties";
@@ -1299,13 +1307,109 @@ public class InitializationFilter extends StartupFilter {
 		super.init(filterConfig);
 		DatabaseDetective databaseDetective = new DatabaseDetective();
 		//set whether need to do initialization work
-		if (databaseDetective.isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
-			//if runtime-properties file doesn't exist, have to do initialization work
+		// the Listener, which starts first, has deleted the file that marks an install incomplete if it no longer
+		// applies, so the file decides the same way the Listener did
+		if (databaseDetective.isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))
+		        || getInstallIncompleteFile().exists()) {
+			//if runtime-properties file doesn't exist, or an install did not complete, have to do initialization work
 			setInitializationComplete(false);
 		} else {
 			//if database is not empty, then let UpdaterFilter to judge whether need database update
 			setInitializationComplete(true);
 		}
+	}
+
+	/**
+	 * The file an install writes before it puts users into the database, the admin user with the
+	 * password the core data seeds among them, and deletes once it has written the runtime properties
+	 * file. See {@link #isInstallIncomplete(Properties)}.
+	 *
+	 * @return the file in the application data directory, named after the runtime properties file,
+	 *         whether or not it exists
+	 */
+	public static File getInstallIncompleteFile() {
+		return new File(OpenmrsUtil.getApplicationDataDirectory(), getRuntimePropertiesFileName() + ".install-incomplete");
+	}
+
+	/**
+	 * Tells whether OpenMRS has to start this wizard because an install did not complete: one that put
+	 * users into the database and failed or was stopped before writing its runtime properties file. A
+	 * runtime properties file that was there before such an install still names that database, and
+	 * starting OpenMRS on it could leave the admin user with the password the core data seeds. Once the
+	 * admin user of the database the runtime properties name has another password, as after a later
+	 * install or a restore, the file that marks the install incomplete is deleted instead. The Listener
+	 * calls this once it has found that database not empty, before this filter starts, and this filter
+	 * then only looks at whether the file is still there.
+	 *
+	 * @param runtimeProperties the runtime properties OpenMRS starts with, or null if it has none
+	 * @return true if the file that marks an install incomplete is there and the database the runtime
+	 *         properties name may still have the seeded admin password
+	 * @throws SQLException if the file is there and the database the runtime properties name cannot
+	 *             tell whether the install finished, such as when it cannot be reached, or the file
+	 *             cannot be deleted
+	 */
+	public static boolean isInstallIncomplete(Properties runtimeProperties) throws SQLException {
+		File installIncompleteFile = getInstallIncompleteFile();
+		if (!installIncompleteFile.exists()) {
+			return false;
+		}
+		String url = runtimeProperties == null ? null : runtimeProperties.getProperty("connection.url");
+		if (!StringUtils.hasText(url)) {
+			return true;
+		}
+		String cannotTell = "Unable to tell whether the install " + installIncompleteFile.getAbsolutePath()
+		        + " marks as incomplete finished, so OpenMRS does not start. To install again, empty the database the "
+		        + "runtime properties name; to start OpenMRS on it, first make sure its admin user does not have the "
+		        + "password the core data seeds, then delete that file.";
+		Connection connection;
+		try {
+			String driver = runtimeProperties.getProperty("connection.driver_class");
+			// loaded as DatabaseUpdater loads it, since DatabaseUtil refuses a driver the wizard does not offer
+			if (StringUtils.hasText(driver)) {
+				Class.forName(driver);
+			} else {
+				DatabaseUtil.loadDatabaseDriver(url, null);
+			}
+			connection = DriverManager.getConnection(url, runtimeProperties.getProperty("connection.username"),
+			    runtimeProperties.getProperty("connection.password"));
+		} catch (ClassNotFoundException | SQLException | RuntimeException e) {
+			throw new SQLException(cannotTell, e);
+		}
+		boolean seeded;
+		try (Connection openConnection = connection;
+		        PreparedStatement statement = openConnection
+		                .prepareStatement("select password, salt from users where user_id = 1");
+		        ResultSet resultSet = statement.executeQuery()) {
+			if (!resultSet.next()) {
+				// the install stopped before the core data added the admin user
+				return true;
+			}
+			// the core data adds the admin user with the seeded password, so a missing password is another one
+			seeded = isSeededAdminPassword(resultSet.getString(1), resultSet.getString(2));
+		} catch (SQLException | RuntimeException e) {
+			throw new SQLException(cannotTell, e);
+		}
+		if (seeded) {
+			return true;
+		}
+		if (!installIncompleteFile.delete()) {
+			throw new SQLException("Unable to delete " + installIncompleteFile.getAbsolutePath()
+			        + ", which an install that did not complete left behind, though the admin user no longer has the "
+			        + "password the core data seeds. Delete it and start OpenMRS again.");
+		}
+		log.warn("Deleted {}, since the admin user of the database no longer has the password the core data seeds",
+		    installIncompleteFile.getAbsolutePath());
+		return false;
+	}
+
+	/**
+	 * @param passwordOnRecord a user's stored password
+	 * @param saltOnRecord that user's stored salt
+	 * @return true if the stored password is the one the core data gives the admin user, checked the
+	 *         way a login checks it
+	 */
+	private static boolean isSeededAdminPassword(String passwordOnRecord, String saltOnRecord) {
+		return Security.checkPassword(passwordOnRecord, SEEDED_ADMIN_PASSWORD + saltOnRecord);
 	}
 
 	private void importTestDataSet(InputStream in, String connectionUrl, String connectionUsername,
@@ -1474,6 +1578,12 @@ public class InitializationFilter extends StartupFilter {
 		 */
 		private Properties runtimePropertiesBeforeInstall;
 
+		/**
+		 * The file that marks the install incomplete, where the next start looks for it: the install's own
+		 * runtime properties can name another application data directory
+		 */
+		private final File installIncompleteFile;
+
 		public synchronized void reportError(String error, String errorPage, Object... params) {
 			errors.put(error, params);
 			this.errorPage = errorPage;
@@ -1581,6 +1691,7 @@ public class InitializationFilter extends StartupFilter {
 		 */
 		InitializationCompletion(InitializationWizardModel wizardModel) {
 			this.wizardModel = wizardModel;
+			installIncompleteFile = getInstallIncompleteFile();
 			installation = new Runnable() {
 
 				/**
@@ -1804,6 +1915,11 @@ public class InitializationFilter extends StartupFilter {
 								    new PrintingChangeSetExecutorCallback("OpenMRS schema file"));
 								addExecutedTask(WizardTask.CREATE_TABLES);
 
+								// the core data gives the admin user the seeded password
+								if (!markInstallIncomplete()) {
+									return;
+								}
+
 								//reset for this task
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_CORE_DATA);
@@ -1827,6 +1943,10 @@ public class InitializationFilter extends StartupFilter {
 						}
 
 						if (wizardModel.importTestData) {
+							// the imported users can include an admin user with the seeded password
+							if (!markInstallIncomplete()) {
+								return;
+							}
 							try {
 								setMessage("Importing test data");
 								setExecutingTask(WizardTask.IMPORT_TEST_DATA);
@@ -1990,10 +2110,37 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		/**
+		 * Writes the file that marks the install incomplete, before the install puts users into the
+		 * database. A runtime properties file that was there before the install stays where it is, and once
+		 * the database has tables, the next start would read it and start OpenMRS rather than this wizard,
+		 * whether or not the install got as far as replacing the seeded admin password. See
+		 * {@link #getInstallIncompleteFile()}.
+		 *
+		 * @return false once an error has been reported, before any users are in the database
+		 */
+		boolean markInstallIncomplete() {
+			try {
+				// written through to the disk before the database commits users the file has to outlast
+				Files.write(installIncompleteFile.toPath(),
+				    ("OpenMRS starts the setup wizard while this file is here: an install put users into its database "
+				            + "and has not finished.\n").getBytes(StandardCharsets.UTF_8),
+				    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE,
+				    StandardOpenOption.SYNC);
+			} catch (IOException e) {
+				reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+				log.warn("Unable to write {}, so the install stopped before putting users into the database",
+				    installIncompleteFile.getAbsolutePath(), e);
+				return false;
+			}
+			return true;
+		}
+
+		/**
 		 * Runs the steps between starting the web application context and starting OpenMRS, in a session
 		 * the caller opened, unless an earlier step of the install has reported an error. The runtime
 		 * properties file, which marks OpenMRS as installed, is written last, so a step that fails before
-		 * it leaves the file as it was.
+		 * it leaves the file as it was, and the file that marks the install incomplete, if the install
+		 * wrote one, is deleted only once the runtime properties file is written.
 		 *
 		 * @param runtimeProperties the runtime properties of the install, holding its database connection
 		 * @return true if every step succeeded, false once a step has reported an error
@@ -2021,6 +2168,10 @@ public class InitializationFilter extends StartupFilter {
 				return false;
 			}
 			setupComplete = true;
+			if (installIncompleteFile.exists() && !installIncompleteFile.delete()) {
+				log.error("Unable to delete {}. Delete it, or OpenMRS starts the setup wizard again when it next starts.",
+				    installIncompleteFile.getAbsolutePath());
+			}
 			return true;
 		}
 
@@ -2096,8 +2247,7 @@ public class InitializationFilter extends StartupFilter {
 				String passwordOnRecord = resultSet.getString(1);
 				String saltOnRecord = resultSet.getString(2);
 				// checked the way a login checks it
-				return passwordOnRecord != null
-				        && Security.checkPassword(passwordOnRecord, SEEDED_ADMIN_PASSWORD + saltOnRecord);
+				return passwordOnRecord != null && isSeededAdminPassword(passwordOnRecord, saltOnRecord);
 			}
 		}
 
@@ -2107,7 +2257,8 @@ public class InitializationFilter extends StartupFilter {
 		 * @return false if setting it failed
 		 */
 		private boolean setImplementationId() {
-			if ("".equals(wizardModel.implementationId)) {
+			// as the implementation id page tells an id from none
+			if (!StringUtils.hasText(wizardModel.implementationId)) {
 				return true;
 			}
 			try {
@@ -2178,8 +2329,10 @@ public class InitializationFilter extends StartupFilter {
 		 * them. One that failed before its setup was complete removes the runtime properties file it opened
 		 * to write it, so the next start comes back to this wizard; opening a file empties it, so this
 		 * holds for a file that was there before the install too. A runtime properties file the install
-		 * never opened stays, since whoever wrote it owns it. Once the setup is complete the database no
-		 * longer has the seeded admin password, so the file stays when only starting OpenMRS failed.
+		 * never opened stays, since whoever wrote it owns it, and so does the file that marks the install
+		 * incomplete, which brings the next start back to this wizard. Once the setup is complete the
+		 * database no longer has the seeded admin password, so the file stays when only starting OpenMRS
+		 * failed.
 		 *
 		 * @param succeeded whether the install got through starting OpenMRS
 		 */
