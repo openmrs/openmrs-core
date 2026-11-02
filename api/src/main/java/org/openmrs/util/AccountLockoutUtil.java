@@ -103,6 +103,38 @@ public final class AccountLockoutUtil {
 	}
 	
 	/**
+	 * Gets the time at which the given user's recorded lockout ends, or null if no lockout is
+	 * recorded. The returned time is in the past once the lockout has expired, so callers decide
+	 * whether the lockout is still active by comparing it with the current time.
+	 *
+	 * @param user the user to check
+	 * @return the time the recorded lockout ends in milliseconds since the epoch, even if that time
+	 *         has already passed, or null if the user does not have a recorded lockout
+	 */
+	public static Long getLockoutEndTimeMs(User user) {
+		String lockoutTimestamp = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
+		if (StringUtils.isBlank(lockoutTimestamp) || "0".equals(lockoutTimestamp)) {
+			return null;
+		}
+		
+		long lockoutStart;
+		try {
+			lockoutStart = Long.parseLong(lockoutTimestamp);
+		}
+		catch (NumberFormatException e) {
+			log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+			    lockoutTimestamp);
+			return null;
+		}
+		if (lockoutStart <= 0) {
+			return null;
+		}
+		
+		long lockoutDuration = getLockoutDurationMs(getLockoutCount(user));
+		return lockoutDuration > Long.MAX_VALUE - lockoutStart ? Long.MAX_VALUE : lockoutStart + lockoutDuration;
+	}
+	
+	/**
 	 * Gets the number of consecutive lockouts stored for the given user.
 	 *
 	 * @param user the user to check

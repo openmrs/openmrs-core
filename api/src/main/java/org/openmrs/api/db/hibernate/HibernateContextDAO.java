@@ -157,27 +157,13 @@ public class HibernateContextDAO implements ContextDAO {
 			}
 			session.refresh(candidateUser);
 
-			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
-			long lockoutTime = -1;
-			if (StringUtils.isNotBlank(lockoutTimeString) && !"0".equals(lockoutTimeString)) {
-				try {
-					// putting this in a try/catch in case the admin decided to put junk into the property
-					lockoutTime = Long.parseLong(lockoutTimeString);
-				}
-				catch (NumberFormatException e) {
-					log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
-						lockoutTimeString);
-				}
-			}
+			Long lockoutEndTime = AccountLockoutUtil.getLockoutEndTimeMs(candidateUser);
 
 			// if they've been locked out, don't continue with the authentication
-			if (lockoutTime > 0) {
-				// the lockout duration depends on how many consecutive lockouts this account has had,
-				// and the lockout timestamp is left untouched while the account is locked so that it
+			if (lockoutEndTime != null) {
+				// the lockout timestamp is left untouched while the account is locked so that it
 				// can expire automatically
-				final long lockoutDuration = AccountLockoutUtil
-				        .getLockoutDurationMs(AccountLockoutUtil.getLockoutCount(candidateUser));
-				if (System.currentTimeMillis() - lockoutTime > lockoutDuration) {
+				if (System.currentTimeMillis() >= lockoutEndTime) {
 					// keep the lockout count so that the next lockout doubles the duration
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);

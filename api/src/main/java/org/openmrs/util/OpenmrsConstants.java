@@ -1210,8 +1210,8 @@ public final class OpenmrsConstants {
 
 	/**
 	 * Name of the user_property that stores the number of consecutive lockouts this user has had.
-	 * The value determines the lockout duration and is reset after a successful login or an
-	 * administrative password reset.
+	 * The value determines the lockout duration and is reset after a successful login, any password
+	 * change or an administrative unlock.
 	 */
 	public static final String USER_PROPERTY_LOCKOUT_COUNT = "lockoutCount";
 	

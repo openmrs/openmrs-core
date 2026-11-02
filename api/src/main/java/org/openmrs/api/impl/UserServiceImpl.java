@@ -288,28 +288,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			return null;
 		}
 		
-		String lockoutTimestamp = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
-		if (StringUtils.isBlank(lockoutTimestamp) || "0".equals(lockoutTimestamp)) {
-			return null;
-		}
-		
-		long lockoutStart;
-		try {
-			lockoutStart = Long.parseLong(lockoutTimestamp);
-		}
-		catch (NumberFormatException e) {
-			log.warn("bad value stored in {} user property: {}", OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
-				lockoutTimestamp);
-			return null;
-		}
-		if (lockoutStart <= 0) {
-			return null;
-		}
-		
-		long lockoutDuration = AccountLockoutUtil.getLockoutDurationMs(AccountLockoutUtil.getLockoutCount(user));
-		long lockoutEnd = lockoutDuration > Long.MAX_VALUE - lockoutStart ? Long.MAX_VALUE
-		        : lockoutStart + lockoutDuration;
-		if (lockoutEnd <= System.currentTimeMillis()) {
+		Long lockoutEnd = AccountLockoutUtil.getLockoutEndTimeMs(user);
+		if (lockoutEnd == null || lockoutEnd <= System.currentTimeMillis()) {
 			return null;
 		}
 		return new Date(lockoutEnd);
