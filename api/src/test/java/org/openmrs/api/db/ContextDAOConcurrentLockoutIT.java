@@ -170,7 +170,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 	/**
 	 * Attempts refused because the back-off has not elapsed check no password, so a concurrent burst
 	 * of them must not advance the lockout counter or extend the back-off. Otherwise a client that
-	 * retries faster than the back-off would lock out an account that 2.9.x would have let in.
+	 * retries faster than the back-off would lock out an account that a plain retry would have let in.
 	 *
 	 * @see ContextDAO#authenticate(String,String)
 	 */
@@ -199,6 +199,7 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		List<String> outcomes = authenticateConcurrently(LOCKED_USERNAME, WRONG_PASSWORD, CONCURRENT_ATTEMPTS);
 
 		assertTrue(outcomes.stream().noneMatch(m -> m.contains(LOCKOUT_MESSAGE)), outcomes.toString());
+		Context.clearSession();
 		User afterRefusals = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
 		assertEquals(String.valueOf(countedAttempts),
 		    afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),

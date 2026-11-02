@@ -339,6 +339,40 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		    "The lockout should reject the attempt before the back-off is considered");
 	}
 
+	@Test
+	public void authenticate_shouldLockoutUserWhoWaitsOutEachBackoff() {
+		setMaxFailedLoginBackoffSeconds(3);
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "3");
+
+		long[] expectedBackoffSeconds = { 0, 1, 2, 3 };
+		for (int i = 0; i < expectedBackoffSeconds.length; i++) {
+			long before = System.currentTimeMillis();
+			assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+			long after = System.currentTimeMillis();
+
+			User admin = getAdmin();
+			String backoff = admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null);
+			if (expectedBackoffSeconds[i] == 0) {
+				assertNull(backoff, "failure " + (i + 1) + " should not start a back-off");
+				continue;
+			}
+			long expectedMillis = TimeUnit.SECONDS.toMillis(expectedBackoffSeconds[i]);
+			long backoffTime = Long.parseLong(backoff);
+			assertTrue(backoffTime >= before + expectedMillis && backoffTime <= after + expectedMillis,
+			    "failure " + (i + 1) + " stored a back-off of " + (backoffTime - before) + " ms");
+
+			// wait the back-off out
+			admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+			    String.valueOf(System.currentTimeMillis() - 1));
+			Context.flushSession();
+		}
+
+		ContextAuthenticationException exception = assertThrows(ContextAuthenticationException.class,
+		    () -> dao.authenticate("admin", "test"));
+		assertTrue(exception.getMessage().contains("Invalid number of connection attempts"), exception.getMessage());
+	}
+
 	private User getAdmin() {
 		return Context.getUserService().getUserByUsername("admin");
 	}

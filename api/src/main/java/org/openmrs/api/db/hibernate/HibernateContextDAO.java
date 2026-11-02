@@ -204,8 +204,8 @@ public class HibernateContextDAO implements ContextDAO {
 
 			// reject attempts made before the back-off from previous failures has elapsed. The password
 			// is not checked, so the attempt is not counted towards the lockout either. Counting it
-			// would lock out a user who retries faster than the back-off even though 2.9.x logged them
-			// in, and a refusal can never be an extra password guess.
+			// would lock out a user who retries faster than the back-off, and a refusal can never be an
+			// extra password guess.
 			long backoffTime = getLoginBackoffTimestamp(candidateUser);
 			if (backoffTime > System.currentTimeMillis()) {
 				log.info("Rejected login attempt for {} because the failed-login back-off has not elapsed yet", login);
@@ -243,7 +243,39 @@ public class HibernateContextDAO implements ContextDAO {
 			} else {
 				// the user failed the username/password, increment their
 				// attempts here and set the "lockout" timestamp if necessary
-				recordFailedLoginAttempt(candidateUser);
+				int attempts = getUsersLoginAttempts(candidateUser);
+
+				attempts++;
+
+				int allowedFailedLoginCount = 7;
+				try {
+					Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+					allowedFailedLoginCount = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
+				}
+				catch (Exception ex) {
+					log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
+						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
+				}
+				finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+				}
+
+				if (attempts > allowedFailedLoginCount) {
+					// set the user as locked out at this exact time
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+						.currentTimeMillis()));
+				} else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+				}
+
+				long backoffMillis = calculateFailedLoginBackoffMillis(attempts, getMaxFailedLoginBackoffSeconds());
+				if (backoffMillis > 0) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+					    String.valueOf(System.currentTimeMillis() + backoffMillis));
+				}
+
+				saveUserProperties(candidateUser);
 			}
 		}
 
@@ -350,53 +382,6 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
-	}
-
-	/**
-	 * Records a failed login attempt for the given user, incrementing the consecutive failure count
-	 * and locking the account out once the configured limit is exceeded. The failed-login back-off is
-	 * refreshed so the next attempt has to wait before the password is checked again.
-	 *
-	 * @param candidateUser the user whose login attempt failed
-	 */
-	private void recordFailedLoginAttempt(User candidateUser) {
-		int attempts = getUsersLoginAttempts(candidateUser);
-
-		attempts++;
-
-		int allowedFailedLoginCount = 7;
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			allowedFailedLoginCount = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-				OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
-		}
-		catch (Exception ex) {
-			log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
-				OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-
-		if (attempts > allowedFailedLoginCount) {
-			// set the user as locked out at this exact time
-			candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
-				.currentTimeMillis()));
-		} else {
-			candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
-		}
-
-		long backoffMillis = calculateFailedLoginBackoffMillis(attempts, getMaxFailedLoginBackoffSeconds());
-		if (backoffMillis > 0) {
-			long backoffTimestamp = System.currentTimeMillis() + backoffMillis;
-			// never shorten a back-off that is already further in the future
-			if (backoffTimestamp > getLoginBackoffTimestamp(candidateUser)) {
-				candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, String
-					.valueOf(backoffTimestamp));
-			}
-		}
-
-		saveUserProperties(candidateUser);
 	}
 
 	/**
