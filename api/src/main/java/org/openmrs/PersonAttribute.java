@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
@@ -94,6 +95,9 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	@FullTextField(name = "valueStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "valueAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	private String value;
+
+	private static final Set<Class<?>> VALUE_TYPES = Set.of(String.class, Integer.class, Long.class, Double.class,
+	    Float.class, Boolean.class, Date.class);
 
 	/** default constructor */
 	public PersonAttribute() {
@@ -282,6 +286,13 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 
 		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
+
+			if (!isPermittedClass(c)) {
+				log.warn(
+				    "Refusing to hydrate PersonAttributeType '{}': format '{}' is not an Attributable or a permitted value type",
+				    getAttributeType().getName(), getAttributeType().getFormat());
+				return getValue();
+			}
 			try {
 				Object o = c.newInstance();
 				if (o instanceof Attributable) {
@@ -289,6 +300,12 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 					return attr.hydrate(getValue());
 				}
 			} catch (InstantiationException e) {
+				if (!VALUE_TYPES.contains(c)) {
+					log.warn(
+					    "Unable to hydrate PersonAttributeType '{}': Attributable format '{}' has no no-arg constructor",
+					    getAttributeType().getName(), getAttributeType().getFormat());
+					return getValue();
+				}
 				// try to hydrate the object with the String constructor
 				log.trace("Unable to call no-arg constructor for class: " + c.getName());
 				return c.getConstructor(String.class).newInstance(getValue());
@@ -391,6 +408,21 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 
 			return OpenmrsUtil.compareWithNullAsGreatest(pa1.getPersonAttributeId(), pa2.getPersonAttributeId());
 		}
+	}
+
+	/**
+	 * Whether a class may be used as a {@link PersonAttributeType#getFormat()}: either an
+	 * {@link Attributable} implementation or one of a fixed set of value types.
+	 * <p>
+	 * <strong>Should</strong> return true for attributable class<br/>
+	 * <strong>Should</strong> return true for permitted value type<br/>
+	 * <strong>Should</strong> return false for class outside permitted set
+	 *
+	 * @param c the class named by a person attribute type format
+	 * @return true if attributes of that format may be hydrated
+	 */
+	public static boolean isPermittedClass(Class<?> c) {
+		return Attributable.class.isAssignableFrom(c) || VALUE_TYPES.contains(c);
 	}
 
 }
