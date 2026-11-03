@@ -4575,4 +4575,79 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 
 		assertEquals(Integer.valueOf(2), count);
 	}
+
+	/**
+	 * A form that removes an answer voids the obs and saves its encounter, and the REST module passes
+	 * every obs of the update to Encounter#addObs, which leaves a saved voided obs as it was saved.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldVoidAnObsSavedWithoutALocationThroughItsEncounter() {
+		Context.getAdministrationService().executeSQL("update obs set location_id = null where obs_id = 7", false);
+		Context.clearSession();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Obs obs = Context.getObsService().getObs(7);
+		obs.setVoided(true);
+		obs.setVoidReason("removed from the form");
+		encounter.addObs(obs);
+
+		Context.getEncounterService().saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs stored = Context.getObsService().getObs(7);
+		assertTrue(stored.getVoided());
+		assertNull(stored.getLocation());
+	}
+
+	/**
+	 * htmlformentry adds the obs of a nested group to the encounter while they are still live and voids
+	 * the answers that were cleared afterwards.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldVoidAnObsSavedWithoutALocationThatWasAddedToItsEncounterFirst() {
+		Context.getAdministrationService().executeSQL("update obs set location_id = null where obs_id = 7", false);
+		Context.clearSession();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Obs obs = Context.getObsService().getObs(7);
+		encounter.addObs(obs);
+		obs.setVoided(true);
+		obs.setVoidReason("answer cleared");
+
+		Context.getEncounterService().saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs stored = Context.getObsService().getObs(7);
+		assertTrue(stored.getVoided());
+		assertNull(stored.getLocation());
+	}
+
+	/**
+	 * A live obs without a location takes the encounter's new location, as one with the original
+	 * location does.
+	 *
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldGiveALiveObsWithoutALocationTheNewLocationOfItsEncounter() {
+		Context.getAdministrationService().executeSQL("update obs set location_id = null where obs_id = 7", false);
+		Context.clearSession();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Location newLocation = Context.getLocationService().getLocation(2);
+		encounter.setLocation(newLocation);
+
+		Context.getEncounterService().saveEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs original = Context.getObsService().getObs(7);
+		assertTrue(original.getVoided());
+		assertNull(original.getLocation());
+		Obs newVersion = Context.getObsService().getRevisionObs(original);
+		assertEquals(newLocation, newVersion.getLocation());
+	}
 }

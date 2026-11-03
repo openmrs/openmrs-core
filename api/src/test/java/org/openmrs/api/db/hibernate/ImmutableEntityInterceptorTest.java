@@ -313,4 +313,38 @@ public class ImmutableEntityInterceptorTest extends BaseContextSensitiveTest {
 		assertThrows(UnchangeableObjectException.class,
 		    () -> interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null));
 	}
+
+	/**
+	 * DropMillisecondsHibernateInterceptor leaves the milliseconds of a java.sql.Date, so they reach
+	 * the database.
+	 *
+	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, Object, Object[], Object[], String[],
+	 *      org.hibernate.type.Type[])
+	 */
+	@Test
+	public void onFlushDirty_shouldFailIfASqlDateDiffersOnlyBelowASecond() {
+		String[] propertyNames = new String[] { SomeImmutableEntityInterceptor.IMMUTABLE_FIELD_NAME };
+		Object[] previousState = new Object[] { new Timestamp(1700000000000L) };
+		Object[] currentState = new Object[] { new java.sql.Date(1700000000600L) };
+		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
+		assertThrows(UnchangeableObjectException.class,
+		    () -> interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null));
+	}
+
+	/**
+	 * DropMillisecondsHibernateInterceptor leaves the milliseconds of a java.sql.Time, so they reach
+	 * the database.
+	 *
+	 * @see ImmutableEntityInterceptor#onFlushDirty(Object, Object, Object[], Object[], String[],
+	 *      org.hibernate.type.Type[])
+	 */
+	@Test
+	public void onFlushDirty_shouldFailIfASqlTimeDiffersOnlyBelowASecond() {
+		String[] propertyNames = new String[] { SomeImmutableEntityInterceptor.IMMUTABLE_FIELD_NAME };
+		Object[] previousState = new Object[] { new Timestamp(1700000000000L) };
+		Object[] currentState = new Object[] { new java.sql.Time(1700000000999L) };
+		ImmutableEntityInterceptor interceptor = new SomeImmutableEntityInterceptor();
+		assertThrows(UnchangeableObjectException.class,
+		    () -> interceptor.onFlushDirty(new Order(), null, currentState, previousState, propertyNames, null));
+	}
 }

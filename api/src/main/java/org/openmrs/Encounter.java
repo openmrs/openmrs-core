@@ -355,8 +355,9 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * <strong>Should</strong> not fail with null obs<br/>
 	 * <strong>Should</strong> set encounter attribute on obs<br/>
 	 * <strong>Should</strong> add obs to non null initial obs set<br/>
-	 * <strong>Should</strong> add encounter attrs to obs if attributes are null<br/>
-	 * <strong>Should</strong> add encounter attrs to obs groupMembers if attributes are null
+	 * <strong>Should</strong> add encounter attrs to a new obs if attributes are null<br/>
+	 * <strong>Should</strong> add encounter attrs to new obs groupMembers if attributes are null<br/>
+	 * <strong>Should</strong> not add encounter attrs to a saved obs
 	 *
 	 * @param observation the Obs to add to this encounter
 	 */
@@ -389,15 +390,18 @@ public class Encounter extends BaseChangeableOpenmrsData {
 				o.setEncounter(this);
 
 				//if the attribute was already set, preserve it
-				//if not, inherit the values from the encounter
-				if (o.getObsDatetime() == null) {
-					o.setObsDatetime(getEncounterDatetime());
-				}
-				if (o.getPerson() == null) {
-					o.setPerson(getPatient());
-				}
-				if (o.getLocation() == null) {
-					o.setLocation(getLocation());
+				//if not, inherit the values from the encounter, unless the obs is saved, since a saved
+				//obs keeps the values it was saved with even if it is voided after this call
+				if (o.getObsId() == null) {
+					if (o.getObsDatetime() == null) {
+						o.setObsDatetime(getEncounterDatetime());
+					}
+					if (o.getPerson() == null) {
+						o.setPerson(getPatient());
+					}
+					if (o.getLocation() == null) {
+						o.setLocation(getLocation());
+					}
 				}
 
 				//propagate attributes to  all group members as well

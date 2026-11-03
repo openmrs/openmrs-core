@@ -101,7 +101,9 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	 * false<br/>
 	 * <strong>Should</strong> pass if a date differs only below a second<br/>
 	 * <strong>Should</strong> pass if a date before 1970 differs only below a second<br/>
-	 * <strong>Should</strong> fail if a date falls in another second
+	 * <strong>Should</strong> fail if a date falls in another second<br/>
+	 * <strong>Should</strong> fail if a sql date differs only below a second<br/>
+	 * <strong>Should</strong> fail if a sql time differs only below a second
 	 */
 	@Override
 	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
@@ -158,15 +160,15 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	}
 
 	/**
-	 * Compares dates to the second, because {@link DropMillisecondsHibernateInterceptor} drops the
-	 * milliseconds of the dates it is about to write before this interceptor runs.
+	 * Compares a date to the second when {@link DropMillisecondsHibernateInterceptor} drops its
+	 * milliseconds before this interceptor runs, and any other value exactly.
 	 */
 	private static boolean isSameValue(Object currentValue, Object previousValue) {
 		// an unchanged lazy association is the same proxy in both states, and equals would load it
 		if (currentValue == previousValue) {
 			return true;
 		}
-		if (currentValue instanceof Date && previousValue instanceof Date) {
+		if (DropMillisecondsHibernateInterceptor.dropsMilliseconds(currentValue) && previousValue instanceof Date) {
 			return Math.floorDiv(((Date) currentValue).getTime(), 1000L) == Math.floorDiv(((Date) previousValue).getTime(),
 			    1000L);
 		}

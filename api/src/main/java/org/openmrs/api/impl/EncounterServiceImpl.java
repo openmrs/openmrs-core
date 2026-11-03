@@ -161,8 +161,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 					}
 
+					// a live obs without a location takes the new location, like one with the original location
 					if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)
-					        && obs.getLocation().equals(originalLocation)) {
+					        && (obs.getLocation() == null || obs.getLocation().equals(originalLocation))) {
 						obs.setLocation(newLocation);
 					}
 				}
