@@ -12,7 +12,6 @@ package org.openmrs.validator;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.annotation.Handler;
@@ -103,7 +102,7 @@ public class ConceptReferenceTermValidator implements Validator {
 		}
 
 		//validate the concept reference term maps
-		if (CollectionUtils.isNotEmpty(conceptReferenceTerm.getConceptReferenceTermMaps())) {
+		if (!conceptReferenceTerm.getConceptReferenceTermMaps().isEmpty()) {
 			int index = 0;
 			Set<String> mappedTermUuids = null;
 			for (ConceptReferenceTermMap map : conceptReferenceTerm.getConceptReferenceTermMaps()) {

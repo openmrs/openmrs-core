@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
@@ -56,7 +55,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
 		        .setIncludeVoided(true).createEncounterSearchCriteria();
 		List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
-		assertTrue(CollectionUtils.isNotEmpty(encounters));
+		assertFalse(encounters.isEmpty());
 		//all encounters void related fields should be null
 		for (Encounter encounter : encounters) {
 			assertTrue(encounter.getVoided());

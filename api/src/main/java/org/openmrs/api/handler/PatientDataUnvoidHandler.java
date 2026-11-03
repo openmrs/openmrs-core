@@ -12,7 +12,6 @@ package org.openmrs.api.handler;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
@@ -50,7 +49,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
 			        .setIncludeVoided(true).createEncounterSearchCriteria();
 			List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
-			if (CollectionUtils.isNotEmpty(encounters)) {
+			if (encounters != null && !encounters.isEmpty()) {
 				for (Encounter encounter : encounters) {
 					if (encounter.getVoided() && encounter.getDateVoided().equals(origParentVoidedDate)
 					        && encounter.getVoidedBy().equals(originalVoidingUser)) {
@@ -62,7 +61,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			//unvoid all the orders that got voided as a result of the patient getting voided
 			OrderService os = Context.getOrderService();
 			List<Order> orders = os.getAllOrdersByPatient(patient);
-			if (CollectionUtils.isNotEmpty(orders)) {
+			if (orders != null && !orders.isEmpty()) {
 				for (Order order : orders) {
 					if (order.getVoided() && order.getDateVoided().equals(origParentVoidedDate)
 					        && order.getVoidedBy().equals(originalVoidingUser)) {

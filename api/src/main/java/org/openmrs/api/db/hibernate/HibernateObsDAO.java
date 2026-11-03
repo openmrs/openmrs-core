@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -344,31 +344,31 @@ public class HibernateObsDAO implements ObsDAO {
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(whom)) {
+		if (isNotEmpty(whom)) {
 			predicates.add(root.get("person").in(whom));
 		}
 
-		if (CollectionUtils.isNotEmpty(encounters)) {
+		if (isNotEmpty(encounters)) {
 			predicates.add(root.get("encounter").in(encounters));
 		}
 
-		if (CollectionUtils.isNotEmpty(questions)) {
+		if (isNotEmpty(questions)) {
 			predicates.add(root.get("concept").in(questions));
 		}
 
-		if (CollectionUtils.isNotEmpty(answers)) {
+		if (isNotEmpty(answers)) {
 			predicates.add(root.get("valueCoded").in(answers));
 		}
 
-		if (CollectionUtils.isNotEmpty(personTypes)) {
+		if (isNotEmpty(personTypes)) {
 			predicates.addAll(getCriteriaPersonModifier(cb, root, personTypes));
 		}
 
-		if (CollectionUtils.isNotEmpty(locations)) {
+		if (isNotEmpty(locations)) {
 			predicates.add(root.get("location").in(locations));
 		}
 
-		if (CollectionUtils.isNotEmpty(visits)) {
+		if (isNotEmpty(visits)) {
 			predicates.add(root.get("encounter").get("visit").in(visits));
 		}
 
@@ -384,7 +384,7 @@ public class HibernateObsDAO implements ObsDAO {
 			predicates.add(cb.lessThanOrEqualTo(root.get(OBS_DATETIME), toDate));
 		}
 
-		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers)) {
+		if (isNotEmpty(valueCodedNameAnswers)) {
 			predicates.add(root.get("valueCodedName").in(valueCodedNameAnswers));
 		}
 
@@ -399,9 +399,13 @@ public class HibernateObsDAO implements ObsDAO {
 		return predicates;
 	}
 
+	private static boolean isNotEmpty(Collection<?> collection) {
+		return collection != null && !collection.isEmpty();
+	}
+
 	private List<Order> createOrderList(CriteriaBuilder cb, Root<Obs> root, List<String> sortList) {
 		List<Order> orders = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(sortList)) {
+		if (isNotEmpty(sortList)) {
 			for (String sort : sortList) {
 				if (StringUtils.isNotBlank(sort)) {
 					String fieldName = getSortField(sort);

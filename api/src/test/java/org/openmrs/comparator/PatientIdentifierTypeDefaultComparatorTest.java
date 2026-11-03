@@ -59,4 +59,30 @@ public class PatientIdentifierTypeDefaultComparatorTest {
 		assertEquals(Arrays.asList(requiredNotRetired, notRequiredNotRetiredA, notRequiredNotRetiredB, requiredRetired1A,
 		    requiredRetired2a, notRequiredRetired), list);
 	}
+
+	/**
+	 * @see PatientIdentifierTypeDefaultComparator#compare(PatientIdentifierType,PatientIdentifierType)
+	 */
+	@Test
+	public void compare_shouldOrderNullNamesAndIdsLast() {
+		PatientIdentifierType namedB = newType(3, "B");
+		PatientIdentifierType namedA = newType(4, "a");
+		PatientIdentifierType unnamedWithId1 = newType(1, null);
+		PatientIdentifierType unnamedWithId2 = newType(2, null);
+		PatientIdentifierType unnamedWithoutId = newType(null, null);
+
+		List<PatientIdentifierType> list = Arrays.asList(unnamedWithoutId, unnamedWithId2, namedB, unnamedWithId1, namedA);
+		list.sort(new PatientIdentifierTypeDefaultComparator());
+
+		assertEquals(Arrays.asList(namedA, namedB, unnamedWithId1, unnamedWithId2, unnamedWithoutId), list);
+	}
+
+	private PatientIdentifierType newType(Integer id, String name) {
+		PatientIdentifierType type = new PatientIdentifierType();
+		type.setId(id);
+		type.setName(name);
+		type.setRequired(false);
+		type.setRetired(false);
+		return type;
+	}
 }

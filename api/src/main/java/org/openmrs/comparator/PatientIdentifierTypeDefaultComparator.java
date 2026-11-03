@@ -12,8 +12,6 @@ package org.openmrs.comparator;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.collections.comparators.ComparatorChain;
-import org.apache.commons.collections.comparators.NullComparator;
 import org.openmrs.PatientIdentifierType;
 
 /**
@@ -25,35 +23,13 @@ public class PatientIdentifierTypeDefaultComparator implements Comparator<Patien
 
 	private static final long serialVersionUID = 1L;
 
-	private final ComparatorChain comparatorChain;
-
-	public PatientIdentifierTypeDefaultComparator() {
-		comparatorChain = new ComparatorChain();
-
-		final NullComparator nullHigherComparator = new NullComparator();
-		final NullComparator nullLowerComparator = new NullComparator(false);
-
-		//Retired higher
-		comparatorChain.addComparator(
-		    (Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRetired(), o2.getRetired()));
-
-		//Required lower
-		comparatorChain.addComparator(
-		    (Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRequired(), o2.getRequired()),
-		    true);
-
-		//By name
-		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> {
-			String o1Name = (o1.getName() != null) ? o1.getName().toLowerCase() : null;
-			String o2Name = (o2.getName() != null) ? o2.getName().toLowerCase() : null;
-
-			return nullHigherComparator.compare(o1Name, o2Name);
-		});
-
-		//By id
-		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> nullHigherComparator
-		        .compare(o1.getPatientIdentifierTypeId(), o2.getPatientIdentifierTypeId()));
-	}
+	private static final Comparator<PatientIdentifierType> ORDER = Comparator
+	        .comparing(PatientIdentifierType::getRetired, Comparator.nullsFirst(Comparator.<Boolean> naturalOrder()))
+	        .thenComparing(PatientIdentifierType::getRequired, Comparator.nullsLast(Comparator.<Boolean> reverseOrder()))
+	        .thenComparing(pit -> pit.getName() != null ? pit.getName().toLowerCase() : null,
+	            Comparator.nullsLast(Comparator.<String> naturalOrder()))
+	        .thenComparing(PatientIdentifierType::getPatientIdentifierTypeId,
+	            Comparator.nullsLast(Comparator.<Integer> naturalOrder()));
 
 	/**
 	 * Orders by retired (true last), required (true first), name and id.
@@ -62,6 +38,6 @@ public class PatientIdentifierTypeDefaultComparator implements Comparator<Patien
 	 */
 	@Override
 	public int compare(PatientIdentifierType pit1, PatientIdentifierType pit2) {
-		return comparatorChain.compare(pit1, pit2);
+		return ORDER.compare(pit1, pit2);
 	}
 }

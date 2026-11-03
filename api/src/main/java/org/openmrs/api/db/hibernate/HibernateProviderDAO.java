@@ -23,7 +23,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -172,8 +171,8 @@ public class HibernateProviderDAO implements ProviderDAO {
 
 		List<Provider> providers = typedQuery.getResultList();
 		if (serializedAttributeValues != null) {
-			CollectionUtils.filter(providers,
-			    new AttributeMatcherPredicate<Provider, ProviderAttributeType>(serializedAttributeValues));
+			providers.removeIf(
+			    new AttributeMatcherPredicate<Provider, ProviderAttributeType>(serializedAttributeValues).negate());
 		}
 		return providers;
 	}

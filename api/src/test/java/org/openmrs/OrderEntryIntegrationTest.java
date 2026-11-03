@@ -9,12 +9,11 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.APIException;
@@ -339,7 +338,8 @@ public class OrderEntryIntegrationTest extends BaseContextSensitiveTest {
 		assertTrue(originalDCOrder.getVoided());
 		List<Order> newPatientOrders = orderService.getAllOrdersByPatient(originalDCOrder.getPatient());
 		assertEquals(originalPatientOrders.size() + 1, newPatientOrders.size());
-		Collection<Order> newOrders = CollectionUtils.disjunction(originalPatientOrders, newPatientOrders);
+		List<Order> newOrders = new ArrayList<>(newPatientOrders);
+		newOrders.removeAll(originalPatientOrders);
 		assertEquals(1, newOrders.size());
 		assertEquals(newOrders.iterator().next().getPreviousOrder(), previousOrder);
 	}

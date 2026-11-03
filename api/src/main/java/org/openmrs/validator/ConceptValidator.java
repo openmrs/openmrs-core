@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -222,7 +221,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			errors.reject("Concept.error.no.FullySpecifiedName");
 		}
 
-		if (CollectionUtils.isNotEmpty(conceptToValidate.getConceptMappings()) && !conceptToValidate.getRetired()) {
+		if (!conceptToValidate.getConceptMappings().isEmpty() && !Boolean.TRUE.equals(conceptToValidate.getRetired())) {
 			//validate all the concept maps
 			int index = 0;
 			Set<Integer> mappedTermIds = null;
@@ -258,7 +257,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 				index++;
 			}
 		}
-		if (CollectionUtils.isNotEmpty(conceptToValidate.getAnswers())) {
+		if (!conceptToValidate.getAnswers().isEmpty()) {
 			for (ConceptAnswer conceptAnswer : conceptToValidate.getAnswers()) {
 				if (conceptAnswer.getAnswerConcept().equals(conceptToValidate)) {
 					errors.reject("Concept.contains.itself.as.answer");
@@ -267,7 +266,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 		}
 		if (conceptToValidate instanceof ConceptNumeric conceptNumeric) {
 			Set<ConceptReferenceRange> referenceRanges = conceptNumeric.getReferenceRanges();
-			if (CollectionUtils.isNotEmpty(referenceRanges)) {
+			if (referenceRanges != null && !referenceRanges.isEmpty()) {
 				int index = 0;
 				for (ConceptReferenceRange referenceRange : referenceRanges) {
 					try {
