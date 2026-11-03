@@ -59,4 +59,26 @@ public class CachedMessageSourceTest {
 		assertEquals(valueAsString, valueAsPM.getMessage());
 	}
 
+	/**
+	 * The merge method should respect the overwrite parameter.
+	 *
+	 * @see CachedMessageSource#merge(org.openmrs.messagesource.MutableMessageSource, boolean)
+	 */
+	@Test
+	public void merge_shouldRespectOverwriteParameter() {
+		CachedMessageSource cachedMessages = new CachedMessageSource();
+		CachedMessageSource source = new CachedMessageSource();
+
+		PresentationMessage existingMessage = new PresentationMessage("test.code", Locale.ENGLISH, "Old message", "");
+		PresentationMessage newMessage = new PresentationMessage("test.code", Locale.ENGLISH, "New message", "");
+
+		cachedMessages.addPresentation(existingMessage);
+		source.addPresentation(newMessage);
+
+		cachedMessages.merge(source, false);
+		assertEquals("Old message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
+
+		cachedMessages.merge(source, true);
+		assertEquals("New message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
+	}
 }
