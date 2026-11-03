@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import jakarta.servlet.ServletException;
@@ -37,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -122,8 +125,17 @@ class InitializationFilterSessionTest {
 
 		boolean runInstalls = false;
 
+		/**
+		 * Runs once the install's checks have passed and before the install is started, as another request
+		 * can
+		 */
+		Runnable beforeStart;
+
 		@Override
 		protected void startInstallation(InitializationWizardModel model) {
+			if (beforeStart != null) {
+				beforeStart.run();
+			}
 			installsStarted.add(model);
 			if (runInstalls) {
 				super.startInstallation(model);
@@ -245,6 +257,53 @@ class InitializationFilterSessionTest {
 		assertEquals("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL, response.getRedirectedUrl());
 		assertThat(filter.installsStarted, empty());
 		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
+	@Test
+	void shouldNotStartAnInstallForAClientThatPostsTheAutomaticInstallMethod() throws Exception {
+		// the install method page offers no automatic install, which starts without the confirmation page
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "auto");
+
+		get(session, null);
+
+		assertThat(filter.installsStarted, empty());
+		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
+	@Test
+	void shouldInstallWithTheValuesItCheckedThoughAnotherRequestOfTheSessionArrivesMeanwhile() throws Exception {
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+		MockHttpSession session = new MockHttpSession();
+		CountDownLatch otherRequestDone = new CountDownLatch(1);
+		Thread[] otherRequest = new Thread[1];
+		filter.beforeStart = () -> {
+			filter.beforeStart = null;
+			otherRequest[0] = new Thread(() -> {
+				try {
+					post(session, "adminusersetup.vm", "new_admin_password", "Other123", "new_admin_password_confirm",
+					    "Other123");
+				} catch (Exception e) {
+					throw new IllegalStateException(e);
+				} finally {
+					otherRequestDone.countDown();
+				}
+			});
+			otherRequest[0].start();
+			// the other request either changes the model now, after the checks, or waits for this one to finish
+			long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+			while (otherRequestDone.getCount() > 0 && otherRequest[0].getState() != Thread.State.BLOCKED
+			        && System.nanoTime() < deadline) {
+				Thread.onSpinWait();
+			}
+		};
+
+		get(session, null);
+		otherRequest[0].join(TimeUnit.SECONDS.toMillis(10));
+
+		assertEquals(1, filter.installsStarted.size());
+		assertEquals("Admin123", filter.installsStarted.get(0).adminUserPassword);
 	}
 
 	@Test
@@ -941,6 +1000,29 @@ class InitializationFilterSessionTest {
 		filter.installationScript.setProperty("database_name", "my--clinic");
 		filter.installationScript.setProperty("has_current_openmrs_database", "true");
 		filter.installationScript.setProperty("create_database_user", "false");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+
+		MockHttpSession session = new MockHttpSession();
+		get(session, null);
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(filter.getWizardModel(session).errors, hasKey(ErrorMessageConstants.ERROR_DB_NAME_INVALID));
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "false, false, false", "true, true, false", "true, false, true" })
+	void shouldRejectAnAutomaticInstallThatPutsAnInvalidDatabaseNameIntoItsSql(boolean hasCurrentOpenmrsDatabase,
+	        boolean createDatabaseUser, boolean importTestData) throws Exception {
+		// the url already names a database, so only creating the database or its user, or importing test data, would
+		// put the name into sql
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("connection.url",
+		    "jdbc:h2:mem:reuse_" + UUID.randomUUID().toString().replace("-", "") + ";DB_CLOSE_DELAY=-1");
+		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
+		filter.installationScript.setProperty("database_name", "my--clinic");
+		filter.installationScript.setProperty("has_current_openmrs_database", String.valueOf(hasCurrentOpenmrsDatabase));
+		filter.installationScript.setProperty("create_database_user", String.valueOf(createDatabaseUser));
+		filter.installationScript.setProperty("import_test_data", String.valueOf(importTestData));
 		filter.installationScript.setProperty("admin_user_password", "Admin123");
 
 		MockHttpSession session = new MockHttpSession();

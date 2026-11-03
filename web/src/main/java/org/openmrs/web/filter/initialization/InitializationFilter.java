@@ -272,6 +272,22 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		InitializationWizardModel wizardModel = getWizardModel(httpRequest.getSession());
+		// one request of a session at a time uses its model, and none once an install has started, so an install
+		// runs with the values it was checked with
+		synchronized (wizardModel) {
+			if (isInstallationStarted()) {
+				renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
+				return;
+			}
+			handleGet(httpRequest, httpResponse, wizardModel, referenceMap, page);
+		}
+	}
+
+	/**
+	 * Handles a GET with the session's model, which no other request of the session uses meanwhile
+	 */
+	private void handleGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+	        InitializationWizardModel wizardModel, Map<String, Object> referenceMap, String page) throws IOException {
 		initializeWizardFromResolvedPropertiesIfPresent(wizardModel);
 		// the confirmation holds only for the values the confirmation page showed
 		wizardModel.wizardCompletePageShown = false;
@@ -573,6 +589,23 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		InitializationWizardModel wizardModel = getWizardModel(httpRequest.getSession());
+		// one request of a session at a time uses its model, and none once an install has started, so an install
+		// runs with the values it was checked with
+		synchronized (wizardModel) {
+			if (isInstallationStarted()) {
+				renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
+				return;
+			}
+			handlePost(httpRequest, httpResponse, wizardModel, referenceMap, page);
+		}
+	}
+
+	/**
+	 * Handles a POST with the session's model, which no other request of the session uses meanwhile
+	 */
+	private void handlePost(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+	        InitializationWizardModel wizardModel, Map<String, Object> referenceMap, String page)
+	        throws IOException, ServletException {
 		// only clear errors before POSTS so that redirects can show errors too.
 		wizardModel.errors.clear();
 		wizardModel.msgs.clear();
@@ -632,7 +665,11 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(CHOOSE_LANG, referenceMap, httpResponse, wizardModel);
 				return;
 			}
-			wizardModel.installMethod = httpRequest.getParameter("install_method");
+			String installMethod = httpRequest.getParameter("install_method");
+			// an automatic install starts without the confirmation page, so only an installation script, an environment
+			// variable or a system property chooses it, never this page
+			wizardModel.installMethod = InitializationWizardModel.INSTALL_METHOD_AUTO.equals(installMethod) ? null
+			        : installMethod;
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
@@ -1520,7 +1557,6 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	private static boolean databaseNameReachesSqlOrUrl(InitializationWizardModel wizardModel) {
 		return !wizardModel.hasCurrentOpenmrsDatabase || wizardModel.createDatabaseUser || wizardModel.importTestData
-		        || InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)
 		        || (wizardModel.databaseConnection != null && wizardModel.databaseConnection.contains("@DBNAME@"));
 	}
 
@@ -1942,9 +1978,11 @@ public class InitializationFilter extends StartupFilter {
 							} catch (Exception e) {
 								reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, DEFAULT_PAGE,
 								    e.getMessage());
-								log.warn("Error while trying to create tables and demo data. If the database already "
-								        + "has the tables of an OpenMRS database, install again without creating them "
-								        + "(create_tables=false for an automatic install)",
+								log.warn("Error while trying to create tables and demo data. If an install or upgrade of "
+								        + "OpenMRS ever finished on this database, even of an older version, install again without "
+								        + "creating the tables (create_tables=false for an automatic install). If none ever "
+								        + "finished and an install was stopped while creating them, install again, and if that "
+								        + "fails too, empty the database and install again.",
 								    e);
 								return;
 							}
