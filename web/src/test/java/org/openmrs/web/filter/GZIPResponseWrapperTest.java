@@ -249,6 +249,29 @@ class GZIPResponseWrapperTest {
 		assertThat(response.getHeader("Content-Encoding"), nullValue());
 	}
 	
+	/**
+	 * A response large enough to start streaming gzip already advertises {@code Content-Encoding:
+	 * gzip}. The container writes its error page uncompressed, so that header must not survive
+	 * {@code sendError}, or the client would try to gunzip plain HTML.
+	 */
+	@Test
+	void shouldNotAdvertiseGzipForTheErrorPageAfterAStreamingResponseHasStarted() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		wrapper.getOutputStream().write(LARGE_BODY);
+		assertThat(response.getHeader("Content-Encoding"), is("gzip"));
+		
+		wrapper.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "boom");
+		wrapper.finishResponse();
+		
+		assertThat(response.getStatus(), is(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+		assertThat(response.getErrorMessage(), is("boom"));
+		assertThat(response.getHeader("Content-Encoding"), nullValue());
+		assertThat(response.getHeader("Vary"), containsString("Accept-Encoding"));
+	}
+	
 	@Test
 	void shouldNotCompressResponsesSmallerThanTheMinimumSize() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();

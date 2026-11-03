@@ -172,6 +172,15 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 			((GZIPResponseStream) stream).discard();
 		}
 		flushWriter();
+		
+		if (compressionHeadersWritten && !origResponse.isCommitted()) {
+			// the container writes the error page straight to the real response without compressing
+			// it, so the Content-Encoding we announced for the abandoned body must not survive.
+			// reset() is the only portable way to remove a header.
+			super.reset();
+			compressionHeadersWritten = false;
+			addVaryHeader();
+		}
 	}
 	
 	@Override
