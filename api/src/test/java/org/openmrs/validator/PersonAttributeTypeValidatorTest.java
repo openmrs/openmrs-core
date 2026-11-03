@@ -191,6 +191,36 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
 	 */
 	@Test
+	public void validate_shouldPassValidationIfFormatIsAnOpenmrsObjectClass() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("org.openmrs.Patient");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertFalse(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFormatIsCharacter() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("java.lang.Character");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertFalse(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
 	public void validate_shouldPassValidationIfFormatIsAPermittedValueType() {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setName("Zodiac");

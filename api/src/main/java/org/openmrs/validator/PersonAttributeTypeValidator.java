@@ -44,7 +44,9 @@ public class PersonAttributeTypeValidator implements Validator {
 	 * <strong>Should</strong> pass validation if all fields are correct<br/>
 	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct<br/>
-	 * <strong>Should</strong> fail validation if format is an invalid class type
+	 * <strong>Should</strong> fail validation if format is an invalid class type<br/>
+	 * <strong>Should</strong> pass validation if format is an openmrs object class<br/>
+	 * <strong>Should</strong> pass validation if format is character
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)

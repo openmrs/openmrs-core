@@ -217,6 +217,52 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see PersonAttribute#getHydratedObject()
+	 */
+	@Test
+	public void getHydratedObject_shouldReturnRawValueForOpenmrsObjectFormat() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setFormat("org.openmrs.Patient");
+
+		PersonAttribute pa = new PersonAttribute(2);
+		pa.setAttributeType(type);
+		pa.setValue("2");
+
+		assertEquals("2", pa.getHydratedObject());
+	}
+
+	/**
+	 * @see PersonAttribute#getHydratedObject()
+	 */
+	@Test
+	public void getHydratedObject_shouldReturnRawValueForCharacterFormat() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setFormat("java.lang.Character");
+
+		PersonAttribute pa = new PersonAttribute(2);
+		pa.setAttributeType(type);
+		pa.setValue("M");
+
+		assertEquals("M", pa.getHydratedObject());
+	}
+
+	/**
+	 * @see PersonAttribute#isPermittedClass(Class)
+	 */
+	@Test
+	public void isPermittedClass_shouldReturnTrueForOpenmrsObjectClass() {
+		assertTrue(PersonAttribute.isPermittedClass(Patient.class));
+	}
+
+	/**
+	 * @see PersonAttribute#isPermittedClass(Class)
+	 */
+	@Test
+	public void isPermittedClass_shouldReturnTrueForCharacter() {
+		assertTrue(PersonAttribute.isPermittedClass(Character.class));
+	}
+
+	/**
 	 * @see PersonAttribute#isPermittedClass(Class)
 	 */
 	@Test

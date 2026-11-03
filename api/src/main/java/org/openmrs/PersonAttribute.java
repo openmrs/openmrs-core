@@ -287,10 +287,11 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
 
-			if (!isPermittedClass(c)) {
-				log.warn(
-				    "Refusing to hydrate PersonAttributeType '{}': format '{}' is not an Attributable or a permitted value type",
-				    getAttributeType().getName(), getAttributeType().getFormat());
+			if (!Attributable.class.isAssignableFrom(c) && !VALUE_TYPES.contains(c)) {
+				if (!isPermittedClass(c)) {
+					log.warn("Refusing to hydrate PersonAttributeType '{}': format '{}' is not a permitted class",
+					    getAttributeType().getName(), getAttributeType().getFormat());
+				}
 				return getValue();
 			}
 			try {
@@ -411,18 +412,23 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	}
 
 	/**
-	 * Whether a class may be used as a {@link PersonAttributeType#getFormat()}: either an
-	 * {@link Attributable} implementation or one of a fixed set of value types.
+	 * Whether a class may be used as a {@link PersonAttributeType#getFormat()}: an {@link Attributable}
+	 * implementation, one of a fixed set of value types, an {@link OpenmrsObject} or {@link Character}.
+	 * Only the first two are ever instantiated by {@link #getHydratedObject()}; the others are accepted
+	 * so that existing types referencing domain objects remain valid.
 	 * <p>
 	 * <strong>Should</strong> return true for attributable class<br/>
 	 * <strong>Should</strong> return true for permitted value type<br/>
+	 * <strong>Should</strong> return true for openmrs object class<br/>
+	 * <strong>Should</strong> return true for character<br/>
 	 * <strong>Should</strong> return false for class outside permitted set
 	 *
 	 * @param c the class named by a person attribute type format
-	 * @return true if attributes of that format may be hydrated
+	 * @return true if a type with that format passes validation
 	 */
 	public static boolean isPermittedClass(Class<?> c) {
-		return Attributable.class.isAssignableFrom(c) || VALUE_TYPES.contains(c);
+		return Attributable.class.isAssignableFrom(c) || VALUE_TYPES.contains(c) || OpenmrsObject.class.isAssignableFrom(c)
+		        || Character.class.equals(c);
 	}
 
 }
