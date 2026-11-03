@@ -273,7 +273,8 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
 	 * <p>
 	 * <strong>Should</strong> load class in format property<br/>
-	 * <strong>Should</strong> still load class in format property if not Attributable
+	 * <strong>Should</strong> still load class in format property if not Attributable<br/>
+	 * <strong>Should</strong> not call no arg constructor of class that is not permitted
 	 *
 	 * @return hydrated object or getValue()
 	 */

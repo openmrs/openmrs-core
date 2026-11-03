@@ -172,6 +172,21 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	 * @see PersonAttribute#getHydratedObject()
 	 */
 	@Test
+	public void getHydratedObject_shouldNotCallNoArgConstructorOfClassThatIsNotPermitted() {
+		NoArgConstructorSpy.constructed = false;
+		PersonAttributeType type = new PersonAttributeType();
+		type.setFormat(NoArgConstructorSpy.class.getName());
+
+		PersonAttribute pa = new PersonAttribute(type, "value");
+
+		assertEquals("value", pa.getHydratedObject());
+		assertFalse(NoArgConstructorSpy.constructed);
+	}
+
+	/**
+	 * @see PersonAttribute#getHydratedObject()
+	 */
+	@Test
 	public void getHydratedObject_shouldReturnRawValueIfFormatIsNotPermitted() {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setFormat(FileOutputStream.class.getName());
@@ -268,6 +283,15 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	@Test
 	public void isPermittedClass_shouldReturnFalseForClassOutsidePermittedSet() {
 		assertFalse(PersonAttribute.isPermittedClass(FileOutputStream.class));
+	}
+
+	public static class NoArgConstructorSpy {
+
+		static boolean constructed = false;
+
+		public NoArgConstructorSpy() {
+			constructed = true;
+		}
 	}
 
 	public static class StringOnlyAttributable implements Attributable<StringOnlyAttributable> {
