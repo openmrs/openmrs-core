@@ -552,7 +552,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		if (Location.class.equals(type)) {
 			return (T) getLocationByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override
