@@ -37,12 +37,13 @@ public final class AccountLockoutUtil {
 	/**
 	 * Calculates the duration of a lockout. The first lockout lasts
 	 * {@code initialDurationMs}, and every consecutive lockout doubles that duration until
-	 * {@code maximumDurationMs} is reached. The loop stops once the maximum is reached so that a
-	 * corrupt or unusually large lockout count cannot overflow the calculation.
+	 * {@code maximumDurationMs} is reached. The maximum only caps how far the duration grows; it
+	 * does not shorten an initial duration configured above it. The loop stops once the maximum is
+	 * reached so that a corrupt or unusually large lockout count cannot overflow the calculation.
 	 *
 	 * @param lockoutCount the number of consecutive lockouts, where the first lockout is 1
 	 * @param initialDurationMs the duration of the first lockout in milliseconds
-	 * @param maximumDurationMs the maximum lockout duration in milliseconds
+	 * @param maximumDurationMs the maximum duration that a lockout can grow to in milliseconds
 	 * @return the lockout duration in milliseconds
 	 */
 	static long calculateLockoutDurationMs(long lockoutCount, long initialDurationMs, long maximumDurationMs) {
@@ -51,12 +52,12 @@ public final class AccountLockoutUtil {
 		}
 		
 		long maximum = maximumDurationMs > 0 ? maximumDurationMs : initialDurationMs;
-		long durationMs = Math.min(initialDurationMs, maximum);
+		long durationMs = initialDurationMs;
 		
 		for (long lockout = 1; lockout < lockoutCount && durationMs < maximum; lockout++) {
 			durationMs = durationMs > maximum / 2 ? maximum : durationMs * 2;
 		}
-		return Math.min(durationMs, maximum);
+		return durationMs;
 	}
 	
 	/**

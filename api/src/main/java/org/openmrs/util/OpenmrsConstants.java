@@ -573,15 +573,17 @@ public final class OpenmrsConstants {
 	/**
 	 * The initial duration, in minutes, that an account stays locked after too many failed login
 	 * attempts. Each consecutive lockout doubles this duration, up to
-	 * {@link #GP_MAX_ACCOUNT_LOCKOUT_DURATION}. The default is ten minutes.
+	 * {@link #GP_MAX_ACCOUNT_LOCKOUT_DURATION}; a value configured above that maximum is honored
+	 * as-is. The default is ten minutes.
 	 *
 	 * @since 2.7.0
 	 */
 	public static final String GP_UNLOCK_ACCOUNT_WAITING_TIME  = "security.unlockAccountWaitingTime";
 
 	/**
-	 * The maximum duration, in minutes, that an account can stay locked after repeated failed login
-	 * attempts. The default is 1440 minutes (24 hours).
+	 * The maximum duration, in minutes, that a lockout can grow to after repeated failed login
+	 * attempts. It caps the doubling of {@link #GP_UNLOCK_ACCOUNT_WAITING_TIME}, but does not
+	 * shorten an initial duration configured above it. The default is 1440 minutes (24 hours).
 	 *
 	 * @since 2.9.0
 	 */
@@ -1015,7 +1017,7 @@ public final class OpenmrsConstants {
 			"Initial time in minutes an account is locked after too many failed login attempts. The duration doubles for each consecutive lockout."));
 
 		props.add(new GlobalProperty(GP_MAX_ACCOUNT_LOCKOUT_DURATION, "1440",
-			"Maximum time in minutes an account can be locked after repeated failed login attempts. Defaults to 1440 minutes (24 hours)."));
+			"Maximum time in minutes a lockout can grow to after repeated failed login attempts. An initial duration configured above this is still honored. Defaults to 1440 minutes (24 hours)."));
 
 		props.add(new GlobalProperty(GP_DEFAULT_CONCEPT_MAP_TYPE, "NARROWER-THAN",
 		        "Default concept map type which is used when no other is set"));

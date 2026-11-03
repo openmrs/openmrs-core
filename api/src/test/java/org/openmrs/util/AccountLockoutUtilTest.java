@@ -55,9 +55,11 @@ public class AccountLockoutUtilTest {
 	}
 
 	@Test
-	public void calculateLockoutDurationMs_shouldNotExceedMaximumWhenInitialDurationIsLarger() {
+	public void calculateLockoutDurationMs_shouldNotShortenAnInitialDurationAboveTheMaximum() {
 		long maximumDurationMs = TimeUnit.MINUTES.toMillis(5);
-		assertEquals(maximumDurationMs,
+		assertEquals(INITIAL_DURATION_MS,
 			AccountLockoutUtil.calculateLockoutDurationMs(1, INITIAL_DURATION_MS, maximumDurationMs));
+		assertEquals(INITIAL_DURATION_MS,
+			AccountLockoutUtil.calculateLockoutDurationMs(4, INITIAL_DURATION_MS, maximumDurationMs));
 	}
 }

@@ -1805,6 +1805,19 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getAccountLockoutEndTime_shouldHonorAnInitialDurationAboveTheMaximum() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME, "2880");
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_ACCOUNT_LOCKOUT_DURATION, "1440");
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
+		User user = setLockoutState(lockoutStart, "1");
+
+		Date endTime = userService.getAccountLockoutEndTime(user);
+
+		assertNotNull(endTime);
+		assertEquals(lockoutStart + TimeUnit.MINUTES.toMillis(2880), endTime.getTime());
+	}
+
+	@Test
 	public void getAccountLockoutEndTime_shouldDoubleForRepeatedLockouts() {
 		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
 		User user = setLockoutState(lockoutStart, "2");

@@ -293,6 +293,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		User admin = Context.getUserService().getUserByUsername("admin");
 		assertEquals(lockoutTimestamp, admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
+		assertEquals("1", admin.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
 	}
 
 	@Test
