@@ -19,12 +19,21 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Wraps Response Stream for GZipFilter
+ * Wraps Response Stream for GZipFilter. Content is buffered in memory until either the response
+ * finishes (when it is compressed only if it is big enough to be worth it) or the buffer overflows
+ * (when it is streamed through gzip, or passed straight through for a response that must not be
+ * compressed).
  * 
  * @author Matt Raible
  * @version $Revision: 1.3 $ $Date: 2004/05/16 02:17:00 $
  */
 public class GZIPResponseStream extends ServletOutputStream {
+	
+	// default size of the in-memory buffer
+	private static final int DEFAULT_BUFFER_SIZE = 50000;
+	
+	// responses below this size are not worth compressing
+	private static final int MIN_COMPRESS_SIZE = 1024;
 	
 	// abstraction of the output stream used for compression
 	protected OutputStream bufferedOutput;
@@ -38,14 +47,29 @@ public class GZIPResponseStream extends ServletOutputStream {
 	// reference to the output stream to the client's browser
 	protected ServletOutputStream output;
 	
-	// default size of the in-memory buffer
-	private int bufferSize = 50000;
+	private final GZIPResponseWrapper wrapper;
+	
+	private final int bufferSize;
+	
+	// set when the response has been abandoned (for example by sendError) so that nothing more is
+	// written to the client
+	private boolean discarded;
 	
 	public GZIPResponseStream(HttpServletResponse response) throws IOException {
+		this(null, response, DEFAULT_BUFFER_SIZE);
+	}
+	
+	GZIPResponseStream(GZIPResponseWrapper wrapper, HttpServletResponse response) throws IOException {
+		this(wrapper, response, DEFAULT_BUFFER_SIZE);
+	}
+	
+	GZIPResponseStream(GZIPResponseWrapper wrapper, HttpServletResponse response, int bufferSize) throws IOException {
 		super();
 		closed = false;
+		this.wrapper = wrapper;
 		this.response = response;
 		this.output = response.getOutputStream();
+		this.bufferSize = bufferSize;
 		bufferedOutput = new ByteArrayOutputStream();
 	}
 	
@@ -56,25 +80,30 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("This output stream has already been closed");
 		}
 		
-		// if we buffered everything in memory, gzip it
+		if (discarded) {
+			closed = true;
+			return;
+		}
+		
+		// if we buffered everything in memory, decide now whether to gzip it
 		if (bufferedOutput instanceof ByteArrayOutputStream) {
-			// get the content
 			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
-			
-			// prepare a gzip stream
-			ByteArrayOutputStream compressedContent = new ByteArrayOutputStream();
-			GZIPOutputStream gzipstream = new GZIPOutputStream(compressedContent);
 			byte[] bytes = baos.toByteArray();
-			gzipstream.write(bytes);
-			gzipstream.finish();
 			
-			// get the compressed content
-			byte[] compressedBytes = compressedContent.toByteArray();
+			if (isCompressionAllowed() && bytes.length >= MIN_COMPRESS_SIZE) {
+				byte[] compressedBytes = gzip(bytes);
+				if (wrapper != null) {
+					wrapper.writeCompressedHeaders(compressedBytes.length);
+				} else {
+					response.setHeader("Content-Encoding", "gzip");
+					response.setContentLength(compressedBytes.length);
+				}
+				output.write(compressedBytes);
+			} else {
+				applyPendingContentLength();
+				output.write(bytes);
+			}
 			
-			// set appropriate HTTP headers
-			response.setContentLength(compressedBytes.length);
-			response.addHeader("Content-Encoding", "gzip");
-			output.write(compressedBytes);
 			output.flush();
 			output.close();
 			closed = true;
@@ -92,6 +121,12 @@ public class GZIPResponseStream extends ServletOutputStream {
 			output.close();
 			closed = true;
 		}
+		// the response was passed straight through to the client
+		else {
+			output.flush();
+			output.close();
+			closed = true;
+		}
 	}
 	
 	@Override
@@ -100,7 +135,19 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot flush a closed output stream");
 		}
 		
-		bufferedOutput.flush();
+		if (discarded) {
+			return;
+		}
+		
+		if (bufferedOutput instanceof GZIPOutputStream) {
+			bufferedOutput.flush();
+			output.flush();
+		} else if (bufferedOutput == output) {
+			output.flush();
+		} else {
+			// still buffering in memory, so there is nothing to send yet
+			bufferedOutput.flush();
+		}
 	}
 	
 	@Override
@@ -109,33 +156,23 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot write to a closed output stream");
 		}
 		
-		// make sure we aren't over the buffer's limit
-		checkBufferSize(1);
+		if (discarded) {
+			return;
+		}
 		
-		// write the byte to the temporary output
-		bufferedOutput.write((byte) b);
-	}
-	
-	private void checkBufferSize(int length) throws IOException {
-		// check if we are buffering too large of a file
+		// make sure we aren't over the buffer's limit
 		if (bufferedOutput instanceof ByteArrayOutputStream) {
 			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
-			
-			if ((baos.size() + length) > bufferSize) {
-				// files too large to keep in memory are sent to the client without Content-Length specified
-				response.addHeader("Content-Encoding", "gzip");
-				
-				// get existing bytes
-				byte[] bytes = baos.toByteArray();
-				
-				// make new gzip stream using the response output stream
-				GZIPOutputStream gzipstream = new GZIPOutputStream(output);
-				gzipstream.write(bytes);
-				
-				// we are no longer buffering, send content via gzipstream
-				bufferedOutput = gzipstream;
+			if ((baos.size() + 1) > bufferSize) {
+				switchToStreaming();
+			} else {
+				// write the byte to the temporary output
+				bufferedOutput.write(b);
+				return;
 			}
 		}
+		
+		bufferedOutput.write(b);
 	}
 	
 	@Override
@@ -150,26 +187,100 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot write to a closed output stream");
 		}
 		
-		// make sure we aren't over the buffer's limit
-		checkBufferSize(len);
+		if (discarded) {
+			return;
+		}
 		
-		// write the content to the buffer
+		// make sure we aren't over the buffer's limit
+		if (bufferedOutput instanceof ByteArrayOutputStream) {
+			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
+			if ((baos.size() + len) > bufferSize) {
+				switchToStreaming();
+			} else {
+				// write the content to the buffer
+				bufferedOutput.write(b, off, len);
+				return;
+			}
+		}
+		
 		bufferedOutput.write(b, off, len);
+	}
+	
+	/**
+	 * Moves past the in-memory buffer: either into a gzip stream (for a response that may be
+	 * compressed) or straight to the client (for one that may not). From here on the response is
+	 * committed and its length is unknown, so the uncompressed length can never be sent.
+	 */
+	private void switchToStreaming() throws IOException {
+		ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
+		byte[] bytes = baos.toByteArray();
+		
+		if (isCompressionAllowed()) {
+			if (wrapper != null) {
+				wrapper.writeStreamingGzipHeaders();
+			} else {
+				response.setHeader("Content-Encoding", "gzip");
+			}
+			
+			GZIPOutputStream gzipstream = new GZIPOutputStream(output, bufferSize);
+			gzipstream.write(bytes);
+			bufferedOutput = gzipstream;
+		} else {
+			applyPendingContentLength();
+			output.write(bytes);
+			bufferedOutput = output;
+		}
+	}
+	
+	private boolean isCompressionAllowed() {
+		return wrapper == null || wrapper.isCompressionAllowed();
+	}
+	
+	private void applyPendingContentLength() {
+		if (wrapper != null) {
+			wrapper.applyPendingContentLength();
+		}
+	}
+	
+	private static byte[] gzip(byte[] bytes) throws IOException {
+		ByteArrayOutputStream compressedContent = new ByteArrayOutputStream();
+		try (GZIPOutputStream gzipstream = new GZIPOutputStream(compressedContent)) {
+			gzipstream.write(bytes);
+		}
+		return compressedContent.toByteArray();
 	}
 	
 	public boolean closed() {
 		return this.closed;
 	}
 	
-	public void reset() {
-		//noop
+	/**
+	 * Discards everything buffered so far, leaving the stream usable for a fresh response.
+	 */
+	void resetBuffer() {
+		if (bufferedOutput instanceof ByteArrayOutputStream) {
+			((ByteArrayOutputStream) bufferedOutput).reset();
+		}
 	}
-
+	
+	public void reset() {
+		resetBuffer();
+	}
+	
+	/**
+	 * Abandons the response. Used by {@code sendError}, whose error page is written by the container
+	 * directly to the real response, so anything buffered here must be thrown away rather than sent.
+	 */
+	void discard() {
+		discarded = true;
+		resetBuffer();
+	}
+	
 	@Override
 	public boolean isReady() {
 		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
 	}
-
+	
 	@Override
 	public void setWriteListener(WriteListener writeListener) {
 		throw new UnsupportedOperationException("Asynchonous operation is not supported.");

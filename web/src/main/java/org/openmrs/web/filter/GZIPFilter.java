@@ -58,7 +58,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");
 
-			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(response);
+			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(request, response);
 
 			chain.doFilter(request, wrappedResponse);
 			wrappedResponse.finishResponse();
