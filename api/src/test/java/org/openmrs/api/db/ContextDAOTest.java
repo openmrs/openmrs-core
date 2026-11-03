@@ -291,7 +291,13 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		Context.getUserService().saveUser(user);
 
 		// the correct password must be rejected without being checked while the back-off is active
-		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "test"));
+		ContextAuthenticationException refused = assertThrows(ContextAuthenticationException.class,
+		    () -> dao.authenticate("admin", "test"));
+		ContextAuthenticationException unknownUser = assertThrows(ContextAuthenticationException.class,
+		    () -> dao.authenticate("some invalid username", "test"));
+		assertEquals(unknownUser.getMessage().replace("some invalid username", ""),
+		    refused.getMessage().replace("admin", ""),
+		    "A refusal must read like an unknown username, or it reveals which usernames exist");
 
 		User afterRejection = getAdmin();
 		assertEquals("2", afterRejection.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
