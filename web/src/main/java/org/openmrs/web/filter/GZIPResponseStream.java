@@ -55,6 +55,14 @@ public class GZIPResponseStream extends ServletOutputStream {
 	// written to the client
 	private boolean discarded;
 	
+	// set while the writer's pending bytes are being dropped for a reset, so that flushing the writer
+	// cannot start streaming (and commit) the response that is about to be discarded
+	private boolean discarding;
+	
+	// set when a streaming gzip response was reset without clearing its Content-Encoding header, so
+	// the replacement body must still be compressed to keep that header valid
+	private boolean forceCompression;
+	
 	public GZIPResponseStream(HttpServletResponse response) throws IOException {
 		this(null, response, DEFAULT_BUFFER_SIZE);
 	}
@@ -90,7 +98,7 @@ public class GZIPResponseStream extends ServletOutputStream {
 			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
 			byte[] bytes = baos.toByteArray();
 			
-			if (isCompressionAllowed() && bytes.length >= MIN_COMPRESS_SIZE) {
+			if (isCompressionAllowed() && (forceCompression || bytes.length >= MIN_COMPRESS_SIZE)) {
 				byte[] compressedBytes = gzip(bytes);
 				if (wrapper != null) {
 					wrapper.writeCompressedHeaders(compressedBytes.length);
@@ -135,7 +143,7 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot flush a closed output stream");
 		}
 		
-		if (discarded) {
+		if (discarded || discarding) {
 			return;
 		}
 		
@@ -156,7 +164,7 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot write to a closed output stream");
 		}
 		
-		if (discarded) {
+		if (discarded || discarding) {
 			return;
 		}
 		
@@ -187,7 +195,7 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot write to a closed output stream");
 		}
 		
-		if (discarded) {
+		if (discarded || discarding) {
 			return;
 		}
 		
@@ -256,15 +264,39 @@ public class GZIPResponseStream extends ServletOutputStream {
 	
 	/**
 	 * Discards everything buffered so far, leaving the stream usable for a fresh response.
+	 * 
+	 * @param keepCompressionHeader whether the response headers are being kept (as {@code resetBuffer}
+	 *            does). If a streaming gzip response is abandoned while its {@code Content-Encoding}
+	 *            header survives, the replacement body is compressed even when it is small, so that the
+	 *            header stays truthful.
 	 */
-	void resetBuffer() {
-		if (bufferedOutput instanceof ByteArrayOutputStream) {
+	void resetBuffer(boolean keepCompressionHeader) {
+		if (bufferedOutput instanceof GZIPOutputStream) {
+			// a streaming gzip response was already started; abandon its compression state so the
+			// replacement is not written into the middle of the old deflate stream
+			bufferedOutput = new ByteArrayOutputStream();
+			forceCompression = keepCompressionHeader;
+		} else if (bufferedOutput instanceof ByteArrayOutputStream) {
 			((ByteArrayOutputStream) bufferedOutput).reset();
+			forceCompression = false;
 		}
 	}
 	
 	public void reset() {
-		resetBuffer();
+		resetBuffer(false);
+	}
+	
+	/**
+	 * Stops anything written by the writer from reaching the client while the response is reset or
+	 * discarded. Without this, flushing the writer can overflow the buffer, start streaming and commit
+	 * the response before it can be discarded.
+	 */
+	void beginDiscard() {
+		discarding = true;
+	}
+	
+	void endDiscard() {
+		discarding = false;
 	}
 	
 	/**
@@ -273,7 +305,7 @@ public class GZIPResponseStream extends ServletOutputStream {
 	 */
 	void discard() {
 		discarded = true;
-		resetBuffer();
+		resetBuffer(false);
 	}
 	
 	@Override

@@ -49,6 +49,13 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 */
 	private Long pendingContentLength = null;
 	
+	/**
+	 * Whether the {@code Content-Encoding: gzip} header was set by this wrapper (as opposed to the
+	 * application), so that it can be treated as ours when deciding whether compression is still
+	 * allowed and when a reset keeps the headers.
+	 */
+	private boolean compressionHeadersWritten;
+	
 	public GZIPResponseWrapper(HttpServletResponse response) {
 		this(null, response);
 	}
@@ -74,10 +81,14 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		try {
 			if (writer != null) {
 				writer.close();
-			} else {
-				if (stream != null && !((GZIPResponseStream) stream).closed()) {
+			} else if (stream != null) {
+				if (!((GZIPResponseStream) stream).closed()) {
 					stream.close();
 				}
+			} else {
+				// no body was written (for example a HEAD request that only sets the file size), so
+				// honour the pending length instead of dropping it
+				applyPendingContentLength();
 			}
 		}
 		catch (IOException e) {
@@ -155,31 +166,40 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	
 	private void discardBufferedOutput() {
 		pendingContentLength = null;
-		flushWriter();
 		if (stream instanceof GZIPResponseStream) {
+			// mark the stream abandoned before flushing the writer, so its pending bytes are dropped
+			// rather than streamed (and committing the response) on their way out
 			((GZIPResponseStream) stream).discard();
 		}
+		flushWriter();
 	}
 	
 	@Override
 	public void reset() {
-		resetBufferedOutput();
-		pendingContentLength = null;
 		super.reset();
+		resetStream(false);
+		pendingContentLength = null;
+		compressionHeadersWritten = false;
 		addVaryHeader();
 	}
 	
 	@Override
 	public void resetBuffer() {
-		resetBufferedOutput();
-		pendingContentLength = null;
 		super.resetBuffer();
+		// resetBuffer clears the body but keeps headers, so a pending Content-Length stays. The
+		// compression header is kept too when it was already written for a streaming response.
+		resetStream(true);
 	}
 	
-	private void resetBufferedOutput() {
-		flushWriter();
+	private void resetStream(boolean keepCompressionHeader) {
 		if (stream instanceof GZIPResponseStream) {
-			((GZIPResponseStream) stream).resetBuffer();
+			GZIPResponseStream gzipStream = (GZIPResponseStream) stream;
+			gzipStream.beginDiscard();
+			flushWriter();
+			gzipStream.resetBuffer(keepCompressionHeader);
+			gzipStream.endDiscard();
+		} else {
+			flushWriter();
 		}
 	}
 	
@@ -288,7 +308,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 * the status, headers and request method all have to be taken into account.
 	 */
 	boolean isCompressionAllowed() {
-		return error == 0 && !headRequest && !origResponse.containsHeader("Content-Encoding")
+		return error == 0 && !headRequest
+		        && (compressionHeadersWritten || !origResponse.containsHeader("Content-Encoding"))
 		        && isCompressibleStatus(origResponse.getStatus());
 	}
 	
@@ -315,6 +336,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		addVaryHeader();
 		origResponse.setHeader("Content-Encoding", "gzip");
 		origResponse.setContentLengthLong(compressedLength);
+		compressionHeadersWritten = true;
 	}
 	
 	/**
@@ -324,5 +346,6 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	void writeStreamingGzipHeaders() {
 		addVaryHeader();
 		origResponse.setHeader("Content-Encoding", "gzip");
+		compressionHeadersWritten = true;
 	}
 }

@@ -264,6 +264,88 @@ class GZIPResponseWrapperTest {
 		assertThat(response.getContentLengthLong(), is((long) SMALL_BODY.length));
 	}
 	
+	@Test
+	void shouldKeepTheContentLengthForAHeadResponseWithNoBody() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("HEAD");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		wrapper.setContentLengthLong(LARGE_BODY.length);
+		wrapper.finishResponse();
+		
+		assertThat(response.getHeader("Content-Encoding"), nullValue());
+		assertThat(response.getContentLengthLong(), is((long) LARGE_BODY.length));
+		assertThat(response.getContentAsByteArray(), equalTo(new byte[0]));
+	}
+	
+	@Test
+	void shouldKeepThePendingContentLengthWhenResetBufferIsCalled() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		wrapper.setContentLengthLong(1_234);
+		wrapper.getOutputStream().write(SMALL_BODY);
+		wrapper.resetBuffer();
+		wrapper.getOutputStream().write("kept".getBytes(StandardCharsets.UTF_8));
+		wrapper.finishResponse();
+		
+		assertThat(response.getContentAsByteArray(), equalTo("kept".getBytes(StandardCharsets.UTF_8)));
+		assertThat(response.getContentLengthLong(), is(1_234L));
+	}
+	
+	@Test
+	void shouldProduceAValidReplacementAfterResettingAStreamingResponse() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		wrapper.getOutputStream().write(LARGE_BODY);
+		wrapper.resetBuffer();
+		wrapper.getOutputStream().write(SMALL_BODY);
+		wrapper.finishResponse();
+		
+		assertThat(response.getHeader("Content-Encoding"), is("gzip"));
+		assertThat(gunzip(response.getContentAsByteArray()), equalTo(SMALL_BODY));
+	}
+	
+	@Test
+	void shouldProduceAValidUncompressedReplacementAfterResetOfAStreamingResponse() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		wrapper.getOutputStream().write(LARGE_BODY);
+		wrapper.reset();
+		wrapper.getOutputStream().write(SMALL_BODY);
+		wrapper.finishResponse();
+		
+		assertThat(response.getHeader("Content-Encoding"), nullValue());
+		assertThat(response.getContentAsByteArray(), equalTo(SMALL_BODY));
+	}
+	
+	@Test
+	void shouldNotSendDiscardedWriterOutputWhenTheBufferWouldOverflow() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		StringBuilder discarded = new StringBuilder(50_001);
+		for (int i = 0; i < 50_001; i++) {
+			discarded.append('a');
+		}
+		
+		PrintWriter writer = wrapper.getWriter();
+		writer.write(discarded.toString());
+		wrapper.resetBuffer();
+		writer.write("kept");
+		wrapper.finishResponse();
+		
+		assertThat(response.getHeader("Content-Encoding"), nullValue());
+		assertThat(response.getContentAsByteArray(), equalTo("kept".getBytes(StandardCharsets.UTF_8)));
+	}
+	
 	private void assertLargeResponseDoesNotCarryUncompressedLength(ContentLengthSetter setter) throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
