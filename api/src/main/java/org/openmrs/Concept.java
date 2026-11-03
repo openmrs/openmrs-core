@@ -92,7 +92,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	private Integer conceptId;
 
 	@GenericField
-	private Boolean retired = false;
+	private boolean retired = false;
 
 	private User retiredBy;
 
@@ -106,7 +106,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	@KeywordField(valueBridge = @ValueBridgeRef(type = OpenmrsObjectValueBridge.class))
 	private ConceptClass conceptClass;
 
-	private Boolean set = false;
+	private boolean set = false;
 
 	private String version;
 
@@ -278,24 +278,25 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	/**
 	 * whether or not this concept is a set
-	 *
-	 * @deprecated as of 2.0, use {@link #getSet()}
 	 */
-	@Deprecated
 	@JsonIgnore
-	public Boolean isSet() {
-		return getSet();
+	public boolean isSet() {
+		return set;
 	}
 
 	/**
 	 * @param set whether or not this concept is a set
 	 */
-	public void setSet(Boolean set) {
+	public void setSet(boolean set) {
 		this.set = set;
 	}
 
-	public Boolean getSet() {
-		return set;
+	/**
+	 * @deprecated use {@link #isSet()}
+	 */
+	@Deprecated
+	public boolean getSet() {
+		return isSet();
 	}
 
 	/**
@@ -1313,13 +1314,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 
 	/**
 	 * @return Returns the retired.
-	 * @deprecated as of 2.0, use {@link #getRetired()}
 	 */
 	@Override
-	@Deprecated
-	@JsonIgnore
-	public Boolean isRetired() {
-		return getRetired();
+	public boolean isRetired() {
+		return retired;
 	}
 
 	/**
@@ -1328,17 +1326,19 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * type.
 	 *
 	 * @see org.openmrs.Retireable#isRetired()
+	 * @deprecated as of 2.0, use {@link #isRetired()}
 	 */
 	@Override
-	public Boolean getRetired() {
-		return retired;
+	@Deprecated
+	public boolean getRetired() {
+		return isRetired();
 	}
 
 	/**
 	 * @param retired The retired to set.
 	 */
 	@Override
-	public void setRetired(Boolean retired) {
+	public void setRetired(boolean retired) {
 		this.retired = retired;
 	}
 

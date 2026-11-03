@@ -176,6 +176,10 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * FHIR:DosageInstructions.AsNeeded.asNeededBoolean Relates to drugOrder.asNeeded
+	 * <p>
+	 * Note: This remains a boxed {@link Boolean} because {@code null} represents an intentional,
+	 * unstated tri-state value.
+	 * </p>
 	 */
 	@Column(name = "as_needed")
 	private Boolean asNeeded;
@@ -201,6 +205,10 @@ public class MedicationDispense extends BaseFormRecordableOpenmrsData {
 	/**
 	 * FHIR:substitution.wasSubstituted True/false whether a substitution was made during this dispense
 	 * event
+	 * <p>
+	 * Note: This remains a boxed {@link Boolean} because {@code null} represents an intentional,
+	 * unstated tri-state value.
+	 * </p>
 	 */
 	@Column(name = "was_substituted")
 	private Boolean wasSubstituted;

@@ -30,7 +30,7 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="retired" type="java.lang.Boolean"
+		<property name="retired" type="boolean"
 			column="retired" length="1" not-null="true"/>
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
@@ -38,7 +38,7 @@
 			column="version" length="50" /> 
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
-		<property name="set" type="java.lang.Boolean" column="is_set"
+		<property name="set" type="boolean" column="is_set"
 			length="1" not-null="true" />
 		
 		

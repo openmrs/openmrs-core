@@ -2487,4 +2487,23 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(personService.getPersonAddressByUuid("y403fafk-e5k4-42d0-9d11-4f52e89d123r"));
 	}
 
+	@Test
+	public void shouldPersistAndReloadConvertedBooleanFlagsOnPerson() {
+		Person person = Context.getPersonService().getPerson(2);
+		person.setDead(true);
+		// OpenMRS validator requires a cause of death if a person is marked as dead
+		person.setCauseOfDeath(Context.getConceptService().getConcept(3));
+		person.setPersonVoided(true);
+		person.setPersonVoidReason("testing primitive boolean persistence");
+		person.setVoided(true);
+		person.setVoidReason("testing primitive boolean persistence");
+		Context.getPersonService().savePerson(person);
+		Context.flushSession();
+		Context.clearSession();
+
+		Person reloaded = Context.getPersonService().getPerson(2);
+		assertTrue(reloaded.isDead());
+		assertTrue(reloaded.isPersonVoided());
+		assertTrue(reloaded.isVoided());
+	}
 }

@@ -32,7 +32,7 @@
 			not-null="true" />
 		<property name="dateCreated" type="java.util.Date" column="date_created"
 			not-null="true" length="19" />
-		<property name="retired" type="java.lang.Boolean" length="1"
+		<property name="retired" type="boolean" length="1"
 			not-null="true" />
 		<many-to-one name="retiredBy" class="org.openmrs.User"
 			not-null="false" column="retired_by" />

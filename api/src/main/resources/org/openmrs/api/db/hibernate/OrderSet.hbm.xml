@@ -49,7 +49,7 @@
         </many-to-one>
         <property name="dateCreated" type="java.util.Date"
                   column="date_created" not-null="true" length="19" />
-        <property name="retired" type="java.lang.Boolean"
+        <property name="retired" type="boolean"
                   column="retired" length="1" not-null="true"/>
         <!-- bi-directional many-to-one association to User -->
         <many-to-one name="retiredBy" class="User">

@@ -89,7 +89,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			}
 			ensureProgramIsSet(workflow, program);
 			for (ProgramWorkflowState state : workflow.getStates()) {
-				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
+				if (state.getConcept() == null) {
 					throw new APIException("ProgramWorkflowState.requires", (Object[]) null);
 				}
 
