@@ -119,6 +119,7 @@ public class TestInstallUtil {
 			log.error("Failed to create the sql dump", e);
 		} catch (InterruptedException e) {
 			log.error("The back up was interrupted while adding test data", e);
+			Thread.currentThread().interrupt();
 		}
 
 		return false;
