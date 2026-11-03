@@ -28,6 +28,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -55,6 +57,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.test.util.AopTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -493,11 +497,13 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			assertTrue(Security.needsUpgrade(hashBefore), "precondition: the stored hash must need an upgrade");
 
 			assertNotNull(dao.authenticate("admin", "test"));
+			awaitPasswordUpgrades();
 			String hashAfter = readStoredPassword();
 			assertNotEquals(hashBefore, hashAfter);
 			assertFalse(Security.needsUpgrade(hashAfter));
 
 			assertNotNull(dao.authenticate("admin", "test"));
+			awaitPasswordUpgrades();
 			assertEquals(hashAfter, readStoredPassword());
 		});
 	}
@@ -507,6 +513,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// longer than users.password holds, so the UPDATE fails
 		withStandInEncoder(rawPassword -> StringUtils.repeat('x', 300), hashBefore -> {
 			assertNotNull(dao.authenticate("admin", "test"));
+			// also proves that the failed upgrade gave its permit back
+			awaitPasswordUpgrades();
 			assertEquals(hashBefore, readStoredPassword());
 		});
 	}
@@ -514,15 +522,39 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldNotOverwriteAHashThatChangedDuringTheLogin() throws Exception {
 		withStandInEncoder(rawPassword -> {
-			// encode() runs after authenticate's transaction has committed and before the upgrade UPDATE, so a
-			// change committed from here stands in for a concurrent login or password change
+			// encode() runs on the upgrade's thread after authenticate's transaction has committed and before the
+			// upgrade UPDATE, so a change committed from here stands in for a concurrent login or password change
 			inNewTransaction(() -> sessionFactory.getCurrentSession()
 					.createNativeQuery("update users set password = 'changed meanwhile' where user_id = 1")
 					.executeUpdate());
 			return "stand-in:" + rawPassword;
 		}, hashBefore -> {
 			assertNotNull(dao.authenticate("admin", "test"));
+			awaitPasswordUpgrades();
 			assertEquals("changed meanwhile", readStoredPassword());
+		});
+	}
+
+	@Test
+	public void authenticate_shouldSkipThePasswordUpgradeWhenTooManyAreAlreadyRunning() throws Exception {
+		Object target = AopTestUtils.getUltimateTargetObject(dao);
+		Semaphore permits = (Semaphore) ReflectionTestUtils.getField(target, "passwordUpgradePermits");
+		CountDownLatch encoded = new CountDownLatch(1);
+		withStandInEncoder(rawPassword -> {
+			encoded.countDown();
+			return "stand-in:" + new StringBuilder(rawPassword).reverse();
+		}, hashBefore -> {
+			int taken = permits.drainPermits();
+			try {
+				// must return without waiting for a free permit
+				assertNotNull(dao.authenticate("admin", "test"));
+				// a skipped upgrade never starts, so nothing is encoded
+				assertFalse(encoded.await(2, TimeUnit.SECONDS), "the upgrade should have been skipped");
+				assertEquals(hashBefore, readStoredPassword());
+			}
+			finally {
+				permits.release(taken);
+			}
 		});
 	}
 
@@ -531,14 +563,20 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		void run(String hashBefore) throws Exception;
 	}
 
+	private void awaitPasswordUpgrades() {
+		Object target = AopTestUtils.getUltimateTargetObject(dao);
+		ReflectionTestUtils.invokeMethod(target, "awaitPasswordUpgrades");
+	}
+
 	/**
 	 * Swaps openmrsPasswordEncoder for one that writes with the given stand-in, runs the body, then puts the
 	 * encoder and admin's rows back.
 	 * <p>
 	 * authenticate() locks the user's row until its transaction commits, and the password upgrade only runs
-	 * after that commit. The test-managed transaction never commits and already holds admin's lock from the
-	 * login in the base class, so it is ended here (rolling back the test data) and the body runs against
-	 * the committed initial data. Whatever the body commits has to be undone by hand.
+	 * after that commit, on another thread. The test-managed transaction never commits and already holds
+	 * admin's lock from the login in the base class, so it is ended here (rolling back the test data) and the
+	 * body runs against the committed initial data. Call awaitPasswordUpgrades() before reading the stored
+	 * hash. Whatever the body commits has to be undone by hand.
 	 */
 	@SuppressWarnings("unchecked")
 	private void withStandInEncoder(Function<CharSequence, String> standInEncode, StandInTest body) throws Exception {

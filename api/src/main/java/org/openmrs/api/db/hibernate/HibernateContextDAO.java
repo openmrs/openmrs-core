@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.persistence.LockTimeoutException;
@@ -47,6 +48,7 @@ import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
@@ -95,6 +97,11 @@ public class HibernateContextDAO implements ContextDAO {
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
+
+	/** Limits how many password upgrades run at once, since each holds a database connection and computes a hash. */
+	static final int MAX_CONCURRENT_PASSWORD_UPGRADES = 4;
+
+	private final Semaphore passwordUpgradePermits = new Semaphore(MAX_CONCURRENT_PASSWORD_UPGRADES);
 
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
@@ -371,47 +378,81 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Re-encodes the password once the login transaction has committed. authenticate() holds a row lock on
 	 * the user until then, so a second transaction writing the new hash any earlier would only wait for that
-	 * lock. Failures are logged and never affect the login, which has already succeeded.
+	 * lock. The work then runs on another thread: this callback still holds the login's database connection,
+	 * so waiting here for a second connection could exhaust the pool when many users log in at once.
 	 */
 	private void scheduleUpgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
-		Runnable upgrade = () -> {
-			try {
-				String newHash = Security.encodePassword(rawPasswordWithSalt);
-				upgradePasswordHash(user, oldHash, newHash);
-			}
-			catch (Exception e) {
-				log.error("Failed to upgrade password hash for user {}", user.getUsername(), e);
-			}
-		};
+		// read here, as the entity must not be shared with the upgrade's thread
+		Integer userId = user.getUserId();
+		String username = user.getUsername();
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 				@Override
 				public void afterCommit() {
-					upgrade.run();
+					startUpgradePasswordHash(userId, username, oldHash, rawPasswordWithSalt);
 				}
 			});
 		} else {
-			upgrade.run();
+			startUpgradePasswordHash(userId, username, oldHash, rawPasswordWithSalt);
 		}
 	}
 
 	/**
-	 * Upgrades a user's stored password hash to the configured encoder in its own transaction, so a failure
-	 * here cannot affect the login. Private on purpose: it changes a user's credential, so it must only be
-	 * reachable from {@link #authenticate(String, String)}.
+	 * Starts the upgrade on another thread unless too many are already running, in which case it is skipped
+	 * and the next login tries again. Never waits, so a login never depends on the upgrade making progress.
 	 */
-	private void upgradePasswordHash(User user, String oldHash, String newHash) {
-		new TransactionTemplate(transactionManager,
-				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> {
-					boolean upgraded = conditionallyUpdateUserPassword(user.getUserId(), oldHash, newHash,
-						user.getUserId(), new Date());
-					if (upgraded) {
-						log.info("Successfully upgraded password hash for user: {}", user.getUsername());
-					} else {
-						log.debug("Password upgrade skipped for user {} — already changed", user.getUsername());
-					}
-					return null;
-				});
+	private void startUpgradePasswordHash(Integer userId, String username, String oldHash, String rawPasswordWithSalt) {
+		if (!passwordUpgradePermits.tryAcquire()) {
+			log.debug("Skipping the password upgrade for user {}: too many upgrades are running", username);
+			return;
+		}
+		try {
+			OpenmrsThreadPoolHolder.threadExecutor.execute(() -> {
+				try {
+					String newHash = Security.encodePassword(rawPasswordWithSalt);
+					upgradePasswordHash(userId, username, oldHash, newHash);
+				}
+				catch (Exception e) {
+					log.error("Failed to upgrade password hash for user {}", username, e);
+				}
+				finally {
+					passwordUpgradePermits.release();
+				}
+			});
+		}
+		catch (RuntimeException e) {
+			passwordUpgradePermits.release();
+			log.error("Could not start the password upgrade for user {}", username, e);
+		}
+	}
+
+	/**
+	 * Upgrades a user's stored password hash to the configured encoder in its own transaction. Private on
+	 * purpose: it changes a user's credential, so it must only be reachable from authenticate().
+	 */
+	private void upgradePasswordHash(Integer userId, String username, String oldHash, String newHash) {
+		TransactionTemplate template = new TransactionTemplate(transactionManager,
+				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+		template.execute(status -> {
+			boolean upgraded = conditionallyUpdateUserPassword(userId, oldHash, newHash, userId, new Date());
+			if (upgraded) {
+				log.info("Successfully upgraded password hash for user: {}", username);
+			} else {
+				log.debug("Password upgrade skipped for user {} - already changed", username);
+			}
+			return null;
+		});
+	}
+
+	/**
+	 * Waits until no password upgrade is running. For tests, which must not read the stored hash while an
+	 * upgrade may still be about to write it. An upgrade takes its permit before authenticate() returns.
+	 */
+	void awaitPasswordUpgrades() throws InterruptedException {
+		if (!passwordUpgradePermits.tryAcquire(MAX_CONCURRENT_PASSWORD_UPGRADES, 30, TimeUnit.SECONDS)) {
+			throw new IllegalStateException("Password upgrades are still running");
+		}
+		passwordUpgradePermits.release(MAX_CONCURRENT_PASSWORD_UPGRADES);
 	}
 
 	private boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
