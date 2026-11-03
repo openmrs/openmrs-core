@@ -48,6 +48,9 @@ public interface ContextDAO {
 	 * <strong>Should</strong> not authenticate when password in database is empty
 	 * <strong>Should</strong> give identical error messages between username and password mismatch
 	 * <strong>Should</strong> lockout user after eight failed attempts
+	 * <strong>Should</strong> reject login attempts before the failed login back-off expires
+	 * <strong>Should</strong> reset the failed login back-off after a successful login
+	 * <strong>Should</strong> keep locking out the user when the failed login back-off is enabled
 	 * <strong>Should</strong> authenticateWithCorrectHashedPassword
 	 * <strong>Should</strong> authenticateWithIncorrectHashedPassword
 	 * <strong>Should</strong> set uuid on user property when authentication fails with valid user
