@@ -910,4 +910,43 @@ class InitializationFilterSessionTest {
 		request.setSession(session);
 		return request;
 	}
+
+	@Test
+	void shouldStartAnAutomaticInstallWhoseDatabaseNameItPutsIntoNoSqlWhateverThatNameIs() throws Exception {
+		// the name is not one the rule accepts, but this install reuses an existing database and user and its
+		// url already names that database, so the name is never put into the sql the wizard runs
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("connection.url",
+		    "jdbc:h2:mem:reuse_" + UUID.randomUUID().toString().replace("-", "") + ";DB_CLOSE_DELAY=-1");
+		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
+		filter.installationScript.setProperty("database_name", "my--clinic");
+		filter.installationScript.setProperty("has_current_openmrs_database", "true");
+		filter.installationScript.setProperty("create_database_user", "false");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+
+		MockHttpSession session = new MockHttpSession();
+		get(session, null);
+
+		assertEquals(1, filter.installsStarted.size());
+		assertEquals("my--clinic", filter.installsStarted.get(0).databaseName);
+		assertThat(filter.getWizardModel(session).errors, not(hasKey(ErrorMessageConstants.ERROR_DB_NAME_INVALID)));
+	}
+
+	@Test
+	void shouldRejectAnAutomaticInstallWhoseInvalidDatabaseNameGoesIntoTheConnectionUrl() throws Exception {
+		// the same name, but now the url carries @DBNAME@, so the install would put the name into the url
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("connection.url", "jdbc:h2:mem:@DBNAME@;DB_CLOSE_DELAY=-1");
+		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
+		filter.installationScript.setProperty("database_name", "my--clinic");
+		filter.installationScript.setProperty("has_current_openmrs_database", "true");
+		filter.installationScript.setProperty("create_database_user", "false");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+
+		MockHttpSession session = new MockHttpSession();
+		get(session, null);
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(filter.getWizardModel(session).errors, hasKey(ErrorMessageConstants.ERROR_DB_NAME_INVALID));
+	}
 }

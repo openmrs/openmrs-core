@@ -1117,7 +1117,7 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
 			return;
 		}
-		if (!isValidDatabaseName(wizardModel.databaseName)) {
+		if (databaseNameReachesSqlOrUrl(wizardModel) && !isValidDatabaseName(wizardModel.databaseName)) {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_NAME_INVALID, null);
 			log.error(
 			    "Not installing OpenMRS, because the configured database name does not consist of letters, digits "
@@ -1505,6 +1505,23 @@ public class InitializationFilter extends StartupFilter {
 	private static boolean isValidDatabaseName(String databaseName) {
 		return databaseName != null && databaseName.length() <= DATABASE_NAME_MAX_LENGTH
 		        && DATABASE_NAME_PATTERN.matcher(databaseName).matches();
+	}
+
+	/**
+	 * Whether an install with this model puts the database name into the SQL it builds (creating the
+	 * database or its user), into the connection URL in place of &#64;DBNAME&#64;, or hands it to the
+	 * test data import. When none of these hold, the name only selects an existing database through a
+	 * URL that already names it, so it reaches neither the SQL the wizard runs nor an external client,
+	 * and need not match the name rule. An automatic install that reuses an existing database and user,
+	 * as the OpenMRS SDK and the Docker image configure, is such a case.
+	 *
+	 * @param wizardModel the wizard model of the install
+	 * @return true if the database name has to be checked against the name rule
+	 */
+	private static boolean databaseNameReachesSqlOrUrl(InitializationWizardModel wizardModel) {
+		return !wizardModel.hasCurrentOpenmrsDatabase || wizardModel.createDatabaseUser || wizardModel.importTestData
+		        || InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)
+		        || (wizardModel.databaseConnection != null && wizardModel.databaseConnection.contains("@DBNAME@"));
 	}
 
 	/**
