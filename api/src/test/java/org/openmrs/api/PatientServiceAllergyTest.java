@@ -234,7 +234,7 @@ public class PatientServiceAllergyTest extends BaseContextSensitiveTest {
 		//clear any cache for this object such that the next calls fetch it from the database
 		Context.evictFromSession(editedAllergy);
 		//edit comment
-		editedAllergy.setComment("edited comment");
+		editedAllergy.setComments("edited comment");
 
 		assertTrue(allergies.contains(editedAllergy));
 
