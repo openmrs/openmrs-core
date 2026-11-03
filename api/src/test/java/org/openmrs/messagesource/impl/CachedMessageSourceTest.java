@@ -74,9 +74,11 @@ public class CachedMessageSourceTest {
 
 		cachedMessages.addPresentation(existingMessage);
 		source.addPresentation(newMessage);
+		source.addPresentation(new PresentationMessage("new.test.code", Locale.ENGLISH, "New code message", ""));
 
 		cachedMessages.merge(source, false);
 		assertEquals("Old message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
+		assertEquals("New code message", cachedMessages.getPresentation("new.test.code", Locale.ENGLISH).getMessage());
 
 		cachedMessages.merge(source, true);
 		assertEquals("New message", cachedMessages.getPresentation("test.code", Locale.ENGLISH).getMessage());
