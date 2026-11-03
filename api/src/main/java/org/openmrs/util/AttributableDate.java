@@ -12,7 +12,6 @@ package org.openmrs.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Attributable;
@@ -54,31 +53,11 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	}
 
 	/**
-	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
-	 */
-	@Override
-	@Deprecated
-	public List<AttributableDate> findPossibleValues(String searchText) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
 	@Override
 	public String getDisplayString() {
 		return new SimpleDateFormat(DATE_FORMAT).format(this);
-	}
-
-	/**
-	 * @see org.openmrs.Attributable#getPossibleValues()
-	 */
-	@Override
-	@Deprecated
-	public List<AttributableDate> getPossibleValues() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
