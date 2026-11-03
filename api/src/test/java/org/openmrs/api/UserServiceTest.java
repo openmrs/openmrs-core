@@ -37,6 +37,7 @@ import static org.openmrs.test.TestUtil.containsId;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1907,6 +1909,108 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), notNullValue());
 		assertThat(createdUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP), not(emptyString()));
 		assertThat(Context.getUserService().getLastLoginTime(createdUser), not(emptyString()));
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldReturnNullWhenUserIsNotLockedOut() {
+		User user = setLockoutState(null, null);
+
+		assertNull(userService.getAccountLockoutEndTime(user));
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldReturnEndOfInitialLockout() {
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
+		User user = setLockoutState(lockoutStart, "1");
+
+		Date endTime = userService.getAccountLockoutEndTime(user);
+
+		assertNotNull(endTime);
+		assertEquals(lockoutStart + TimeUnit.MINUTES.toMillis(10), endTime.getTime());
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldUseTheConfiguredInitialLockoutDuration() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME, "3");
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
+		User user = setLockoutState(lockoutStart, "1");
+
+		Date endTime = userService.getAccountLockoutEndTime(user);
+
+		assertNotNull(endTime);
+		assertEquals(lockoutStart + TimeUnit.MINUTES.toMillis(3), endTime.getTime());
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldHonorAnInitialDurationAboveTheMaximum() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME, "2880");
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_ACCOUNT_LOCKOUT_DURATION, "1440");
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
+		User user = setLockoutState(lockoutStart, "1");
+
+		Date endTime = userService.getAccountLockoutEndTime(user);
+
+		assertNotNull(endTime);
+		assertEquals(lockoutStart + TimeUnit.MINUTES.toMillis(2880), endTime.getTime());
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldDoubleForRepeatedLockouts() {
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
+		User user = setLockoutState(lockoutStart, "2");
+
+		Date endTime = userService.getAccountLockoutEndTime(user);
+
+		assertNotNull(endTime);
+		assertEquals(lockoutStart + TimeUnit.MINUTES.toMillis(20), endTime.getTime());
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldUseTheMaximumLockoutDuration() {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_ACCOUNT_LOCKOUT_DURATION, "15");
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
+		User user = setLockoutState(lockoutStart, "3");
+
+		Date endTime = userService.getAccountLockoutEndTime(user);
+
+		assertNotNull(endTime);
+		assertEquals(lockoutStart + TimeUnit.MINUTES.toMillis(15), endTime.getTime());
+	}
+
+	@Test
+	public void getAccountLockoutEndTime_shouldReturnNullWhenTheLockoutHasExpired() {
+		long lockoutStart = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(21);
+		User user = setLockoutState(lockoutStart, "2");
+
+		assertNull(userService.getAccountLockoutEndTime(user));
+	}
+
+	@Test
+	public void unlockUser_shouldClearLockoutAndResetHistory() {
+		User user = setLockoutState(System.currentTimeMillis(), "3");
+
+		User unlocked = userService.unlockUser(user);
+
+		assertEquals("", unlocked.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP));
+		assertEquals("", unlocked.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+		assertEquals("", unlocked.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT));
+		assertNull(userService.getAccountLockoutEndTime(unlocked));
+	}
+
+	private User setLockoutState(Long lockoutStart, String lockoutCount) {
+		User user = userService.getUserByUsername(ADMIN_USERNAME);
+		if (lockoutStart == null) {
+			user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+		} else {
+			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(lockoutStart));
+			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
+		}
+		if (lockoutCount == null) {
+			user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT);
+		} else {
+			user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_COUNT, lockoutCount);
+		}
+		return userService.saveUser(user);
 	}
 
 	private Credentials getTestUserCredentials() {
