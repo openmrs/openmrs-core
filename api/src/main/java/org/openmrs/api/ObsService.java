@@ -349,7 +349,6 @@ public interface ObsService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
-	//TODO: DAO auth filter
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException;
@@ -396,7 +395,6 @@ public interface ObsService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
-	//TODO: DAO auth filter
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber) throws APIException;
@@ -604,7 +602,6 @@ public interface ObsService extends OpenmrsService {
 	 * @see org.openmrs.parameter.ObsSearchCriteriaBuilder
 	 */
 	@PreAuthorize("hasPermission(#obsSearchCriteria?.whom, '" + PrivilegeConstants.GET_OBS + "')")
-	//TODO: DAO auth filter
 	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException;
 
 	/**
@@ -644,7 +641,6 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@SuppressWarnings("squid:S107")
 	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
-	//TODO: DAO auth filter
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
@@ -662,7 +658,6 @@ public interface ObsService extends OpenmrsService {
 	 * @since 2.7.0
 	 */
 	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
-	//TODO: DAO auth filter
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
 	        Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
@@ -684,6 +679,5 @@ public interface ObsService extends OpenmrsService {
 	 * @see org.openmrs.parameter.ObsSearchCriteriaBuilder
 	 */
 	@PreAuthorize("hasPermission(#obsSearchCriteria?.whom, '" + PrivilegeConstants.GET_OBS + "')")
-	//TODO: DAO auth filter
 	public Integer getObservationCount(ObsSearchCriteria obsSearchCriteria) throws APIException;
 }

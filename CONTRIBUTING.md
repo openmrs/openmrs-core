@@ -70,7 +70,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 7. Commit
 
   For every commit please write a short (max 72 characters) summary in the first line followed with a blank line and then more detailed descriptions of the change. Use markdown syntax for simple styling. Please include any JIRA issue numbers in your summary.
-  
+
         git commit -m "TRUNK-123: Put change summary here (can be a ticket title)"
 
   **NEVER leave the commit message blank!** Provide a detailed, clear, and complete description of your commit!
@@ -78,7 +78,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 8. Issue a Pull Request
 
   Before submitting a pull request, update your branch to the latest code.
-  
+
         git pull --rebase upstream master
 
   If you have made many commits, we ask you to squash them into atomic units of work. Most of tickets should have one commit only, especially bug fixes, which makes them easier to back port.

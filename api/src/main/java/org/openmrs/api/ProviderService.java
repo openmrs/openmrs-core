@@ -196,7 +196,6 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
-	//TODO: DAO auth filter
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes, boolean includeRetired);
 
@@ -226,7 +225,6 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
-	//TODO: DAO auth filter
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes);
 
@@ -240,7 +238,6 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
-	//TODO: DAO auth filter
 	public Integer getCountOfProviders(String query);
 
 	/**
@@ -258,7 +255,6 @@ public interface ProviderService extends OpenmrsService {
 	 * @since 1.9.4
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
-	//TODO: DAO auth filter
 	public Integer getCountOfProviders(String query, boolean includeRetired);
 
 	/**

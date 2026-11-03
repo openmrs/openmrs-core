@@ -520,7 +520,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
-	//TODO: DAO auth filter
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
 	        throws APIException;
 
@@ -550,7 +549,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.10
 	 */
 	@PreAuthorize("hasPermission(#patientId, 'Patient', '" + PrivilegeConstants.GET_ENCOUNTERS + "')")
-	//TODO: DAO auth filter
 	public List<Encounter> getEncounters(String query, Integer patientId, Integer start, Integer length,
 	        boolean includeVoided) throws APIException;
 
@@ -586,7 +584,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ENCOUNTERS + "')")
-	//TODO: DAO auth filter
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
 
 	/**
@@ -783,7 +780,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.9
 	 */
 	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_VISITS + "')")
-	//TODO: DAO auth filter
 	public List<Encounter> getEncountersByVisitsAndPatient(Patient patient, boolean includeVoided, String query,
 	        Integer start, Integer length) throws APIException;
 
@@ -801,7 +797,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @since 1.9
 	 */
 	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_VISITS + "')")
-	//TODO: DAO auth filter
 	public Integer getEncountersByVisitsAndPatientCount(Patient patient, boolean includeVoided, String query)
 	        throws APIException;
 
