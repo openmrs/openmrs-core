@@ -58,6 +58,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.search.SearchQueryUnique;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.collection.ListPart;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -759,6 +760,46 @@ public class HibernatePatientDAO implements PatientDAO {
 		    HibernatePersonDAO.getMaximumSearchResults());
 	}
 
+	@Override
+	public ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length) throws DAOException {
+		return getPatientsAndCount(query, false, start, length);
+	}
+
+	@Override
+	public ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start, Integer length)
+	        throws DAOException {
+		Integer tmpStart = start;
+		if (tmpStart == null || tmpStart < 0) {
+			tmpStart = 0;
+		}
+		Integer maxLength = HibernatePersonDAO.getMaximumSearchResults();
+		Integer tmpLength = length;
+		if (tmpLength == null || tmpLength > maxLength) {
+			tmpLength = maxLength;
+		}
+
+		if (StringUtils.isBlank(query)) {
+			return ListPart.newListPart(new ArrayList<>(), tmpStart.longValue(), tmpLength.longValue(), 0L, true);
+		}
+
+		String minChars = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
+		if (!StringUtils.isNumeric(minChars)) {
+			minChars = "" + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS;
+		}
+		if (query.length() < Integer.parseInt(minChars)) {
+			return ListPart.newListPart(new ArrayList<>(), tmpStart.longValue(), tmpLength.longValue(), 0L, true);
+		}
+
+		SearchQueryUnique<?, Patient> patientQuery = getPatientSearchQuery(query, includeVoided);
+		SearchQueryUnique.SearchUniqueResults<Patient> result = SearchQueryUnique.searchWithResultsAndCount(
+		    searchSessionFactory, patientQuery, tmpStart, tmpLength, HibernatePersonDAO.getMaximumSearchResults());
+		Long totalElements = result.getTotalHitCount();
+		Boolean totalElementsExact = result.getTotalHitCountExact() == null ? Boolean.TRUE : result.getTotalHitCountExact();
+		return ListPart.newListPart(result.getResults(), tmpStart.longValue(), tmpLength.longValue(),
+		    totalElements == null ? 0L : totalElements, totalElementsExact);
+	}
+
 	private List<Patient> findPatients(String query, boolean includeVoided) {
 		return findPatients(query, includeVoided, null, null);
 	}
@@ -800,6 +841,21 @@ public class HibernatePatientDAO implements PatientDAO {
 		    }).toPredicate(), "patient.personId", this::multiLoadPatients), tmpStart, tmpLength);
 	}
 
+	private SearchQueryUnique<?, Patient> getPatientSearchQuery(String query, boolean includeVoided) {
+		PersonQuery personQuery = new PersonQuery();
+
+		return SearchQueryUnique
+		        .newProjectedQuery(PatientIdentifier.class,
+		            f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false), "patient.personId",
+		            this::multiLoadPatients)
+		        .join(SearchQueryUnique
+		                .newProjectedQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
+		                    "person.personId", this::multiLoadPatients)
+		                .join(SearchQueryUnique.newProjectedQuery(PersonAttribute.class,
+		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
+		                    this::multiLoadPatients)));
+	}
+
 	public List<Patient> findPatients(String query, boolean includeVoided, Integer start, Integer length) {
 		Integer tmpStart = start;
 		if (tmpStart == null) {
@@ -823,19 +879,8 @@ public class HibernatePatientDAO implements PatientDAO {
 			return patients;
 		}
 
-		PersonQuery personQuery = new PersonQuery();
-
-		patients = SearchQueryUnique.search(searchSessionFactory, SearchQueryUnique
-		        .newProjectedQuery(
-		            PatientIdentifier.class, f -> newPatientIdentifierSearchPredicate(f, query, includeVoided, false),
-		            "patient.personId", this::multiLoadPatients)
-		        .join(SearchQueryUnique
-		                .newProjectedQuery(PersonName.class, f -> personQuery.getPatientNameQuery(f, query, includeVoided),
-		                    "person.personId", this::multiLoadPatients)
-		                .join(SearchQueryUnique.newProjectedQuery(PersonAttribute.class,
-		                    f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId",
-		                    this::multiLoadPatients))),
-		    start, length);
+		patients = SearchQueryUnique.search(searchSessionFactory, getPatientSearchQuery(query, includeVoided), start,
+		    length);
 
 		return patients;
 	}

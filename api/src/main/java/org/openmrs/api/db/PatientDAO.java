@@ -19,6 +19,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.api.PatientService;
+import org.openmrs.collection.ListPart;
 
 /**
  * Database methods for the PatientService
@@ -119,6 +120,19 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getPatients(String, boolean, Integer, Integer)
 	 */
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws DAOException;
+
+	/**
+	 * Returns the requested patient page together with the total deduplicated count from a single
+	 * SearchQueryUnique traversal.
+	 */
+	public ListPart<Patient> getPatientsAndCount(String query, Integer start, Integer length) throws DAOException;
+
+	/**
+	 * Returns the requested patient page together with the total deduplicated count from a single
+	 * SearchQueryUnique traversal.
+	 */
+	public ListPart<Patient> getPatientsAndCount(String query, boolean includeVoided, Integer start, Integer length)
+	        throws DAOException;
 
 	/**
 	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
