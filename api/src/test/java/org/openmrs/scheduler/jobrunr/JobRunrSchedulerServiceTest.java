@@ -31,6 +31,7 @@ import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.ConcurrentJobModificationException;
 import org.jobrunr.storage.JobNotFoundException;
 import org.jobrunr.storage.RecurringJobsResult;
+import org.jobrunr.storage.StorageException;
 import org.jobrunr.storage.StorageProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -232,6 +233,22 @@ public class JobRunrSchedulerServiceTest {
 		}
 		verify(jobRequestScheduler, never()).delete(anyString());
 		verify(storageProvider, never()).saveRecurringJob(any(RecurringJob.class));
+	}
+
+	@Test
+	public void onStartup_shouldRegisterTheRecurringJobAfterLosingTheInsertRaceOnANonEnglishDatabase() {
+		TaskDefinition task = startupTask();
+		task.setRepeatInterval(60L);
+		UUID id = UUID.fromString(task.getUuid());
+		Job insertedByOtherNode = job(StateName.ENQUEUED, 1);
+		when(storageProvider.getJobById(id)).thenThrow(new JobNotFoundException(id)).thenReturn(insertedByOtherNode);
+		// a non-English MySQL reports the duplicate key as a plain StorageException
+		when(storageProvider.save(any(Job.class))).thenThrow(new StorageException("Doppelter Eintrag"));
+		when(storageProvider.getRecurringJobs()).thenReturn(new RecurringJobsResult());
+
+		schedulerService.onStartup();
+
+		verify(storageProvider).saveRecurringJob(any(RecurringJob.class));
 	}
 
 	@Test

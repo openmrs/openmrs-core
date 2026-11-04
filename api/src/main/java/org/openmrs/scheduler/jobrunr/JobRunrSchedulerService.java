@@ -286,9 +286,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	/**
 	 * Registers a recurring job that always repeats at the task's configured interval.
 	 * <p>
-	 * JobRunr computes interval runs as {@code createdAt + n * interval},  for {@code n >= 1}, so anchoring
-	 * {@code createdAt} one interval before the task's start time keeps the 2.8.x semantics of {@code start_time} 
-	 * (it fixes the phase of the schedule,e.g. "daily at 02:00") without the placeholder period and fix-up job 
+	 * JobRunr computes interval runs as {@code createdAt + n * interval} for {@code n >= 1}, so anchoring
+	 * {@code createdAt} one interval before the task's start time keeps the 2.8.x semantics of {@code start_time}
+	 * (it fixes the phase of the schedule, e.g. "daily at 02:00") without the placeholder period and fix-up job
 	 * used previously, which could never run because the fix-up executed without a Hibernate session.
 	 */
 	private void registerRecurring(TaskDefinition task, String name, String scheduledBy) {
