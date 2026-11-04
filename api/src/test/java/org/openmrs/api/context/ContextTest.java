@@ -37,6 +37,7 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.validation.Validator;
@@ -311,6 +312,26 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Integer butchId = butch.getUserId();
 
 		butch.setUserId(1);
+
+		assertEquals(butchId, Context.getAuthenticatedUserId());
+	}
+
+	/**
+	 * @see Context#refreshAuthenticatedUser()
+	 */
+	@Test
+	public void refreshAuthenticatedUser_shouldKeepTheStoredIdWhenTheAttachedUserObjectIdIsChanged() {
+		Context.becomeUser("3-4");
+		User butch = Context.getAuthenticatedUser();
+		Integer butchId = butch.getUserId();
+
+		butch.setUserId(1);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_USERS);
+		try {
+			Context.refreshAuthenticatedUser();
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_USERS);
+		}
 
 		assertEquals(butchId, Context.getAuthenticatedUserId());
 	}

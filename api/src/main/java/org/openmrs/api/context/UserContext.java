@@ -220,7 +220,7 @@ public class UserContext implements Serializable {
 		log.debug("Refreshing authenticated user");
 
 		if (user != null) {
-			setAuthenticatedUser(Context.getUserService().getUser(userId));
+			user = Context.getUserService().getUser(userId);
 			//update the stored location in the user's session
 			setUserLocation(false);
 			setUserLocale(false);
