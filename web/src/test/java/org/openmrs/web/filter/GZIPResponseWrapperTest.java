@@ -369,6 +369,28 @@ class GZIPResponseWrapperTest {
 		assertThat(response.getContentAsByteArray(), equalTo("kept".getBytes(StandardCharsets.UTF_8)));
 	}
 	
+	@Test
+	void shouldDeliverAnErrorWhenTheWriterStillHoldsEnoughToOverflowTheBuffer() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		// commit as soon as anything reaches the response, as a container does once its buffer fills
+		response.setBufferSize(1);
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		StringBuilder discarded = new StringBuilder(50_001);
+		for (int i = 0; i < 50_001; i++) {
+			discarded.append('a');
+		}
+		
+		wrapper.getWriter().write(discarded.toString());
+		wrapper.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "boom");
+		wrapper.finishResponse();
+		
+		assertThat(response.getStatus(), is(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+		assertThat(response.getErrorMessage(), is("boom"));
+		assertThat(response.getHeader("Content-Encoding"), nullValue());
+	}
+	
 	private void assertLargeResponseDoesNotCarryUncompressedLength(ContentLengthSetter setter) throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
