@@ -302,6 +302,20 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see Context#getAuthenticatedUserId()
+	 */
+	@Test
+	public void getAuthenticatedUserId_shouldReturnTheIdAsLoadedEvenIfTheAuthenticatedUserObjectIsChanged() {
+		Context.becomeUser("3-4");
+		User butch = Context.getAuthenticatedUser();
+		Integer butchId = butch.getUserId();
+
+		butch.setUserId(1);
+
+		assertEquals(butchId, Context.getAuthenticatedUserId());
+	}
+
+	/**
 	 * @see Context#evictEntity(OpenmrsObject)
 	 */
 	@Test

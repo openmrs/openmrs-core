@@ -700,6 +700,20 @@ public class Context {
 	}
 
 	/**
+	 * @return id of the "active" user as loaded when they were authenticated, otherwise
+	 *         <code>null</code>
+	 * @since 3.0.0
+	 */
+	public static Integer getAuthenticatedUserId() {
+		if (Daemon.isDaemonThread()) {
+			User daemonUser = Daemon.getDaemonThreadUser();
+			return daemonUser == null ? null : daemonUser.getUserId();
+		}
+
+		return getUserContext().getAuthenticatedUserId();
+	}
+
+	/**
 	 * @return true if user has been authenticated in this context
 	 */
 	public static boolean isAuthenticated() {
