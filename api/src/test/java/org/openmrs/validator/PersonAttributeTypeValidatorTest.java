@@ -141,4 +141,95 @@ public class PersonAttributeTypeValidatorTest extends BaseContextSensitiveTest {
 		assertTrue(errors.hasFieldErrors("format"));
 		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFormatIsNotAPermittedClass() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("java.io.FileOutputStream");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertTrue(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfFormatClassDoesNotExist() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("org.openmrs.DoesNotExist");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertTrue(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFormatIsAnAttributableClass() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("org.openmrs.Concept");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertFalse(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFormatIsAnOpenmrsObjectClass() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("org.openmrs.Patient");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertFalse(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFormatIsCharacter() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("java.lang.Character");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertFalse(errors.hasFieldErrors("format"));
+	}
+
+	/**
+	 * @see PersonAttributeTypeValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfFormatIsAPermittedValueType() {
+		PersonAttributeType type = new PersonAttributeType();
+		type.setName("Zodiac");
+		type.setFormat("java.lang.Integer");
+
+		Errors errors = new BindException(type, "patObj");
+		new PersonAttributeTypeValidator().validate(type, errors);
+
+		assertFalse(errors.hasFieldErrors("format"));
+	}
+
 }
