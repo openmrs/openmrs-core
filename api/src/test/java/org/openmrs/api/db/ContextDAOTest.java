@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -505,6 +506,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			assertNotNull(dao.authenticate("admin", "test"));
 			awaitPasswordUpgrades();
 			assertEquals(hashAfter, readStoredPassword());
+			assertEquals(1, standInEncodes.get(), "the second login must not re-encode");
 		});
 	}
 
@@ -558,6 +560,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		});
 	}
 
+	private final AtomicInteger standInEncodes = new AtomicInteger();
+
 	private interface StandInTest {
 
 		void run(String hashBefore) throws Exception;
@@ -588,6 +592,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 			@Override
 			public String encode(CharSequence rawPassword) {
+				standInEncodes.incrementAndGet();
 				return standInEncode.apply(rawPassword);
 			}
 
@@ -597,6 +602,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			}
 		};
 
+		standInEncodes.set(0);
 		TestTransaction.end();
 
 		Object[] original = callInNewTransaction(() -> (Object[]) sessionFactory.getCurrentSession()
