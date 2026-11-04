@@ -18,7 +18,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.Interceptor;
 import org.hibernate.collection.spi.PersistentSet;
 import org.hibernate.type.Type;
-import org.openmrs.Auditable;
+import org.openmrs.Changeable;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -26,18 +26,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class looks for {@link OpenmrsObject} and {@link Auditable} that are being inserted into the
- * database. The creator and dateCreated fields are set when inserting or updating objects and the
- * fields are still null. If the class is an update (instead of an insert) then the changedBy and
- * dateChanged fields are set to the current user and the current time. <br>
+ * This class sets creation audit fields for {@link OpenmrsObject} instances and change audit fields
+ * for objects implementing {@link Changeable}. The creator and dateCreated fields are set when
+ * inserting or updating objects if those fields are still null. When a changeable object is
+ * updated, the changedBy and dateChanged fields are set to the current user and the current time.
  * <br>
- * This class replaces the logic that was in the AuditableSaveHandler. It is here so that the
- * cascading does NOT happen for dateChanged/changedBy to child OpenmrsObjects (because all handlers
- * recurse on lists of OpenmrsObjects.
+ * <br>
+ * This class replaces the logic that was in the AuditableSaveHandler. It is here so that cascading
+ * does NOT happen for dateChanged/changedBy to child OpenmrsObjects (because all handlers recurse
+ * on lists of OpenmrsObjects).
  *
  * @since 1.9
  */
-
 public class AuditableInterceptor implements Interceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(AuditableInterceptor.class);
@@ -64,12 +64,11 @@ public class AuditableInterceptor implements Interceptor {
 	 * <p>
 	 * <strong>Should</strong> set the dateChanged field<br/>
 	 * <strong>Should</strong> set the changedBy field<br/>
-	 * <strong>Should</strong> be called when saving an Auditable<br/>
+	 * <strong>Should</strong> be called when saving a {@link Changeable}<br/>
 	 * <strong>Should</strong> not enter into recursion on entity
 	 *
 	 * @return true if the object got the changedBy and dateChanged fields set
 	 */
-
 	@Override
 	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) throws CallbackException {
@@ -77,7 +76,7 @@ public class AuditableInterceptor implements Interceptor {
 
 		objectWasChanged = setCreatorAndDateCreatedIfNull(entity, currentState, propertyNames);
 
-		if (entity instanceof Auditable && propertyNames != null) {
+		if (entity instanceof Changeable && propertyNames != null) {
 			log.debug("Setting changed by fields on {}", entity.getClass());
 
 			Map<String, Object> propertyValues = getPropertyValuesToUpdate();
