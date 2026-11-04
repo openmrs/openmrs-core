@@ -170,6 +170,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		JobDetails jobDetails = new JobDetails(new JobRequestAdapter(taskDefinition, scheduledBy));
 		
 		Job run;
+		int readVersion = 0;
 		try {
 			Job previous = storageProvider.getJobById(id);
 			StateName state = previous.getState();
@@ -180,7 +181,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 			// Same id and version as the finished run, so the save only succeeds if no other node changed it
 			List<JobState> history = new ArrayList<>(previous.getJobStates());
 			history.add(new EnqueuedState());
-			run = new Job(id, previous.getVersion(), jobDetails, history, new ConcurrentHashMap<>());
+			readVersion = previous.getVersion();
+			run = new Job(id, readVersion, jobDetails, history, new ConcurrentHashMap<>());
 		}
 		catch (JobNotFoundException e) {
 			run = new Job(id, 0, jobDetails, new ArrayList<>(Collections.singletonList(new EnqueuedState())),
@@ -195,7 +197,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		catch (StorageException e) {
 			// ConcurrentJobModificationException on the versioned update, or a duplicate key on the insert:
 			// another node wrote this row after we read it, so its run stands
-			if (jobExists(id)) {
+			if (changedSince(id, readVersion)) {
 				log.debug("Startup run of {} was queued concurrently by another node", name, e);
 			} else {
 				throw e;
@@ -203,10 +205,9 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		}
 	}
 	
-	private boolean jobExists(UUID id) {
+	private boolean changedSince(UUID id, int readVersion) {
 		try {
-			storageProvider.getJobById(id);
-			return true;
+			return storageProvider.getJobById(id).getVersion() != readVersion;
 		}
 		catch (JobNotFoundException e) {
 			return false;
@@ -285,10 +286,10 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	/**
 	 * Registers a recurring job that always repeats at the task's configured interval.
 	 * <p>
-	 * JobRunr computes interval runs as {@code createdAt + n * interval}, so anchoring {@code createdAt} at the
-	 * task's start time keeps the 2.8.x semantics of {@code start_time} (it fixes the phase of the schedule,
-	 * e.g. "daily at 02:00") without the placeholder period and fix-up job used previously, which could never
-	 * run because the fix-up executed without a Hibernate session.
+	 * JobRunr computes interval runs as {@code createdAt + n * interval},  for {@code n >= 1}, so anchoring
+	 * {@code createdAt} one interval before the task's start time keeps the 2.8.x semantics of {@code start_time} 
+	 * (it fixes the phase of the schedule,e.g. "daily at 02:00") without the placeholder period and fix-up job 
+	 * used previously, which could never run because the fix-up executed without a Hibernate session.
 	 */
 	private void registerRecurring(TaskDefinition task, String name, String scheduledBy) {
 		long intervalSeconds = task.getRepeatInterval();

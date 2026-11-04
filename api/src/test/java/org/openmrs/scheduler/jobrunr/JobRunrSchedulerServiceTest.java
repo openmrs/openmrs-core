@@ -224,8 +224,12 @@ public class JobRunrSchedulerServiceTest {
 		        ZoneId.systemDefault());
 		when(storageProvider.getRecurringJobs()).thenReturn(new RecurringJobsResult(Collections.singletonList(current)));
 
-		schedulerService.onStartup();
-
+		try (MockedStatic<Context> context = mockStatic(Context.class)) {
+			// lets a heal that fires by mistake reach delete() instead of failing on the
+			// missing user context
+			context.when(() -> Context.hasPrivilege(anyString())).thenReturn(true);
+			schedulerService.onStartup();
+		}
 		verify(jobRequestScheduler, never()).delete(anyString());
 		verify(storageProvider, never()).saveRecurringJob(any(RecurringJob.class));
 	}

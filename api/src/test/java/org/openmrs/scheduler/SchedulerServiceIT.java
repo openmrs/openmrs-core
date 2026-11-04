@@ -315,8 +315,16 @@ public class SchedulerServiceIT extends BaseContextSensitiveNonTransactionalTest
 		
 		schedulerService.onStartup(); // should not fail
 
-		assertThat(schedulerService.getRecurringTasks().filter(r -> task.getUuid().equals(r.getUuid())).count(),
-				equalTo(1L));
+		RecurringTaskDetails before = schedulerService.getRecurringTasks()
+				.filter(r -> task.getUuid().equals(r.getUuid())).findFirst()
+				.orElseThrow(() -> new AssertionError("recurring task was not registered"));
+
+		schedulerService.onStartup();
+
+		RecurringTaskDetails after = schedulerService.getRecurringTasks()
+				.filter(r -> task.getUuid().equals(r.getUuid())).findFirst()
+				.orElseThrow(() -> new AssertionError("recurring task was not registered"));
+		assertThat(after.getCreatedAt(), equalTo(before.getCreatedAt()));
 		schedulerService.deleteTask(task.getId());
 	}
 
