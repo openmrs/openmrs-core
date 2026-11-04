@@ -37,6 +37,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -427,7 +428,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	}
 
 	public void setStates(Set<PatientState> states) {
-		this.states = states;
+		this.states = CollectionUtil.setCollection(this.states, states);
 	}
 
 	/**
@@ -519,7 +520,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	}
 
 	public void setAttributes(Set<PatientProgramAttribute> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
 	}
 
 	public void setAttribute(PatientProgramAttribute attribute) {
