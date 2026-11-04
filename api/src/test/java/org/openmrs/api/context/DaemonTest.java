@@ -15,6 +15,9 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
@@ -24,11 +27,16 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -39,11 +47,79 @@ import org.openmrs.api.APIException;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Tests the methods on the {@link Daemon} class
  */
 public class DaemonTest extends BaseContextSensitiveTest {
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	/**
+	 * A task that opens its own session and fails before its closeSession() must not leave that session
+	 * (and its connection and open transaction) bound to the pooled worker thread.
+	 *
+	 * @see Daemon#executeScheduledTaskAsUser(String, Daemon.DaemonTask, Daemon.CallerKey)
+	 */
+	@Test
+	public void executeScheduledTaskAsUser_shouldReleaseASessionTheTaskLeftOpen() throws Exception {
+		ExecutorService worker = Executors.newSingleThreadExecutor();
+		try {
+			Future<Boolean> sessionStillBound = worker.submit(() -> {
+				try {
+					Daemon.executeScheduledTaskAsUser("admin", () -> {
+						Context.openSession();
+						throw new IllegalStateException("fails before its own closeSession()");
+					}, Daemon.callerKey());
+				}
+				catch (IllegalStateException expected) {
+					// the task's own failure
+				}
+				return TransactionSynchronizationManager.hasResource(sessionFactory);
+			});
+			assertFalse(sessionStillBound.get());
+		}
+		finally {
+			worker.shutdownNow();
+		}
+	}
+	
+	/**
+	 * A session leaked onto the worker thread before the task starts must not be joined by the task: it gets
+	 * a session of its own, and the leaked one is closed.
+	 *
+	 * @see Daemon#executeScheduledTaskAsUser(String, Daemon.DaemonTask, Daemon.CallerKey)
+	 */
+	@Test
+	public void executeScheduledTaskAsUser_shouldNotRunATaskInASessionLeakedByAPreviousTask() throws Exception {
+		ExecutorService worker = Executors.newSingleThreadExecutor();
+		try {
+			AtomicReference<Session> leaked = new AtomicReference<>();
+			AtomicReference<Session> used = new AtomicReference<>();
+			Future<Boolean> sessionStillBound = worker.submit(() -> {
+				// what an earlier job on this pooled thread left behind
+				Context.openSession();
+				leaked.set(((SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory)).getSession());
+
+				Daemon.executeScheduledTaskAsUser("admin", () -> used.set(
+				    ((SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory)).getSession()),
+				    Daemon.callerKey());
+				return TransactionSynchronizationManager.hasResource(sessionFactory);
+			});
+
+			assertFalse(sessionStillBound.get());
+			assertNotNull(used.get());
+			assertNotSame(leaked.get(), used.get());
+			assertFalse(leaked.get().isOpen());
+		}
+		finally {
+			worker.shutdownNow();
+		}
+	}
 	
 	
 	/**

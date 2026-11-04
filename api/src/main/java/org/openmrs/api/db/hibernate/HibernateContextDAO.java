@@ -407,6 +407,54 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ContextDAO#releaseThreadSession()
+	 */
+	@Override
+	public boolean releaseThreadSession() {
+		Object value = TransactionSynchronizationManager.getResource(sessionFactory);
+		if (!(value instanceof ContextSessionHolder)) {
+			return false;
+		}
+		ContextSessionHolder holder = (ContextSessionHolder) value;
+		if (holder.isInSpringTransaction()) {
+			log.warn("Not releasing thread session: a Spring transaction is still active on it");
+			return false;
+		}
+		
+		TransactionSynchronizationManager.unbindResource(sessionFactory);
+		Session session = holder.getSession();
+		if (!session.isOpen()) {
+			return true;
+		}
+		try {
+			if (session.getTransaction().isActive()) {
+				session.getTransaction().rollback();
+			}
+			// The JDBC connection is handed out with autocommit=false, so reads or flushes made outside a
+			// Spring transaction leave an implicit InnoDB transaction open. Roll it back explicitly rather
+			// than relying on pool check-in behaviour.
+			session.doWork(connection -> {
+				if (!connection.getAutoCommit()) {
+					connection.rollback();
+				}
+			});
+		}
+		catch (RuntimeException e) {
+			log.error("Failed to roll back leaked thread session", e);
+		}
+		finally {
+			// Always close, so the connection goes back to the pool even if the rollback failed
+			try {
+				session.close();
+			}
+			catch (RuntimeException e) {
+				log.error("Failed to close leaked thread session", e);
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ContextDAO#clearSession()
 	 */
 	@Override

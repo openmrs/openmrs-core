@@ -106,6 +106,26 @@ public interface ContextDAO {
 	 * closing the session would break the transaction's cleanup.
 	 */
 	public void closeSession();
+
+	/**
+	 * Unconditionally releases the session that {@link #openSession()} bound to the current thread,
+	 * regardless of how many unmatched {@code openSession()} calls are outstanding. Any database
+	 * transaction still open on that session is rolled back before the session is closed.
+	 * <p>
+	 * Intended for the boundary of a unit of work running on a pooled thread (scheduler workers,
+	 * executor threads), where a session leaked by unbalanced open/close calls would otherwise stay
+	 * bound to the thread, keep its JDBC connection checked out, hold row locks and an InnoDB read
+	 * view indefinitely, and be silently reused by the next unit of work on that thread.
+	 * <p>
+	 * Sessions bound by another owner (e.g. OpenSessionInViewFilter) and sessions in use by an
+	 * active Spring transaction are left untouched.
+	 *
+	 * @return true if a session was still bound to the thread and had to be released
+	 * @since 2.9.0
+	 */
+	default boolean releaseThreadSession() {
+		return false;
+	}
 	
 	/**
 	 * @see org.openmrs.api.context.Context#clearSession()

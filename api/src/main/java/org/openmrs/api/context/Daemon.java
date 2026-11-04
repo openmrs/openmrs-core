@@ -547,6 +547,15 @@ public final class Daemon {
 	        throws Exception {
 		requireDaemonCaller(callerKey, "executeScheduledTaskAsUser can only be called from JobRequestHandlerAdapter");
 
+		// JobRunr workers are pooled and long-lived. A session left bound to this thread by a previous job
+		// would otherwise be silently joined by this one (openSession() only increments a counter), along
+		// with its JDBC connection, its open InnoDB transaction and its stale first-level cache.
+		if (Context.releaseThreadSession()) {
+			log.error("Released a Hibernate session leaked onto worker thread {} by a previous task. "
+			        + "A task is calling Context.openSession() without a matching closeSession() in a finally block.",
+			    Thread.currentThread().getName());
+		}
+		
 		isDaemonThread.set(true);
 		try {
 			Context.openSession();
@@ -555,7 +564,17 @@ public final class Daemon {
 			runnable.run();
 		} finally {
 			isDaemonThread.remove();
+			// The worker thread is pooled; do not let the cached daemon User (attached to this job's session)
+			// carry over to the next job on this thread.
+			daemonThreadUser.remove();
 			Context.closeSession();
+			// Release whatever the task left behind (unbalanced openSession() calls, e.g. a task that opens a
+			// session and throws before its own closeSession()), so it cannot outlive this job.
+			if (Context.releaseThreadSession()) {
+				log.warn("Task run as {} on thread {} left its Hibernate session open; it was rolled back and closed. "
+				        + "Wrap the task's openSession()/closeSession() in try/finally.",
+				    userSystemId, Thread.currentThread().getName());
+			}
 		}
 	}
 
