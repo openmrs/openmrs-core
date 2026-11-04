@@ -9,24 +9,30 @@
  */
 package org.openmrs.api.cache;
 
+import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
+import org.infinispan.context.Flag;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.cachemanagerlistener.event.MergeEvent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionSynchronizationUtils;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link CacheInvalidation} directly, using a local cache manager built from
@@ -104,6 +110,34 @@ public class CacheInvalidationTest {
 		new CacheInvalidation.PartitionMergeListener(invalidation).merged(mock(MergeEvent.class));
 
 		assertFalse(cache().containsKey("some.key"));
+	}
+
+	@Test
+	public void merged_shouldRemoveTheGenerationTokenBeforeClearingThisNodesCache() {
+		Cache<Object, Object> cache = mockCache();
+		AdvancedCache<Object, Object> local = mockAdvancedCache();
+		AdvancedCache<Object, Object> unlocked = mockAdvancedCache();
+		when(cache.getAdvancedCache()).thenReturn(local);
+		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
+		when(local.withFlags(Flag.CACHE_MODE_LOCAL, Flag.SKIP_LOCKING)).thenReturn(unlocked);
+		CacheInvalidation invalidation = new CacheInvalidation("the test cache", () -> cache,
+		        mock(EmbeddedCacheManager.class));
+
+		new CacheInvalidation.PartitionMergeListener(invalidation).merged(mock(MergeEvent.class));
+
+		InOrder inOrder = inOrder(unlocked, local);
+		inOrder.verify(unlocked).remove(CacheInvalidation.GENERATION);
+		inOrder.verify(local).clear();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Cache<Object, Object> mockCache() {
+		return mock(Cache.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static AdvancedCache<Object, Object> mockAdvancedCache() {
+		return mock(AdvancedCache.class);
 	}
 
 	private static void complete() {

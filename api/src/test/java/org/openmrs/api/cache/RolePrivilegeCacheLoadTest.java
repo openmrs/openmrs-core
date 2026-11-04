@@ -91,8 +91,9 @@ public class RolePrivilegeCacheLoadTest {
 	}
 
 	@AfterEach
-	public void tearDown() {
+	public void tearDown() throws InterruptedException {
 		executor.shutdownNow();
+		assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
 		nativeCache().clear();
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			TransactionSynchronizationManager.clearSynchronization();
@@ -366,6 +367,7 @@ public class RolePrivilegeCacheLoadTest {
 		when(failing.put(eq(CacheInvalidation.GENERATION), any())).thenThrow(new IllegalStateException("partitioned"));
 		when(failing.getAdvancedCache()).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
+		when(local.withFlags(Flag.CACHE_MODE_LOCAL, Flag.SKIP_LOCKING)).thenReturn(local);
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::submit,
 		        name -> role("Clerk", "View Patients"));
 
@@ -381,6 +383,7 @@ public class RolePrivilegeCacheLoadTest {
 		when(failing.put(eq(CacheInvalidation.GENERATION), any())).thenThrow(new IllegalStateException("partitioned"));
 		when(failing.getAdvancedCache()).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
+		when(local.withFlags(Flag.CACHE_MODE_LOCAL, Flag.SKIP_LOCKING)).thenReturn(local);
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::submit,
 		        name -> role("Clerk", "View Patients"));
 		TransactionSynchronizationManager.initSynchronization();

@@ -163,4 +163,28 @@
 		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
 	</changeSet>
 
+	<changeSet id="20261021-add-index-users-username" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="users" indexName="users_username"/>
+			</not>
+		</preConditions>
+		<comment>Adding index on users.username, which is looked up on every login</comment>
+		<createIndex tableName="users" indexName="users_username">
+			<column name="username"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="20261021-add-index-users-system-id" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="users" indexName="users_system_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding index on users.system_id, which is looked up on every login</comment>
+		<createIndex tableName="users" indexName="users_system_id">
+			<column name="system_id"/>
+		</createIndex>
+	</changeSet>
+
 </databaseChangeLog>
