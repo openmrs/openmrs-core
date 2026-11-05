@@ -316,13 +316,21 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 *
 	 * @return true if one of the filters needs to take some action
 	 */
-	private boolean setupNeeded() throws Exception {
+	boolean setupNeeded() throws Exception {
 		if (!runtimePropertiesFound) {
 			return true;
 		}
 
+		Properties runtimeProperties = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
 		DatabaseDetective databaseDetective = new DatabaseDetective();
-		if (databaseDetective.isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
+		if (databaseDetective.isDatabaseEmpty(runtimeProperties)) {
+			return true;
+		}
+
+		if (InitializationFilter.isInstallIncomplete(runtimeProperties)) {
+			log.warn("Starting the setup wizard, since {} is there: an install put users into the database and did not "
+			        + "finish",
+			    InitializationFilter.getInstallIncompleteFile().getAbsolutePath());
 			return true;
 		}
 

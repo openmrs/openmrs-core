@@ -30,6 +30,8 @@ public class ErrorMessageConstants {
 
 	public static final String ERROR_DB_NEW_NAME_REQ = "install.error.dbNewName";
 
+	public static final String ERROR_DB_NAME_INVALID = "install.error.dbNameInvalid";
+
 	public static final String ERROR_DB_USER_NAME_REQ = "install.error.dbUserName";
 
 	public static final String ERROR_DB_USER_PSWD_REQ = "install.error.dbUserPswd";
@@ -43,6 +45,8 @@ public class ErrorMessageConstants {
 	public static final String ERROR_DB_ADM_PSDW_EMPTY = "install.error.adminPswdEmpty";
 
 	public static final String ERROR_DB_ADM_PSDW_WEAK = "install.error.adminPswdWeak";
+
+	public static final String ERROR_DB_ADM_PSDW_DEFAULT = "install.error.adminPswdDefault";
 
 	public static final String ERROR_DB_IMPL_ID_REQ = "install.error.implID";
 
@@ -75,6 +79,8 @@ public class ErrorMessageConstants {
 	public static final String ERROR_SET_INPL_ID = "install.error.unableSetImplId";
 
 	public static final String ERROR_COMPLETE_STARTUP = "install.error.unableCompleteStartup";
+
+	public static final String ERROR_RESTART_REQUIRED = "install.error.restartRequired";
 
 	public static final String ERROR_UNABLE_COPY_DATA = "install.error.unableCopyData";
 

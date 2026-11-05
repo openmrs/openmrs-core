@@ -7,6 +7,9 @@
         <div class="form-container">
             <h2 class="form-title">$l10n.get("install.advanced.admin")</h2>
             <p class="form-subtitle">$l10n.get("install.advanced.admin.password.info")</p>
+            #if( $createTables == false )
+            <p class="form-subtitle">$l10n.get("install.advanced.admin.password.existingDatabase")</p>
+            #end
 
             <div class="form-section">
                 <div class="info-group">
