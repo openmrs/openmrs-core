@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 
@@ -31,6 +33,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 
 	protected HttpServletResponse origResponse;
 
+	private final HttpServletRequest request;
+
 	protected ServletOutputStream stream = null;
 
 	protected PrintWriter writer = null;
@@ -38,7 +42,12 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	protected int error = 0;
 
 	public GZIPResponseWrapper(HttpServletResponse response) {
+		this(null, response);
+	}
+
+	public GZIPResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
 		super(response);
+		this.request = request;
 		origResponse = response;
 	}
 
@@ -82,14 +91,14 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 
 	@Override
 	public PrintWriter getWriter() throws IOException {
+		if (writer != null) {
+			return writer;
+		}
+
 		// From cmurphy@intechtual.com to fix:
 		// https://appfuse.dev.java.net/issues/show_bug.cgi?id=59
 		if (this.origResponse != null && this.origResponse.isCommitted()) {
 			return super.getWriter();
-		}
-
-		if (writer != null) {
-			return writer;
 		}
 
 		if (stream != null) {
@@ -107,17 +116,44 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 */
 	@Override
 	public void sendError(int error, String message) throws IOException {
+		if (isIncluded()) {
+			super.sendError(error, message);
+			return;
+		}
+		discardBufferedOutput();
 		super.sendError(error, message);
 		this.error = error;
 
 		log.debug("sending error: {} [{}]", error, message);
 	}
 
+	@Override
+	public void sendError(int error) throws IOException {
+		sendError(error, null);
+	}
+
+	@Override
 	public void setContentLength(int length) {
-		//Intentionally left blank to ignore whatever length the caller sets, because
-		//we are going to zip the response and hence end up with a smaller length.
-		//Without this empty method, the base class's setContentLength() method will be
-		//called, leading to the browser's waiting for more data than what we actually
-		//have for the compressed output, hence slowing down the response. TRUNK-5978
+		if (isIncluded()) {
+			super.setContentLength(length);
+		}
+	}
+
+	@Override
+	public void setContentLengthLong(long length) {
+		if (isIncluded()) {
+			super.setContentLengthLong(length);
+		}
+	}
+
+	private boolean isIncluded() {
+		return request != null && request.getDispatcherType() == DispatcherType.INCLUDE;
+	}
+
+	private void discardBufferedOutput() {
+		writer = null;
+		if (stream instanceof GZIPResponseStream) {
+			((GZIPResponseStream) stream).discardBufferedOutput();
+		}
 	}
 }
