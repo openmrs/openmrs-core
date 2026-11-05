@@ -15,10 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.StorageService;
 import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +34,9 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	BinaryDataHandler handler;
+
+	@Autowired
+	StorageService storageService;
 
 	@Test
 	public void shouldReturnSupportedViews() {
@@ -88,6 +93,28 @@ public class BinaryDataHandlerTest extends BaseContextSensitiveTest {
 		assertEquals(complexObs1.getComplexData().getTitle(), filename);
 		assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
 		assertEquals(complexObs2.getComplexData().getTitle(), filename);
+	}
+
+	@Test
+	public void getObs_shouldReadDataAndMetadataInASingleStorageCall() {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"));
+
+		CountingStorageService counting = new CountingStorageService(storageService);
+		BinaryDataHandler countingHandler = new BinaryDataHandler();
+		ReflectionTestUtils.setField(countingHandler, "adminService", adminService);
+		ReflectionTestUtils.setField(countingHandler, "storageService", counting);
+
+		Obs obs = new Obs();
+		obs.setComplexData(new ComplexData("TestingComplexObsSaving", "Teststring".getBytes()));
+
+		countingHandler.saveObs(obs);
+		counting.reset();
+
+		countingHandler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+
+		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
+		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
+		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
 	}
 
 	@Test
