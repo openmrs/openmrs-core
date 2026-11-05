@@ -58,6 +58,7 @@ public interface ObsService extends OpenmrsService {
 	 * @since 2.9.0, 3.0.0
 	 */
 	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	List<Obs> getObsVersionHistory(Obs obs);
 
 	/**
