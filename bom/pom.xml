@@ -46,7 +46,7 @@
 		     of Hibernate Search. Similarly, our version of Hibernate Search must be
 		     compatible with the version of Hibernate and Hibernate must be compatible
 		     with our version of Spring. -->
-		<springVersion>7.0.9</springVersion>
+		<springVersion>7.0.10</springVersion>
 		<springTestVersion>7.0.9</springTestVersion>
 		<!-- springSecurityVersion tracks the Spring Security line built against springVersion -->
 		<springSecurityVersion>7.1.1</springSecurityVersion>
@@ -106,7 +106,7 @@
 
 		<!-- Database -->
 		<mysqlConnectorVersion>9.7.0</mysqlConnectorVersion>
-		<mariadbClientVersion>3.5.10</mariadbClientVersion>
+		<mariadbClientVersion>3.5.11</mariadbClientVersion>
 		<postgresqlVersion>42.7.14</postgresqlVersion>
 		<liquibaseVersion>4.32.0</liquibaseVersion>
 		<liquibaseExtTypeConverterVersion>1.0.1</liquibaseExtTypeConverterVersion>
