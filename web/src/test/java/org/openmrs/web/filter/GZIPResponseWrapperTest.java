@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -270,6 +271,20 @@ class GZIPResponseWrapperTest {
 		assertThat(response.getErrorMessage(), is("boom"));
 		assertThat(response.getHeader("Content-Encoding"), nullValue());
 		assertThat(response.getHeader("Vary"), containsString("Accept-Encoding"));
+	}
+	
+	@Test
+	void shouldKeepCookiesWhenSendErrorAbandonsAStreamingResponse() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		
+		wrapper.addCookie(new Cookie("JSESSIONID", "abc"));
+		wrapper.getOutputStream().write(LARGE_BODY);
+		wrapper.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "boom");
+		
+		assertThat(response.getHeader("Content-Encoding"), nullValue());
+		assertThat(response.getHeader("Set-Cookie"), containsString("JSESSIONID=abc"));
 	}
 	
 	@Test

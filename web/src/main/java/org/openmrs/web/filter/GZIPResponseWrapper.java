@@ -176,8 +176,13 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		if (compressionHeadersWritten && !origResponse.isCommitted()) {
 			// the container writes the error page straight to the real response without compressing
 			// it, so the Content-Encoding we announced for the abandoned body must not survive.
-			// reset() is the only portable way to remove a header.
+			// reset() is the only portable way to remove a header, but sendError must preserve
+			// cookies, so they are put back.
+			String[] cookies = origResponse.getHeaders("Set-Cookie").toArray(new String[0]);
 			super.reset();
+			for (String cookie : cookies) {
+				origResponse.addHeader("Set-Cookie", cookie);
+			}
 			compressionHeadersWritten = false;
 			addVaryHeader();
 		}
