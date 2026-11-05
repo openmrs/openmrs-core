@@ -13,6 +13,7 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,11 +43,11 @@ public class EncounterType extends BaseChangeableOpenmrsMetadata {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer encounterTypeId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "view_privilege", nullable = true)
 	private Privilege viewPrivilege;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "edit_privilege", nullable = true)
 	private Privilege editPrivilege;
 

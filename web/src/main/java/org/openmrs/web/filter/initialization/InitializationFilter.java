@@ -47,7 +47,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.ImplementationId;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -78,6 +77,7 @@ import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.SessionModelUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
@@ -834,7 +834,7 @@ public class InitializationFilter extends StartupFilter {
 								TestInstallUtil.getResourceInputStream(
 								    wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "verifycredentials.htm",
 								    wizardModel.remoteUsername, wizardModel.remotePassword);
-							} catch (APIAuthenticationException e) {
+							} catch (AccessDeniedException e) {
 								log.debug("Error generated: ", e);
 								page = TESTING_REMOTE_DETAILS_SETUP;
 								errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
@@ -1681,7 +1681,7 @@ public class InitializationFilter extends StartupFilter {
 										wizardModel.workLog.add("Added Modules");
 										addExecutedTask(WizardTask.ADD_MODULES);
 									}
-								} catch (APIAuthenticationException e) {
+								} catch (AccessDeniedException e) {
 									log.warn("Unable to authenticate as a User with the System Developer role");
 									reportError(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE,
 									    TESTING_REMOTE_DETAILS_SETUP, "");

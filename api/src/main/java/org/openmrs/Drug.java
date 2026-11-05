@@ -39,6 +39,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.ObjectPath;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyValue;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.CollectionUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -64,7 +65,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "combination", nullable = false)
 	private Boolean combination = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dosage_form")
 	private Concept dosageForm;
 
@@ -77,13 +78,13 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "strength", length = 255)
 	private String strength;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dose_limit_units")
 	private Concept doseLimitUnits;
 
 	@IndexedEmbedded(includePaths = "conceptId", includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
@@ -241,7 +242,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	 * @since 1.10
 	 */
 	public void setIngredients(Collection<DrugIngredient> ingredients) {
-		this.ingredients = ingredients;
+		this.ingredients = CollectionUtil.setCollection(this.ingredients, ingredients);
 	}
 
 	/**
@@ -295,7 +296,7 @@ public class Drug extends BaseChangeableOpenmrsMetadata {
 	 * @since 1.10
 	 */
 	public void setDrugReferenceMaps(Set<DrugReferenceMap> drugReferenceMaps) {
-		this.drugReferenceMaps = drugReferenceMaps;
+		this.drugReferenceMaps = CollectionUtil.setCollection(this.drugReferenceMaps, drugReferenceMaps);
 	}
 
 	/**

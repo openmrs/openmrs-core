@@ -40,6 +40,7 @@ import org.openmrs.api.impl.ProgramWorkflowServiceImpl;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -480,8 +481,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// log out so the context no longer holds the Get Patient Programs privilege
 		Context.logout();
 
-		assertThrows(APIAuthenticationException.class,
-		    () -> Context.getProgramWorkflowService().getPatientProgramByUuid(uuid));
+		assertThrows(AccessDeniedException.class, () -> Context.getProgramWorkflowService().getPatientProgramByUuid(uuid));
 	}
 
 	/**
@@ -513,8 +513,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// log out so the context no longer holds the Get Patient Programs privilege
 		Context.logout();
 
-		assertThrows(APIAuthenticationException.class,
-		    () -> Context.getProgramWorkflowService().getPatientStateByUuid(uuid));
+		assertThrows(AccessDeniedException.class, () -> Context.getProgramWorkflowService().getPatientStateByUuid(uuid));
 	}
 
 	/**
@@ -691,6 +690,62 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ProgramWorkflowService#saveProgram(Program)
+	 */
+	@Test
+	public void saveProgram_shouldAddAWorkflowToAProgramWhoseNewWorkflowWasAlreadyFlushed() {
+		Program program = pws.getProgram(1);
+		ProgramWorkflow first = new ProgramWorkflow();
+		first.setConcept(cs.getConcept(4));
+		program.addWorkflow(first);
+		pws.saveProgram(program);
+		Context.flushSession();
+
+		ProgramWorkflow second = new ProgramWorkflow();
+		second.setConcept(cs.getConcept(5));
+		program.addWorkflow(second);
+		pws.saveProgram(program);
+		Context.flushSession();
+		Context.clearSession();
+
+		Program saved = pws.getProgram(1);
+		assertNotNull(saved.getWorkflowByName(cs.getConcept(4).getName().getName()));
+		assertNotNull(saved.getWorkflowByName(cs.getConcept(5).getName().getName()));
+	}
+
+	/**
+	 * @see ProgramWorkflowService#saveProgram(Program)
+	 */
+	@Test
+	public void saveProgram_shouldUpdateProgramCreatedEarlierInTheSameSession() {
+		Program program = new Program();
+		program.setName("NEW PROGRAM");
+		program.setConcept(cs.getConcept(3));
+		ProgramWorkflow workflow = new ProgramWorkflow();
+		workflow.setConcept(cs.getConcept(4));
+		program.addWorkflow(workflow);
+		ProgramWorkflowState state = new ProgramWorkflowState();
+		state.setConcept(cs.getConcept(5));
+		state.setInitial(true);
+		state.setTerminal(false);
+		workflow.addState(state);
+		pws.saveProgram(program);
+
+		program = pws.getProgramByName("NEW PROGRAM");
+		ProgramWorkflowState newState = new ProgramWorkflowState();
+		newState.setConcept(cs.getConcept(6));
+		newState.setInitial(false);
+		newState.setTerminal(true);
+		program.getWorkflowByName("CIVIL STATUS").addState(newState);
+		pws.saveProgram(program);
+		Context.flushSession();
+		Context.clearSession();
+
+		program = pws.getProgramByName("NEW PROGRAM");
+		assertEquals(2, program.getWorkflowByName("CIVIL STATUS").getStates().size());
+	}
+
+	/**
 	 * @throws InterruptedException
 	 * @see ProgramWorkflowService#triggerStateConversion(Patient,Concept,Date)
 	 */
@@ -810,7 +865,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		// log out so the context no longer holds the Get Patient Programs privilege
 		Context.logout();
 
-		assertThrows(APIAuthenticationException.class,
+		assertThrows(AccessDeniedException.class,
 		    () -> Context.getProgramWorkflowService().getPatientProgramAttributeByAttributeName(patients, attributeName));
 	}
 

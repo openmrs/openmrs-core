@@ -11,6 +11,7 @@ package org.openmrs.module.web;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import jakarta.servlet.http.HttpServlet;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.stubbing.Answer;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleClassLoader;
@@ -35,7 +37,9 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.web.DispatcherServlet;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 /**
  *
@@ -169,6 +174,23 @@ public class WebModuleUtilTest {
 			scanner.close();
 
 		assertTrue(found);
+	}
+
+	/**
+	 * @see WebModuleUtil#createDwrModulesXml(String)
+	 */
+	@Test
+	public void createDwrModulesXml_shouldDeclareTheDwrDocumentType(@TempDir File realPath)
+	        throws IOException, SAXException {
+		File webInf = new File(realPath, "WEB-INF");
+		webInf.mkdir();
+
+		WebModuleUtil.createDwrModulesXml(realPath.getAbsolutePath());
+
+		DocumentType doctype = createDocumentBuilder().parse(new File(webInf, "dwr-modules.xml")).getDoctype();
+		assertNotNull(doctype);
+		assertEquals("-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN", doctype.getPublicId());
+		assertEquals("http://directwebremoting.org/schema/dwr20.dtd", doctype.getSystemId());
 	}
 
 	@Test

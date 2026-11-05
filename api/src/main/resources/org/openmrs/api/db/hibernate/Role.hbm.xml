@@ -32,7 +32,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Role to create parentRoles-->
-		<set name="inheritedRoles" cascade="none" lazy="false"
+		<set name="inheritedRoles" access="field" cascade="none" lazy="false"
 			table="role_role">
 			<cache usage="read-write"/>
 			<key>
@@ -42,7 +42,7 @@
 		</set>
 
 		<!-- bi-directional many-to-many association to Role to create childRoles-->
-		<set name="childRoles" cascade="none" lazy="false"
+		<set name="childRoles" access="field" cascade="none" lazy="false"
 			table="role_role">
 			<cache usage="read-write"/>
 			<key>
@@ -52,7 +52,7 @@
 		</set>
                 
 		<!-- bi-directional many-to-many association to Privilege -->
-		<set name="privileges" cascade="" lazy="false"
+		<set name="privileges" access="field" cascade="" lazy="false"
 			table="role_privilege">
 			<cache usage="read-write"/>
 			<key>
