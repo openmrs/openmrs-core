@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 import org.hibernate.proxy.HibernateProxy;
@@ -110,7 +111,7 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 	 */
 	private static final Class<?> UNRESOLVED = Void.class;
 
-	private final List<DomainObjectAuthorizationRule> rules;
+	private final List<DomainObjectAuthorizationRule> rules = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Which rules apply to a type, derived on first sight and kept - {@code hasPermission(...)} may run
@@ -129,7 +130,25 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 
 	@Autowired
 	public OpenmrsPermissionEvaluator(List<DomainObjectAuthorizationRule> rules) {
-		this.rules = List.copyOf(rules);
+		this.rules.addAll(rules);
+	}
+
+	/**
+	 * Adds a rule to the ones injected at startup. Visible for tests: a registered rule changes which
+	 * path a read takes even while it refuses nothing, so core's own tests register theirs for the test
+	 * that needs them rather than as beans every context would pick up.
+	 */
+	void addRule(DomainObjectAuthorizationRule rule) {
+		rules.add(rule);
+		rulesByClass.clear();
+	}
+
+	/**
+	 * Undoes {@link #addRule(DomainObjectAuthorizationRule)}.
+	 */
+	void removeRule(DomainObjectAuthorizationRule rule) {
+		rules.remove(rule);
+		rulesByClass.clear();
 	}
 
 	@Override
@@ -151,6 +170,38 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 		}
 
 		return authorizedByRules(authentication, targetDomainObject, permission);
+	}
+
+	/**
+	 * Whether any rule is registered at all, so a caller can skip work that would only ever be answered
+	 * by "nothing covers this" - {@link Authorize} returns early when no module has contributed a rule,
+	 * which is every installation that does not use them.
+	 *
+	 * @return true if at least one {@link DomainObjectAuthorizationRule} is registered
+	 * @since 3.0.0
+	 */
+	boolean hasRules() {
+		return !rules.isEmpty();
+	}
+
+	/**
+	 * Whether every registered rule covering {@code target}'s type authorizes it for
+	 * {@code permission}, with no privilege check of its own - the question {@link Authorize} asks on
+	 * behalf of a presentation layer that has already passed the service's own guard and is now
+	 * deciding how much of what it was given to disclose. Re-checking the privilege there would ask
+	 * what the service method already answered.
+	 * <p>
+	 * A null target, a type no rule covers, and a {@code Daemon} thread all authorize, exactly as they
+	 * do for {@code hasPermission(...)}.
+	 *
+	 * @param target the object to judge
+	 * @param permission the privilege the read is being made under, passed to the rules so they can
+	 *            tell operations apart
+	 * @return true if no registered rule refuses {@code target}
+	 * @since 3.0.0
+	 */
+	boolean rulesAuthorize(Object target, Object permission) {
+		return target == null || authorizedByRules(LegacyContextAuthentication.current(), target, permission);
 	}
 
 	/**
@@ -366,7 +417,7 @@ public class OpenmrsPermissionEvaluator implements PermissionEvaluator {
 		}
 
 		String privilege = permission.toString();
-		if (FilterPassPrivilegeCache.holdsPrivilege(privilege, PrivilegeResolution::holdsPrivilege)) {
+		if (FilterPassPrivilegeCache.holdsPrivilege(privilege, Context::hasPrivilege)) {
 			return true;
 		}
 
