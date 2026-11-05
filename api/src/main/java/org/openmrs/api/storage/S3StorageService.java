@@ -127,14 +127,7 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 	}
 
 	public InputStream getData(String key) throws IOException {
-		CompletableFuture<ResponseInputStream<GetObjectResponse>> object = s3AsyncClient.getObject(
-		    GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(),
-		    AsyncResponseTransformer.toBlockingInputStream());
-		try {
-			return waitForResponse(object);
-		} catch (IOException e) {
-			throw translateNotFound(key, e);
-		}
+		return getDataWithMetadata(key).data();
 	}
 
 	@Override
@@ -151,8 +144,20 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		GetObjectResponse getResponse = response.response();
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setMimeType(getResponse.contentType());
-		metadata.setLength(getResponse.contentLength());
+		metadata.setLength(getObjectLength(getResponse));
 		return new DataWithMetadata(response, metadata);
+	}
+
+	/**
+	 * With multipart enabled the client downloads in parts and hands back the first part's response, so
+	 * Content-Length is that part's size, while Content-Range ends with the size of the object.
+	 *
+	 * @param response the response to read the length from
+	 * @return the total object length
+	 */
+	static Long getObjectLength(GetObjectResponse response) {
+		String total = StringUtils.substringAfterLast(response.contentRange(), "/");
+		return StringUtils.isNumeric(total) ? Long.valueOf(total) : response.contentLength();
 	}
 
 	private <T> T waitForResponse(CompletableFuture<T> object) throws IOException {

@@ -21,10 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.StorageService;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +41,9 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	ImageHandler handler;
+
+	@Autowired
+	private StorageService storageService;
 
 	@Test
 	public void shouldReturnSupportedViews() {
@@ -144,18 +149,26 @@ public class ImageHandlerTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getObs_shouldNotThrowWhenTheObsDirGlobalPropertyHasNoValue() throws IOException {
-		// The TRUNK-6472 fallback strips the obs dir off the key, which must be skipped when the
-		// global property has no value to strip
-		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, null));
+	public void getObs_shouldReadDataAndMetadataInASingleStorageCall() throws IOException {
+		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestImage.png").toFile();
+		BufferedImage img = ImageIO.read(sourceFile);
+
+		CountingStorageService counting = new CountingStorageService(storageService);
+		ImageHandler countingHandler = new ImageHandler();
+		ReflectionTestUtils.setField(countingHandler, "adminService", adminService);
+		ReflectionTestUtils.setField(countingHandler, "storageService", counting);
 
 		Obs obs = new Obs();
-		obs.setValueComplex("jpg|2026/01-01/2026-01-01-00-00-00-000-abcdefgh.jpg");
+		obs.setComplexData(new ComplexData("TestingComplexObsSaving.png", img));
 
-		Obs complexObs = handler.getObs(obs, "RAW_VIEW");
+		countingHandler.saveObs(obs);
+		counting.reset();
 
-		assertNull(complexObs.getComplexData().getData(), "a missing image should yield no data");
-		assertEquals("jpg", complexObs.getComplexData().getTitle());
+		countingHandler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+
+		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
+		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
+		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
 	}
 
 	@Test

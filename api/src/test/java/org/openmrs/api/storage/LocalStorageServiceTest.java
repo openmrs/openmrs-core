@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -163,6 +164,29 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 				Files.deleteIfExists(legacyPath);
 			}
 		}
+	}
+
+	@Test
+	public void getData_shouldFallBackToLegacyForUnicodeFilenameThatEncodesPastNameLimit() throws IOException {
+		String filename = "я".repeat(60) + "_" + UUID.randomUUID() + ".txt";
+		String key = "obs/" + filename;
+		Path legacyPath = Paths.get(OpenmrsUtil.getApplicationDataDirectory()).resolve(key);
+		try {
+			Files.createDirectories(legacyPath.getParent());
+			Files.writeString(legacyPath, "legacy content");
+
+			try (InputStream data = storageService.getData(key)) {
+				assertEquals("legacy content", IOUtils.toString(data, Charset.defaultCharset()));
+			}
+		} finally {
+			Files.deleteIfExists(legacyPath);
+		}
+	}
+
+	@Test
+	public void exists_shouldRejectKeyOutsideStorageDir() {
+		String outsideKey = tempDir.getParent().resolve("outside-storage-key").toString();
+		assertThrows(IllegalArgumentException.class, () -> storageService.exists(outsideKey));
 	}
 
 	@Test

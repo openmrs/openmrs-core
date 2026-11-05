@@ -12,8 +12,8 @@ package org.openmrs.api.storage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -77,12 +77,15 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	}
 
 	/**
-	 * Reads from the current storage location, falling back to the legacy location only if the file is
-	 * not found there.
+	 * Reads from the current storage location, falling back to the legacy location if the read fails
+	 * there.
 	 * <p>
 	 * The current location is read rather than probed, so a hit costs no extra
-	 * <code>Files.exists</code> call compared to reading from a single location. Only a miss pays for a
-	 * probe of the legacy location.
+	 * <code>Files.exists</code> call compared to reading from a single location. Only a failed read
+	 * pays for a probe of the legacy location.
+	 * <p>
+	 * A failed read is not necessarily a missing file. A legacy name whose encoded form exceeds the
+	 * file system's name length limit fails here too, so the legacy location decides in that case.
 	 *
 	 * @param key the storage key
 	 * @param reader the read to perform against the resolved path
@@ -92,11 +95,14 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	 */
 	private <T> T read(String key, IOFunction<Path, T> reader) throws IOException {
 		Path path = storageDir.resolve(encodeKey(key));
+		FileSystemException currentLocationFailure = null;
 		if (isInStorageDir(path)) {
 			try {
 				return reader.apply(path);
-			} catch (NoSuchFileException e) {
-				// The file is not in the current location, so fall back to the legacy location below.
+			} catch (FileSystemException e) {
+				// Not only a missing file: a legacy name the encoding pushes past the file system's name
+				// length limit fails here too, so the legacy location decides
+				currentLocationFailure = e;
 			}
 		}
 
@@ -106,10 +112,10 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 			return reader.apply(legacyPath);
 		}
 
-		if (!isInStorageDir(path)) {
-			throw new IllegalArgumentException("Key must not point outside storage dir. Wrong key: " + key);
+		if (currentLocationFailure != null) {
+			throw currentLocationFailure;
 		}
-		throw new NoSuchFileException(path.toString(), null, "No such file or directory");
+		throw new IllegalArgumentException("Key must not point outside storage dir. Wrong key: " + key);
 	}
 
 	private InputStream getDataInternal(Path path) throws IOException {
@@ -270,7 +276,8 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 
 	@Override
 	public boolean exists(String key) {
-		if (fileExists(storageDir.resolve(encodeKey(key)))) {
+		Path path = storageDir.resolve(encodeKey(key));
+		if (isInStorageDir(path) && fileExists(path)) {
 			return true;
 		}
 
@@ -282,6 +289,8 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 			return true;
 		}
 
+		// Preserve master's containment check for a key outside the current storage dir
+		assertKeyInStorageDir(path, key);
 		return false;
 	}
 }

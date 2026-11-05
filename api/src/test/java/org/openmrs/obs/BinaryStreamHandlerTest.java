@@ -17,10 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.StorageService;
 import org.openmrs.obs.handler.BinaryStreamHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,6 +37,9 @@ public class BinaryStreamHandlerTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	BinaryStreamHandler handler;
+
+	@Autowired
+	StorageService storageService;
 
 	@Test
 	public void shouldReturnSupportedViews() {
@@ -70,6 +75,31 @@ public class BinaryStreamHandlerTest extends BaseContextSensitiveTest {
 		obs.setValueComplex("missing file |nonexistentkey");
 
 		assertThrows(IllegalArgumentException.class, () -> handler.getObs(obs, ComplexObsHandler.RAW_VIEW));
+	}
+
+	@Test
+	public void getObs_shouldReadDataAndMetadataInASingleStorageCall() throws IOException {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"));
+
+		CountingStorageService counting = new CountingStorageService(storageService);
+		BinaryStreamHandler countingHandler = new BinaryStreamHandler();
+		ReflectionTestUtils.setField(countingHandler, "adminService", adminService);
+		ReflectionTestUtils.setField(countingHandler, "storageService", counting);
+
+		Obs obs = new Obs();
+		obs.setComplexData(new ComplexData("TestingComplexObsSaving", new ByteArrayInputStream("Teststring".getBytes())));
+
+		countingHandler.saveObs(obs);
+		counting.reset();
+
+		Obs fetched = countingHandler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+		try (InputStream data = (InputStream) fetched.getComplexData().getData()) {
+			assertEquals("Teststring", new String(data.readAllBytes()));
+		}
+
+		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
+		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
+		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
 	}
 
 	@Test

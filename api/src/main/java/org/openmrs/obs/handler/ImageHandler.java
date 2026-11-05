@@ -83,7 +83,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			// hack--if this is old version of the image where we aren't explicitly saving the filename, we
 			// need to use "key"/"path" portion as the file, see https://openmrs.atlassian.net/browse/TRUNK-6472
 			String obsDir = getObsDir();
-			if (obsDir != null && extensions.contains(filename)) {
+			if (extensions.contains(filename)) {
 				filename = key.replaceFirst(obsDir, "");
 			}
 
