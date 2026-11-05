@@ -185,7 +185,7 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 
 	@Test
 	public void exists_shouldRejectKeyOutsideStorageDir() {
-		String outsideKey = tempDir.getParent().resolve("outside-storage-key").toString();
+		String outsideKey = "/outside-storage-key";
 		assertThrows(IllegalArgumentException.class, () -> storageService.exists(outsideKey));
 	}
 
