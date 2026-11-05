@@ -833,7 +833,7 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter.setPatient(patient);
 
 		// add an obs that doesn't have date/location/patient set on it.
-		Obs obs = new Obs(123);
+		Obs obs = new Obs();
 		encounter.addObs(obs);
 
 		// make sure it was added
@@ -843,6 +843,30 @@ public class EncounterTest extends BaseContextMockTest {
 		assertTrue(obs.getObsDatetime().equals(date));
 		assertTrue(obs.getLocation().equals(location));
 		assertTrue(obs.getPerson().equals(patient));
+	}
+
+	/**
+	 * @see Encounter#addObs(Obs)
+	 */
+	@Test
+	public void addObs_shouldNotAddEncounterAttrsToASavedObs() {
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(new Date());
+		encounter.setLocation(new Location(1));
+		encounter.setPatient(new Patient(1));
+		Obs live = new Obs(123);
+		Obs voided = new Obs(124);
+		voided.setVoided(true);
+
+		encounter.addObs(live);
+		encounter.addObs(voided);
+
+		for (Obs obs : new Obs[] { live, voided }) {
+			assertEquals(encounter, obs.getEncounter());
+			assertNull(obs.getObsDatetime());
+			assertNull(obs.getLocation());
+			assertNull(obs.getPerson());
+		}
 	}
 
 	/**
@@ -863,13 +887,13 @@ public class EncounterTest extends BaseContextMockTest {
 		encounter.setPatient(patient);
 
 		// add an obs that doesn't have date/location/patient set on it.
-		Obs obs = new Obs(123);
-		Obs childObs = new Obs(456);
+		Obs obs = new Obs();
+		Obs childObs = new Obs();
 		obs.addGroupMember(childObs);
 
 		//check for infinite recursion
 		// childObs-->childObs2   and childObs2-->childObs
-		Obs childObs2 = new Obs(456);
+		Obs childObs2 = new Obs();
 		childObs.addGroupMember(childObs2);
 		childObs2.addGroupMember(childObs);
 

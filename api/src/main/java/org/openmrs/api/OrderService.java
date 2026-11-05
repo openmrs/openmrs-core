@@ -196,7 +196,10 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> unset dateStopped of the previous order if the specified order is a
 	 * discontinuation<br/>
 	 * <strong>Should</strong> unset dateStopped of the previous order if the specified order is a
-	 * revision
+	 * revision<br/>
+	 * <strong>Should</strong> reject a changed patient concept or dose<br/>
+	 * <strong>Should</strong> not change a voided order<br/>
+	 * <strong>Should</strong> not load the associations of the order
 	 *
 	 * @param voidReason String reason
 	 * @param order Order to void
@@ -336,7 +339,8 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> stop the previous order if the specified order is a discontinuation<br/>
 	 * <strong>Should</strong> stop the previous order if the specified order is a revision<br/>
 	 * <strong>Should</strong> fail for a discontinuation order if the previousOrder is inactive<br/>
-	 * <strong>Should</strong> fail for a revise order if the previousOrder is inactive
+	 * <strong>Should</strong> fail for a revise order if the previousOrder is inactive<br/>
+	 * <strong>Should</strong> reject a changed patient concept or dose
 	 *
 	 * @param order order to be unvoided
 	 * @return the Order that was unvoided
@@ -353,7 +357,8 @@ public interface OrderService extends OpenmrsService {
 	 * <strong>Should</strong> set the new fulFillerComment<br/>
 	 * <strong>Should</strong> not update fulfillerStatus or fulFillerComment if null passed in to that
 	 * field<br/>
-	 * <strong>Should</strong> save the changed order
+	 * <strong>Should</strong> save the changed order<br/>
+	 * <strong>Should</strong> reject a changed patient concept or dose
 	 *
 	 * @param order order whose fulfillerStatus should be changed
 	 * @param orderFulfillerStatus describes the new Order.FulfillerStatus the order should be set to

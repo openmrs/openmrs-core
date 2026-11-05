@@ -118,6 +118,10 @@ public interface ObsService extends OpenmrsService {
 	 * </ul>
 	 * </p>
 	 * <p>
+	 * A voided observation is saved in place, and only its void fields can change. It moves to another
+	 * person only with its own encounter or in a patient merge.
+	 * </p>
+	 * <p>
 	 * <strong>Should</strong> create new file from complex data for new obs<br/>
 	 * <strong>Should</strong> not overwrite file when updating a complex obs<br/>
 	 * <strong>Should</strong> void the given obs in the database<br/>
@@ -129,7 +133,14 @@ public interface ObsService extends OpenmrsService {
 	 * <strong>Should</strong> cascade update to new child obs groups<br/>
 	 * <strong>Should</strong> link original and updated obs<br/>
 	 * <strong>Should</strong> set void reason message to changeMessage<br/>
-	 * <strong>Should</strong> not void an Obs with no changes
+	 * <strong>Should</strong> not void an Obs with no changes<br/>
+	 * <strong>Should</strong> not change the value of an obs in the save that voids it<br/>
+	 * <strong>Should</strong> not change the value of a voided obs<br/>
+	 * <strong>Should</strong> not move a voided obs without an encounter to another person<br/>
+	 * <strong>Should</strong> save the new voided members of a new group with the group's encounter and
+	 * person<br/>
+	 * <strong>Should</strong> not store the complex data of a voided obs again<br/>
+	 * <strong>Should</strong> save a group with a voided member and the new version that replaces it
 	 *
 	 * @param obs the Obs to save to the database
 	 * @param changeMessage String explaining why <code>obs</code> is being changed. If <code>obs</code>
@@ -145,10 +156,13 @@ public interface ObsService extends OpenmrsService {
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
 
 	/**
-	 * Equivalent to deleting an observation
+	 * Equivalent to deleting an observation. Other unsaved changes to the obs, apart from a move to the
+	 * patient of its own encounter or in a patient merge, are rejected when the session is flushed.
 	 * <p>
 	 * <strong>Should</strong> set voided bit on given obs<br/>
-	 * <strong>Should</strong> fail if reason parameter is empty
+	 * <strong>Should</strong> fail if reason parameter is empty<br/>
+	 * <strong>Should</strong> reject an obs with other changes<br/>
+	 * <strong>Should</strong> reject a member taken out of its group
 	 *
 	 * @param obs Obs to void
 	 * @param reason String reason it's being voided
@@ -163,7 +177,8 @@ public interface ObsService extends OpenmrsService {
 	 * Revive an observation (pull a Lazarus)
 	 * <p>
 	 * <strong>Should</strong> unset voided bit on given obs<br/>
-	 * <strong>Should</strong> cascade unvoid to child grouped obs
+	 * <strong>Should</strong> cascade unvoid to child grouped obs<br/>
+	 * <strong>Should</strong> reject an obs whose person is not its encounter's patient
 	 *
 	 * @param obs Obs to unvoid
 	 * @throws APIException

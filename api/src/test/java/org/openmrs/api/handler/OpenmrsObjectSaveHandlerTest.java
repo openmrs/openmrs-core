@@ -16,6 +16,7 @@ import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Order;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.AllowEmptyStrings;
@@ -77,6 +78,28 @@ public class OpenmrsObjectSaveHandlerTest {
 		term.setConceptSource(new ConceptSource(1));
 		new OpenmrsObjectSaveHandler().handle(term, null, null, null);
 		assertEquals("code", term.getCode());
+	}
+
+	/**
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldNotTrimTheStringsOfASavedOrder() {
+		Order order = new Order(1);
+		order.setInstructions(" take with food ");
+		new OpenmrsObjectSaveHandler().handle(order, null, null, null);
+		assertEquals(" take with food ", order.getInstructions());
+	}
+
+	/**
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldTrimTheStringsOfANewOrder() {
+		Order order = new Order();
+		order.setInstructions(" take with food ");
+		new OpenmrsObjectSaveHandler().handle(order, null, null, null);
+		assertEquals("take with food", order.getInstructions());
 	}
 
 	/**
