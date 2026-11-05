@@ -192,6 +192,9 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 
 	@Test
 	public void upgradeEncoding_shouldReturnFalseWhenNoIdForEncodeIsConfigured() {
+		// the encoder for this prefix would ask for a re-encode, but it is not the one encode() writes with
+		when(bcryptEncoder.upgradeEncoding("hashedPassword")).thenReturn(true);
+
 		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("", idToPasswordEncoder,
 			fallbackEncoder);
 
@@ -235,6 +238,34 @@ public class OpenmrsDelegatingPasswordEncoderTest {
 		// a well-formed hash for the configured work factors still delegates as before
 		String encoded = encoder.encode("password");
 		assertFalse(encoder.upgradeEncoding(encoded));
+	}
+
+	/**
+	 * With no id to encode with, new hashes are written by the fallback encoder, so a re-encode would turn an
+	 * argon2 hash into a legacy one. The argon2 encoder alone would ask for it when the hash was made with
+	 * lower work factors, which is what this pins.
+	 */
+	@Test
+	public void upgradeEncoding_shouldReturnFalseForAnArgon2HashBelowTheWorkFactorsWhenNoIdForEncodeIsConfigured() {
+		Argon2PasswordEncoder configured = new Argon2PasswordEncoder(16, 32, 1, 19456, 2);
+		String weakHash = new Argon2PasswordEncoder(16, 32, 1, 8192, 2).encode("password");
+		assertTrue(configured.upgradeEncoding(weakHash), "sanity: the argon2 encoder alone asks for a re-encode");
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put("argon2", configured);
+		OpenmrsDelegatingPasswordEncoder encoder = new OpenmrsDelegatingPasswordEncoder("", encoders, fallbackEncoder);
+
+		assertFalse(encoder.upgradeEncoding("{argon2}" + weakHash));
+	}
+
+	/**
+	 * The guard only stops other encoders from asking: when argon2 is the encoder that writes new hashes, an
+	 * argon2 hash below its work factors still has to be re-encoded.
+	 */
+	@Test
+	public void upgradeEncoding_shouldReturnTrueForAnArgon2HashBelowTheWorkFactorsWhenArgon2IsTheIdForEncode() {
+		String weakHash = new Argon2PasswordEncoder(16, 32, 1, 8192, 2).encode("password");
+
+		assertTrue(buildArgon2OptInEncoder(new LegacyOpenmrsPasswordEncoder()).upgradeEncoding("{argon2}" + weakHash));
 	}
 
 	/**
