@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Collection;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +42,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	protected int error = 0;
 	
 	private final boolean headRequest;
+
+	private final HttpServletRequest request;
 	
 	/**
 	 * The length the caller asked for, held back until it is known whether the response will be
@@ -63,6 +66,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	public GZIPResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
 		super(response);
 		origResponse = response;
+		this.request = request;
 		headRequest = request != null && "HEAD".equalsIgnoreCase(request.getMethod());
 		addVaryHeader();
 	}
@@ -118,14 +122,14 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	
 	@Override
 	public PrintWriter getWriter() throws IOException {
+		if (writer != null) {
+			return writer;
+		}
+
 		// From cmurphy@intechtual.com to fix:
 		// https://appfuse.dev.java.net/issues/show_bug.cgi?id=59
 		if (this.origResponse != null && this.origResponse.isCommitted()) {
 			return super.getWriter();
-		}
-		
-		if (writer != null) {
-			return writer;
 		}
 		
 		if (stream != null) {
@@ -143,6 +147,10 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 */
 	@Override
 	public void sendError(int error, String message) throws IOException {
+		if (isIncluded()) {
+			super.sendError(error, message);
+			return;
+		}
 		discardBufferedOutput();
 		this.error = error;
 		
@@ -156,6 +164,10 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 */
 	@Override
 	public void sendError(int error) throws IOException {
+		if (isIncluded()) {
+			super.sendError(error);
+			return;
+		}
 		discardBufferedOutput();
 		this.error = error;
 		
@@ -186,6 +198,10 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 			compressionHeadersWritten = false;
 			addVaryHeader();
 		}
+	}
+
+	private boolean isIncluded() {
+		return request != null && request.getDispatcherType() == DispatcherType.INCLUDE;
 	}
 	
 	@Override
@@ -235,7 +251,11 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 */
 	@Override
 	public void setContentLength(int length) {
-		pendingContentLength = (long) length;
+		if (isIncluded()) {
+			super.setContentLength(length);
+		} else {
+			pendingContentLength = (long) length;
+		}
 	}
 	
 	/**
@@ -244,13 +264,21 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	 */
 	@Override
 	public void setContentLengthLong(long length) {
-		pendingContentLength = length;
+		if (isIncluded()) {
+			super.setContentLengthLong(length);
+		} else {
+			pendingContentLength = length;
+		}
 	}
 	
 	@Override
 	public void setHeader(String name, String value) {
 		if (isContentLength(name)) {
-			setPendingContentLength(value);
+			if (isIncluded()) {
+				super.setHeader(name, value);
+			} else {
+				setPendingContentLength(value);
+			}
 		} else {
 			super.setHeader(name, value);
 		}
@@ -259,7 +287,11 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	@Override
 	public void addHeader(String name, String value) {
 		if (isContentLength(name)) {
-			setPendingContentLength(value);
+			if (isIncluded()) {
+				super.addHeader(name, value);
+			} else {
+				setPendingContentLength(value);
+			}
 		} else {
 			super.addHeader(name, value);
 		}
@@ -268,7 +300,11 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	@Override
 	public void setIntHeader(String name, int value) {
 		if (isContentLength(name)) {
-			pendingContentLength = (long) value;
+			if (isIncluded()) {
+				super.setIntHeader(name, value);
+			} else {
+				pendingContentLength = (long) value;
+			}
 		} else {
 			super.setIntHeader(name, value);
 		}
@@ -277,7 +313,11 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	@Override
 	public void addIntHeader(String name, int value) {
 		if (isContentLength(name)) {
-			pendingContentLength = (long) value;
+			if (isIncluded()) {
+				super.addIntHeader(name, value);
+			} else {
+				pendingContentLength = (long) value;
+			}
 		} else {
 			super.addIntHeader(name, value);
 		}

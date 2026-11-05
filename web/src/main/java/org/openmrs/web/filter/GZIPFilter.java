@@ -16,6 +16,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openmrs.api.APIException;
@@ -58,9 +59,11 @@ public class GZIPFilter extends OncePerRequestFilter {
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");
 
-			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(request, response);
+			HttpServletRequest wrappedRequest = request instanceof HttpServletRequestWrapper ? request
+			        : new HttpServletRequestWrapper(request);
+			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(wrappedRequest, response);
 
-			chain.doFilter(request, wrappedResponse);
+			chain.doFilter(wrappedRequest, wrappedResponse);
 			wrappedResponse.finishResponse();
 
 			return;

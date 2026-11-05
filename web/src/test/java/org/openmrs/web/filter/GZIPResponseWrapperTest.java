@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -248,6 +249,69 @@ class GZIPResponseWrapperTest {
 		assertThat(response.getErrorMessage(), is("boom"));
 		assertThat(response.getContentAsByteArray(), equalTo(new byte[0]));
 		assertThat(response.getHeader("Content-Encoding"), nullValue());
+	}
+
+	@Test
+	void shouldKeepThePageWhenAnIncludedResourceSendsAnError() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		wrapper.getOutputStream().write(MEDIUM_BODY);
+
+		request.setDispatcherType(DispatcherType.INCLUDE);
+		wrapper.sendError(HttpServletResponse.SC_NOT_FOUND);
+		request.setDispatcherType(DispatcherType.REQUEST);
+		wrapper.finishResponse();
+
+		assertThat(gunzip(response.getContentAsByteArray()), equalTo(MEDIUM_BODY));
+	}
+
+	@Test
+	void shouldDelegateContentLengthSettersForAnIncludedResource() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		request.setDispatcherType(DispatcherType.INCLUDE);
+
+		wrapper.setContentLength(123);
+		assertThat(response.getContentLengthLong(), is(123L));
+		response.reset();
+
+		wrapper.setContentLengthLong(234L);
+		assertThat(response.getContentLengthLong(), is(234L));
+		response.reset();
+
+		wrapper.setHeader("Content-Length", "345");
+		assertThat(response.getContentLengthLong(), is(345L));
+		response.reset();
+
+		wrapper.addHeader("Content-Length", "456");
+		assertThat(response.getContentLengthLong(), is(456L));
+		response.reset();
+
+		wrapper.setIntHeader("Content-Length", 567);
+		assertThat(response.getContentLengthLong(), is(567L));
+		response.reset();
+
+		wrapper.addIntHeader("Content-Length", 678);
+		assertThat(response.getContentLengthLong(), is(678L));
+	}
+
+	@Test
+	void shouldReturnTheCachedWriterAfterTheResponseIsCommitted() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		response.setBufferSize(1);
+		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+
+		byte[] page = patternedBody(60_000);
+		PrintWriter writer = wrapper.getWriter();
+		writer.write(new String(page, StandardCharsets.UTF_8));
+		writer.flush();
+		wrapper.getWriter().close();
+
+		assertThat(gunzip(response.getContentAsByteArray()), equalTo(page));
 	}
 	
 	/**
