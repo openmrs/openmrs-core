@@ -41,6 +41,7 @@ import org.openmrs.Provider;
 import org.openmrs.ReferralOrder;
 import org.openmrs.TestOrder;
 import org.openmrs.Visit;
+import org.openmrs.aop.event.SaveServiceEvent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AmbiguousOrderException;
 import org.openmrs.api.CannotDeleteObjectInUseException;
@@ -59,6 +60,7 @@ import org.openmrs.api.UnchangeableObjectException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.event.EventPublisher;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.parameter.OrderSearchCriteria;
 import org.openmrs.util.ConfigUtil;
@@ -94,6 +96,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 
 	@Autowired
 	protected OrderDAO dao;
+
+	@Autowired
+	private EventPublisher eventPublisher;
 
 	private static OrderNumberGenerator orderNumberGenerator = null;
 
@@ -894,6 +899,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		}
 
 		setProperty(orderToStop, "dateStopped", discontinueDate);
+		eventPublisher.publishEvent(new SaveServiceEvent<>(orderToStop));
 		saveOrderInternal(orderToStop, null);
 	}
 
