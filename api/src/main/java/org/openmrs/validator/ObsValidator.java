@@ -19,7 +19,6 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Obs;
-import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -271,14 +270,7 @@ public class ObsValidator implements Validator {
 
 		if (conceptReferenceRange != null) {
 			validateAbsoluteRanges(obs, conceptReferenceRange, errors, atRootNode);
-
-			if (obs.getId() == null) {
-				setObsReferenceRange(obs, conceptReferenceRange);
-			}
-		} else if (obs.getId() == null) {
-			setObsReferenceRange(obs);
 		}
-		setObsInterpretation(obs);
 	}
 
 	/**
@@ -323,83 +315,6 @@ public class ObsValidator implements Validator {
 			} else {
 				errors.rejectValue("groupMembers", "Obs.error.inGroupMember", new Object[] {}, null);
 			}
-		}
-	}
-
-	/**
-	 * Builds and sets the ObsReferenceRange for the given Obs.
-	 *
-	 * @param obs Observation to set the reference range
-	 * @param conceptReferenceRange ConceptReferenceRange used to build the ObsReferenceRange
-	 */
-	private void setObsReferenceRange(Obs obs, ConceptReferenceRange conceptReferenceRange) {
-		ObsReferenceRange obsRefRange = new ObsReferenceRange();
-
-		obsRefRange.setHiAbsolute(conceptReferenceRange.getHiAbsolute());
-		obsRefRange.setHiCritical(conceptReferenceRange.getHiCritical());
-		obsRefRange.setHiNormal(conceptReferenceRange.getHiNormal());
-		obsRefRange.setLowAbsolute(conceptReferenceRange.getLowAbsolute());
-		obsRefRange.setLowCritical(conceptReferenceRange.getLowCritical());
-		obsRefRange.setLowNormal(conceptReferenceRange.getLowNormal());
-		obsRefRange.setObs(obs);
-
-		obs.setReferenceRange(obsRefRange);
-	}
-
-	/**
-	 * Builds and sets the ObsReferenceRange from concept numeric values.
-	 *
-	 * @param obs Observation to set the reference range
-	 */
-	private void setObsReferenceRange(Obs obs) {
-		if (obs.getConcept() == null) {
-			return;
-		}
-
-		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(obs.getConcept().getId());
-
-		if (conceptNumeric != null) {
-			ObsReferenceRange obsRefRange = new ObsReferenceRange();
-
-			obsRefRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
-			obsRefRange.setHiCritical(conceptNumeric.getHiCritical());
-			obsRefRange.setHiNormal(conceptNumeric.getHiNormal());
-			obsRefRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
-			obsRefRange.setLowCritical(conceptNumeric.getLowCritical());
-			obsRefRange.setLowNormal(conceptNumeric.getLowNormal());
-			obsRefRange.setObs(obs);
-
-			obs.setReferenceRange(obsRefRange);
-		}
-	}
-
-	/**
-	 * This method sets Obs interpretation based on the current obs' numeric value.
-	 *
-	 * @param obs Observation to set the interpretation
-	 */
-	private void setObsInterpretation(Obs obs) {
-		ObsReferenceRange referenceRange = obs.getReferenceRange();
-		if (referenceRange == null || obs.getValueNumeric() == null) {
-			return;
-		}
-
-		Double obsValue = obs.getValueNumeric();
-		Double hiCritical = referenceRange.getHiCritical();
-		Double lowCritical = referenceRange.getLowCritical();
-		Double lowNormal = referenceRange.getLowNormal();
-		Double hiNormal = referenceRange.getHiNormal();
-
-		if (hiCritical != null && obsValue >= hiCritical) {
-			obs.setInterpretation(Obs.Interpretation.CRITICALLY_HIGH);
-		} else if (hiNormal != null && obsValue > hiNormal) {
-			obs.setInterpretation(Obs.Interpretation.HIGH);
-		} else if (lowCritical != null && obsValue <= lowCritical) {
-			obs.setInterpretation(Obs.Interpretation.CRITICALLY_LOW);
-		} else if (lowNormal != null && obsValue < lowNormal) {
-			obs.setInterpretation(Obs.Interpretation.LOW);
-		} else {
-			obs.setInterpretation(Obs.Interpretation.NORMAL);
 		}
 	}
 
