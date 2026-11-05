@@ -19,10 +19,8 @@ import java.util.function.Predicate;
  * {@link PrivilegeCachingMethodSecurityExpressionHandler}.
  * <p>
  * A filter expression is evaluated once per element but names a fixed privilege, so a collection of
- * n elements resolves the same privilege n times - each resolution bracketed by a {@code Get Roles}
- * proxy privilege that mutates a synchronized list (see {@link PrivilegeResolution}). On the read
- * methods that return tens of thousands of rows that is the dominant cost of filtering, and every
- * answer after the first is already known.
+ * n elements resolves the same privilege n times. On the read methods that return tens of thousands
+ * of rows that is wasted work, since every answer after the first is already known.
  * <p>
  * Only the privilege is cached, never a {@link DomainObjectAuthorizationRule} verdict: rules are
  * asked about a particular object and genuinely differ per element. The cache is therefore no more

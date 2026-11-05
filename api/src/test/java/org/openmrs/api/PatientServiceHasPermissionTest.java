@@ -13,14 +13,16 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
+import org.openmrs.security.AuthorizationRules;
 import org.openmrs.security.DomainObjectAuthorizationRule;
+import org.openmrs.security.OpenmrsPermissionEvaluator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,10 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * that the wiring described on {@link org.openmrs.security.OpenmrsPermissionEvaluator} reaches real
  * service methods, not only the evaluator unit tests.
  * <p>
- * {@link DenyingPatientRule} is registered for the whole suite (picked up by the same
- * component-scan as any other bean), but denies nothing by default so it does not affect unrelated
- * tests; each test here toggles {@link DenyingPatientRule#setDeniedPatientId(Integer)} and restores
- * it afterward.
+ * {@link DenyingPatientRule} is registered with the evaluator for each test here and removed
+ * afterward, rather than being a bean (see {@link AuthorizationRules}); each test toggles
+ * {@link DenyingPatientRule#setDeniedPatientId(Integer)} on its own instance.
  */
 public class PatientServiceHasPermissionTest extends BaseContextSensitiveTest {
 
@@ -47,12 +48,18 @@ public class PatientServiceHasPermissionTest extends BaseContextSensitiveTest {
 	private PatientService patientService;
 
 	@Autowired
-	private DenyingPatientRule rule;
+	private OpenmrsPermissionEvaluator evaluator;
+
+	private final DenyingPatientRule rule = new DenyingPatientRule();
+
+	@BeforeEach
+	public void registerRule() {
+		AuthorizationRules.register(evaluator, rule);
+	}
 
 	@AfterEach
-	public void resetRule() {
-		rule.setDeniedPatientId(null);
-		rule.setDeniedPatientUuid(null);
+	public void unregisterRule() {
+		AuthorizationRules.unregister(evaluator, rule);
 	}
 
 	@Test
@@ -110,10 +117,9 @@ public class PatientServiceHasPermissionTest extends BaseContextSensitiveTest {
 	 * Denies exactly one, test-selected patient - by id or by uuid, matching whichever form
 	 * {@link DomainObjectAuthorizationRule}'s id-based {@code isAuthorized} was actually called with
 	 * (see its javadoc) - authorizing every other target (including every other domain type -
-	 * {@link #getTargetType()} scopes it to {@code Patient} and its subtypes only). Off (denies
-	 * nothing) by default so registering it does not change behavior for tests that do not use it.
+	 * {@link #getTargetType()} scopes it to {@code Patient} and its subtypes only). Denies nothing by
+	 * default, so a test that arms nothing sees the unfiltered call.
 	 */
-	@Component
 	public static class DenyingPatientRule implements DomainObjectAuthorizationRule {
 
 		private volatile Integer deniedPatientId;
@@ -157,7 +163,7 @@ public class PatientServiceHasPermissionTest extends BaseContextSensitiveTest {
 				return deniedPatientUuid == null || !deniedPatientUuid.equals(uuid);
 			}
 			// an id form this rule cannot interpret denies, as DomainObjectAuthorizationRule requires -
-			// permissive only while nothing is armed, so registering it changes nothing for other tests
+			// permissive only while nothing is armed, so a test that arms nothing is unaffected
 			return deniedPatientId == null && deniedPatientUuid == null;
 		}
 	}

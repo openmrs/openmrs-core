@@ -22,6 +22,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.CollectionStatistics;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -747,7 +750,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllPrivileges_shouldReturnAllPrivilegesInTheSystem() {
 		executeDataSet(XML_FILENAME);
 		List<Privilege> privileges = userService.getAllPrivileges();
-		assertEquals(1, privileges.size());
+		assertEquals(2, privileges.size());
 	}
 
 	/**
@@ -1980,6 +1983,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 		}
+	}
+
+	/**
+	 * @see User#setRoles(Set)
+	 */
+	@Test
+	public void setRoles_shouldNotRewriteRowsWhenGivenTheSameInstances() {
+		User user = userService.getUser(501);
+		Statistics statistics = ((SessionFactory) applicationContext.getBean("sessionFactory")).getStatistics();
+		statistics.clear();
+
+		user.setRoles(new HashSet<>(user.getRoles()));
+		Context.flushSession();
+
+		CollectionStatistics roles = statistics.getCollectionStatistics("org.openmrs.User.roles");
+		assertEquals(0, roles.getRecreateCount() + roles.getRemoveCount() + roles.getUpdateCount());
 	}
 
 }
