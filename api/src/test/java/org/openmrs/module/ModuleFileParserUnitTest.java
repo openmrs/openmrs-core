@@ -102,16 +102,6 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	@Test
-	public void deprecatedParse_shouldFailIfParserWasCreatedWithNewConstructorAndModuleFileIsNull() {
-
-		String messageKey = "Module.error.fileCannotBeNull";
-		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
-
-		ModuleFileParser moduleFileParser = new ModuleFileParser(messageSourceService);
-		expectModuleExceptionWithMessage(() -> moduleFileParser.parse(), messageKey);
-	}
-
-	@Test
 	public void parseFromInputstream_shouldParseValidXmlConfig() throws IOException {
 
 		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
