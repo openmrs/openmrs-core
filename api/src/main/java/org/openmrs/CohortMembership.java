@@ -16,6 +16,7 @@ import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,7 +42,7 @@ public class CohortMembership extends BaseChangeableOpenmrsData implements Compa
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cohortMemberId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cohort_id", nullable = false)
 	@Access(AccessType.FIELD)
 	private Cohort cohort;

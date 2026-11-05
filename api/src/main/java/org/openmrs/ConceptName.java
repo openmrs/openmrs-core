@@ -17,6 +17,7 @@ import java.util.Locale;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,6 +42,7 @@ import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.search.SearchAnalysis;
 import org.openmrs.api.db.hibernate.search.bridge.LocaleValueBridge;
 import org.openmrs.api.db.hibernate.type.StringEnumType;
+import org.openmrs.util.CollectionUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -63,7 +65,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@DocumentId
 	private Integer conceptNameId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Concept concept;
@@ -76,7 +78,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@KeywordField(valueBridge = @ValueBridgeRef(type = LocaleValueBridge.class))
 	private Locale locale;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
@@ -87,7 +89,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@GenericField
 	private Boolean voided = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
 	private User voidedBy;
 
@@ -111,7 +113,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@GenericField
 	private Boolean localePreferred = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 
@@ -324,7 +326,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tags the tags to set.
 	 */
 	public void setTags(Collection<ConceptNameTag> tags) {
-		this.tags = tags;
+		this.tags = CollectionUtil.setCollection(this.tags, tags);
 	}
 
 	/**

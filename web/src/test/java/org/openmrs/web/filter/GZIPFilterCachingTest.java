@@ -175,7 +175,7 @@ class GZIPFilterCachingTest {
 
 	/**
 	 * This is the point of the change: the property is read on every request, because ConfigUtil
-	 * answers that from its own cache, but the regexes behind it are compiled only once.
+	 * answers that from the global property cache, but the regexes behind it are compiled only once.
 	 */
 	@Test
 	void shouldCompileTheConfiguredPatternsOnlyOnce() throws Exception {

@@ -121,8 +121,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Program getProgram(Integer id) {
-		return dao.getProgram(id);
+	public Program getProgram(Integer programId) {
+		return dao.getProgram(programId);
 	}
 
 	/**
@@ -403,11 +403,13 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @see org.openmrs.api.ProgramWorkflowService#saveConceptStateConversion(org.openmrs.ConceptStateConversion)
 	 */
 	@Override
-	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws APIException {
-		if (csc.getConcept() == null || csc.getProgramWorkflow() == null || csc.getProgramWorkflowState() == null) {
+	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion conceptStateConversion)
+	        throws APIException {
+		if (conceptStateConversion.getConcept() == null || conceptStateConversion.getProgramWorkflow() == null
+		        || conceptStateConversion.getProgramWorkflowState() == null) {
 			throw new APIException("ConceptStateConversion.requires", (Object[]) null);
 		}
-		return dao.saveConceptStateConversion(csc);
+		return dao.saveConceptStateConversion(conceptStateConversion);
 	}
 
 	/**
@@ -415,8 +417,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public ConceptStateConversion getConceptStateConversion(Integer id) {
-		return dao.getConceptStateConversion(id);
+	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) {
+		return dao.getConceptStateConversion(conceptStateConversionId);
 	}
 
 	/**
@@ -610,8 +612,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 
 	@Override
-	public ProgramAttributeType getProgramAttributeType(Integer id) {
-		return dao.getProgramAttributeType(id);
+	public ProgramAttributeType getProgramAttributeType(Integer programAttributeTypeId) {
+		return dao.getProgramAttributeType(programAttributeTypeId);
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * This class represents a list of patientIds.
@@ -369,7 +370,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 
 	public void setMemberships(Set<CohortMembership> members) {
-		this.memberships = members;
+		this.memberships = CollectionUtil.setCollection(this.memberships, members);
 	}
 
 	/**
