@@ -26,6 +26,7 @@ import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Extension of {@link org.openmrs.BaseOpenmrsMetadata} for classes that support customization via
@@ -55,7 +56,7 @@ public abstract class BaseCustomizableMetadata<A extends Attribute> extends Base
 	 * @param attributes the attributes to set
 	 */
 	public void setAttributes(Set<A> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
 	}
 
 	/**

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Form
@@ -175,7 +176,7 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	 * @param formFields The formFields to set.
 	 */
 	public void setFormFields(Set<FormField> formFields) {
-		this.formFields = formFields;
+		this.formFields = CollectionUtil.setCollection(this.formFields, formFields);
 	}
 
 	/**
