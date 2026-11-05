@@ -16,7 +16,6 @@ import java.util.regex.PatternSyntaxException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.jspecify.annotations.NonNull;
@@ -58,12 +57,10 @@ public class GZIPFilter extends OncePerRequestFilter {
 
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");
-			HttpServletRequest wrappedRequest = request instanceof HttpServletRequestWrapper ? request
-			        : new HttpServletRequestWrapper(request);
 
-			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(wrappedRequest, response);
+			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(response);
 
-			chain.doFilter(wrappedRequest, wrappedResponse);
+			chain.doFilter(request, wrappedResponse);
 			wrappedResponse.finishResponse();
 
 			return;

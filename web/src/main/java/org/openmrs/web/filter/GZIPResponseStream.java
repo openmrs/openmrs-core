@@ -165,12 +165,6 @@ public class GZIPResponseStream extends ServletOutputStream {
 		//noop
 	}
 
-	public void discardBufferedOutput() {
-		if (bufferedOutput instanceof ByteArrayOutputStream) {
-			((ByteArrayOutputStream) bufferedOutput).reset();
-		}
-	}
-
 	@Override
 	public boolean isReady() {
 		throw new UnsupportedOperationException("Asynchonous operation is not supported.");
