@@ -90,6 +90,10 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		if (id == null) {
 			return StringUtils.isNotBlank(idForEncode);
 		}
+		// only the encoder encode() writes with can call for a re-encode
+		if (!id.equals(idForEncode)) {
+			return false;
+		}
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
 			// we don't manage this prefix
