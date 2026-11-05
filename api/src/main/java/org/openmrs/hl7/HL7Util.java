@@ -89,7 +89,9 @@ public class HL7Util {
 		// Parse timezone (optional in HL7 format)
 		String timeZoneOffset;
 		try {
-			Date parsedDay = new SimpleDateFormat("yyyyMMdd").parse(s.substring(0, 8));
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+			dateFormat.setLenient(false);
+			Date parsedDay = dateFormat.parse(s.substring(0, 8));
 			timeZoneOffset = getTimeZoneOffset(s, parsedDay);
 		} catch (ParseException e) {
 			throw new HL7Exception("Error parsing date: '" + s.substring(0, 8) + "' for time zone offset'" + s + "'", e);
@@ -137,7 +139,9 @@ public class HL7Util {
 
 		Date date;
 		try {
-			date = new SimpleDateFormat(TIMESTAMP_FORMAT).parse(dateString.toString());
+			SimpleDateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+			timestampFormat.setLenient(false);
+			date = timestampFormat.parse(dateString.toString());
 		} catch (ParseException e) {
 			throw new HL7Exception("Error parsing date '" + s + "'");
 		}
