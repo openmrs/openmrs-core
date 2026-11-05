@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.HibernateException;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -23,6 +24,9 @@ import org.openmrs.ObsReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ObsArchiveHelper;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -113,6 +117,23 @@ public class ObsValidator implements Validator {
 		}
 
 		boolean isObsGroup = obs.hasGroupMembers(true);
+
+		boolean hasNoValue = obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
+		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
+		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null
+		        && obs.getComplexData() == null;
+
+		if (!isObsGroup && hasNoValue && obs.getObsId() != null) {
+			try {
+				ObsArchiveHelper archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+				if (archiveHelper != null && archiveHelper.hasArchivedChildren(obs.getObsId())) {
+					isObsGroup = true;
+				}
+			} catch (APIException | HibernateException | DataAccessException e) {
+				LoggerFactory.getLogger(ObsValidator.class).warn("Failed to check for archived children for obs {}",
+				    obs.getObsId(), e);
+			}
+		}
 		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
 		if (isObsGroup) {
 			if (obs.getValueCoded() != null) {
@@ -149,10 +170,7 @@ public class ObsValidator implements Validator {
 
 		}
 		// if this is NOT an obs group, make sure that it has at least one value set (not counting obsGroupId)
-		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
-		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
-		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null
-		        && obs.getComplexData() == null) {
+		else if (hasNoValue) {
 			errors.reject("error.noValue");
 		}
 

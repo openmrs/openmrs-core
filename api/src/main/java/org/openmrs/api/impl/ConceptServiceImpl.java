@@ -114,6 +114,21 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		this.dao = dao;
 	}
 
+	private ObsArchiveHelper archiveHelper;
+
+	/**
+	 * Gets the ObsArchiveHelper component from the Spring application context.
+	 *
+	 * @return the ObsArchiveHelper instance
+	 * @since 3.0.0
+	 */
+	private ObsArchiveHelper getArchiveHelper() {
+		if (archiveHelper == null) {
+			archiveHelper = Context.getRegisteredComponent("obsArchiveHelper", ObsArchiveHelper.class);
+		}
+		return archiveHelper;
+	}
+
 	/**
 	 * <p>
 	 * <strong>Should</strong> return the concept with new conceptID if creating new concept<br/>
@@ -1378,7 +1393,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		concepts.add(concept);
 		Integer count = Context.getObsService().getObservationCount(null, null, concepts, null, null, null, null, null, null,
 		    true);
-		return count > 0;
+		if (count > 0) {
+			return true;
+		}
+		ObsArchiveHelper helper = getArchiveHelper();
+		return helper != null && helper.hasArchivedObs(concept);
 	}
 
 	/**
@@ -1407,7 +1426,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<ConceptName> conceptNames = new ArrayList<>();
 		conceptNames.add(conceptName);
 		Integer count = Context.getObsService().getObservationCount(conceptNames, true);
-		return count > 0;
+		if (count > 0) {
+			return true;
+		}
+		ObsArchiveHelper helper = getArchiveHelper();
+		return helper != null && helper.hasArchivedObs(conceptName);
 	}
 
 	/**

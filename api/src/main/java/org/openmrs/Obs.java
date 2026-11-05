@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.APIException;
@@ -177,6 +178,8 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	protected Encounter encounter;
 
 	private Obs previousVersion;
+
+	private Integer previousVersionId;
 
 	private Boolean dirty = Boolean.FALSE;
 
@@ -1264,7 +1267,15 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * version of this Obs.
 	 */
 	public Obs getPreviousVersion() {
-		return previousVersion;
+		if (previousVersion != null) {
+			try {
+				previousVersion.getUuid();
+				return previousVersion;
+			} catch (ObjectNotFoundException e) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -1275,6 +1286,16 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	public void setPreviousVersion(Obs previousVersion) {
 		markAsDirty(this.previousVersion, previousVersion);
 		this.previousVersion = previousVersion;
+		this.previousVersionId = (previousVersion == null) ? null : previousVersion.getObsId();
+	}
+
+	public Integer getPreviousVersionId() {
+		return previousVersionId;
+	}
+
+	public void setPreviousVersionId(Integer previousVersionId) {
+		markAsDirty(this.previousVersionId, previousVersionId);
+		this.previousVersionId = previousVersionId;
 	}
 
 	public Boolean hasPreviousVersion() {
