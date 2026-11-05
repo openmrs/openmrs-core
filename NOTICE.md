@@ -28,7 +28,7 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Apache Velocity Tools (`org.apache.velocity.tools:velocity-tools-generic`)
 - AWS SDK for Java (`software.amazon.awssdk:s3`)
 - Google Guava (`com.google.guava:guava`)
-- Groovy (`org.codehaus.groovy:groovy-all`)
+- Groovy (`org.apache.groovy:groovy-all`)
 - Hibernate ORM (`org.hibernate.orm:hibernate-core`, `hibernate-c3p0`, `hibernate-envers`)
 - Hibernate Search (`org.hibernate.search:hibernate-search-mapper-orm`, `hibernate-search-backend-lucene`, `hibernate-search-backend-elasticsearch`)
 - Hibernate Validator (`org.hibernate.validator:hibernate-validator`)
