@@ -10,6 +10,7 @@
 package org.openmrs.notification;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -21,6 +22,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.security.access.AccessDeniedException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -193,5 +195,109 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
 		}
+	}
+
+	@Test
+	public void getAlert_shouldIgnoreATamperedIdOnTheAuthenticatedUser() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		User butch = Context.getUserService().getUserByUsername("butch");
+		Integer butchAlertId = as.saveAlert(new Alert("butch's alert", butch)).getAlertId();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", superUser)).getAlertId();
+
+		becomeButchWithADetachedUserObject();
+		Context.getAuthenticatedUser().setUserId(superUser.getUserId());
+
+		assertNull(as.getAlert(superUsersAlertId));
+		assertNotNull(as.getAlert(butchAlertId));
+	}
+
+	@Test
+	public void getAlert_shouldIgnoreATamperedUuidOnTheAuthenticatedUser() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		User butch = Context.getUserService().getUserByUsername("butch");
+		Integer butchAlertId = as.saveAlert(new Alert("butch's alert", butch)).getAlertId();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", superUser)).getAlertId();
+
+		becomeButchWithADetachedUserObject();
+		Context.getAuthenticatedUser().setUuid(superUser.getUuid());
+
+		assertNull(as.getAlert(superUsersAlertId));
+		assertNotNull(as.getAlert(butchAlertId));
+	}
+
+	@Test
+	public void getAlertsByUser_shouldIgnoreATamperedIdOnTheAuthenticatedUser() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		User butch = Context.getUserService().getUserByUsername("butch");
+		Integer butchAlertId = as.saveAlert(new Alert("butch's alert", butch)).getAlertId();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", superUser)).getAlertId();
+
+		becomeButchWithADetachedUserObject();
+		Context.getAuthenticatedUser().setUserId(superUser.getUserId());
+
+		List<Alert> alerts = as.getAlertsByUser(null);
+		assertTrue(alerts.stream().anyMatch(alert -> butchAlertId.equals(alert.getAlertId())));
+		assertFalse(alerts.stream().anyMatch(alert -> superUsersAlertId.equals(alert.getAlertId())));
+	}
+
+	@Test
+	public void getAlertsByUser_shouldIgnoreATamperedUuidOnTheAuthenticatedUser() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		User butch = Context.getUserService().getUserByUsername("butch");
+		Integer butchAlertId = as.saveAlert(new Alert("butch's alert", butch)).getAlertId();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", superUser)).getAlertId();
+
+		becomeButchWithADetachedUserObject();
+		Context.getAuthenticatedUser().setUuid(superUser.getUuid());
+
+		List<Alert> alerts = as.getAlertsByUser(null);
+		assertTrue(alerts.stream().anyMatch(alert -> butchAlertId.equals(alert.getAlertId())));
+		assertFalse(alerts.stream().anyMatch(alert -> superUsersAlertId.equals(alert.getAlertId())));
+	}
+
+	@Test
+	public void getAlerts_shouldDenyAnotherUsersAlertsWhenTheAuthenticatedUsersIdIsTampered() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+
+		becomeButchWithADetachedUserObject();
+		User butch = Context.getAuthenticatedUser();
+		Integer butchId = butch.getUserId();
+		butch.setUserId(superUser.getUserId());
+
+		assertThrows(AccessDeniedException.class, () -> as.getAlerts(superUser, true, true));
+		assertThrows(AccessDeniedException.class, () -> as.getAlerts(butch, true, true));
+		assertNotNull(as.getAlerts(new User(butchId), true, true));
+	}
+
+	@Test
+	public void getAlerts_shouldReadAnyUsersAlertsForACallerHoldingAProxyGetAlertsPrivilegeWhenTheirIdIsTampered() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		Integer superUsersAlertId = as.saveAlert(new Alert("super user's alert", superUser)).getAlertId();
+
+		becomeButchWithADetachedUserObject();
+		Context.getAuthenticatedUser().setUserId(superUser.getUserId());
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		try {
+			assertNotNull(as.getAlert(superUsersAlertId));
+			assertNotNull(as.getAlerts(superUser, true, true));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALERTS);
+		}
+	}
+
+	/**
+	 * Becomes butch and detaches his User object from the session, as it would be on any request after
+	 * the one that logged him in, so that changes made to it do not leak into freshly loaded recipients
+	 */
+	private void becomeButchWithADetachedUserObject() {
+		Context.becomeUser("3-4");
+		Context.flushSession();
+		Context.clearSession();
 	}
 }
