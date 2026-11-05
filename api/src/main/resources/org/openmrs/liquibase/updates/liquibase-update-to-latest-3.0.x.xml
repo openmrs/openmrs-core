@@ -155,5 +155,36 @@
 		</update>
 	</changeSet>
 
-</databaseChangeLog>
+	<changeSet id="20261015-check-concept-reference-range-criteria" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_reference_range</sqlCheck></not>
+		</preConditions>
+		<comment>Report concept reference range criteria that can no longer be evaluated because they call methods the criteria sandbox refuses</comment>
+		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
+	</changeSet>
 
+	<changeSet id="20261021-add-index-users-username" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="users" indexName="users_username"/>
+			</not>
+		</preConditions>
+		<comment>Adding index on users.username, which is looked up on every login</comment>
+		<createIndex tableName="users" indexName="users_username">
+			<column name="username"/>
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="20261021-add-index-users-system-id" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists tableName="users" indexName="users_system_id"/>
+			</not>
+		</preConditions>
+		<comment>Adding index on users.system_id, which is looked up on every login</comment>
+		<createIndex tableName="users" indexName="users_system_id">
+			<column name="system_id"/>
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

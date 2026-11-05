@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -37,7 +38,10 @@ import static org.mockito.Mockito.mockStatic;
  * {@code isAuthenticated()} SpEL consults directly via {@code Authentication#isAuthenticated()} -
  * itself accounts for the Daemon-thread and proxy-privilege cases, not just
  * {@code UserContext#isAuthenticated()}'s plain {@code user != null}. No dedicated bean method is
- * needed the way {@code hasPermission(null, '&lt;privilege&gt;')} is for named privileges.
+ * needed the way {@code hasPermission(null, '&lt;privilege&gt;')} is for named privileges. That the
+ * two also deny alike is down to {@link OpenmrsAuthorizationManagerFactory#authenticated()}, which
+ * records the denial for {@link PrivilegeNamingAuthorizationManager} to report as
+ * {@code AuthorizationAdvice} does.
  */
 public class OpenmrsPermissionEvaluatorTest extends BaseContextSensitiveTest {
 
@@ -58,6 +62,23 @@ public class OpenmrsPermissionEvaluatorTest extends BaseContextSensitiveTest {
 		try {
 			assertThrows(Exception.class, requireLoggedInTestService::viaAuthorized);
 			assertThrows(AccessDeniedException.class, requireLoggedInTestService::viaPreAuthorize);
+		} finally {
+			Context.authenticate("admin", "test");
+		}
+	}
+
+	@Test
+	public void bothAnnotations_shouldDenyALoggedOutCallerWithTheSameAPIAuthenticationException() {
+		// converting a no-value @Authorized as the migration guide's table says must not change what a
+		// caller catching the deprecated exception sees
+		Context.getUserContext().logout();
+		try {
+			APIAuthenticationException viaAuthorized = assertThrows(APIAuthenticationException.class,
+			    requireLoggedInTestService::viaAuthorized);
+			APIAuthenticationException viaPreAuthorize = assertThrows(APIAuthenticationException.class,
+			    requireLoggedInTestService::viaPreAuthorize);
+			assertEquals("Basic authentication required", viaAuthorized.getMessage());
+			assertEquals(viaAuthorized.getMessage(), viaPreAuthorize.getMessage());
 		} finally {
 			Context.authenticate("admin", "test");
 		}

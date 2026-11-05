@@ -46,8 +46,8 @@
   </scm>
 
 	<ciManagement>
-		<system>Bamboo</system>
-		<url>https://ci.openmrs.org/browse/TRUNK-MASTER</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/openmrs/openmrs-core/actions</url>
 	</ciManagement>
 
 	<modules>
@@ -112,6 +112,12 @@
 					<version>3.16.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
+						<!-- Retains real method parameter names in compiled bytecode, so Spring Security's
+						     #paramName SpEL bindings (see @PreAuthorize/@PostAuthorize usages) resolve
+						     without needing an explicit @P annotation on every referenced parameter -
+						     required in particular for interface methods, which have no method body for
+						     the debug-info-based discovery fallback to read. -->
+						<parameters>true</parameters>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -169,7 +175,7 @@
 				<plugin>
 					<groupId>com.diffplug.spotless</groupId>
 					<artifactId>spotless-maven-plugin</artifactId>
-					<version>3.10.3</version>
+					<version>3.10.4</version>
 					<configuration>
 						<java>
 							<eclipse>
@@ -210,7 +216,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.10.4.1</version>
+					<version>4.10.5.0</version>
 					<configuration>
 						<excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
 						<effort>Max</effort>

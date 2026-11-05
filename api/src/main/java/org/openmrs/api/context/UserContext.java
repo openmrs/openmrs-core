@@ -29,6 +29,7 @@ import org.openmrs.User;
 import org.openmrs.UserSessionListener;
 import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
@@ -36,10 +37,10 @@ import org.openmrs.security.AuthenticatedResultToken;
 import org.openmrs.security.CredentialsAuthenticationToken;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -230,7 +231,7 @@ public class UserContext implements Serializable {
 	 */
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
 		if (!Daemon.isDaemonThread() && !Context.getAuthenticatedUser().isSuperUser()) {
-			throw new AccessDeniedException("You must be a superuser to assume another user's identity");
+			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 
 		log.debug("Turning the authenticated user into user with systemId: {}", systemId);
@@ -319,9 +320,8 @@ public class UserContext implements Serializable {
 	/**
 	 * Will remove one instance of privilege from the privileges that are currently proxied. The name is
 	 * matched case-insensitively, like every other privilege check, but only the first match is
-	 * removed: {@link org.openmrs.aop.AuthorizationAdvice} brackets each service call with an
-	 * add/remove pair, so nested calls legitimately stack the same privilege and one remove must undo
-	 * exactly one add.
+	 * removed: a nested read can legitimately stack the same privilege on top of the one its caller
+	 * added, so one remove must undo exactly one add.
 	 *
 	 * @param privilege Privilege to remove in string form
 	 */
@@ -614,7 +614,7 @@ public class UserContext implements Serializable {
 			return anonymousRole;
 		}
 
-		anonymousRole = Context.getUserService().getRole(RoleConstants.ANONYMOUS);
+		anonymousRole = readImplicitRole(RoleConstants.ANONYMOUS);
 		if (anonymousRole == null) {
 			throw new RuntimeException(
 			        "Database out of sync with code: " + RoleConstants.ANONYMOUS + " role does not exist");
@@ -636,13 +636,26 @@ public class UserContext implements Serializable {
 			return authenticatedRole;
 		}
 
-		authenticatedRole = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
+		authenticatedRole = readImplicitRole(RoleConstants.AUTHENTICATED);
 		if (authenticatedRole == null) {
 			throw new RuntimeException(
 			        "Database out of sync with code: " + RoleConstants.AUTHENTICATED + " role does not exist");
 		}
 
 		return authenticatedRole;
+	}
+
+	/**
+	 * Holds the proxy privilege around the read because {@code getRole} is itself privilege-checked;
+	 * without it, resolving any privilege recurses.
+	 */
+	private Role readImplicitRole(String roleName) {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
+		try {
+			return Context.getUserService().getRole(roleName);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
+		}
 	}
 
 	/**

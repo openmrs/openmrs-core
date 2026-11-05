@@ -18,15 +18,19 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.PrivilegeListener;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Component;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -94,6 +98,37 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 	public void before_shouldThrowAccessDeniedException() {
 		Context.getUserContext().logout();
 		assertThrows(AccessDeniedException.class, () -> Context.getConceptService().getConcept(3));
+	}
+
+	// the three tests below cover each way the advice denies: code written against 2.x catches
+	// APIAuthenticationException, code written against 3.0 catches Spring Security's type, and both
+	// must recognize the same denial
+
+	@Test
+	public void before_shouldDenyAMissingPrivilegeWithAnAPIAuthenticationExceptionSpringSecurityRecognizes() {
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Context.getConceptService().getConcept(3));
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Privileges required: Get Concepts", denial.getMessage());
+	}
+
+	@Test
+	public void before_shouldDenyTheFirstMissingRequiredPrivilegeWithAnAPIAuthenticationExceptionSpringSecurityRecognizes() {
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Context.getPatientService().saveCauseOfDeathObs(null, null, null, null));
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Privileges required: Get Patients", denial.getMessage());
+	}
+
+	@Test
+	public void before_shouldDenyAnUnauthenticatedCallerWithAnAPIAuthenticationExceptionSpringSecurityRecognizes() {
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Context.getUserService().changePassword("old", "new"));
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Basic authentication required", denial.getMessage());
 	}
 
 }

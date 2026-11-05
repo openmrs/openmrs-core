@@ -9,8 +9,11 @@
  */
 package org.openmrs.notification;
 
+import java.util.HashSet;
+
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.impl.AlertServiceImpl;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -68,6 +71,23 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		//Test that alert contains the expected content
 		assertTrue(alertOne.getText().equals(Context.getMessageSourceService()
 		        .getMessage("Module.startupError.notification.message", new Object[] { "test" }, null)));
+	}
+
+	/**
+	 * @see Alert#setRecipients(java.util.Set)
+	 */
+	@Test
+	public void setRecipients_shouldAcceptACopyOfTheCurrentRecipientsOfALoadedAlert() {
+		AlertService as = Context.getAlertService();
+		Integer alertId = as.saveAlert(new Alert("text", Context.getAuthenticatedUser())).getAlertId();
+		Context.flushSession();
+		Context.clearSession();
+
+		Alert alert = as.getAlert(alertId);
+		alert.setRecipients(new HashSet<>(alert.getRecipients()));
+		Context.flushSession();
+
+		assertEquals(1, alert.getRecipients().size());
 	}
 
 	@Test
@@ -146,6 +166,19 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		assertThrows(AccessDeniedException.class, () -> as.getAlerts(superUser, true, true));
 		assertThrows(AccessDeniedException.class, () -> as.getAlertsByUser(superUser));
 		assertThrows(AccessDeniedException.class, () -> as.getAllActiveAlerts(superUser));
+	}
+
+	@Test
+	public void getAlerts_shouldDenyAnotherUsersAlertsWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+
+		Context.becomeUser("3-4");
+
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> as.getAlerts(superUser, true, true));
+		assertEquals("Privilege required: Get Alerts", denial.getMessage());
 	}
 
 	@Test

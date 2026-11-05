@@ -17,9 +17,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.OpenmrsService;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Defines methods required to schedule a task.
@@ -53,7 +55,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
 	String getStatus(Integer id);
 
 	/**
@@ -65,7 +67,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #deleteTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	void shutdownTask(TaskDefinition task) throws SchedulerException;
 
 	/**
@@ -79,7 +81,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #schedule(TaskData)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	Task scheduleTask(TaskDefinition task) throws SchedulerException;
 
 	/**
@@ -91,7 +93,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #deleteTask(String)} and {@link #schedule(TaskData)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	Task rescheduleTask(TaskDefinition task) throws SchedulerException;
 
 	/**
@@ -103,7 +105,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x this method is not needed anymore
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
 	void rescheduleAllTasks() throws SchedulerException;
 
 	/**
@@ -115,7 +117,8 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #getTasks(TaskState, Instant)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
+	@PostFilter("hasPermission(filterObject, 'Manage Scheduler')")
 	Collection<TaskDefinition> getScheduledTasks();
 
 	/**
@@ -128,7 +131,8 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #getTasks(TaskState, Instant)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
+	@PostFilter("hasPermission(filterObject, 'Manage Scheduler')")
 	Collection<TaskDefinition> getRegisteredTasks();
 
 	/**
@@ -140,7 +144,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#id, 'org.openmrs.scheduler.TaskDefinition', 'Manage Scheduler')")
 	TaskDefinition getTask(Integer id);
 
 	/**
@@ -151,7 +155,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#uuid, 'org.openmrs.scheduler.TaskDefinition', 'Manage Scheduler')")
 	TaskDefinition getTaskByUuid(String uuid);
 
 	/**
@@ -163,7 +167,8 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
+	@PostAuthorize("hasPermission(returnObject, 'Manage Scheduler')")
 	TaskDefinition getTaskByName(String name);
 
 	/**
@@ -175,7 +180,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #deleteTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
 	void deleteTask(Integer id);
 
 	/**
@@ -188,7 +193,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @deprecated since 2.9.x use {@link #schedule(TaskData)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	@Logging(ignore = true)
 	void saveTaskDefinition(TaskDefinition task);
 
@@ -213,7 +218,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Optional<TaskDetails> getTask(String uuid);
 
 	/**
@@ -227,7 +232,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Optional<RecurringTaskDetails> getRecurringTask(String uuid);
 
 	/**
@@ -243,7 +248,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	void deleteTask(String uuid);
 
 	/**
@@ -259,7 +264,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	void deleteRecurringTask(String uuid);
 
 	/**
@@ -276,7 +281,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Stream<TaskDetails> getTasks(TaskState state, Instant updatedBefore);
 
 	/**
@@ -289,7 +294,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Stream<RecurringTaskDetails> getRecurringTasks();
 
 	/**
@@ -303,7 +308,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Stream<RecurringTaskDetails> getRecurringTasksByName(String name);
 
 	/**
@@ -325,7 +330,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData);
 
 	/**
@@ -341,7 +346,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, String name);
 
 	/**
@@ -359,7 +364,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(String uuid, TaskData taskData);
 
 	/**
@@ -378,7 +383,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(String uuid, TaskData taskData, String name);
 
 	/**
@@ -393,7 +398,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, Instant runAt);
 
 	/**
@@ -409,7 +414,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, Instant runAt, String name);
 
 	/**
@@ -427,7 +432,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(String uuid, TaskData taskData, Instant runAt);
 
 	/**
@@ -446,7 +451,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(String uuid, TaskData taskData, Instant runAt, String name);
 
 	/**
@@ -461,7 +466,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, ZonedDateTime runAt);
 
 	/**
@@ -477,7 +482,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, ZonedDateTime runAt, String name);
 
 	/**
@@ -495,7 +500,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt);
 
 	/**
@@ -515,7 +520,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt, String name);
 
 	/**
@@ -530,7 +535,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron);
 
 	/**
@@ -546,7 +551,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, String name);
 
 	/**
@@ -564,7 +569,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron);
 
 	/**
@@ -584,7 +589,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, String name);
 
 	/**
@@ -600,7 +605,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId);
 
 	/**
@@ -618,7 +623,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId, String name);
 
 	/**
@@ -638,7 +643,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId);
 
 	/**
@@ -659,7 +664,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId, String name);
 
 	/**
@@ -674,7 +679,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval);
 
 	/**
@@ -690,7 +695,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval, String name);
 
 	/**
@@ -708,7 +713,7 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval);
 
 	/**
@@ -728,6 +733,6 @@ public interface SchedulerService extends OpenmrsService {
 	 *             permission
 	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval, String name);
 }

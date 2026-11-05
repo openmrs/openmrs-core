@@ -18,9 +18,10 @@ import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.ProviderRole;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Handler;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -42,6 +43,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public List<Provider> getAllProviders();
 
 	/**
@@ -53,7 +55,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public List<Provider> getAllProviders(boolean includeRetired);
 
 	/**
@@ -66,7 +69,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_PROVIDERS + "')")
+	@PreAuthorize("hasPermission(#provider, '" + PrivilegeConstants.MANAGE_PROVIDERS + "')")
 	public void retireProvider(Provider provider, String reason);
 
 	/**
@@ -78,7 +81,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
+	@PreAuthorize("hasPermission(#provider, '" + PrivilegeConstants.MANAGE_PROVIDERS + "')")
 	public Provider unretireProvider(Provider provider);
 
 	/**
@@ -90,7 +93,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PROVIDERS })
+	@PreAuthorize("hasPermission(#provider, '" + PrivilegeConstants.PURGE_PROVIDERS + "')")
 	public void purgeProvider(Provider provider);
 
 	/**
@@ -103,7 +106,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PreAuthorize("hasPermission(#providerId, 'Provider', '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Provider getProvider(Integer providerId);
 
 	/**
@@ -116,7 +119,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDERS })
+	@PreAuthorize("hasPermission(#provider, '" + PrivilegeConstants.MANAGE_PROVIDERS + "')")
 	public Provider saveProvider(Provider provider);
 
 	/**
@@ -128,7 +131,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasPermission(#uuid, 'Provider', '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Provider getProviderByUuid(String uuid);
 
 	/**
@@ -142,7 +145,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Collection<Provider> getProvidersByPerson(Person person);
 
 	/**
@@ -161,7 +165,8 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10, 1.9.1
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Collection<Provider> getProvidersByPerson(Person person, boolean includeRetired);
 
 	/**
@@ -190,7 +195,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	//TODO: DAO auth filter
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes, boolean includeRetired);
 
@@ -219,7 +225,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	//TODO: DAO auth filter
 	public List<Provider> getProviders(String query, Integer start, Integer length,
 	        Map<ProviderAttributeType, Object> attributes);
 
@@ -232,7 +239,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	//TODO: DAO auth filter
 	public Integer getCountOfProviders(String query);
 
 	/**
@@ -249,7 +257,8 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 1.9.4
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	//TODO: DAO auth filter
 	public Integer getCountOfProviders(String query, boolean includeRetired);
 
 	/**
@@ -304,7 +313,8 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.7.0, 2.6.3
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PROVIDER_ATTRIBUTE_TYPES + "')")
 	public ProviderAttributeType getProviderAttributeTypeByName(String name);
 
 	/**
@@ -380,7 +390,7 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasPermission(#provider, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public boolean isProviderIdentifierUnique(Provider provider) throws APIException;
 
 	/**
@@ -393,7 +403,8 @@ public interface ProviderService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Provider getProviderByIdentifier(String identifier);
 
 	/**
@@ -408,7 +419,8 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	public Provider getUnknownProvider();
 
 	/**
@@ -420,7 +432,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.0
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
+	@PreAuthorize("hasPermission(#providerRoleId, 'ProviderRole', '" + PrivilegeConstants.GET_PROVIDER_ROLES + "')")
 	ProviderRole getProviderRole(Integer providerRoleId);
 
 	/**
@@ -432,7 +444,8 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.1
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDER_ROLES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROVIDER_ROLES + "')")
 	public List<ProviderRole> getAllProviderRoles(boolean includeRetired);
 
 	/**
@@ -444,7 +457,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.0
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDER_ROLES })
+	@PreAuthorize("hasPermission(#uuid, 'ProviderRole', '" + PrivilegeConstants.GET_PROVIDER_ROLES + "')")
 	ProviderRole getProviderRoleByUuid(String uuid);
 
 	/**
@@ -456,7 +469,8 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.0
 	 */
-	@Authorized({ PrivilegeConstants.GET_PROVIDERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PROVIDERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PROVIDERS + "')")
 	List<Provider> getProvidersByRoles(List<ProviderRole> roles);
 
 	/**
@@ -468,7 +482,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.2
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDER_ROLES })
+	@PreAuthorize("hasPermission(#providerRole, '" + PrivilegeConstants.MANAGE_PROVIDER_ROLES + "')")
 	ProviderRole saveProviderRole(ProviderRole providerRole);
 
 	/**
@@ -480,7 +494,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.2
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDER_ROLES })
+	@PreAuthorize("hasPermission(#providerRole, '" + PrivilegeConstants.MANAGE_PROVIDER_ROLES + "')")
 	ProviderRole retireProviderRole(ProviderRole providerRole, String reason);
 
 	/**
@@ -491,7 +505,7 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.2
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_PROVIDER_ROLES })
+	@PreAuthorize("hasPermission(#providerRole, '" + PrivilegeConstants.MANAGE_PROVIDER_ROLES + "')")
 	ProviderRole unretireProviderRole(ProviderRole providerRole);
 
 	/**
@@ -502,6 +516,6 @@ public interface ProviderService extends OpenmrsService {
 	 *             permission
 	 * @since 2.8.2
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_PROVIDER_ROLES })
+	@PreAuthorize("hasPermission(#providerRole, '" + PrivilegeConstants.PURGE_PROVIDER_ROLES + "')")
 	void purgeProviderRole(ProviderRole providerRole);
 }

@@ -16,9 +16,11 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * API methods related to Cohorts and CohortDefinitions
@@ -53,7 +55,8 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_COHORTS, PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#cohort, '" + PrivilegeConstants.ADD_COHORTS + "') or hasPermission(#cohort, '"
+	        + PrivilegeConstants.EDIT_COHORTS + "')")
 	public Cohort saveCohort(Cohort cohort) throws APIException;
 
 	/**
@@ -71,7 +74,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.DELETE_COHORTS })
+	@PreAuthorize("hasPermission(#cohort, '" + PrivilegeConstants.DELETE_COHORTS + "')")
 	public Cohort voidCohort(Cohort cohort, String reason) throws APIException;
 
 	/**
@@ -84,7 +87,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_COHORTS })
+	@PreAuthorize("hasPermission(#cohort, '" + PrivilegeConstants.PURGE_COHORTS + "')")
 	public Cohort purgeCohort(Cohort cohort) throws APIException;
 
 	/**
@@ -98,7 +101,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasPermission(#id, 'Cohort', '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public Cohort getCohort(Integer id) throws APIException;
 
 	/**
@@ -115,7 +118,8 @@ public interface CohortService extends OpenmrsService {
 	 *             permission
 	 * @since 2.1.0
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public Cohort getCohortByName(String name) throws APIException;
 
 	/**
@@ -124,7 +128,8 @@ public interface CohortService extends OpenmrsService {
 	 * @deprecated use {@link #getCohortByName(String)}
 	 */
 	@Deprecated
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public Cohort getCohort(String name) throws APIException;
 
 	/**
@@ -138,7 +143,8 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public List<Cohort> getAllCohorts() throws APIException;
 
 	/**
@@ -152,7 +158,8 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException;
 
 	/**
@@ -168,7 +175,8 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public List<Cohort> getCohorts(String nameFragment) throws APIException;
 
 	/**
@@ -185,7 +193,8 @@ public interface CohortService extends OpenmrsService {
 	 *             permission
 	 */
 	@Deprecated
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public List<Cohort> getCohortsContainingPatient(Patient patient) throws APIException;
 
 	/**
@@ -198,7 +207,8 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasPermission(#patientId, 'Patient', '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws APIException;
 
 	/**
@@ -216,7 +226,8 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#cohort, '" + PrivilegeConstants.EDIT_COHORTS + "') and hasPermission(#patient, '"
+	        + PrivilegeConstants.EDIT_COHORTS + "')")
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) throws APIException;
 
 	/**
@@ -238,7 +249,8 @@ public interface CohortService extends OpenmrsService {
 	 *             permission
 	 */
 	@Deprecated
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#cohort, '" + PrivilegeConstants.EDIT_COHORTS + "') and hasPermission(#patient, '"
+	        + PrivilegeConstants.EDIT_COHORTS + "')")
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) throws APIException;
 
 	/**
@@ -252,7 +264,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasPermission(#uuid, 'Cohort', '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public Cohort getCohortByUuid(String uuid);
 
 	/**
@@ -264,7 +276,7 @@ public interface CohortService extends OpenmrsService {
 	 *             permission
 	 * @since 2.1.0
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasPermission(#uuid, 'CohortMembership', '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	public CohortMembership getCohortMembershipByUuid(String uuid);
 
 	/**
@@ -275,7 +287,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#cohortMembership, '" + PrivilegeConstants.EDIT_COHORTS + "')")
 	void purgeCohortMembership(CohortMembership cohortMembership);
 
 	/**
@@ -288,7 +300,7 @@ public interface CohortService extends OpenmrsService {
 	 *             permission
 	 * @since 2.1.0
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#cohortMembership, '" + PrivilegeConstants.EDIT_COHORTS + "')")
 	CohortMembership voidCohortMembership(CohortMembership cohortMembership, String reason);
 
 	/**
@@ -301,7 +313,7 @@ public interface CohortService extends OpenmrsService {
 	 *             permission
 	 * @since 2.1.0
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#cohortMembership, '" + PrivilegeConstants.EDIT_COHORTS + "')")
 	CohortMembership endCohortMembership(CohortMembership cohortMembership, Date onDate);
 
 	/**
@@ -316,7 +328,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.EDIT_COHORTS + "')")
 	void notifyPatientVoided(Patient patient);
 
 	/**
@@ -333,7 +345,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_COHORTS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.EDIT_COHORTS + "')")
 	void notifyPatientUnvoided(Patient patient, User originallyVoidedBy, Date originalDateVoided);
 
 	/**
@@ -347,6 +359,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_PATIENT_COHORTS })
+	@PreAuthorize("hasPermission(#patientId, 'Patient', '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENT_COHORTS + "')")
 	List<CohortMembership> getCohortMemberships(Integer patientId, Date activeOnDate, boolean includeVoided);
 }

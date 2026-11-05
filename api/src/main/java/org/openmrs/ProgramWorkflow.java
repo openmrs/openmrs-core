@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.NaturalStrings;
 
 /**
@@ -247,7 +248,7 @@ public class ProgramWorkflow extends BaseChangeableOpenmrsMetadata {
 	}
 
 	public void setStates(Set<ProgramWorkflowState> states) {
-		this.states = states;
+		this.states = CollectionUtil.setCollection(this.states, states);
 	}
 
 	public Concept getConcept() {
