@@ -1229,6 +1229,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 					if (currCause != null) {
 						log.debug("Current cause is not null, setting to value_coded");
+
+						// check if this is an "other" concept - if so, then
+						// we need to add value_text
+						// do these lookups before the saved obs is mutated
+						// below, so that no database query triggers a
+						// Hibernate auto-flush of the mutated obs, which
+						// ImmutableObsInterceptor would reject and stop us
+						// from ever reaching saveObs below (TRUNK-6867)
+						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
+
 						obsDeath.setValueCoded(currCause);
 						obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 
@@ -1238,10 +1249,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						}
 						obsDeath.setObsDatetime(dateDeath);
 
-						// check if this is an "other" concept - if so, then
-						// we need to add value_text
-						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
 						if (conceptOther != null) {
 							if (conceptOther.equals(currCause)) {
 								// seems like this is an other concept -
