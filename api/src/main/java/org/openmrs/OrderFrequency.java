@@ -9,16 +9,7 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.*;
 import org.hibernate.envers.Audited;
 
 /**
@@ -49,7 +40,7 @@ public class OrderFrequency extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "uuid", unique = true)
 	private String uuid;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false, unique = true)
 	private Concept concept;
 	
