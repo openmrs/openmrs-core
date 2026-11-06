@@ -11,6 +11,7 @@ package org.openmrs.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,6 +19,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
@@ -781,6 +784,53 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 
 		assertTrue(IOUtils.contentEquals(expectedByteArrayInputStream, byteArrayInputStreamFromOutputStream));
 		verify(output, times(1)).close();
+	}
+
+	/**
+	 * @throws IOException
+	 * @see OpenmrsUtil#getFileAsString(File)
+	 */
+	@Test
+	public void getFileAsString_shouldReturnFileContentsWhenFileExists(@TempDir File tempDir) throws IOException {
+		File file = new File(tempDir, "get-file-as-string-test.txt");
+		Files.writeString(file.toPath(), "first line\nsecond line", StandardCharsets.UTF_8);
+
+		assertEquals("first line\nsecond line", OpenmrsUtil.getFileAsString(file));
+	}
+
+	/**
+	 * @throws IOException
+	 * @see OpenmrsUtil#getFileAsString(File)
+	 */
+	@Test
+	public void getFileAsString_shouldDecodeFileContentAsUtf8(@TempDir File tempDir) throws IOException {
+		File file = new File(tempDir, "get-file-as-string-utf8.txt");
+		Files.writeString(file.toPath(), "café — 中文", StandardCharsets.UTF_8);
+
+		assertEquals("café — 中文", OpenmrsUtil.getFileAsString(file));
+	}
+
+	/**
+	 * @throws IOException
+	 * @see OpenmrsUtil#getFileAsString(File)
+	 */
+	@Test
+	public void getFileAsString_shouldReturnEmptyStringForEmptyFile(@TempDir File tempDir) throws IOException {
+		File file = new File(tempDir, "get-file-as-string-empty.txt");
+		Files.writeString(file.toPath(), "", StandardCharsets.UTF_8);
+
+		assertEquals("", OpenmrsUtil.getFileAsString(file));
+	}
+
+	/**
+	 * @throws IOException
+	 * @see OpenmrsUtil#getFileAsString(File)
+	 */
+	@Test
+	public void getFileAsString_shouldThrowIOExceptionWhenTheFileDoesNotExist(@TempDir File tempDir) throws IOException {
+		File missing = new File(tempDir, "does-not-exist.txt");
+
+		assertThrows(IOException.class, () -> OpenmrsUtil.getFileAsString(missing));
 	}
 
 	/**
