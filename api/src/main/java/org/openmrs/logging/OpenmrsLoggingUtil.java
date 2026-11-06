@@ -30,7 +30,6 @@ import org.apache.logging.log4j.status.StatusLogger;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openmrs.annotation.Logging;
-import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -141,8 +140,11 @@ public final class OpenmrsLoggingUtil {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			try {
 				logLevel = ConfigUtil.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
-			} catch (ServiceNotFoundException e) {
-				StatusLogger.getLogger().error("An exception was thrown while trying to get the {} global property",
+			} catch (RuntimeException e) {
+				// The service layer may be unavailable or mid-initialization (e.g. a re-entrant
+				// ServiceContext initialization) while logging is being configured. Logging must be
+				// resilient, so skip the log-level overrides rather than letting the failure propagate.
+				StatusLogger.getLogger().warn("Could not read the {} global property; skipping log-level overrides",
 				    OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL, e);
 				return;
 			} finally {
