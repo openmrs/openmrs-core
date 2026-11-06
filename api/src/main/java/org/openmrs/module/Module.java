@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -72,8 +71,6 @@ public final class Module {
 	private Map<String, String> extensionNames = new IdentityHashMap<>();
 
 	private List<Extension> extensions = new ArrayList<>();
-
-	private Map<String, Properties> messages = new HashMap<>();
 
 	private List<Privilege> privileges = new ArrayList<>();
 
@@ -603,29 +600,6 @@ public final class Module {
 
 	public void setFile(File file) {
 		this.file = file;
-	}
-
-	/**
-	 * Gets a mapping from locale to properties used by this module. The locales are represented as a
-	 * string containing language and country codes.
-	 *
-	 * @return mapping from locales to properties
-	 * @deprecated as of 2.0 because messages are automatically loaded from the classpath
-	 */
-	@Deprecated
-	public Map<String, Properties> getMessages() {
-		return messages;
-	}
-
-	/**
-	 * Sets the map from locale to properties used by this module.
-	 *
-	 * @param messages map of locale to properties for that locale
-	 * @deprecated as of 2.0 because messages are automatically loaded from the classpath
-	 */
-	@Deprecated
-	public void setMessages(Map<String, Properties> messages) {
-		this.messages = messages;
 	}
 
 	public List<GlobalProperty> getGlobalProperties() {
