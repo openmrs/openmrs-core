@@ -1173,12 +1173,18 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 	 * Parses an ISO 8601 datetime string, with or without a timezone offset, using strict resolution so
 	 * that invalid values such as February 30 are rejected instead of being rolled over to a different
 	 * day. Uses the same formatter shape as {@link DateUtil#parseDatetimeString(String)}, whose default
-	 * resolution is not strict.
+	 * resolution is not strict. A single space is also accepted in place of the 'T' separator
+	 * (yyyy-MM-dd HH:mm[:ss]), the legacy form that {@link DateUtil#parseDatetimeString(String)} accepts
+	 * and that existing clients post for date obs.
 	 *
 	 * @param s the string to parse
 	 * @return the parsed date, or null if the string is not a valid ISO 8601 datetime
 	 */
 	private static Date parseIsoDatetime(String s) {
+		int dateLength = "yyyy-MM-dd".length();
+		if (s.length() > dateLength && s.charAt(dateLength) == ' ') {
+			s = s.substring(0, dateLength) + 'T' + s.substring(dateLength + 1);
+		}
 		if (!s.contains("T")) {
 			return null;
 		}

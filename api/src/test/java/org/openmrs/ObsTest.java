@@ -26,7 +26,9 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -632,6 +634,60 @@ public class ObsTest {
 		obs.setValueAsString("2023-06-15T21:00:00.000Z");
 
 		assertEquals(Date.from(OffsetDateTime.parse("2023-06-15T21:00:00.000Z").toInstant()), obs.getValueDatetime());
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseDatetimeWithSpaceSeparatorIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15 10:30");
+
+		assertEquals(Date.from(LocalDateTime.of(2023, 6, 15, 10, 30).atZone(ZoneId.systemDefault()).toInstant()),
+		    obs.getValueDatetime());
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseDatetimeWithSpaceSeparatorAndSecondsIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15 10:30:45");
+
+		assertEquals(Date.from(LocalDateTime.of(2023, 6, 15, 10, 30, 45).atZone(ZoneId.systemDefault()).toInstant()),
+		    obs.getValueDatetime());
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldFailIfDatetimeWithSpaceSeparatorIsInvalidIfTypeIsDT() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-02-30 10:30"));
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-06-15 25:30"));
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-06-15 garbage"));
+		assertThrows(ParseException.class, () -> obs.setValueAsString("2023-06-15  10:30"));
 	}
 
 	/**
