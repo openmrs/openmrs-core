@@ -17,27 +17,28 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
+import org.openmrs.notification.MessageException;
 import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.notification.MessageException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to Users in the system Use:<br>
- * 
  * <pre>
- * 
- * 
+ *
+ *
  * List&lt;User&gt; users = Context.getUserService().getAllUsers();
  * </pre>
- * 
+ *
  * @see org.openmrs.api.context.Context
  */
 public interface UserService extends OpenmrsService {
 
-	String ADMIN_PASSWORD_LOCKED_PROPERTY = "admin_password_locked";
-	
+	String ADMIN_PASSWORD_LOCKED_PROPERTY = "admin.password.locked";
+
 	/**
 	 * Create user with given password.
 	 *
@@ -45,540 +46,681 @@ public interface UserService extends OpenmrsService {
 	 * @param password the password for created user
 	 * @return created user
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.ADD_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.ADD_USERS + "')")
 	@Logging(ignoredArgumentIndexes = { 1 })
 	User createUser(User user, String password) throws APIException;
-	
+
 	/**
 	 * Change user password.
+	 * <p>
+	 * <strong>Should</strong> throw APIException if old password is not correct<br/>
+	 * <strong>Should</strong> throw APIException if new password is the same as old passoword<br/>
+	 * <strong>Should</strong> throw APIException if given user does not exist<br/>
+	 * <strong>Should</strong> change password for given user if oldPassword is correctly passed<br/>
+	 * <strong>Should</strong> change password for given user if oldPassword is null and changing user
+	 * have privileges<br/>
+	 * <strong>Should</strong> throw exception if oldPassword is null and changing user have not
+	 * privileges<br/>
+	 * <strong>Should</strong> throw exception if new password is too short
 	 *
 	 * @param user the user to update password
-	 * @param oldPassword the user password  to update
+	 * @param oldPassword the user password to update
 	 * @param newPassword the new user password
 	 * @throws APIException for not existing user and if old password is weak
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.12
-	 * <strong>Should</strong> throw APIException if old password is not correct
-	 * <strong>Should</strong> throw APIException if new password is the same as old passoword
-	 * <strong>Should</strong> throw APIException if given user does not exist
-	 * <strong>Should</strong> change password for given user if oldPassword is correctly passed
-	 * <strong>Should</strong> change password for given user if oldPassword is null and changing user have privileges
-	 * <strong>Should</strong> throw exception if oldPassword is null and changing user have not privileges
-	 * <strong>Should</strong> throw exception if new password is too short
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	void changePassword(User user, String oldPassword, String newPassword) throws APIException;
-	
+
 	/**
 	 * Get user by internal user identifier.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch user with given userId
+	 *
 	 * @param userId internal identifier
 	 * @return requested user
 	 * @throws APIException
-	 * <strong>Should</strong> fetch user with given userId
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#userId, 'User', '" + PrivilegeConstants.GET_USERS + "')")
 	User getUser(Integer userId) throws APIException;
-	
+
 	/**
 	 * Get user by the given uuid.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch user with given uuid<br/>
+	 * <strong>Should</strong> find object given valid uuid<br/>
+	 * <strong>Should</strong> return null if no object found with given uuid
+	 *
 	 * @param uuid
 	 * @return user or null
 	 * @throws APIException
-	 * <strong>Should</strong> fetch user with given uuid
-	 * <strong>Should</strong> find object given valid uuid
-	 * <strong>Should</strong> return null if no object found with given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#uuid, 'User', '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByUuid(String uuid) throws APIException;
-	
+
 	/**
 	 * Get user by username (user's login identifier)
-	 * 
+	 * <p>
+	 * <strong>Should</strong> get user by username
+	 *
 	 * @param username User's identifier used for authentication
 	 * @return requested user
-	 * <strong>Should</strong> get user by username
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByUsername(String username);
-	
+
 	/**
 	 * Gets a user by username or email
-	 * 
+	 *
 	 * @param usernameOrEmail User's email address or username
 	 * @return requested user or null if not found
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByUsernameOrEmail(String usernameOrEmail);
-	
+
 	/**
 	 * Gets a user with the specified activation key
-	 * @param activationKey User's activation key for password reset 
-	 * @return requested User with associated  activation key
+	 *
+	 * @param activationKey User's activation key for password reset
+	 * @return requested User with associated activation key
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_USERS + "')")
 	User getUserByActivationKey(String activationKey);
-	
+
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
-	 * 
+	 * <p>
+	 * <strong>Should</strong> verify that username and system id is unique
+	 *
 	 * @param user User to compare
 	 * @return boolean
 	 * @throws APIException
-	 * <strong>Should</strong> verify that username and system id is unique
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.GET_USERS + "')")
 	boolean hasDuplicateUsername(User user) throws APIException;
-	
+
 	/**
 	 * Get users by role granted
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch users assigned given role<br/>
+	 * <strong>Should</strong> not fetch user that does not belong to given role
+	 *
 	 * @param role Role that the Users must have to be returned
 	 * @return users with requested role
 	 * @throws APIException
-	 * <strong>Should</strong> fetch users assigned given role
-	 * <strong>Should</strong> not fetch user that does not belong to given role
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#role, '" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsersByRole(Role role) throws APIException;
-	
+
 	/**
 	 * Updates a given <code>user</code> in the database.
-	 * 
+	 *
 	 * @param user
 	 * @return the saved user
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
 	User saveUser(User user) throws APIException;
-	
+
 	/**
 	 * Deactivate a user account so that it can no longer log in.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> retire user and set attributes
+	 *
 	 * @param user
 	 * @param reason
 	 * @throws APIException
-	 * <strong>Should</strong> retire user and set attributes
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
 	User retireUser(User user, String reason) throws APIException;
-	
+
 	/**
 	 * Clears retired flag for a user.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> unretire and unmark all attributes
+	 *
 	 * @param user
 	 * @throws APIException
-	 * <strong>Should</strong> unretire and unmark all attributes
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
 	User unretireUser(User user) throws APIException;
-	
+
 	/**
 	 * Completely remove a location from the database (not reversible). This method delegates to
 	 * #purgeLocation(location, boolean) method.
-	 * 
-	 * @param user the User to remove from the database.
+	 * <p>
 	 * <strong>Should</strong> delete given user
+	 *
+	 * @param user the User to remove from the database.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.PURGE_USERS + "')")
 	void purgeUser(User user) throws APIException;
-	
+
 	/**
-	 * Completely remove a user from the database (not reversible). This is a delete from the
-	 * database. This is included for troubleshooting and low-level system administration. Ideally,
-	 * this method should <b>never</b> be called &mdash; <code>Users</code> should be
-	 * <em>voided</em> and not <em>deleted</em> altogether (since many foreign key constraints
-	 * depend on users, deleting a user would require deleting all traces, and any historical trail
-	 * would be lost). This method only clears user roles and attempts to delete the user record. If
-	 * the user has been included in any other parts of the database (through a foreign key), the
-	 * attempt to delete the user will violate foreign key constraints and fail.
-	 * 
-	 * @param cascade <code>true</code> to delete associated content
-	 * <strong>Should</strong> throw APIException if cascade is true
-	 * <strong>Should</strong> delete given user when cascade equals false
+	 * Completely remove a user from the database (not reversible). This is a delete from the database.
+	 * This is included for troubleshooting and low-level system administration. Ideally, this method
+	 * should <b>never</b> be called &mdash; <code>Users</code> should be <em>voided</em> and not
+	 * <em>deleted</em> altogether (since many foreign key constraints depend on users, deleting a user
+	 * would require deleting all traces, and any historical trail would be lost). This method only
+	 * clears user roles and attempts to delete the user record. If the user has been included in any
+	 * other parts of the database (through a foreign key), the attempt to delete the user will violate
+	 * foreign key constraints and fail.
+	 * <p>
+	 * <strong>Should</strong> throw APIException if cascade is true<br/>
+	 * <strong>Should</strong> delete given user when cascade equals false<br/>
 	 * <strong>Should</strong> not delete user roles for given user when cascade equals false
+	 *
+	 * @param cascade <code>true</code> to delete associated content
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_USERS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.PURGE_USERS + "')")
 	void purgeUser(User user, boolean cascade) throws APIException;
-	
+
 	/**
 	 * Returns all privileges currently possible for any User
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return all privileges in the system
+	 *
 	 * @return Global list of privileges
 	 * @throws APIException
-	 * <strong>Should</strong> return all privileges in the system
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_PRIVILEGES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_PRIVILEGES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.MANAGE_PRIVILEGES + "')")
 	List<Privilege> getAllPrivileges() throws APIException;
-	
+
 	/**
 	 * Returns all roles currently possible for any User
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return all roles in the system
+	 *
 	 * @return Global list of roles
 	 * @throws APIException
-	 * <strong>Should</strong> return all roles in the system
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ROLES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_ROLES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.MANAGE_ROLES + "')")
 	List<Role> getAllRoles() throws APIException;
-	
+
 	/**
 	 * Save the given role in the database
-	 * 
+	 * <p>
+	 * <strong>Should</strong> throw error if role inherits from itself<br/>
+	 * <strong>Should</strong> save given role to the database
+	 *
 	 * @param role Role to update
 	 * @return the saved role
 	 * @throws APIException
-	 * <strong>Should</strong> throw error if role inherits from itself
-	 * <strong>Should</strong> save given role to the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ROLES })
+	@PreAuthorize("hasPermission(#role, '" + PrivilegeConstants.MANAGE_ROLES + "')")
 	Role saveRole(Role role) throws APIException;
-	
+
 	/**
 	 * Complete remove a role from the database
-	 * 
+	 * <p>
+	 * <strong>Should</strong> throw error when role is a core role<br/>
+	 * <strong>Should</strong> return if role is null<br/>
+	 * <strong>Should</strong> delete given role from database
+	 *
 	 * @param role Role to delete from the database
 	 * @throws APIException
-	 * <strong>Should</strong> throw error when role is a core role
-	 * <strong>Should</strong> return if role is null
-	 * <strong>Should</strong> delete given role from database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_ROLES })
+	@PreAuthorize("hasPermission(#role, '" + PrivilegeConstants.PURGE_ROLES + "')")
 	void purgeRole(Role role) throws APIException;
-	
+
 	/**
 	 * Save the given privilege in the database
-	 * 
+	 * <p>
+	 * <strong>Should</strong> save given privilege to the database
+	 *
 	 * @param privilege Privilege to update
 	 * @return the saved privilege
 	 * @throws APIException
-	 * <strong>Should</strong> save given privilege to the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_PRIVILEGES })
+	@PreAuthorize("hasPermission(#privilege, '" + PrivilegeConstants.MANAGE_PRIVILEGES + "')")
 	Privilege savePrivilege(Privilege privilege) throws APIException;
-	
+
 	/**
 	 * Completely remove a privilege from the database
-	 * 
+	 * <p>
+	 * <strong>Should</strong> delete given privilege from the database<br/>
+	 * <strong>Should</strong> throw error when privilege is core privilege
+	 *
 	 * @param privilege Privilege to delete
 	 * @throws APIException
-	 * <strong>Should</strong> delete given privilege from the database
-	 * <strong>Should</strong> throw error when privilege is core privilege
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_PRIVILEGES })
+	@PreAuthorize("hasPermission(#privilege, '" + PrivilegeConstants.PURGE_PRIVILEGES + "')")
 	void purgePrivilege(Privilege privilege) throws APIException;
-	
+
 	/**
 	 * Returns role object with given string role
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch role for given role name
+	 *
 	 * @return Role object for specified string
 	 * @throws APIException
-	 * <strong>Should</strong> fetch role for given role name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ROLES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ROLES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ROLES + "')")
 	Role getRole(String r) throws APIException;
-	
+
 	/**
 	 * Get Role by its UUID
-	 * 
+	 * <p>
+	 * <strong>Should</strong> find object given valid uuid<br/>
+	 * <strong>Should</strong> return null if no object found with given uuid
+	 *
 	 * @param uuid
 	 * @return role or null
-	 * <strong>Should</strong> find object given valid uuid
-	 * <strong>Should</strong> return null if no object found with given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ROLES)
+	@PreAuthorize("hasPermission(#uuid, 'Role', '" + PrivilegeConstants.GET_ROLES + "')")
 	Role getRoleByUuid(String uuid) throws APIException;
-	
+
 	/**
 	 * Returns Privilege in the system with given String privilege
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch privilege for given name
+	 *
 	 * @return Privilege
 	 * @throws APIException
-	 * <strong>Should</strong> fetch privilege for given name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_PRIVILEGES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PRIVILEGES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_PRIVILEGES + "')")
 	Privilege getPrivilege(String p) throws APIException;
-	
+
 	/**
 	 * Get Privilege by its UUID
-	 * 
+	 * <p>
+	 * <strong>Should</strong> find object given valid uuid<br/>
+	 * <strong>Should</strong> return null if no object found with given uuid<br/>
+	 * <strong>Should</strong> fetch privilege for given uuid
+	 *
 	 * @param uuid
 	 * @return privilege or null
-	 * <strong>Should</strong> find object given valid uuid
-	 * <strong>Should</strong> return null if no object found with given uuid
-	 * <strong>Should</strong> fetch privilege for given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_PRIVILEGES)
+	@PreAuthorize("hasPermission(#uuid, 'Privilege', '" + PrivilegeConstants.GET_PRIVILEGES + "')")
 	Privilege getPrivilegeByUuid(String uuid) throws APIException;
-	
+
 	/**
 	 * Returns all users in the system
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch all users in the system<br/>
+	 * <strong>Should</strong> not contains any duplicate users
+	 *
 	 * @return Global list of users
 	 * @throws APIException
-	 * <strong>Should</strong> fetch all users in the system
-	 * <strong>Should</strong> not contains any duplicate users
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getAllUsers() throws APIException;
-	
+
 	/**
 	 * Changes the current user's password.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> match on correctly hashed sha1 stored password<br/>
+	 * <strong>Should</strong> match on incorrectly hashed sha1 stored password<br/>
+	 * <strong>Should</strong> match on sha512 hashed password<br/>
+	 * <strong>Should</strong> be able to update password multiple times<br/>
+	 * <strong>Should</strong> respect locking via runtime properties
+	 *
 	 * @param oldPassword current password
 	 * @param newPassword new password
 	 * @throws APIException
-	 * <strong>Should</strong> match on correctly hashed sha1 stored password
-	 * <strong>Should</strong> match on incorrectly hashed sha1 stored password
-	 * <strong>Should</strong> match on sha512 hashed password
-	 * <strong>Should</strong> be able to update password multiple times
-	 * <strong>Should</strong> respect locking via runtime properties
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	void changePassword(String oldPassword, String newPassword) throws APIException;
 
 	/**
 	 * Changes password of {@link User} passed in
+	 * <p>
+	 * <strong>Should</strong> update password of given user when logged in user has edit users password
+	 * privilege<br/>
+	 * <strong>Should</strong> not update password of given user when logged in user does not have edit
+	 * users password privilege
+	 *
 	 * @param user user whose password is to be changed
 	 * @param newPassword new password to set
 	 * @throws APIException
-	 * <strong>Should</strong> update password of given user when logged in user has edit users password privilege
-	 * <strong>Should</strong> not update password of given user when logged in user does not have edit users password privilege
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({PrivilegeConstants.EDIT_USER_PASSWORDS})
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	void changePassword(User user, String newPassword) throws APIException;
-	
+
 	/**
-	 * Changes the current user's password directly. This is most useful if migrating users from
-	 * other systems and you want to retain the existing passwords. This method will simply save the
-	 * passed hashed password and salt directly to the database.
-	 * 
-	 * @param user the user whose password you want to change
-	 * @param hashedPassword - the <em>already hashed</em> password to store
-	 * @param salt - the salt which should be used with this hashed password
-	 * @throws APIException
-	 * @since 1.5
+	 * Changes the current user's password directly. This is most useful if migrating users from other
+	 * systems and you want to retain the existing passwords. This method will simply save the passed
+	 * encoded password and salt directly to the database. The encoded password may be the full value
+	 * produced by {@link org.openmrs.util.Security#encodePassword(String)} (for
+	 * {@code password + salt}) or an older bare hash, since the configured encoder accepts both.
+	 * <p>
 	 * <strong>Should</strong> change the hashed password for the given user
+	 *
+	 * @param user the user whose password you want to change
+	 * @param hashedPassword - the <em>already encoded</em> password to store
+	 * @param salt - the salt which should be used with this encoded password
+	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 1.5
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException;
-	
+
 	/**
 	 * Changes the passed user's secret question and answer.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> change the secret question and answer for given user
+	 *
 	 * @param u User to change
 	 * @param question
 	 * @param answer
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
-	 * <strong>Should</strong> change the secret question and answer for given user
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
+	@PreAuthorize("hasPermission(#u, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	void changeQuestionAnswer(User u, String question, String answer) throws APIException;
-	
+
 	/**
 	 * Changes the current user's secret question and answer.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> match on correctly hashed stored password<br/>
+	 * <strong>Should</strong> match on incorrectly hashed stored password
+	 *
 	 * @param pw user's password
 	 * @param q question
 	 * @param a answer
 	 * @throws APIException
-	 * <strong>Should</strong> match on correctly hashed stored password
-	 * <strong>Should</strong> match on incorrectly hashed stored password
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	@Logging(ignoreAllArgumentValues = true)
 	void changeQuestionAnswer(String pw, String q, String a) throws APIException;
-	
+
 	/**
 	 * Returns secret question for the given user.
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 * @throws APIException
 	 * @since 2.0
 	 */
 	String getSecretQuestion(User user) throws APIException;
-	
+
 	/**
 	 * Compares <code>answer</code> against the <code>user</code>'s secret answer.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return true when given answer matches stored secret answer<br/>
+	 * <strong>Should</strong> return false when given answer does not match the stored secret answer
+	 *
 	 * @param u user
 	 * @param answer
 	 * @throws APIException
-	 * <strong>Should</strong> return true when given answer matches stored secret answer
-	 * <strong>Should</strong> return false when given answer does not match the stored secret answer
 	 */
 	@Logging(ignoredArgumentIndexes = { 1 })
 	boolean isSecretAnswer(User u, String answer) throws APIException;
-	
+
 	/**
-	 * Return a list of users sorted by personName (see {@link PersonByNameComparator}) if any part
-	 * of the search matches first/last/system id and the user has one at least one of the given
+	 * Return a list of users sorted by personName (see {@link PersonByNameComparator}) if any part of
+	 * the search matches first/last/system id and the user has one at least one of the given
 	 * <code>roles</code> assigned to them
-	 * 
-	 * @param nameSearch string to compare to the beginning of user's given/middle/family/family2
-	 *            names
+	 * <p>
+	 * <strong>Should</strong> match search to familyName2<br/>
+	 * <strong>Should</strong> fetch voided users if includedVoided is true<br/>
+	 * <strong>Should</strong> not fetch voided users if includedVoided is false<br/>
+	 * <strong>Should</strong> fetch users with name that contains given nameSearch<br/>
+	 * <strong>Should</strong> fetch users with systemId that contains given nameSearch<br/>
+	 * <strong>Should</strong> fetch users with at least one of the given role objects<br/>
+	 * <strong>Should</strong> not fetch duplicate users<br/>
+	 * <strong>Should</strong> fetch all users if nameSearch is empty or null<br/>
+	 * <strong>Should</strong> not fail if roles are searched but name is empty
+	 *
+	 * @param nameSearch string to compare to the beginning of user's given/middle/family/family2 names
 	 * @param roles all the Roles the user must contain
 	 * @param includeVoided true/false whether to include voided users
 	 * @return list of users matching the given attributes
-	 * <strong>Should</strong> match search to familyName2
-	 * <strong>Should</strong> fetch voided users if includedVoided is true
-	 * <strong>Should</strong> not fetch voided users if includedVoided is false
-	 * <strong>Should</strong> fetch users with name that contains given nameSearch
-	 * <strong>Should</strong> fetch users with systemId that contains given nameSearch
-	 * <strong>Should</strong> fetch users with at least one of the given role objects
-	 * <strong>Should</strong> not fetch duplicate users
-	 * <strong>Should</strong> fetch all users if nameSearch is empty or null
-	 * <strong>Should</strong> not fail if roles are searched but name is empty
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException;
-	
+
 	/**
 	 * Search for a list of users by exact first name and last name.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch users exactly matching the given givenName and familyName<br/>
+	 * <strong>Should</strong> fetch voided users whenincludeVoided is true<br/>
+	 * <strong>Should</strong> not fetch any voided users when includeVoided is false<br/>
+	 * <strong>Should</strong> not fetch any duplicate users
+	 *
 	 * @param givenName
 	 * @param familyName
 	 * @param includeRetired
 	 * @return List&lt;User&gt; object of users matching criteria
-	 * <strong>Should</strong> fetch users exactly matching the given givenName and familyName
-	 * <strong>Should</strong> fetch voided users whenincludeVoided is true
-	 * <strong>Should</strong> not fetch any voided users when includeVoided is false
-	 * <strong>Should</strong> not fetch any duplicate users
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) throws APIException;
-	
+
 	/**
 	 * Get all user accounts that belong to a given person.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fetch all accounts for a person when include retired is true<br/>
+	 * <strong>Should</strong> not fetch retired accounts when include retired is false
+	 *
 	 * @param person
 	 * @param includeRetired
 	 * @return all user accounts that belong to person, including retired ones if specified
 	 * @throws APIException
-	 * <strong>Should</strong> fetch all accounts for a person when include retired is true
-	 * <strong>Should</strong> not fetch retired accounts when include retired is false
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasPermission(#person, '" + PrivilegeConstants.GET_USERS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_USERS + "')")
 	List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException;
-	
+
 	/**
 	 * Adds the <code>key</code>/<code>value</code> pair to the given <code>user</code>.
 	 * <p>
 	 * <b>Implementations of this method should handle privileges</b>
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return null if user is null<br/>
+	 * <strong>Should</strong> throw error when user is not authorized to edit users<br/>
+	 * <strong>Should</strong> add property with given key and value when key does not already
+	 * exist<br/>
+	 * <strong>Should</strong> modify property with given key and value when key already exists
+	 *
 	 * @param user
 	 * @param key
 	 * @param value
 	 * @return the user that was passed in and added to
-	 * <strong>Should</strong> return null if user is null
-	 * <strong>Should</strong> throw error when user is not authorized to edit users
-	 * <strong>Should</strong> add property with given key and value when key does not already exist
-	 * <strong>Should</strong> modify property with given key and value when key already exists
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User setUserProperty(User user, String key, String value) throws APIException;
-	
+
 	/**
 	 * Removes the property denoted by <code>key</code> from the <code>user</code>'s properties.
 	 * <b>Implementations of this method should handle privileges</b>
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return null if user is null<br/>
+	 * <strong>Should</strong> throw error when user is not authorized to edit users<br/>
+	 * <strong>Should</strong> remove user property for given user and key
+	 *
 	 * @param user
 	 * @param key
 	 * @return the user that was passed in and removed from
-	 * <strong>Should</strong> return null if user is null
-	 * <strong>Should</strong> throw error when user is not authorized to edit users
-	 * <strong>Should</strong> remove user property for given user and key
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User removeUserProperty(User user, String key) throws APIException;
-	
+
 	/**
-	 * Get/generate/find the next system id to be doled out. Assume check digit /not/ applied in
-	 * this method
-	 * 
+	 * Get/generate/find the next system id to be doled out. Assume check digit /not/ applied in this
+	 * method
+	 *
 	 * @return new system id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	String generateSystemId();
-	
+
 	/**
 	 * Return a batch of users of a specific size sorted by personName (see
-	 * {@link PersonByNameComparator}) if any part of the search matches first/last/system id and
-	 * the user has one at least one of the given <code>roles</code> assigned to them. If start and
-	 * length are not specified, then all matches are returned, If name is empty or null, then all
-	 * all users will be returned taking into consideration the values of start and length
-	 * arguments.
-	 * 
+	 * {@link PersonByNameComparator}) if any part of the search matches first/last/system id and the
+	 * user has one at least one of the given <code>roles</code> assigned to them. If start and length
+	 * are not specified, then all matches are returned, If name is empty or null, then all all users
+	 * will be returned taking into consideration the values of start and length arguments.
+	 * <p>
+	 * <strong>Should</strong> return users whose roles inherit requested roles
+	 *
 	 * @param name string to compare to the beginning of user's given/middle/family/family2 names
 	 * @param roles all the Roles the user must contain
 	 * @param includeRetired true/false whether to include voided users
 	 * @param start beginning index for the batch
 	 * @param length number of users to return in the batch
 	 * @return list of matching users of a size based on the specified arguments
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
-	 * <strong>Should</strong> return users whose roles inherit requested roles
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	//TODO: DAO auth filter
 	List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
-	
+
 	/**
-	 * Return the number of users with a matching name or system id and have at least one of the
-	 * given roles assigned to them
-	 * 
+	 * Return the number of users with a matching name or system id and have at least one of the given
+	 * roles assigned to them
+	 *
 	 * @param name patient name
 	 * @param roles all the Roles the user must contain
 	 * @param includeRetired Specifies whether voided users should be included
 	 * @return the number of users matching the given attributes
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized( { PrivilegeConstants.GET_USERS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
+	//TODO: DAO auth filter
 	Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
-	
+
 	/**
 	 * Saves the current key/value as a user property for the current user.
-	 * 
+	 *
 	 * @param key the authenticated user's property
 	 * @param value value of the property
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User saveUserProperty(String key, String value);
-	
+
 	/**
 	 * Replaces all user properties with the given map of properties for the current user
-	 * 
+	 *
 	 * @param properties the authenticated user's properties
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	User saveUserProperties(Map<String, String> properties);
-	
+
 	/**
 	 * Change user password given the answer to the secret question
+	 * <p>
+	 * <strong>Should</strong> update password if secret is correct<br/>
+	 * <strong>Should</strong> not update password if secret is not correct
+	 *
 	 * @param secretAnswer the answer to secret question
 	 * @param pw the new password
-	 * <strong>Should</strong> update password if secret is correct
-	 * <strong>Should</strong> not update password if secret is not correct
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException;
-	
+
 	/**
 	 * Sets a user's activation key
+	 *
 	 * @param user The user for which the activation key will be set
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_USER_PASSWORDS)
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USER_PASSWORDS + "')")
 	User setUserActivationKey(User user) throws MessageException;
-	
+
 	/**
 	 * Change user password given the activation key
-	 * 
+	 *
 	 * @param activationKey the activation for password reset
 	 * @param newPassword the new password
 	 */
@@ -587,22 +729,25 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * @param user the User whose Locale to retrieve
 	 * @return the default Locale of the given user, or the system locale if unspecified
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.3.6, 2.4.6, 2.5.4, 2.6.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Locale getDefaultLocaleForUser(User user);
 
 	/**
 	 * Retrieves the last login time of the user in Unix Timestamp
-	 * 
+	 *
 	 * @param user the subject user
 	 * @return timestamp representing last login time (e.g. 1717414410587)
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
-	 * 
 	 * @should return empty string on last login time if a different user is logged in
 	 * @should not be empty if user is authenticated
 	 * @should return empty string on last login time if property not set
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	String getLastLoginTime(User user);
 }

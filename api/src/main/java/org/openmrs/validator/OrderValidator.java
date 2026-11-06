@@ -22,47 +22,52 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link Order} class.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { Order.class })
 public class OrderValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return Order.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if order is null<br/>
+	 * <strong>Should</strong> fail validation if order and encounter have different patients<br/>
+	 * <strong>Should</strong> fail validation if voided is null<br/>
+	 * <strong>Should</strong> fail validation if concept is null<br/>
+	 * <strong>Should</strong> fail validation if patient is null<br/>
+	 * <strong>Should</strong> fail validation if encounter is null<br/>
+	 * <strong>Should</strong> fail validation if orderer is null<br/>
+	 * <strong>Should</strong> fail validation if urgency is null<br/>
+	 * <strong>Should</strong> fail validation if action is null<br/>
+	 * <strong>Should</strong> fail validation if dateActivated after dateStopped<br/>
+	 * <strong>Should</strong> fail validation if dateActivated after autoExpireDate<br/>
+	 * <strong>Should</strong> fail validation if dateActivated is before encounter's
+	 * encounterDatetime<br/>
+	 * <strong>Should</strong> fail validation if scheduledDate is set and urgency is not set as
+	 * ON_SCHEDULED_DATE<br/>
+	 * <strong>Should</strong> fail validation if scheduledDate is null when urgency is
+	 * ON_SCHEDULED_DATE<br/>
+	 * <strong>Should</strong> fail validation if orderType.javaClass does not match order.class<br/>
+	 * <strong>Should</strong> pass validation if the class of the order is a subclass of
+	 * orderType.javaClass<br/>
+	 * <strong>Should</strong> pass validation if all fields are correct<br/>
+	 * <strong>Should</strong> not allow a future dateActivated<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if order is null
-	 * <strong>Should</strong> fail validation if order and encounter have different patients
-	 * <strong>Should</strong> fail validation if voided is null
-	 * <strong>Should</strong> fail validation if concept is null
-	 * <strong>Should</strong> fail validation if patient is null
-	 * <strong>Should</strong> fail validation if encounter is null
-	 * <strong>Should</strong> fail validation if orderer is null
-	 * <strong>Should</strong> fail validation if urgency is null
-	 * <strong>Should</strong> fail validation if action is null
-	 * <strong>Should</strong> fail validation if dateActivated after dateStopped
-	 * <strong>Should</strong> fail validation if dateActivated after autoExpireDate
-	 * <strong>Should</strong> fail validation if dateActivated is before encounter's encounterDatetime
-	 * <strong>Should</strong> fail validation if scheduledDate is set and urgency is not set as ON_SCHEDULED_DATE
-	 * <strong>Should</strong> fail validation if scheduledDate is null when urgency is ON_SCHEDULED_DATE
-	 * <strong>Should</strong> fail validation if orderType.javaClass does not match order.class
-	 * <strong>Should</strong> pass validation if the class of the order is a subclass of orderType.javaClass
-	 * <strong>Should</strong> pass validation if all fields are correct
-	 * <strong>Should</strong> not allow a future dateActivated
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -81,26 +86,26 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "orderer", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "urgency", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "action", "error.null");
-			
+
 			validateSamePatientInOrderAndEncounter(order, errors);
 			validateOrderTypeClass(order, errors);
 			validateDateActivated(order, errors);
 			validateScheduledDate(order, errors);
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "orderReasonNonCoded", "accessionNumber",
 			    "commentToFulfiller", "voidReason");
-			
+
 			validateOrderGroupEncounter(order, errors);
 			validateOrderGroupPatient(order, errors);
 		}
 	}
-	
+
 	private void validateOrderTypeClass(Order order, Errors errors) {
 		OrderType orderType = order.getOrderType();
 		if (orderType != null && !orderType.getJavaClass().isAssignableFrom(order.getClass())) {
 			errors.rejectValue("orderType", "Order.error.orderTypeClassMismatchesOrderClass");
 		}
 	}
-	
+
 	private void validateDateActivated(Order order, Errors errors) {
 		Date dateActivated = order.getDateActivated();
 		if (dateActivated != null) {
@@ -125,17 +130,17 @@ public class OrderValidator implements Validator {
 			}
 		}
 	}
-	
+
 	private void validateSamePatientInOrderAndEncounter(Order order, Errors errors) {
 		if (order.getEncounter() != null && order.getPatient() != null
-				&& !order.getEncounter().getPatient().equals(order.getPatient())) {
+		        && !order.getEncounter().getPatient().equals(order.getPatient())) {
 			errors.rejectValue("encounter", "Order.error.encounterPatientMismatch");
 		}
 	}
-	
+
 	private void validateScheduledDate(Order order, Errors errors) {
-		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null && order.getUrgency().equals(
-		    Order.Urgency.ON_SCHEDULED_DATE));
+		boolean isUrgencyOnScheduledDate = (order.getUrgency() != null
+		        && order.getUrgency().equals(Order.Urgency.ON_SCHEDULED_DATE));
 		if (order.getScheduledDate() != null && !isUrgencyOnScheduledDate) {
 			errors.rejectValue("urgency", "Order.error.urgencyNotOnScheduledDate");
 		}
@@ -143,13 +148,13 @@ public class OrderValidator implements Validator {
 			errors.rejectValue("scheduledDate", "Order.error.scheduledDateNullForOnScheduledDateUrgency");
 		}
 	}
-	
+
 	private void validateOrderGroupEncounter(Order order, Errors errors) {
 		if (order.getOrderGroup() != null && !(order.getEncounter().equals(order.getOrderGroup().getEncounter()))) {
 			errors.rejectValue("encounter", "Order.error.orderEncounterAndOrderGroupEncounterMismatch");
 		}
 	}
-	
+
 	private void validateOrderGroupPatient(Order order, Errors errors) {
 		if (order.getOrderGroup() != null && !(order.getPatient().equals(order.getOrderGroup().getPatient()))) {
 			errors.rejectValue("patient", "Order.error.orderPatientAndOrderGroupPatientMismatch");

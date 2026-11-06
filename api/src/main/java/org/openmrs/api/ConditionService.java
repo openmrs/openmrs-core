@@ -9,13 +9,14 @@
  */
 package org.openmrs.api;
 
+import java.util.List;
+
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
-
-import java.util.List;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * This interface defines methods for condition objects.
@@ -28,51 +29,65 @@ public interface ConditionService extends OpenmrsService {
 	 * Gets a condition based on the uuid
 	 *
 	 * @param uuid - uuid of the condition to be returned
-	 * @throws APIException   
+	 * @throws APIException
 	 * @return the condition
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#uuid, 'Condition', '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	Condition getConditionByUuid(String uuid) throws APIException;
 
 	/**
 	 * Gets a patient's active conditions
 	 *
 	 * @param patient - the patient to retrieve conditions for
-	 * @throws APIException   
+	 * @throws APIException
 	 * @return a list of the patient's active conditions
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_CONDITIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	List<Condition> getActiveConditions(Patient patient) throws APIException;
 
-    /**
+	/**
 	 * Gets all conditions i.e both active and inactive conditions, associated with a patient
 	 *
 	 * @param patient - the patient to retrieve conditions for
-	 * @throws APIException   
+	 * @throws APIException
 	 * @return a list of the patient's conditions
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.2.1
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#patient, '" + PrivilegeConstants.GET_CONDITIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	List<Condition> getAllConditions(Patient patient) throws APIException;
 
 	/**
 	 * Gets all conditions(not voided) of an encounter.
-	 * 
+	 *
 	 * @param encounter - the encounter to retrieve conditions for
 	 * @return a list of encounter's conditions
 	 * @throws APIException
 	 * @since 2.4.0, 2.3.1
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks *
+	 *             permission
 	 */
+	@PreAuthorize("hasPermission(#encounter, '" + PrivilegeConstants.GET_CONDITIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	List<Condition> getConditionsByEncounter(Encounter encounter) throws APIException;
-	
+
 	/**
 	 * Gets a condition by id
 	 *
 	 * @param conditionId the id of the Condition to retrieve
 	 * @return the Condition with the given id, or null if none exists
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_CONDITIONS })
+	@PreAuthorize("hasPermission(#conditionId, 'Condition', '" + PrivilegeConstants.GET_CONDITIONS + "')")
 	Condition getCondition(Integer conditionId) throws APIException;
 
 	/**
@@ -80,8 +95,10 @@ public interface ConditionService extends OpenmrsService {
 	 *
 	 * @param condition - the condition to be saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.EDIT_CONDITIONS + "')")
 	Condition saveCondition(Condition condition) throws APIException;
 
 	/**
@@ -90,30 +107,38 @@ public interface ConditionService extends OpenmrsService {
 	 * @param condition the condition to be voided
 	 * @param voidReason the reason for voiding the condition
 	 * @throws APIException if an error occurs while voiding the condition
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.EDIT_CONDITIONS })
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.EDIT_CONDITIONS + "')")
 	Condition voidCondition(Condition condition, String voidReason) throws APIException;
 
 	/**
 	 * Revive a previously voided condition
+	 * <p>
+	 * <strong>Should</strong> unset voided bit on given condition
 	 *
 	 * @param condition Condition to unvoid
 	 * @throws APIException
-	 * <strong>Should</strong> unset voided bit on given condition
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_CONDITIONS)
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.EDIT_CONDITIONS + "')")
 	Condition unvoidCondition(Condition condition) throws APIException;
 
 	/**
-	 * Completely remove a condition from the database. This should typically not be called
-	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
-	 * is not seen in interface any longer (see #voidCondition(Condition) for that one) If other things link to
-	 * this condition, an error will be thrown.
+	 * Completely remove a condition from the database. This should typically not be called because we
+	 * don't want to ever lose data. The data really <i>should</i> be voided and then it is not seen in
+	 * interface any longer (see #voidCondition(Condition) for that one) If other things link to this
+	 * condition, an error will be thrown.
+	 * <p>
+	 * <strong>Should</strong> delete the given condition from the database
 	 *
 	 * @param condition
 	 * @throws APIException
-	 * <strong>Should</strong> delete the given condition from the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.DELETE_CONDITIONS)
+	@PreAuthorize("hasPermission(#condition, '" + PrivilegeConstants.DELETE_CONDITIONS + "')")
 	void purgeCondition(Condition condition) throws APIException;
 }

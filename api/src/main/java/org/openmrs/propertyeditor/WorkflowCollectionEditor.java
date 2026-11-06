@@ -28,28 +28,27 @@ import org.springframework.util.StringUtils;
  * program
  */
 public class WorkflowCollectionEditor extends PropertyEditorSupport {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(WorkflowCollectionEditor.class);
-	
+
 	public WorkflowCollectionEditor() {
 	}
-	
+
 	private Program program = null;
-	
+
 	/**
 	 * @param program
 	 */
 	public WorkflowCollectionEditor(Program program) {
 		this.program = program;
 	}
-	
+
 	/**
-	 * Takes a "program_id:list" where program_id is the id of the program that this collection is
-	 * for (or not present, if it's a new program) and list is a space-separated list of concept
-	 * ids. This class is a bit of a hack, because I don't know a better way to do this. -DJ The
-	 * purpose is to retire and un-retire workflows where possible rather than deleting and creating
-	 * them.
-	 * 
+	 * Takes a "program_id:list" where program_id is the id of the program that this collection is for
+	 * (or not present, if it's a new program) and list is a space-separated list of concept ids. This
+	 * class is a bit of a hack, because I don't know a better way to do this. -DJ The purpose is to
+	 * retire and un-retire workflows where possible rather than deleting and creating them.
+	 * <p>
 	 * <strong>Should</strong> update workflows in program
 	 */
 	@Override
@@ -65,13 +64,12 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 					// if a program wasn't passed in, try to look it up now
 					program = pws.getProgram(Integer.valueOf(progIdStr));
 				}
-			}
-			catch (Exception ex) {}
-			
+			} catch (Exception ex) {}
+
 			String[] conceptIds = text.split(" ");
 			Set<ProgramWorkflow> oldSet = program == null ? new HashSet<>() : program.getAllWorkflows();
 			Set<Integer> newConceptIds = new HashSet<>();
-			
+
 			for (String id : conceptIds) {
 				if (id.trim().length() == 0) {
 					continue;
@@ -79,7 +77,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				log.debug("trying " + id);
 				newConceptIds.add(Integer.valueOf(id.trim()));
 			}
-			
+
 			// go through oldSet and see what we need to keep and what we need to unvoid
 			Set<Integer> alreadyDone = new HashSet<>();
 			for (ProgramWorkflow pw : oldSet) {
@@ -90,7 +88,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				}
 				alreadyDone.add(pw.getConcept().getConceptId());
 			}
-			
+
 			// now add any new ones
 			newConceptIds.removeAll(alreadyDone);
 			for (Integer conceptId : newConceptIds) {
@@ -99,16 +97,16 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				pw.setConcept(cs.getConcept(conceptId));
 				oldSet.add(pw);
 			}
-			
+
 			setValue(oldSet);
 		} else {
 			setValue(null);
 		}
 	}
-	
+
 	/**
 	 * Convert this program's workflows into "id: wkflowid wkflowid wkflowid"
-	 * 
+	 *
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	@Override
@@ -136,5 +134,5 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			return ret.toString().trim();
 		}
 	}
-	
+
 }

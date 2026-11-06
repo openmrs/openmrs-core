@@ -15,31 +15,35 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+
 import org.hibernate.annotations.BatchSize;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 
 /**
- * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined attributes.
+ * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined
+ * attributes.
+ *
  * @param <A> the type of attribute held
  * @since 1.9
  */
 @MappedSuperclass
 public abstract class BaseCustomizableData<A extends Attribute> extends BaseChangeableOpenmrsData implements Customizable<A> {
 
-	@Access(AccessType.PROPERTY)
+	@Access(AccessType.FIELD)
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("voided asc")
 	@BatchSize(size = 100)
 	private Set<A> attributes = new LinkedHashSet<>();
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
 	 */
@@ -47,14 +51,14 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 	public Set<A> getAttributes() {
 		return attributes;
 	}
-	
+
 	/**
 	 * @param attributes the attributes to set
 	 */
 	public void setAttributes(Set<A> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes()
 	 */
@@ -70,7 +74,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#getActiveAttributes(org.openmrs.customdatatype.CustomValueDescriptor)
 	 */
@@ -86,7 +90,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.Customizable#addAttribute(Attribute)
 	 */
@@ -98,10 +102,12 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
-	
+
 	/**
 	 * Convenience method that voids all existing attributes of the given type, and sets this new one.
-	 * <strong>Should</strong> void the attribute if an attribute with same attribute type already exists and the maxOccurs is set to 1
+	 * <p>
+	 * <strong>Should</strong> void the attribute if an attribute with same attribute type already
+	 * exists and the maxOccurs is set to 1
 	 *
 	 * @param attribute
 	 */
@@ -111,7 +117,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 			addAttribute(attribute);
 			return;
 		}
-		
+
 		if (getActiveAttributes(attribute.getAttributeType()).size() == 1) {
 			A existing = getActiveAttributes(attribute.getAttributeType()).get(0);
 			if (!existing.getValue().equals(attribute.getValue())) {
@@ -125,7 +131,7 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 			}
 			return;
 		}
-		
+
 		for (A existing : getActiveAttributes(attribute.getAttributeType())) {
 			if (existing.getAttributeType().equals(attribute.getAttributeType())) {
 				if (existing.getId() != null) {
@@ -138,5 +144,5 @@ public abstract class BaseCustomizableData<A extends Attribute> extends BaseChan
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
 	}
-	
+
 }

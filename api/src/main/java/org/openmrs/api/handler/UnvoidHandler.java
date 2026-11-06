@@ -25,22 +25,22 @@ import org.openmrs.aop.RequiredDataAdvice;
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
  * and also unvoided by the {@link RequiredDataAdvice} class.<br>
  * <br>
- * 
+ *
  * @see BaseUnvoidHandler
  * @see RequiredDataAdvice
  * @see VoidHandler
  * @since 1.5
  */
 public interface UnvoidHandler<V extends Voidable> extends RequiredDataHandler<V> {
-	
+
 	/**
 	 * Implementing classes are called around every unvoid* method to set everything to null.<br>
 	 * <br>
-	 * 
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	@Override
 	public void handle(V voidableObject, User voidingUser, Date origParentVoidedDate, String unused);
-	
+
 }

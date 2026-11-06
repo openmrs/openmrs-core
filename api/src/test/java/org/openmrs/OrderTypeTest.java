@@ -9,19 +9,19 @@
  */
 package org.openmrs;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
 
 /**
  * This class tests all methods that are not getter or setters in the {@link org.openmrs.OrderType}
  * java object this test class for {@link org.openmrs.OrderType}
- * 
+ *
  * @see org.openmrs.OrderType
  */
 public class OrderTypeTest {
-	
+
 	/**
 	 * @see org.openmrs.OrderType#getJavaClass()
 	 */
@@ -29,14 +29,14 @@ public class OrderTypeTest {
 	public void setJavaClass_shouldGetJavaClassObject() {
 		//Create a new OrderType
 		OrderType orderType = new OrderType();
-		
+
 		//Test with Integer class
 		Class<?> clazz = Integer.class;
-		
+
 		orderType.setJavaClassName(clazz.getName());
 		assertEquals(clazz, orderType.getJavaClass());
 	}
-	
+
 	/**
 	 * @see OrderType#addConceptClass(ConceptClass)
 	 */
@@ -47,11 +47,11 @@ public class OrderTypeTest {
 		ot.addConceptClass(cc);
 		assertTrue(ot.getConceptClasses().contains(cc));
 	}
-	
+
 	/**
-	 * Ensures that if the collection implementation gets changed from a set, that duplicates are
-	 * not added
-	 * 
+	 * Ensures that if the collection implementation gets changed from a set, that duplicates are not
+	 * added
+	 *
 	 * @see OrderType#addConceptClass(ConceptClass)
 	 */
 	@Test

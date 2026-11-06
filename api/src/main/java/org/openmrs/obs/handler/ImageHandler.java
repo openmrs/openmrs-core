@@ -9,10 +9,6 @@
  */
 package org.openmrs.obs.handler;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,6 +18,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openmrs.Obs;
@@ -38,41 +38,41 @@ import org.springframework.stereotype.Component;
  * taken from the image name. if the .* image name suffix matches
  * {@link javax.imageio.ImageIO#getWriterFormatNames()} then that mime type will be used to save the
  * image. Images are stored in the location specified by the global property: "obs.complex_obs_dir"
- * 
+ *
  * @see org.openmrs.util.OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.5
  */
 @Component
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
-	
+
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW };
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ImageHandler.class);
-	
+
 	private Set<String> extensions;
-	
+
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
 	 * overwriting existing files.
 	 */
 	public ImageHandler() {
 		super();
-		
+
 		// Create a HashSet to quickly check for supported extensions.
 		extensions = new HashSet<>();
 		Collections.addAll(extensions, ImageIO.getWriterFormatNames());
 	}
-	
+
 	/**
 	 * Currently supports all views and puts the Image file data into the ComplexData object
-	 * 
+	 *
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		String key = parseDataKey(obs);
-		
+
 		// Raw image
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			String mimeType = null;
@@ -95,32 +95,32 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				log.error("Trying to read file: {}", key, e);
 				// Do not fail if image is missing
 			}
-			
+
 			String filename = parseFilename(obs, "image");
-			
+
 			// hack--if this is old version of the image where we aren't explicitly saving the filename, we
 			// need to use "key"/"path" portion as the file, see https://openmrs.atlassian.net/browse/TRUNK-6472
 			if (extensions.contains(filename)) {
 				filename = key.replaceFirst(getObsDir(), "");
 			}
-			
+
 			ComplexData complexData = new ComplexData(filename, img);
 			complexData.setMimeType(mimeType); // Set mimeType based on file content and not filename
 			if (img != null) { // Do not inject if image is missing
 				injectMissingMetadata(key, complexData);
 			}
 			complexData.setLength(null); // Reset as loaded image size is not equal to file size
-			
+
 			obs.setComplexData(complexData);
 		} else {
 			// No other view supported
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
-		
+
 		return obs;
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
 	 */
@@ -128,7 +128,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	public String[] getSupportedViews() {
 		return supportedViews;
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
@@ -137,24 +137,24 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		try {
 			String filename = obs.getComplexData().getTitle();
 			String extension = FilenameUtils.getExtension(filename);
-			
+
 			String assignedKey = storageService.saveData((out) -> {
 				Object data = obs.getComplexData().getData();
-				
+
 				InputStream in = null;
 				if (data instanceof byte[]) {
 					in = new ByteArrayInputStream((byte[]) data);
 				} else if (data instanceof InputStream) {
 					in = (InputStream) data;
 				}
-				
+
 				BufferedImage img = null;
 				if (in != null) {
 					img = ImageIO.read(in);
 				} else if (data instanceof BufferedImage) {
 					img = (BufferedImage) data;
 				}
-				
+
 				if (img == null) {
 					throw new APIException("Obs.error.cannot.save.complex", new Object[] { obs.getObsId() });
 				}
@@ -170,8 +170,8 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		
+
 		return obs;
 	}
-	
+
 }

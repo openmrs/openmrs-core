@@ -12,18 +12,19 @@ package org.openmrs.api.context;
 import org.openmrs.User;
 
 /**
- * The result of an authentication process, see {@link AuthenticationScheme#authenticate(Credentials)}.
- * At least the OpenMRS {@link User) is returned, and more if needed through further extensions/implementations.
- * 
+ * The result of an authentication process, see
+ * {@link AuthenticationScheme#authenticate(Credentials)}. At least the OpenMRS {@link User) is
+ * returned, and more if needed through further extensions/implementations.
+ *
  * @since 2.3.0
  */
 public interface Authenticated {
-	
+
 	/**
 	 * @return A string describing or identifying the authentication scheme that was used.
 	 */
 	public String getAuthenticationScheme();
-	
+
 	/**
 	 * @return The authenticated OpenMRS {@link User}.
 	 */

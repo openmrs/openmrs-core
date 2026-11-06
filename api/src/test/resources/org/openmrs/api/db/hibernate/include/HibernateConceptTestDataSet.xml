@@ -43,4 +43,8 @@
   <drug drug_id="14" concept_id="14" name="TEST_DRUG_NAME" combination="true" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-9765997d849e"/>
   <drug drug_id="15" concept_id="15" name="TEST_DRUG_NAME_RETIRED" combination="true" creator="1" date_created="2014-05-27 15:48:00.0" retired="true" uuid="8e2323fa-0fa0-461f-9b59-9765997d849f"/>
   <drug drug_id="1584" concept_id="15" name="DRUG_NAME_WITH_SPECIAL_CHARACTERS (" combination="true" creator="1" date_created="2015-11-24 15:48:00.0" retired="false" uuid="8e2574fa-0fa0-461f-9b59-9765997d846"/>
+  <!-- concept 20 has a distinctive name that no drug_name matches; used to verify the concept-name full-text lookup is skipped when a concept is supplied (TRUNK-6683) -->
+  <concept concept_id="20" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 13:58:36.0" version="" uuid="0abca361-f6bf-49cc-97de-b2f37f099020"/>
+  <concept_name concept_id="20" name="ZEBRACONCEPT" locale="en" creator="1" date_created="2008-08-15 13:58:36.0" concept_name_id="2500" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="b8159118-c97b-4d5a-a63e-d4aa4be0c520"/>
+  <drug drug_id="20" concept_id="20" name="Placebo-X" combination="false" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="8e2323fa-0fa0-461f-9b59-9765997d8420"/>
 </dataset>

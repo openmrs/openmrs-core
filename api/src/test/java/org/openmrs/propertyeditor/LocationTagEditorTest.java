@@ -15,24 +15,24 @@ import org.openmrs.api.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocationTagEditorTest extends BasePropertyEditorTest<LocationTag, LocationTagEditor> {
-	
+
 	protected static final String LOC_INITIAL_DATA_XML = "org/openmrs/api/include/LocationServiceTest-initialData.xml";
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private LocationService locationService;
-	
+
 	@BeforeEach
 	public void prepareData() {
 		executeDataSet(LOC_INITIAL_DATA_XML);
 	}
-	
+
 	@Override
 	protected LocationTagEditor getNewEditor() {
 		return new LocationTagEditor();
 	}
-	
+
 	@Override
 	protected LocationTag getExistingObject() {
 		return locationService.getLocationTag(EXISTING_ID);

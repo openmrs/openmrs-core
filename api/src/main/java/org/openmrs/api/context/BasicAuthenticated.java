@@ -14,32 +14,32 @@ import org.openmrs.User;
 /**
  * A basic implementation of {@link Authenticated} that contains the necessary elements for an
  * OpenMRS authentication.
- * 
+ *
  * @since 2.3.0
  */
 public class BasicAuthenticated implements Authenticated {
-	
+
 	private User user;
-	
+
 	private String authenticationScheme;
-	
+
 	public BasicAuthenticated(User user, String authenticationScheme) {
 		this.user = user;
 		this.authenticationScheme = authenticationScheme;
 	}
-	
+
 	public String getAuthenticationScheme() {
 		return this.authenticationScheme;
 	}
-	
+
 	public void setAuthenticationScheme(String authenticationScheme) {
 		this.authenticationScheme = authenticationScheme;
 	}
-	
+
 	public User getUser() {
 		return this.user;
 	}
-	
+
 	public void setUser(User user) {
 		this.user = user;
 	}

@@ -9,36 +9,36 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class GlobalPropertiesTestHelper {
-	
+
 	private AdministrationService administrationService;
-	
+
 	public GlobalPropertiesTestHelper(AdministrationService administrationService) {
 		this.administrationService = administrationService;
 	}
-	
+
 	public String setGlobalProperty(String propertyName, String propertyValue) {
 		String oldPropertyValue = administrationService.getGlobalProperty(propertyName);
-		
+
 		administrationService.setGlobalProperty(propertyName, propertyValue);
 		assertEquals(propertyValue, administrationService.getGlobalProperty(propertyName));
-		
+
 		return oldPropertyValue;
 	}
-	
+
 	public void purgeGlobalProperty(String propertyName) {
 		GlobalProperty globalProperty = administrationService.getGlobalPropertyObject(propertyName);
-		
+
 		if (globalProperty != null) {
 			administrationService.purgeGlobalProperty(globalProperty);
 		}
 		assertNull(administrationService.getGlobalProperty(propertyName));
 	}
-	
+
 }

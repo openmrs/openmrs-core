@@ -14,14 +14,16 @@ import org.openmrs.customdatatype.SerializingCustomDatatype;
 
 /**
  * This is a superclass for custom datatypes for OpenmrsObjects
- * 
+ *
  * @since 2.0.0
  */
 public abstract class BaseOpenmrsDatatype<T extends OpenmrsObject> extends SerializingCustomDatatype<T> {
-	
+
 	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
+	 * <p>
 	 * <strong>Should</strong> return the uuid of the object
+	 *
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
 	 */
 	@Override
 	public String serialize(T typedValue) {

@@ -16,28 +16,30 @@ import org.hibernate.query.NativeQuery;
 import org.openmrs.PersonAttribute;
 
 public class PersonAttributeHelper {
-	
+
 	private static final String QUERY_ALL_PERSON_ATTRIBUTES = "select pa.* from person_attribute pa";
-	
+
 	private static final String QUERY_ALL_VOIDED_PERSON_ATTRIBUTES = "select pa.* from person_attribute pa where voided = true";
-	
+
 	private static final String QUERY_ALL_NON_SEARCHABLE_PERSON_ATTRIBUTES = "select pa.* from person_attribute pa, person_attribute_type pta "
 	        + "where pa.person_attribute_type_id = pta.person_attribute_type_id and pta.searchable = false";
-	
+
 	private SessionFactory sessionFactory;
-	
+
 	public PersonAttributeHelper(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
+	 * <p>
 	 * <strong>Should</strong> return true if a person attribute exists
 	 */
 	public boolean personAttributeExists(String value) {
 		return getPersonAttribute(getPersonAttributeList(QUERY_ALL_PERSON_ATTRIBUTES), value) != null;
 	}
-	
+
 	/**
+	 * <p>
 	 * <strong>Should</strong> return true if a voided person attribute exists
 	 */
 	public boolean voidedPersonAttributeExists(String value) {
@@ -48,35 +50,38 @@ public class PersonAttributeHelper {
 		}
 		return false;
 	}
-	
+
 	/**
+	 * <p>
 	 * <strong>Should</strong> return true if a non-voided person attribute exists
 	 */
 	public boolean nonVoidedPersonAttributeExists(String value) {
 		return personAttributeExists(value) && (!voidedPersonAttributeExists(value));
 	}
-	
+
 	/**
+	 * <p>
 	 * <strong>Should</strong> return true if a non-searchable person attribute exists
 	 */
 	public boolean nonSearchablePersonAttributeExists(String value) {
 		return getPersonAttribute(getPersonAttributeList(QUERY_ALL_NON_SEARCHABLE_PERSON_ATTRIBUTES), value) != null;
 	}
-	
+
 	/**
+	 * <p>
 	 * <strong>Should</strong> return true if a searchable person attribute exists
 	 */
 	public boolean searchablePersonAttributeExists(String value) {
 		return personAttributeExists(value) && (!nonSearchablePersonAttributeExists(value));
 	}
-	
+
 	private List<PersonAttribute> getPersonAttributeList(String queryString) {
-		NativeQuery<PersonAttribute> query = sessionFactory.getCurrentSession()
-			.createNativeQuery(queryString, PersonAttribute.class);
-		
+		NativeQuery<PersonAttribute> query = sessionFactory.getCurrentSession().createNativeQuery(queryString,
+		    PersonAttribute.class);
+
 		return query.getResultList();
 	}
-	
+
 	private PersonAttribute getPersonAttribute(List<PersonAttribute> personAttributeList, String personAttributeValue) {
 		for (PersonAttribute personAttribute : personAttributeList) {
 			if (personAttribute.getValue().equalsIgnoreCase(personAttributeValue)) {
@@ -85,5 +90,5 @@ public class PersonAttributeHelper {
 		}
 		return null;
 	}
-	
+
 }

@@ -15,23 +15,23 @@ import org.openmrs.api.context.Context;
  * Represents fatal errors that occur due to invalid or expired activation key.
  */
 public class InvalidActivationKeyException extends APIException {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public InvalidActivationKeyException() {
-		
+
 	}
-	
+
 	public InvalidActivationKeyException(String message) {
 		super(Context.getMessageSourceService().getMessage(message));
 	}
-	
+
 	public InvalidActivationKeyException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public InvalidActivationKeyException(Throwable cause) {
 		super(cause);
 	}
-	
+
 }

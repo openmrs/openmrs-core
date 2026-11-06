@@ -15,14 +15,14 @@ package org.openmrs.logic.op;
  * Example: <br>
  * - <code>logicService.parse("'CD4 COUNT'").first(2);</code><br>
  * The above will give us a criteria to get the first two "CD4 COUNT" observations
- * 
+ *
  * @see Last
  */
 public class First implements TransformOperator {
-	
+
 	@Override
 	public String toString() {
 		return "FIRST";
 	}
-	
+
 }

@@ -9,18 +9,17 @@
  */
 package org.openmrs.util;
 
+import java.net.MalformedURLException;
+
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.net.MalformedURLException;
-
-import org.junit.jupiter.api.Test;
-
 public class HttpUrlTest {
-	
-	
+
 	@Test
 	public void constructor_shouldNotThrowExceptionIfItIsAnHttpUrl() throws MalformedURLException {
 		HttpUrl url = new HttpUrl("http://something");
@@ -32,19 +31,19 @@ public class HttpUrlTest {
 		HttpUrl url = new HttpUrl("https://something");
 		assertThat(url, notNullValue());
 	}
-	
+
 	@Test
 	public void constructor_shouldThrowMalformedUrlExceptionIfTheUrlDoesNotHaveHttp() throws MalformedURLException {
 		MalformedURLException exception = assertThrows(MalformedURLException.class, () -> new HttpUrl("not_http"));
 		assertThat(exception.getMessage(), is("Not a valid http(s) url"));
 	}
-	
+
 	@Test
 	public void constructor_shouldNotAllowNullUrls() throws MalformedURLException {
 		MalformedURLException exception = assertThrows(MalformedURLException.class, () -> new HttpUrl(null));
 		assertThat(exception.getMessage(), is("Url cannot be null"));
 	}
-	
+
 	@Test
 	public void toString_shouldReturnUrl() throws MalformedURLException {
 		assertThat(new HttpUrl("http://something").toString(), is("http://something"));

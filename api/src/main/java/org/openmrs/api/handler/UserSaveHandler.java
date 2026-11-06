@@ -30,7 +30,7 @@ import org.openmrs.api.context.Context;
  */
 @Handler(supports = User.class)
 public class UserSaveHandler implements SaveHandler<User> {
-	
+
 	/**
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
@@ -41,20 +41,20 @@ public class UserSaveHandler implements SaveHandler<User> {
 		if (StringUtils.isEmpty(user.getSystemId())) {
 			user.setSystemId(Context.getUserService().generateSystemId());
 		}
-		
+
 		// the framework only automatically recurses on properties that are Collection<OpenmrsObject>
 		// so we need to do this manually
 		if (user.getPerson() != null) {
 			loadLazyHibernateCollections(user);
 			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, user.getPerson(), creator, dateCreated, other,
-					new ArrayList<>());
+			    new ArrayList<>());
 		}
 	}
-	
+
 	private void loadLazyHibernateCollections(User user) {
 		if (user.getPerson() instanceof Patient) {
 			((Patient) user.getPerson()).getPatientIdentifier();
 		}
 	}
-	
+
 }

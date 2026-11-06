@@ -20,24 +20,22 @@ import org.hibernate.HibernateException;
 import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.usertype.DynamicParameterizedType;
 import org.hibernate.usertype.EnhancedUserType;
+import org.openmrs.util.OpenmrsClassLoader;
 
 /**
- * A custom UserType for mapping Java enums as strings in Hibernate 7.x HBM XML mappings.
- * This replaces the removed {@code org.hibernate.type.EnumType} which was used in Hibernate 6.x.
+ * A custom UserType for mapping Java enums as strings in Hibernate 7.x HBM XML mappings. This
+ * replaces the removed {@code org.hibernate.type.EnumType} which was used in Hibernate 6.x.
  * <p>
- * Usage in HBM XML:
- * <pre>{@code
+ * Usage in HBM XML: <pre>{@code
  * <property name="status" column="status" length="16" not-null="true">
  *     <type name="org.openmrs.api.db.hibernate.type.StringEnumType">
  *         <param name="enumClass">org.openmrs.Obs$Status</param>
  *     </type>
  * </property>
- * }</pre>
- *
- * NOTE: This class should be deleted once Obs, ConceptName, and OrderSet are migrated from
- * hibernate xml mapping files to annotations.
+ * }</pre> The enum class is loaded through {@link OpenmrsClassLoader}, so modules can map their own
+ * enums with this type too. Keep it after core's own mappings move to annotations.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class StringEnumType implements EnhancedUserType<Enum>, DynamicParameterizedType {
 
 	private Class<? extends Enum> enumClass;
@@ -49,9 +47,8 @@ public class StringEnumType implements EnhancedUserType<Enum>, DynamicParameteri
 			enumClassName = parameters.getProperty(ENTITY);
 		}
 		try {
-			enumClass = (Class<? extends Enum>) Class.forName(enumClassName);
-		}
-		catch (ClassNotFoundException e) {
+			enumClass = (Class<? extends Enum>) OpenmrsClassLoader.getInstance().loadClass(enumClassName);
+		} catch (ClassNotFoundException e) {
 			throw new HibernateException("Enum class not found: " + enumClassName, e);
 		}
 	}

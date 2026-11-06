@@ -9,7 +9,6 @@
  */
 package org.openmrs.validator;
 
-import org.openmrs.Encounter;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.notification.Alert;
@@ -38,13 +37,16 @@ public class AlertValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return Alert.class.isAssignableFrom(c);
 	}
-	
+
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if Alert Text is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all required values are set
-	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <p>
+	 * <strong>Should</strong> fail validation if Alert Text is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all required values are set<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
@@ -52,11 +54,11 @@ public class AlertValidator implements Validator {
 
 		if (obj == null || !(obj instanceof Alert)) {
 			throw new IllegalArgumentException("error.general and must be of type " + Alert.class);
-	}
+		}
 		Alert alert = (Alert) obj;
 
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
-			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "text", "Alert.text.required");
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "text");
 
 	}
 }

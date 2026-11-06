@@ -17,17 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Tests the {@link PatientEditor}
  */
 public class PatientEditorTest extends BasePropertyEditorTest<Patient, PatientEditor> {
-	
+
 	private static final Integer EXISTING_ID = 2;
-	
+
 	@Autowired
 	private PatientService patientService;
-	
+
 	@Override
 	protected PatientEditor getNewEditor() {
 		return new PatientEditor();
 	}
-	
+
 	@Override
 	protected Patient getExistingObject() {
 		return patientService.getPatient(EXISTING_ID);

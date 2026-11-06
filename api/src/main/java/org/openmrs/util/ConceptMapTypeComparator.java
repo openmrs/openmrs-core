@@ -26,7 +26,7 @@ import org.openmrs.ConceptMapType;
 public class ConceptMapTypeComparator implements Comparator<ConceptMapType>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
@@ -34,20 +34,23 @@ public class ConceptMapTypeComparator implements Comparator<ConceptMapType>, Ser
 	public int compare(ConceptMapType conceptMapType, ConceptMapType conceptMapType2) {
 		int firstWeight = getConceptMapTypeSortWeight(conceptMapType);
 		int secondWeight = getConceptMapTypeSortWeight(conceptMapType2);
-		
+
 		return Integer.compare(firstWeight, secondWeight);
 	}
-	
+
 	/**
-	 * <p>This method calculates a weight used to decide the object's order in a collection.</p>
+	 * <p>
+	 * This method calculates a weight used to decide the object's order in a collection.
+	 * </p>
+	 *
 	 * @param conceptMapType the ConceptMapType object the weight of which is to be calculated
 	 * @return
-	 * <ol>
-	 * <li>Regular: 0</li>
-	 * <li>Retired: 1</li>
-	 * <li>Hidden: 2</li>
-	 * <li>Retired and Hidden: 3</li>
-	 * </ol>
+	 *         <ol>
+	 *         <li>Regular: 0</li>
+	 *         <li>Retired: 1</li>
+	 *         <li>Hidden: 2</li>
+	 *         <li>Retired and Hidden: 3</li>
+	 *         </ol>
 	 */
 	public static int getConceptMapTypeSortWeight(ConceptMapType conceptMapType) {
 		return ((conceptMapType.getRetired() ? 1 : 0) + (conceptMapType.getIsHidden() ? 2 : 0));

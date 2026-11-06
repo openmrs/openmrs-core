@@ -9,20 +9,20 @@
  */
 package org.openmrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Contains test methods for {@link org.openmrs.Drug}.
  */
 public class DrugTest extends BaseContextSensitiveTest {
-	
+
 	private final static String UUID_1 = "333cd82c-7d3d-11e3-8633-13f177b345d8";
-	
+
 	private final static String UUID_2 = "4eef1530-7d3d-11e3-ac6d-e388e198a21e";
-	
+
 	/**
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
@@ -32,31 +32,31 @@ public class DrugTest extends BaseContextSensitiveTest {
 		drug1.setUuid(UUID_1);
 		Drug drug2 = new Drug();
 		drug2.setUuid(UUID_2);
-		
+
 		DrugReferenceMap map = new DrugReferenceMap();
 		map.setDrug(drug2);
 		drug1.addDrugReferenceMap(map);
 		assertEquals(drug1, drug1.getDrugReferenceMaps().iterator().next().getDrug());
 	}
-	
+
 	/**
 	 * @see Drug#addDrugReferenceMap(DrugReferenceMap)
 	 */
 	@Test
 	public void addDrugReferenceMap_shouldShouldNotAddDuplicateDrugReferenceMaps() {
 		Drug drug = new Drug();
-		
+
 		DrugReferenceMap map1 = new DrugReferenceMap();
 		map1.setUuid(UUID_1);
 		DrugReferenceMap map2 = new DrugReferenceMap();
 		map2.setUuid(UUID_2);
 		DrugReferenceMap map2Duplicate = new DrugReferenceMap();
 		map2Duplicate.setUuid(UUID_2);
-		
+
 		drug.addDrugReferenceMap(map1);
 		drug.addDrugReferenceMap(map2);
 		drug.addDrugReferenceMap(map2Duplicate);
-		
+
 		assertEquals(2, drug.getDrugReferenceMaps().size());
 	}
 }

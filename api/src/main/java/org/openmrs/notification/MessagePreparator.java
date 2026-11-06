@@ -13,13 +13,13 @@ package org.openmrs.notification;
  * Interface that defines the message preparator's functionality.
  */
 public interface MessagePreparator {
-	
+
 	/**
 	 * Prepare a message using a template.
-	 * 
+	 *
 	 * @param template
 	 * @return the prepared <code>Message</code>
 	 */
 	public Message prepare(Template template) throws MessageException;
-	
+
 }

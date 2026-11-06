@@ -12,7 +12,8 @@ package org.openmrs.annotation;
 import org.springframework.stereotype.Component;
 
 /**
- * Test bean which should be only loaded when running on OpenMRS 1.10 and later with the htmlformentry module
+ * Test bean which should be only loaded when running on OpenMRS 1.10 and later with the
+ * htmlformentry module
  */
 @Component
 @OpenmrsProfile(openmrsPlatformVersion = "1.10", modules = { "htmlformentry:2.3" })

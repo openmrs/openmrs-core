@@ -36,9 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("serializationService")
 @Transactional
 public class SerializationServiceImpl extends BaseOpenmrsService implements SerializationService {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SerializationServiceImpl.class);
-	
+
 	//***** Properties (set by spring)
 	private Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
 
@@ -46,9 +46,9 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	public void initializeSerializerMap(@Qualifier("serializerList") List<? extends OpenmrsSerializer> serializerList) {
 		setSerializers(serializerList);
 	}
-	
+
 	//***** Service method implementations *****
-	
+
 	/**
 	 * @see org.openmrs.api.SerializationService#getSerializer(java.lang.Class)
 	 */
@@ -59,23 +59,22 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.SerializationService#getDefaultSerializer()
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public OpenmrsSerializer getDefaultSerializer() {
-		String prop = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
+		String prop = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
 		if (StringUtils.isNotEmpty(prop)) {
 			try {
 				Class<?> clazz = Context.loadClass(prop);
 				if (clazz != null && OpenmrsSerializer.class.isAssignableFrom(clazz)) {
 					return (OpenmrsSerializer) clazz.newInstance();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.info("Cannot create an instance of " + prop + " - using builtin SimpleXStreamSerializer.");
 			}
 		} else {
@@ -83,28 +82,27 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		}
 		return serializerMap.get(SimpleXStreamSerializer.class);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.SerializationService#serialize(java.lang.Object, java.lang.Class)
 	 */
 	@Override
 	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException {
-		
+
 		// Get appropriate OpenmrsSerializer implementation
 		OpenmrsSerializer serializer = getSerializer(clazz);
 		if (serializer == null) {
 			throw new SerializationException("OpenmrsSerializer of class <" + clazz + "> not found.");
 		}
-		
+
 		// Attempt to Serialize the object
 		try {
 			return serializer.serialize(o);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new SerializationException("An error occurred during serialization of object <" + o + ">", e);
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.SerializationService#deserialize(java.lang.String, java.lang.Class,
 	 *      java.lang.Class)
@@ -112,25 +110,24 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	@Override
 	public <T> T deserialize(String serializedObject, Class<? extends T> objectClass,
 	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException {
-		
+
 		// Get appropriate OpenmrsSerializer implementation
 		OpenmrsSerializer serializer = getSerializer(serializerClass);
 		if (serializer == null) {
 			throw new APIException("serializer.not.found", new Object[] { serializerClass });
 		}
-		
+
 		// Attempt to Deserialize the object
 		try {
 			return serializer.deserialize(serializedObject, objectClass);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			String msg = "An error occurred during deserialization of data <" + serializedObject + ">";
 			throw new SerializationException(msg, e);
 		}
 	}
-	
+
 	//***** Property access *****
-	
+
 	/**
 	 * @return the serializers
 	 */
@@ -141,10 +138,12 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		}
 		return new ArrayList<>(serializerMap.values());
 	}
-	
+
 	/**
-	 * @param serializers the serializers to set
+	 * <p>
 	 * <strong>Should</strong> not reset serializers list when called multiple times
+	 *
+	 * @param serializers the serializers to set
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
 		if (serializers == null || serializerMap == null) {

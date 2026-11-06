@@ -9,20 +9,20 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link ConceptDatatypeValidator} class.
  */
 public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
@@ -31,22 +31,22 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName(null);
 		cd.setDescription("some text");
-		
+
 		Errors errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		cd.setName("");
 		errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		cd.setName(" ");
 		errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
@@ -55,22 +55,22 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
 		cd.setDescription(null);
-		
+
 		Errors errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
 		assertFalse(errors.hasFieldErrors("description"));
-		
+
 		cd.setDescription("");
 		errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
 		assertFalse(errors.hasFieldErrors("description"));
-		
+
 		cd.setDescription(" ");
 		errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
 		assertFalse(errors.hasFieldErrors("description"));
 	}
-	
+
 	/**
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
@@ -79,13 +79,13 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 		ConceptDatatype cd = new ConceptDatatype();
 		cd.setName("name");
 		cd.setDescription("some text");
-		
+
 		Errors errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
@@ -96,30 +96,30 @@ public class ConceptDatatypeValidatorTest extends BaseContextSensitiveTest {
 		cd.setDescription("some text");
 		cd.setHl7Abbreviation("hl7");
 		cd.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see ConceptDatatypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		ConceptDatatype cd = new ConceptDatatype();
-		cd
-		        .setName("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		cd
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		cd.setName(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		cd.setDescription(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		cd.setHl7Abbreviation("hl7Abbreviation");
-		cd
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		cd.setRetireReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(cd, "cd");
 		new ConceptDatatypeValidator().validate(cd, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("hl7Abbreviation"));

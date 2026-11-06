@@ -24,7 +24,7 @@ import org.openmrs.api.APIException;
  * This handler makes sure the when a voided object is saved, that the reason field is entered for
  * supported objects Note: Obs is not included in the supported types because the ObsService handles
  * this explicitly
- * 
+ *
  * @see RequiredDataAdvice
  * @see SaveHandler
  * @see RequiredDataAdvice
@@ -32,22 +32,22 @@ import org.openmrs.api.APIException;
  */
 @Handler(supports = { Patient.class, Encounter.class })
 public class RequireVoidReasonSaveHandler implements SaveHandler<Voidable> {
-	
+
 	/**
 	 * Validates that the voidReason is non-null and non-empty for supported objects
-	 * 
-	 * <strong>Should</strong> throw APIException if Patient voidReason is null
-	 * <strong>Should</strong> throw APIException if Encounter voidReason is empty
-	 * <strong>Should</strong> throw APIException if Encounter voidReason is blank
-	 * <strong>Should</strong> not throw Exception if voidReason is not blank
+	 * <p>
+	 * <strong>Should</strong> throw APIException if Patient voidReason is null<br/>
+	 * <strong>Should</strong> throw APIException if Encounter voidReason is empty<br/>
+	 * <strong>Should</strong> throw APIException if Encounter voidReason is blank<br/>
+	 * <strong>Should</strong> not throw Exception if voidReason is not blank<br/>
 	 * <strong>Should</strong> not throw Exception if voidReason is null for unsupported types
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {
-		
+
 		if (voidableObject.getVoided() && StringUtils.isBlank(voidableObject.getVoidReason())) {
 			throw new APIException("voided.bit.was.set.true", new Object[] { voidableObject, voidableObject.getClass() });
 		}
 	}
-	
+
 }

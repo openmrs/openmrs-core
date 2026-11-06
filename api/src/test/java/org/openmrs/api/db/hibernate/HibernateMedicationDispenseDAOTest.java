@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.DrugOrder;
@@ -23,8 +25,6 @@ import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,21 +34,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * Unit tests for the HibernateMedicationDispenseDAO
  */
 public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest {
-	
+
 	@Autowired
 	MedicationDispenseDAO medicationDispenseDAO;
-	
+
 	@Autowired
 	AdministrationDAO administrationDAO;
 
 	@BeforeEach
 	public void setUp() {
 		executeDataSet("org/openmrs/api/include/MedicationDispenseServiceTest-initialData.xml");
-		updateSearchIndex();
 	}
 
 	/**
-	 * @see MedicationDispenseDAO#getMedicationDispense(Integer) 
+	 * @see MedicationDispenseDAO#getMedicationDispense(Integer)
 	 */
 	@Test
 	public void getMedicationDispense_shouldGetExistingMedicationDispense() {
@@ -76,7 +75,7 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		List<MedicationDispense> l = medicationDispenseDAO.getMedicationDispenseByCriteria(b.build());
 		assertThat(l.size(), is(1));
 		testMedicationDispense1(l.get(0));
-		
+
 		b.setPatient(new Patient(7));
 		l = medicationDispenseDAO.getMedicationDispenseByCriteria(b.build());
 		assertThat(l.size(), is(2));
@@ -100,7 +99,7 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		b.setEncounter(new Encounter(3));
 		l = medicationDispenseDAO.getMedicationDispenseByCriteria(b.build());
 		assertThat(l.size(), is(1));
-		
+
 		b.setEncounter(null);
 		l = medicationDispenseDAO.getMedicationDispenseByCriteria(b.build());
 		assertThat(l.size(), is(3));
@@ -176,7 +175,7 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 		existing = medicationDispenseDAO.getMedicationDispense(1);
 		assertNull(existing);
 	}
-	
+
 	public static void testMedicationDispense1(MedicationDispense existing) {
 		assertThat(existing.getUuid(), is("b75c5c9e-b66c-11ec-8065-0242ac110002"));
 		assertThat(existing.getPatient().getPatientId(), is(2));

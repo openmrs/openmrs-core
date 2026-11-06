@@ -10,15 +10,17 @@
 package org.openmrs.api.context;
 
 /**
- * User-pass credentials represent the usual OpenMRS authentication credentials made of a pair username + password.
- * 
+ * User-pass credentials represent the usual OpenMRS authentication credentials made of a pair
+ * username + password.
+ *
  * @since 2.3.0
  */
 public class UsernamePasswordCredentials implements Credentials {
 
 	protected String username;
+
 	protected String password;
-	
+
 	public static final String SCHEME = "OPENMRS_USERPASS_AUTH_SCHEME";
 
 	public UsernamePasswordCredentials(String username, String password) {

@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.openmrs.obs.ComplexObsHandler;
 
 /**
@@ -20,24 +19,24 @@ import org.openmrs.obs.ComplexObsHandler;
  */
 @Audited
 public class ConceptComplex extends Concept {
-	
+
 	public static final long serialVersionUID = 473231233L;
-	
+
 	private String handler;
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public ConceptComplex() {
 	}
-	
+
 	/**
 	 * @param conceptId
 	 */
 	public ConceptComplex(Integer conceptId) {
 		super(conceptId);
 	}
-	
+
 	/**
 	 * Constructor with conceptId and ConceptComplexHandler
 	 *
@@ -48,7 +47,7 @@ public class ConceptComplex extends Concept {
 		super(conceptId);
 		this.handler = handler;
 	}
-	
+
 	/**
 	 * Constructor from Concept.
 	 *
@@ -71,10 +70,10 @@ public class ConceptComplex extends Concept {
 		this.setRetired(c.getRetired());
 		this.setVersion(c.getVersion());
 		this.setUuid(c.getUuid());
-		
+
 		this.handler = "";
 	}
-	
+
 	/**
 	 * Overrides parent method and returns true if this Concept.getDatatype() equals "Complex"..
 	 *
@@ -85,10 +84,10 @@ public class ConceptComplex extends Concept {
 		if (getDatatype() == null || getDatatype().getHl7Abbreviation() == null) {
 			return false;
 		}
-		
+
 		return "ED".equals(getDatatype().getHl7Abbreviation());
 	}
-	
+
 	/**
 	 * Set the ConceptComplexHandler. This should be the ComplexObsHandler key
 	 *
@@ -97,12 +96,12 @@ public class ConceptComplex extends Concept {
 	public void setHandler(String handler) {
 		this.handler = handler;
 	}
-	
+
 	/**
 	 * @return Returns the key to the ComplexObsHandler associated with this ConceptComplex.
 	 */
 	public String getHandler() {
 		return this.handler;
 	}
-	
+
 }

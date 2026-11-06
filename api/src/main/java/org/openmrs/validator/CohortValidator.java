@@ -23,9 +23,10 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates {@link Cohort} objects.
+ *
  * @since 2.1.0
  */
-@Handler(supports = {Cohort.class}, order=50)
+@Handler(supports = { Cohort.class }, order = 50)
 public class CohortValidator implements Validator {
 
 	@Override
@@ -36,11 +37,8 @@ public class CohortValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (obj == null || !(obj instanceof Cohort)) {
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
-					+ Cohort.class);
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Cohort.class);
 		}
-
-
 
 		Cohort cohort = (Cohort) obj;
 		if (!cohort.getVoided()) {
@@ -50,8 +48,7 @@ public class CohortValidator implements Validator {
 					Patient p = Context.getPatientService().getPatient(member.getPatientId());
 					int dateCompare = OpenmrsUtil.compareWithNullAsLatest(member.getStartDate(), member.getEndDate());
 					if (p != null && p.getVoided() && !member.getVoided()) {
-						String message = "Patient " + p.getPatientId()
-								+ " is voided, cannot add voided members to a cohort";
+						String message = "Patient " + p.getPatientId() + " is voided, cannot add voided members to a cohort";
 						errors.rejectValue("memberships", "Cohort.patientAndMemberShouldBeVoided", message);
 					}
 					if (dateCompare == 1) {

@@ -9,8 +9,6 @@
  */
 package org.openmrs.web.context;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Authenticated;
 import org.openmrs.api.context.Context;
@@ -18,24 +16,26 @@ import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.TestUsernameCredentials;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * A Context loaded with a test Spring config that overrides the default auth scheme.
- * 
+ *
  * @see Context
  */
 public class AltAuthSchemeContextTest extends BaseWebContextSensitiveTest {
 
-  /**
-   * @see Context#authenticate(Credentials)
-   */
-  @Test
-  public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
-    // replay
-    Authenticated authenticated = Context.authenticate(new TestUsernameCredentials("admin"));
+	/**
+	 * @see Context#authenticate(Credentials)
+	 */
+	@Test
+	public void authenticate_shouldAuthenticateUserWithAlternateScheme() {
+		// replay
+		Authenticated authenticated = Context.authenticate(new TestUsernameCredentials("admin"));
 
-    // verif
-    assertEquals("test-scheme", authenticated.getAuthenticationScheme());
-    assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
-    assertEquals("admin", Context.getAuthenticatedUser().getUsername());
-  }
+		// verif
+		assertEquals("test-scheme", authenticated.getAuthenticationScheme());
+		assertEquals(Context.getAuthenticatedUser().getUuid(), authenticated.getUser().getUuid());
+		assertEquals("admin", Context.getAuthenticatedUser().getUsername());
+	}
 }

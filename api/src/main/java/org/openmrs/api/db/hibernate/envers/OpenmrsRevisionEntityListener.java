@@ -10,20 +10,20 @@
 
 package org.openmrs.api.db.hibernate.envers;
 
+import java.util.Date;
+
 import org.hibernate.envers.RevisionListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 
-import java.util.Date;
-
 public class OpenmrsRevisionEntityListener implements RevisionListener {
+
 	@Override
 	public void newRevision(Object o) {
 		OpenmrsRevisionEntity customRevisionEntity = (OpenmrsRevisionEntity) o;
-		if(Context.getUserContext().isAuthenticated()) {
+		if (Context.getUserContext().isAuthenticated()) {
 			customRevisionEntity.setChangedBy(Context.getUserContext().getAuthenticatedUser().getUserId());
-		}
-		else if(Daemon.getDaemonThreadUser() != null) {
+		} else if (Daemon.getDaemonThreadUser() != null) {
 			customRevisionEntity.setChangedBy(Daemon.getDaemonThreadUser().getUserId());
 		}
 		customRevisionEntity.setChangedOn(new Date());

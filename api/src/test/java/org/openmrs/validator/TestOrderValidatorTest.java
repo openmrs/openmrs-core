@@ -9,13 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -32,11 +25,18 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  */
 public class TestOrderValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -58,14 +58,14 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounter);
 		order.setDateActivated(new Date());
 		order.setSpecimenSource(specimenSource);
-		
+
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
 		assertTrue(errors.hasFieldErrors("specimenSource"));
-		assertEquals("ServiceOrder.error.specimenSourceNotAmongAllowedConcepts", errors.getFieldError("specimenSource")
-		        .getCode());
+		assertEquals("ServiceOrder.error.specimenSourceNotAmongAllowedConcepts",
+		    errors.getFieldError("specimenSource").getCode());
 	}
-	
+
 	/**
 	 * @see TestOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
@@ -87,7 +87,7 @@ public class TestOrderValidatorTest extends BaseContextSensitiveTest {
 		order.setEncounter(encounter);
 		order.setDateActivated(new Date());
 		order.setSpecimenSource(specimenSource);
-		
+
 		Errors errors = new BindException(order, "order");
 		new TestOrderValidator().validate(order, errors);
 		assertFalse(errors.hasFieldErrors());

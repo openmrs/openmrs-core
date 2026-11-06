@@ -22,17 +22,18 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * Allows to conditionally enable storage service based on "storage.type" property.
  * <p>
  * It enables "local" storage by default.
- * 
+ *
  * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public class StorageServiceCondition implements Condition {
+
 	private static final Logger log = LoggerFactory.getLogger(StorageServiceCondition.class);
-	
+
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(Qualifier.class.getName());
 		Object value = annotationAttributes != null ? annotationAttributes.get("value") : null;
-		
+
 		String storageType = context.getEnvironment().getProperty("storage.type", String.class, "local");
 		if (value != null && storageType.equalsIgnoreCase(value.toString())) {
 			log.info("Selected storage type: {}", storageType);

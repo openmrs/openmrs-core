@@ -16,19 +16,19 @@ import org.openmrs.api.context.Daemon;
 /**
  * Required to run code with elevated privileges in
  * {@link Daemon#runInDaemonThreadAndWait(Runnable, DaemonToken)}.
- * 
+ *
  * @since 1.9.2
  */
 public class DaemonToken implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String id;
-	
+
 	public DaemonToken(String id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * @return the id
 	 */

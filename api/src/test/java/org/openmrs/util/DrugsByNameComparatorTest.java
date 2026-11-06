@@ -9,22 +9,21 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Drug;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The Class DrugsByNameComparatorTest. Contains tests for DrugsByNameComparator
  */
 public class DrugsByNameComparatorTest {
-	
+
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
 	 */
 	@Test
-	public void compareDrugNamesIgnoringNumericals_shouldReturnNegativeIfNameForDrug1ComesBeforeThatOfDrug2()
-	{
+	public void compareDrugNamesIgnoringNumericals_shouldReturnNegativeIfNameForDrug1ComesBeforeThatOfDrug2() {
 		Drug drug1 = new Drug();
 		drug1.setName("ABCD");
 		Drug drug2 = new Drug();
@@ -33,7 +32,7 @@ public class DrugsByNameComparatorTest {
 		int actualValue = dComparator.compare(drug1, drug2);
 		assertEquals(actualValue, -1);
 	}
-	
+
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
 	 */
@@ -47,13 +46,12 @@ public class DrugsByNameComparatorTest {
 		int actualValue = dComparator.compare(drug1, drug2);
 		assertEquals(actualValue, 0);
 	}
-	
+
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
 	 */
 	@Test
-	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringDashes()
-	{
+	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringDashes() {
 		Drug drug1 = new Drug();
 		drug1.setName("AB-AB");
 		Drug drug2 = new Drug();
@@ -62,13 +60,12 @@ public class DrugsByNameComparatorTest {
 		int actualValue = dComparator.compare(drug1, drug2);
 		assertEquals(actualValue, 1);
 	}
-	
+
 	/**
 	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
 	 */
 	@Test
-	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringNumerics()
-	{
+	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringNumerics() {
 		Drug drug1 = new Drug();
 		drug1.setName("AB1AB");
 		Drug drug2 = new Drug();
@@ -77,5 +74,5 @@ public class DrugsByNameComparatorTest {
 		int actualValue = dComparator.compare(drug1, drug2);
 		assertEquals(actualValue, 1);
 	}
-	
+
 }

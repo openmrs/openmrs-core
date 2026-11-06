@@ -13,24 +13,25 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * A comparator which takes version numbers stored as string. It assumes the versions
- * are separated by periods and does not contain letters. This prevents the version 
- * number 10 from coming before version number 9.
- *
+ * A comparator which takes version numbers stored as string. It assumes the versions are separated
+ * by periods and does not contain letters. This prevents the version number 10 from coming before
+ * version number 9.
  */
 public class VersionComparator implements Comparator<String>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	String TOKEN = ".";
-	
+
 	/**
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * <p>
 	 * <strong>Should</strong> compare via numeric value not string value
+	 *
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	@Override
 	public int compare(String o1, String o2) {
 		return ModuleUtil.compareVersion(o1, o2);
 	}
-	
+
 }

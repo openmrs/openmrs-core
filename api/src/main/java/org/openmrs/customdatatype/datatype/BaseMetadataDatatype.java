@@ -14,18 +14,20 @@ import org.openmrs.customdatatype.CustomDatatype;
 
 /**
  * This is a superclass for custom datatypes for OpenmrsMetadata
- * 
+ *
  * @since 2.0.0
  */
 public abstract class BaseMetadataDatatype<T extends OpenmrsMetadata> extends BaseOpenmrsDatatype<T> {
-	
+
 	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(Object)
+	 * <p>
 	 * <strong>Should</strong> use the name in summary instance
+	 *
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(Object)
 	 */
 	@Override
 	public Summary doGetTextSummary(T typedValue) {
 		return new CustomDatatype.Summary(typedValue.getName(), true);
 	}
-	
+
 }

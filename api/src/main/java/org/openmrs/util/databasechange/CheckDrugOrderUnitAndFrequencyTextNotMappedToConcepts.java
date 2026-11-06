@@ -29,7 +29,7 @@ import liquibase.precondition.CustomPrecondition;
  * executed
  */
 public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements CustomPrecondition {
-	
+
 	@Override
 	public void check(Database database) throws CustomPreconditionFailedException, CustomPreconditionErrorException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
@@ -45,7 +45,7 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 				                + "frequencies via the global property named orderEntry.unitsToConceptsMappings"
 				                + " or use 1.10 upgrade helper module to map them");
 			}
-			
+
 			Set<String> frequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency", "drug_order", String.class,
 			    connection.getUnderlyingConnection());
 			Set<String> unmappedFrequencies = getUnMappedText(frequencies, connection);
@@ -57,23 +57,22 @@ public class CheckDrugOrderUnitAndFrequencyTextNotMappedToConcepts implements Cu
 				                + "frequencies via the global property named orderEntry.unitsToConceptsMappings"
 				                + " or use 1.10 upgrade helper module to map them");
 			}
-		}
-		catch (Exception e) {
-			throw new CustomPreconditionErrorException("An error occurred while checking for unmapped free text drug "
-			        + "order dose units and frequencies", e);
+		} catch (Exception e) {
+			throw new CustomPreconditionErrorException(
+			        "An error occurred while checking for unmapped free text drug " + "order dose units and frequencies", e);
 		}
 	}
-	
+
 	private Set<String> getUnMappedText(Set<String> textList, JdbcConnection connection) {
 		Set<String> unmappedText = new HashSet<>(textList.size());
 		for (String text : textList) {
 			if (StringUtils.isBlank(text) || UpgradeUtil.getConceptIdForUnits(text) != null) {
 				continue;
 			}
-			
+
 			unmappedText.add(text);
 		}
 		return unmappedText;
 	}
-	
+
 }

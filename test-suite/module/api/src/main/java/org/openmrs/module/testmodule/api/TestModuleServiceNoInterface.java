@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TestModuleServiceNoInterface extends BaseOpenmrsService {
-	
+
 	@Cacheable("testModuleCache")
 	@Transactional
 	public String hello() {

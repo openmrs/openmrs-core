@@ -21,36 +21,38 @@ import org.springframework.validation.ValidationUtils;
  *
  * @since 2.0
  */
-@Handler(supports = {ConceptAttributeType.class}, order = 50)
+@Handler(supports = { ConceptAttributeType.class }, order = 50)
 public class ConceptAttributeTypeValidator extends BaseAttributeTypeValidator<ConceptAttributeType> {
 
-    /**
-     * Determines if the command object being submitted is a valid type
-     *
-     * @see org.springframework.validation.Validator#T)
-     * <strong>Should</strong> pass validation if field lengths are correct
-     * <strong>Should</strong> fail validation if field lengths are not correct
-     */
-    @Override
+	/**
+	 * Determines if the command object being submitted is a valid type
+	 * <p>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
+	 * @see org.springframework.validation.Validator#T)
+	 */
+	@Override
 	public boolean supports(Class<?> c) {
-        return ConceptAttributeType.class.isAssignableFrom(c);
-    }
+		return ConceptAttributeType.class.isAssignableFrom(c);
+	}
 
-    @Override
+	@Override
 	public void validate(Object obj, Errors errors) {
-        super.validate(obj, errors);
-        ConceptAttributeType conceptAttributeType = (ConceptAttributeType) obj;
-        ConceptService conceptService = Context.getConceptService();
-        if (conceptAttributeType.getName() != null && !conceptAttributeType.getName().isEmpty()) {
-            ConceptAttributeType attributeType = conceptService.getConceptAttributeTypeByName(conceptAttributeType.getName());
-            if (attributeType != null && !attributeType.getUuid().equals(conceptAttributeType.getUuid())) {
-                errors.rejectValue("name", "ConceptAttributeType.error.nameAlreadyInUse");
-            }
-        } else {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ConceptAttributeType.error.nameEmpty");
-        }
+		super.validate(obj, errors);
+		ConceptAttributeType conceptAttributeType = (ConceptAttributeType) obj;
+		ConceptService conceptService = Context.getConceptService();
+		if (conceptAttributeType.getName() != null && !conceptAttributeType.getName().isEmpty()) {
+			ConceptAttributeType attributeType = conceptService
+			        .getConceptAttributeTypeByName(conceptAttributeType.getName());
+			if (attributeType != null && !attributeType.getUuid().equals(conceptAttributeType.getUuid())) {
+				errors.rejectValue("name", "ConceptAttributeType.error.nameAlreadyInUse");
+			}
+		} else {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "ConceptAttributeType.error.nameEmpty");
+		}
 
-        ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "datatypeClassname",
-                "preferredHandlerClassname", "retireReason");
-    }
+		ValidateUtil.validateFieldLengths(errors, obj.getClass(), "name", "description", "datatypeClassname",
+		    "preferredHandlerClassname", "retireReason");
+	}
 }

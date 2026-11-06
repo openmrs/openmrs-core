@@ -26,34 +26,35 @@ import org.openmrs.aop.RequiredDataAdvice;
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
  * and also unvoided by the {@link RequiredDataAdvice} class.<br>
  * <br>
- * 
+ *
  * @see RequiredDataAdvice
  * @see VoidHandler
  * @since 1.5
  */
-@Handler(supports = {Voidable.class}, order = 10)
+@Handler(supports = { Voidable.class }, order = 10)
 public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
-	
+
 	/**
 	 * Called around every unvoid* method to set everything to null.<br>
 	 * <br>
-	 * 
+	 * <p>
+	 * <strong>Should</strong> unset the voided bit<br/>
+	 * <strong>Should</strong> unset the voider<br/>
+	 * <strong>Should</strong> unset the dateVoided<br/>
+	 * <strong>Should</strong> unset the voidReason<br/>
+	 * <strong>Should</strong> only act on already voided objects<br/>
+	 * <strong>Should</strong> not act on objects with a different dateVoided
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> unset the voided bit
-	 * <strong>Should</strong> unset the voider
-	 * <strong>Should</strong> unset the dateVoided
-	 * <strong>Should</strong> unset the voidReason
-	 * <strong>Should</strong> only act on already voided objects
-	 * <strong>Should</strong> not act on objects with a different dateVoided
 	 */
 	@Override
 	public void handle(Voidable voidableObject, User voidingUser, Date origParentVoidedDate, String unused) {
-		
+
 		// only operate on voided objects
 		if (voidableObject.getVoided()
 		        && (origParentVoidedDate == null || origParentVoidedDate.equals(voidableObject.getDateVoided()))) {
-			
+
 			// only unvoid objects that were voided at the same time as the parent object
 			voidableObject.setVoided(false);
 			voidableObject.setVoidedBy(null);
@@ -61,5 +62,5 @@ public class BaseUnvoidHandler implements UnvoidHandler<Voidable> {
 			voidableObject.setVoidReason(null);
 		}
 	}
-	
+
 }

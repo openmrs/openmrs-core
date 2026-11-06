@@ -20,14 +20,15 @@ import org.openmrs.customdatatype.SerializingCustomDatatype;
 import org.springframework.stereotype.Component;
 
 /**
- * Datatype for a Date (without time), represented by a java.util.Date. 
+ * Datatype for a Date (without time), represented by a java.util.Date.
+ *
  * @since 1.9
  */
 @Component
 public class DateDatatype extends SerializingCustomDatatype<Date> {
 
 	static final String DATE_FORMAT = "yyyy-MM-dd";
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#doGetTextSummary(java.lang.Object)
 	 */
@@ -35,10 +36,12 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 	public CustomDatatype.Summary doGetTextSummary(Date typedValue) {
 		return new CustomDatatype.Summary(Context.getDateFormat().format(typedValue), true);
 	}
-	
+
 	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
+	 * <p>
 	 * <strong>Should</strong> reconstruct a date serialized by this handler
+	 *
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(java.lang.String)
 	 */
 	@Override
 	public Date deserialize(String serializedValue) {
@@ -47,19 +50,20 @@ public class DateDatatype extends SerializingCustomDatatype<Date> {
 		}
 		try {
 			return new SimpleDateFormat(DATE_FORMAT).parse(serializedValue);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new InvalidCustomValueException("Invalid date: " + serializedValue);
 		}
 	}
-	
+
 	/**
-	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
+	 * <p>
 	 * <strong>Should</strong> convert a date into a ymd string representation
+	 *
+	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#serialize(java.lang.Object)
 	 */
 	@Override
 	public String serialize(Date typedValue) {
 		return new SimpleDateFormat(DATE_FORMAT).format(typedValue);
 	}
-	
+
 }

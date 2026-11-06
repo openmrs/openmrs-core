@@ -9,19 +9,21 @@
  */
 package org.openmrs;
 
+import java.lang.reflect.Field;
+
+import org.junit.jupiter.api.Test;
+import org.openmrs.api.APIException;
+
+import liquibase.util.StringUtil;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import liquibase.util.StringUtil;
-import org.junit.jupiter.api.Test;
-import org.openmrs.api.APIException;
-
-import java.lang.reflect.Field;
-
-
 /**
- * This class tests all methods that are not getter or setters in the BaseFormRecordableOpenmrsDataImpl java object this test class for BaseFormRecordableOpenmrsDataImpl
+ * This class tests all methods that are not getter or setters in the
+ * BaseFormRecordableOpenmrsDataImpl java object this test class for
+ * BaseFormRecordableOpenmrsDataImpl
  *
  * @see BaseFormRecordableOpenmrsData
  */
@@ -116,7 +118,7 @@ public class BaseFormRecordableOpenmrsDataTest {
 	public void setFormField_shouldRejectANamepaceAndPathCombinationLongerThanTheMaxLength() throws Exception {
 		final String ns = StringUtil.repeat("x", 255);
 		final String path = "";
-		
+
 		Obs impl = new Obs();
 		assertThrows(APIException.class, () -> impl.setFormField(ns, path));
 	}

@@ -12,31 +12,32 @@ package org.openmrs;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 
 /**
  * This is a type of order that adds referral specific attributes.
- * 
+ *
  * @since 2.5.0
  */
 @Entity
 @Table(name = "referral_order")
-@PrimaryKeyJoinColumn(name = "order_id") 
-@OnDelete(action = OnDeleteAction.CASCADE) 
+@PrimaryKeyJoinColumn(name = "order_id")
+@OnDelete(action = OnDeleteAction.CASCADE)
 @Audited
 public class ReferralOrder extends ServiceOrder {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public ReferralOrder() {
-		
+
 	}
-	
+
 	/**
 	 * @see org.openmrs.ServiceOrder#copy()
 	 */
@@ -46,10 +47,10 @@ public class ReferralOrder extends ServiceOrder {
 		super.copyHelper(newOrder);
 		return newOrder;
 	}
-	
+
 	/**
 	 * Creates a discontinuation order for this.
-	 * 
+	 *
 	 * @see org.openmrs.ServiceOrder#cloneForDiscontinuing()
 	 * @return the newly created order
 	 */
@@ -59,11 +60,11 @@ public class ReferralOrder extends ServiceOrder {
 		super.cloneForDiscontinuingHelper(newOrder);
 		return newOrder;
 	}
-	
+
 	/**
 	 * Creates a ReferralOrder for revision from this order, sets the previousOrder, action field and
 	 * other test order fields.
-	 * 
+	 *
 	 * @return the newly created order
 	 */
 	@Override

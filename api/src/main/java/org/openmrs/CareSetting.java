@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
 import org.hibernate.type.SqlTypes;
@@ -33,59 +34,59 @@ import org.hibernate.type.SqlTypes;
  * type of setting (INPATIENT, OUTPATIENT, EMERGENCY) they use. If an implementation provides care
  * in two separate hospitals that function independently, then they would use two separate care
  * settings like "Hospital A" and "Hospital B".
- * 
+ *
  * @since 1.10
  */
 @Audited
 @Entity
 @Table(name = "care_setting")
 public class CareSetting extends BaseChangeableOpenmrsMetadata {
-	
+
 	public enum CareSettingType {
 		OUTPATIENT,
 		INPATIENT
 	}
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "care_setting_id")
 	private Integer careSettingId;
-	
+
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.VARCHAR)
 	@Column(name = "care_setting_type", length = 50, nullable = false)
 	private CareSettingType careSettingType;
-	
+
 	public CareSetting() {
 	}
-	
+
 	public CareSetting(String name, String description, CareSettingType careSettingType) {
 		setName(name);
 		setDescription(description);
 		setCareSettingType(careSettingType);
 	}
-	
+
 	public Integer getCareSettingId() {
 		return careSettingId;
 	}
-	
+
 	public void setCareSettingId(Integer careSettingId) {
 		this.careSettingId = careSettingId;
 	}
-	
+
 	public CareSettingType getCareSettingType() {
 		return careSettingType;
 	}
-	
+
 	public void setCareSettingType(CareSettingType careSettingType) {
 		this.careSettingType = careSettingType;
 	}
-	
+
 	@Override
 	public Integer getId() {
 		return getCareSettingId();
 	}
-	
+
 	@Override
 	public void setId(Integer id) {
 		setCareSettingId(id);

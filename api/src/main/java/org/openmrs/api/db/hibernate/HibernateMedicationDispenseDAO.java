@@ -9,6 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import org.hibernate.SessionFactory;
 import org.openmrs.MedicationDispense;
 import org.openmrs.api.db.MedicationDispenseDAO;
@@ -16,23 +24,17 @@ import org.openmrs.parameter.MedicationDispenseCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Hibernate implementation of the MedicationDispenseDAO
+ *
  * @since 2.6.0
  * @see MedicationDispenseDAO
  */
 @Repository("medicationDispenseDAO")
 public class HibernateMedicationDispenseDAO implements MedicationDispenseDAO {
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateMedicationDispenseDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
@@ -67,7 +69,7 @@ public class HibernateMedicationDispenseDAO implements MedicationDispenseDAO {
 			predicates.add(criteriaBuilder.equal(md.get("voided"), false));
 		}
 		if (predicates.size() > 0) {
-			criteriaQuery.where(predicates.toArray(new Predicate[]{}));
+			criteriaQuery.where(predicates.toArray(new Predicate[] {}));
 		}
 		criteriaQuery.orderBy(criteriaBuilder.asc(md.get("medicationDispenseId")));
 		return sessionFactory.getCurrentSession().createQuery(criteriaQuery).list();

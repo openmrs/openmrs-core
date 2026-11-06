@@ -27,52 +27,53 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
-
-
+import org.openmrs.util.CollectionUtil;
 
 /**
- * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
- * Not all orders in an encounter need to be grouped this way, only those that have a specific connection to each other 
- * (e.g. several orders that together make up a treatment protocol for some diagnosis could be grouped).
- * 
+ * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single
+ * encounter,often driven by an {@link org.openmrs.OrderSet}. Not all orders in an encounter need to
+ * be grouped this way, only those that have a specific connection to each other (e.g. several
+ * orders that together make up a treatment protocol for some diagnosis could be grouped).
+ *
  * @since 1.12
  */
 @Entity
 @Table(name = "order_group")
 @Audited
 public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
-	
+
 	public static final long serialVersionUID = 72232L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_group_id", nullable = false)
 	private Integer orderGroupId;
-	
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
-	
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
-	
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_set_id")
 	private OrderSet orderSet;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_order_group")
 	private OrderGroup parentOrderGroup;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_group_reason")
 	private Concept orderGroupReason;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "previous_order_group")
 	private OrderGroup previousOrderGroup;
 
@@ -81,7 +82,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	private List<Order> orders = new ArrayList<>();
 
 	@Access(AccessType.FIELD)
-	@OneToMany(mappedBy = "parentOrderGroup", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+	@OneToMany(mappedBy = "parentOrderGroup", cascade = { CascadeType.REMOVE }, orphanRemoval = true)
 	@OrderBy("orderGroupId asc")
 	@BatchSize(size = 25)
 	private Set<OrderGroup> nestedOrderGroups;
@@ -94,7 +95,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public Integer getOrderGroupId() {
 		return orderGroupId;
 	}
-	
+
 	/**
 	 * Sets the orderGroupId
 	 *
@@ -103,7 +104,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public void setOrderGroupId(Integer orderGroupId) {
 		this.orderGroupId = orderGroupId;
 	}
-	
+
 	/**
 	 * Gets the patient
 	 *
@@ -112,7 +113,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public Patient getPatient() {
 		return patient;
 	}
-	
+
 	/**
 	 * Sets the patient
 	 *
@@ -121,7 +122,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	
+
 	/**
 	 * Gets the encounter
 	 *
@@ -130,7 +131,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public Encounter getEncounter() {
 		return encounter;
 	}
-	
+
 	/**
 	 * Sets the encounter
 	 *
@@ -139,7 +140,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
 	}
-	
+
 	/**
 	 * Gets the orders
 	 *
@@ -151,28 +152,28 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 		}
 		return orders;
 	}
-	
+
 	/**
 	 * Sets the orders
 	 *
 	 * @param orders the orders to set
 	 */
 	public void setOrders(List<Order> orders) {
-		this.orders = orders;
+		this.orders = CollectionUtil.setCollection(this.orders, orders);
 	}
-	
+
 	/**
 	 * Adds a new order to the existing list of orders
-	 * 
+	 *
 	 * @param order the new order to be added
 	 */
 	public void addOrder(Order order) {
 		this.addOrder(order, null);
 	}
-	
+
 	/**
 	 * Adds {@link Order}s to existing Order list
-	 * 
+	 *
 	 * @param orders
 	 * @since 2.2
 	 */
@@ -181,11 +182,11 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 			addOrder(order);
 		}
 	}
-	
+
 	/**
-	 * Adds a new order to the existing list of orders.
-	 * The <tt>sortWeight</tt> for the order is auto calculated based on the given position.
-	 * 
+	 * Adds a new order to the existing list of orders. The <tt>sortWeight</tt> for the order is auto
+	 * calculated based on the given position.
+	 *
 	 * @param order the new order to be added
 	 * @param position the position where the order has to be added
 	 */
@@ -193,16 +194,16 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 		if (order == null || getOrders().contains(order)) {
 			return;
 		}
-                
-                order.setOrderGroup(this);  
-                 
+
+		order.setOrderGroup(this);
+
 		Integer listIndex = findListIndexForGivenPosition(position);
 		getOrders().add(listIndex, order);
 		if (order.getSortWeight() == null) {
 			order.setSortWeight(findSortWeight(listIndex));
 		}
 	}
-	
+
 	private Integer findListIndexForGivenPosition(Integer position) {
 		Integer size = getOrders().size();
 		if (position != null) {
@@ -216,7 +217,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 		}
 		return position;
 	}
-	
+
 	private double findSortWeight(int index) {
 		int size = getOrders().size();
 		if (size == 1) {
@@ -230,7 +231,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 		}
 		return (getOrders().get(index - 1).getSortWeight() + getOrders().get(index + 1).getSortWeight()) / 2;
 	}
-	
+
 	/**
 	 * Gets the orderSet
 	 *
@@ -239,7 +240,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public OrderSet getOrderSet() {
 		return orderSet;
 	}
-	
+
 	/**
 	 * Sets the orderSet
 	 *
@@ -248,30 +249,30 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	public void setOrderSet(OrderSet orderSet) {
 		this.orderSet = orderSet;
 	}
-	
+
 	@Override
 	public Integer getId() {
 		return getOrderGroupId();
 	}
-	
+
 	@Override
 	public void setId(Integer id) {
 		setOrderGroupId(id);
 	}
-	
+
 	/**
 	 * Gets the parent order group to maintain linkages between groups and support group nesting
-	 * 
+	 *
 	 * @return the parent order group
 	 * @since 2.4.0
 	 */
 	public OrderGroup getParentOrderGroup() {
 		return parentOrderGroup;
 	}
-	
+
 	/**
 	 * Sets the parent order group to maintain linkages between groups and support group nesting
-	 * 
+	 *
 	 * @param parentOrderGroup the parent order group to set.
 	 * @since 2.4.0
 	 */
@@ -280,9 +281,8 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	}
 
 	/**
-	 * Gets the order group reason which denotes the reason why the group was
-	 * ordered
-	 * 
+	 * Gets the order group reason which denotes the reason why the group was ordered
+	 *
 	 * @return the order group reason
 	 * @since 2.4.0
 	 */
@@ -291,20 +291,19 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	}
 
 	/**
-	 * Sets the order group reason which denotes the reason why the group was
-	 * ordered
-	 * 
+	 * Sets the order group reason which denotes the reason why the group was ordered
+	 *
 	 * @param orderGroupReason, the order group reason to set
 	 * @since 2.4.0
 	 */
 	public void setOrderGroupReason(Concept orderGroupReason) {
 		this.orderGroupReason = orderGroupReason;
 	}
-	
+
 	/**
-	 * Gets the previous order group to other order groups, to maintain linkages
-	 * between groups and support group nesting
-	 * 
+	 * Gets the previous order group to other order groups, to maintain linkages between groups and
+	 * support group nesting
+	 *
 	 * @param returns the previous order group
 	 * @since 2.4.0
 	 */
@@ -313,35 +312,35 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	}
 
 	/**
-	 * Sets the previous order group to other order groups, to maintain linkages
-	 * between groups and support group nesting
-	 * 
+	 * Sets the previous order group to other order groups, to maintain linkages between groups and
+	 * support group nesting
+	 *
 	 * @param previousOrderGroup The previous order group to set
 	 * @since 2.4.0
 	 */
 	public void setPreviousOrderGroup(OrderGroup previousOrderGroup) {
 		this.previousOrderGroup = previousOrderGroup;
 	}
-	
+
 	/**
-	 * Gets the nested order groups to other order groups, to maintain linkages
-	 * between groups and support group nesting
-	 * 
+	 * Gets the nested order groups to other order groups, to maintain linkages between groups and
+	 * support group nesting
+	 *
 	 * @param returns the nested order groups
 	 * @since 2.4.0
 	 */
 	public Set<OrderGroup> getNestedOrderGroups() {
 		return this.nestedOrderGroups;
 	}
-	
+
 	/**
-	 * Sets the nested order groups to other order groups, to maintain linkages
-	 * between groups and support group nesting.
-	 * 
+	 * Sets the nested order groups to other order groups, to maintain linkages between groups and
+	 * support group nesting.
+	 *
 	 * @param nestedOrderGroup The nested order groups to set
 	 * @since 2.4.0
 	 */
 	public void setNestedOrderGroups(Set<OrderGroup> nestedOrderGroups) {
-		this.nestedOrderGroups = nestedOrderGroups;
+		this.nestedOrderGroups = CollectionUtil.setCollection(this.nestedOrderGroups, nestedOrderGroups);
 	}
 }

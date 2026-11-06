@@ -9,8 +9,6 @@
  */
 package org.openmrs.util;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,20 +18,21 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * This test class (should) contain tests for all of the {@link UserByNameComparator} methods.
  */
 public class UserByNameComparatorTest {
-	
+
 	/**
-	 * This tests sorting with the {@link UserByNameComparator} given a set of users with
-	 * personNames
-	 * 
+	 * This tests sorting with the {@link UserByNameComparator} given a set of users with personNames
+	 *
 	 * @see UserByNameComparator#compare(User,User)
 	 */
 	@Test
 	public void compare_shouldSortUsersByPersonNames() {
-		
+
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		User user1 = new User(person1);
@@ -46,17 +45,17 @@ public class UserByNameComparatorTest {
 		Person person4 = new Person();
 		person4.addName(new PersonName("givenName", "middleNamh", "familyName"));
 		User user4 = new User(person4);
-		
+
 		List<User> listToSort = new ArrayList<>();
 		// add the users randomly
 		listToSort.add(user3);
 		listToSort.add(user1);
 		listToSort.add(user4);
 		listToSort.add(user2);
-		
+
 		// sort the list with userByNameComparator
 		listToSort.sort(new UserByNameComparator());
-		
+
 		// make sure that the users are sorted in the expected order
 		Iterator<User> it = listToSort.iterator();
 		assertTrue(user1.equals(it.next()), "Expected user1 to be the first in the sorted user list but wasn't");

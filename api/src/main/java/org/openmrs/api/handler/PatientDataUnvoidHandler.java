@@ -38,19 +38,17 @@ import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
  * @see Patient
  * @since 1.9
  */
-@Handler(supports = {Patient.class}, order = 50)
+@Handler(supports = { Patient.class }, order = 50)
 public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
-	
+
 	@Override
 	public void handle(Patient patient, User originalVoidingUser, Date origParentVoidedDate, String unused) {
 		//can't be unvoiding a patient that doesn't exist in the database
 		if (patient.getId() != null) {
 			//unvoid all the encounter that got voided as a result of the patient getting voided
 			EncounterService es = Context.getEncounterService();
-			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder()
-				.setPatient(patient)
-				.setIncludeVoided(true)
-				.createEncounterSearchCriteria();
+			EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteriaBuilder().setPatient(patient)
+			        .setIncludeVoided(true).createEncounterSearchCriteria();
 			List<Encounter> encounters = es.getEncounters(encounterSearchCriteria);
 			if (CollectionUtils.isNotEmpty(encounters)) {
 				for (Encounter encounter : encounters) {
@@ -60,7 +58,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 					}
 				}
 			}
-			
+
 			//unvoid all the orders that got voided as a result of the patient getting voided
 			OrderService os = Context.getOrderService();
 			List<Order> orders = os.getAllOrdersByPatient(patient);

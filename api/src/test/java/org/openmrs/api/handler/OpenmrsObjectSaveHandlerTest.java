@@ -9,10 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -25,11 +21,15 @@ import org.openmrs.User;
 import org.openmrs.annotation.AllowEmptyStrings;
 import org.openmrs.annotation.AllowLeadingOrTrailingWhitespace;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Tests for {@link OpenmrsObjectSaveHandler}
  */
 public class OpenmrsObjectSaveHandlerTest {
-	
+
 	/**
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
@@ -39,14 +39,14 @@ public class OpenmrsObjectSaveHandlerTest {
 		role.setName("");
 		role.setDescription("");
 		role.setRole("");
-		
+
 		new OpenmrsObjectSaveHandler().handle(role, null, null, null);
-		
+
 		assertNull(role.getName());
 		assertNull(role.getDescription());
 		assertNull(role.getRole());
 	}
-	
+
 	/**
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
@@ -56,7 +56,7 @@ public class OpenmrsObjectSaveHandlerTest {
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
 		assertNotNull(obj.getName());
 	}
-	
+
 	/**
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
@@ -66,7 +66,7 @@ public class OpenmrsObjectSaveHandlerTest {
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
 		assertNotNull(obj.getDescription());
 	}
-	
+
 	/**
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
@@ -78,7 +78,7 @@ public class OpenmrsObjectSaveHandlerTest {
 		new OpenmrsObjectSaveHandler().handle(term, null, null, null);
 		assertEquals("code", term.getCode());
 	}
-	
+
 	/**
 	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
 	 */
@@ -88,47 +88,75 @@ public class OpenmrsObjectSaveHandlerTest {
 		new OpenmrsObjectSaveHandler().handle(obj, null, null, null);
 		assertEquals("name", obj.getName());
 	}
-	
+
+	/**
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldSetTheUuidIfItIsNull() {
+		Role role = new Role();
+		role.setUuid(null);
+
+		new OpenmrsObjectSaveHandler().handle(role, null, null, null);
+
+		assertNotNull(role.getUuid());
+	}
+
+	/**
+	 * A uuid supplied by the caller identifies the object elsewhere, so saving must not replace it.
+	 *
+	 * @see OpenmrsObjectSaveHandler#handle(OpenmrsObject,User,Date,String)
+	 */
+	@Test
+	public void handle_shouldNotOverwriteAnExistingUuid() {
+		Role role = new Role();
+		String uuid = role.getUuid();
+
+		new OpenmrsObjectSaveHandler().handle(role, null, null, null);
+
+		assertEquals(uuid, role.getUuid());
+	}
+
 	public class SomeClass extends BaseOpenmrsObject {
-		
+
 		private Integer id;
-		
+
 		private String name;
-		
+
 		private String description;
-		
+
 		public SomeClass(String name) {
 			setName(name);
 		}
-		
+
 		public SomeClass(String name, String description) {
 			setName(name);
 			setDescription(description);
 		}
-		
+
 		public String getName() {
 			return name;
 		}
-		
+
 		@AllowEmptyStrings
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
 		public String getDescription() {
 			return description;
 		}
-		
+
 		@AllowLeadingOrTrailingWhitespace
 		public void setDescription(String description) {
 			this.description = description;
 		}
-		
+
 		@Override
 		public void setId(Integer id) {
 			this.id = id;
 		}
-		
+
 		@Override
 		public Integer getId() {
 			return id;

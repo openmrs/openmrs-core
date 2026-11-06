@@ -17,31 +17,31 @@ import org.apache.commons.collections.comparators.NullComparator;
 import org.openmrs.PatientIdentifierType;
 
 /**
- * Orders {@link PatientIdentifierType} by retired (true last), required (true first), name and
- * id.
- * 
+ * Orders {@link PatientIdentifierType} by retired (true last), required (true first), name and id.
+ *
  * @since 1.9.2, 1.8.5
  */
 public class PatientIdentifierTypeDefaultComparator implements Comparator<PatientIdentifierType>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final ComparatorChain comparatorChain;
-	
+
 	public PatientIdentifierTypeDefaultComparator() {
 		comparatorChain = new ComparatorChain();
-		
+
 		final NullComparator nullHigherComparator = new NullComparator();
 		final NullComparator nullLowerComparator = new NullComparator(false);
-		
+
 		//Retired higher
 		comparatorChain.addComparator(
-				(Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRetired(), o2.getRetired()));
-		
+		    (Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRetired(), o2.getRetired()));
+
 		//Required lower
 		comparatorChain.addComparator(
-				(Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRequired(), o2.getRequired()), true);
-		
+		    (Comparator<PatientIdentifierType>) (o1, o2) -> nullLowerComparator.compare(o1.getRequired(), o2.getRequired()),
+		    true);
+
 		//By name
 		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> {
 			String o1Name = (o1.getName() != null) ? o1.getName().toLowerCase() : null;
@@ -49,14 +49,15 @@ public class PatientIdentifierTypeDefaultComparator implements Comparator<Patien
 
 			return nullHigherComparator.compare(o1Name, o2Name);
 		});
-		
+
 		//By id
-		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> nullHigherComparator.compare(o1.getPatientIdentifierTypeId(), o2.getPatientIdentifierTypeId()));
+		comparatorChain.addComparator((Comparator<PatientIdentifierType>) (o1, o2) -> nullHigherComparator
+		        .compare(o1.getPatientIdentifierTypeId(), o2.getPatientIdentifierTypeId()));
 	}
-	
+
 	/**
 	 * Orders by retired (true last), required (true first), name and id.
-	 * 
+	 * <p>
 	 * <strong>Should</strong> order properly
 	 */
 	@Override

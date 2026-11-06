@@ -14,30 +14,30 @@ package org.openmrs.serialization;
  * OpenMRS
  */
 public class SerializationException extends Exception {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Default Constructor
 	 */
 	public SerializationException() {
 		super();
 	}
-	
+
 	/**
 	 * Inherited Constructor
 	 */
 	public SerializationException(Throwable cause) {
 		super(cause);
 	}
-	
+
 	/**
 	 * Inherited Constructor
 	 */
 	public SerializationException(String message) {
 		super(message);
 	}
-	
+
 	/**
 	 * Inherited Constructor
 	 */

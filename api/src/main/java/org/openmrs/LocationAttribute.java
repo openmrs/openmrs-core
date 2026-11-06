@@ -9,67 +9,66 @@
  */
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+
+import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
 
 /**
  * A value for a user-defined {@link LocationAttributeType} that is stored on a {@link Location}.
+ *
  * @see Attribute
  * @since 1.9
  */
 @Audited
 @Entity
 @Table(name = "location_attribute")
-@AssociationOverride(
-	name="owner",
-	joinColumns = @JoinColumn(name="location_id", nullable = false)
-)
+@AssociationOverride(name = "owner", joinColumns = @JoinColumn(name = "location_id", nullable = false))
 public class LocationAttribute extends BaseAttribute<LocationAttributeType, Location> implements Attribute<LocationAttributeType, Location> {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="location_attribute_id")
+	@Column(name = "location_attribute_id")
 	private Integer locationAttributeId;
-	
+
 	// BaseAttribute<Location> has an "owner" property of type Location, which we re-expose as "location"
-	
+
 	/**
 	 * @return the locationAttributeId
 	 */
 	public Integer getLocationAttributeId() {
 		return locationAttributeId;
 	}
-	
+
 	/**
 	 * @param locationAttributeId the locationAttributeId to set
 	 */
 	public void setLocationAttributeId(Integer locationAttributeId) {
 		this.locationAttributeId = locationAttributeId;
 	}
-	
+
 	/**
 	 * @return the location
 	 */
 	public Location getLocation() {
 		return getOwner();
 	}
-	
+
 	/**
 	 * @param location the location to set
 	 */
 	public void setLocation(Location location) {
 		setOwner(location);
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -77,7 +76,7 @@ public class LocationAttribute extends BaseAttribute<LocationAttributeType, Loca
 	public Integer getId() {
 		return getLocationAttributeId();
 	}
-	
+
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
@@ -85,5 +84,5 @@ public class LocationAttribute extends BaseAttribute<LocationAttributeType, Loca
 	public void setId(Integer id) {
 		setLocationAttributeId(id);
 	}
-	
+
 }

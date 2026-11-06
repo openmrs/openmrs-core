@@ -9,13 +9,13 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
@@ -27,8 +27,8 @@ import org.openmrs.util.OpenmrsConstants;
 
 public class PersonSearchCriteria {
 
-	Predicate preparePredicateForAttribute(CriteriaBuilder cb, Join<Patient, Attribute> attributeJoin, 
-			Join<Attribute, AttributeType> attributeTypeJoin, String value, Boolean voided, MatchMode matchMode) {
+	Predicate preparePredicateForAttribute(CriteriaBuilder cb, Join<Patient, Attribute> attributeJoin,
+	        Join<Attribute, AttributeType> attributeTypeJoin, String value, Boolean voided, MatchMode matchMode) {
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(cb.isTrue(attributeTypeJoin.get("searchable")));
 
@@ -38,13 +38,12 @@ public class PersonSearchCriteria {
 			predicates.add(cb.isFalse(attributeJoin.get("voided")));
 		}
 
-		return cb.and(predicates.toArray(new Predicate[]{}));
+		return cb.and(predicates.toArray(new Predicate[] {}));
 	}
-	
+
 	Join<Patient, Attribute> addAliasForAttribute(Join<Encounter, Patient> patientJoin) {
 		return patientJoin.join("attributes", JoinType.LEFT);
 	}
-
 
 	Join<Attribute, AttributeType> addAliasForAttributeType(Join<Patient, Attribute> attributeJoin) {
 		return attributeJoin.join("attributeType", JoinType.LEFT);
@@ -52,10 +51,11 @@ public class PersonSearchCriteria {
 
 	MatchMode getAttributeMatchMode() {
 		AdministrationService adminService = Context.getAdministrationService();
-		String matchModeProperty = adminService.getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE, "");
-		return (matchModeProperty.equals(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE)) ? MatchMode.ANYWHERE
+		String matchModeProperty = adminService
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_MODE, "");
+		return (matchModeProperty.equals(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_ATTRIBUTE_SEARCH_MATCH_ANYWHERE))
+		        ? MatchMode.ANYWHERE
 		        : MatchMode.EXACT;
 	}
-	
+
 }

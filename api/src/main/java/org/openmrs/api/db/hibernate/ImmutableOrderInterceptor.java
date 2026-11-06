@@ -15,16 +15,16 @@ import org.springframework.stereotype.Component;
 /**
  * ImmutableEntityInterceptor for Orders, ensures that orders fields don't get edited except for
  * dateStopped, voided, dateVoided, voidedBy, voidReason
- * 
+ *
  * @see ImmutableEntityInterceptor
  * @since 1.10
  */
 @Component("immutableOrderInterceptor")
 public class ImmutableOrderInterceptor extends ImmutableEntityInterceptor {
-	
+
 	private static final String[] MUTABLE_PROPERTY_NAMES = new String[] { "dateStopped", "voided", "dateVoided", "voidedBy",
-		"changedBy", "dateChanged", "voidReason", "patient", "fulfillerStatus", "fulfillerComment", "accessionNumber"};
-	
+	        "changedBy", "dateChanged", "voidReason", "patient", "fulfillerStatus", "fulfillerComment", "accessionNumber" };
+
 	/**
 	 * @see ImmutableEntityInterceptor#getSupportedType()
 	 */
@@ -32,7 +32,7 @@ public class ImmutableOrderInterceptor extends ImmutableEntityInterceptor {
 	protected Class<?> getSupportedType() {
 		return Order.class;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.hibernate.ImmutableEntityInterceptor#getMutablePropertyNames()
 	 */
@@ -40,7 +40,7 @@ public class ImmutableOrderInterceptor extends ImmutableEntityInterceptor {
 	protected String[] getMutablePropertyNames() {
 		return MUTABLE_PROPERTY_NAMES;
 	}
-	
+
 	/**
 	 * @see ImmutableEntityInterceptor#ignoreVoidedOrRetiredObjects()
 	 */

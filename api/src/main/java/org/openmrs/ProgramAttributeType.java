@@ -10,16 +10,16 @@
 
 package org.openmrs;
 
-import org.hibernate.envers.Audited;
-import org.openmrs.attribute.AttributeType;
-import org.openmrs.attribute.BaseAttributeType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import org.hibernate.envers.Audited;
+import org.openmrs.attribute.AttributeType;
+import org.openmrs.attribute.BaseAttributeType;
 
 @Entity
 @Table(name = "program_attribute_type")
@@ -29,23 +29,23 @@ public class ProgramAttributeType extends BaseAttributeType<PatientProgram> impl
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "program_attribute_type_id")
-    private Integer programAttributeTypeId;
+	private Integer programAttributeTypeId;
 
-    @Override
-    public Integer getId() {
-        return getProgramAttributeTypeId();
-    }
+	@Override
+	public Integer getId() {
+		return getProgramAttributeTypeId();
+	}
 
-    @Override
-    public void setId(Integer id) {
-        setProgramAttributeTypeId(id);
-    }
+	@Override
+	public void setId(Integer id) {
+		setProgramAttributeTypeId(id);
+	}
 
-    public Integer getProgramAttributeTypeId() {
-        return programAttributeTypeId;
-    }
+	public Integer getProgramAttributeTypeId() {
+		return programAttributeTypeId;
+	}
 
-    public void setProgramAttributeTypeId(Integer programAttributeTypeId) {
-        this.programAttributeTypeId = programAttributeTypeId;
-    }
+	public void setProgramAttributeTypeId(Integer programAttributeTypeId) {
+		this.programAttributeTypeId = programAttributeTypeId;
+	}
 }

@@ -23,9 +23,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 /**
- * A thread-safe first-in, first-out queue with a fixed size that replaces the oldest element when full.
- * 
- * This class does not support null elements.
+ * A thread-safe first-in, first-out queue with a fixed size that replaces the oldest element when
+ * full. This class does not support null elements.
  *
  * @param <E> the type of elements in this collection
  * @since 2.4
@@ -90,8 +89,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			internalAdd(e);
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 
@@ -109,12 +107,21 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 				Objects.requireNonNull(e);
 				internalAdd(e);
 			}
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 
 		return true;
+	}
+
+	/**
+	 * Returns the capacity (i.e., the maximum number of elements stored) of this
+	 * ThreadSafeCircularFifoQueue
+	 *
+	 * @return the capacity of the current queue
+	 */
+	public int capacity() {
+		return this.maxElements;
 	}
 
 	@Override
@@ -133,8 +140,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 
 				read = write = size = 0;
 			}
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -149,8 +155,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return internalContains(o);
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -169,10 +174,9 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 					return false;
 				}
 			}
-			
+
 			return true;
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -187,8 +191,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 			}
 
 			return elements[read];
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 
@@ -205,8 +208,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return size == 0;
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -222,8 +224,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return size == 0 ? null : elements[read];
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -234,8 +235,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return size == 0 ? null : internalRemove();
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -250,8 +250,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 			}
 
 			return internalRemove();
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -280,8 +279,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 			} while (idx != write);
 
 			return false;
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -294,8 +292,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return removeIf(c::contains);
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -308,8 +305,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return removeIf(o -> !c.contains(o));
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -320,8 +316,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		lock.lock();
 		try {
 			return size;
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -357,8 +352,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 			}
 
 			return result;
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
@@ -387,14 +381,13 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 					sb.append(',').append(' ');
 				}
 			}
-		}
-		finally {
+		} finally {
 			lock.unlock();
 		}
 	}
 
 	/* Internal implementations: MUST BE USED INSIDE LOCKS  */
-	
+
 	private int increment(int i) {
 		return (i + 1) % maxElements;
 	}
@@ -412,7 +405,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		elements[write] = e;
 		write = increment(write);
 	}
-	
+
 	private boolean internalContains(Object o) {
 		if (size > 0) {
 			int idx = read;
@@ -476,13 +469,11 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 	}
 
 	/**
-	 * A linked list maintaining references between the queue and any iterators
-	 * 
-	 * This class exists to ensure that iterator objects are properly updated when items are removed from the queue and
-	 * are invalidated if the underlying queue becomes incompatible with the iterator's view of it.
-	 * 
-	 * This is based on the implementation of ArrayBlockingQueue.Itrs and involves the same garbage collection scheme
-	 * described there.
+	 * A linked list maintaining references between the queue and any iterators This class exists to
+	 * ensure that iterator objects are properly updated when items are removed from the queue and are
+	 * invalidated if the underlying queue becomes incompatible with the iterator's view of it. This is
+	 * based on the implementation of ArrayBlockingQueue.Itrs and involves the same garbage collection
+	 * scheme described there.
 	 */
 	private class Iterators {
 
@@ -538,7 +529,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 			int probes = tryHarder ? LONG_SWEEP_PROBES : SHORT_SWEEP_PROBES;
 			Node o, p;
 			final Node sweeper = this.sweeper;
-			boolean completeCycle;   // to limit search to one full sweep
+			boolean completeCycle; // to limit search to one full sweep
 
 			if (sweeper == null) {
 				o = null;
@@ -589,7 +580,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 		}
 
 		private void prune(Predicate<Iterator> shouldRemove) {
-			for (Node o = null, p = head; p != null; ) {
+			for (Node o = null, p = head; p != null;) {
 				final Iterator it = p.get();
 				final Node next = p.next;
 
@@ -629,13 +620,12 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 	}
 
 	/**
-	 * An attempt to be a straight-forward iterator implementation for a ThreadSafeCircularFifoQueue.
-	 * 
-	 * It should iterate over each member in the queue only once, assuming that the queue is not modified while this
-	 * iterator remains in use. If the underlying queue is modified, the iterator will attempt to recover and keep going.
-	 * 
-	 * If it becomes too far out of synch with the underlying data, an iterator may fail before iterating over all elements
-	 * in a queue. However if {@link #hasNext()} returns true, {@link #next()} will always return a result.
+	 * An attempt to be a straight-forward iterator implementation for a ThreadSafeCircularFifoQueue. It
+	 * should iterate over each member in the queue only once, assuming that the queue is not modified
+	 * while this iterator remains in use. If the underlying queue is modified, the iterator will
+	 * attempt to recover and keep going. If it becomes too far out of synch with the underlying data,
+	 * an iterator may fail before iterating over all elements in a queue. However if {@link #hasNext()}
+	 * returns true, {@link #next()} will always return a result.
 	 */
 	private class Iterator implements java.util.Iterator<E> {
 
@@ -680,8 +670,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 
 					prevCycles = iterators.cycles;
 				}
-			}
-			finally {
+			} finally {
 				lock.unlock();
 			}
 		}
@@ -703,11 +692,10 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 						detach();
 					}
 				}
-			}
-			finally {
+			} finally {
 				lock.unlock();
 			}
-			
+
 			return false;
 		}
 
@@ -724,7 +712,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 				if (!isDetached()) {
 					updateIndices();
 				}
-				
+
 				prevIndex = nextIndex;
 				prevItem = it;
 
@@ -742,8 +730,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 				}
 
 				return it;
-			}
-			finally {
+			} finally {
 				lock.unlock();
 			}
 		}
@@ -756,7 +743,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 				if (!isDetached()) {
 					updateIndices();
 				}
-				
+
 				if (prevIndex == NONE) {
 					throw new IllegalStateException();
 				} else if (prevIndex >= 0 && elements[prevIndex] == prevItem) {
@@ -769,12 +756,11 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 
 				prevIndex = NONE;
 				prevItem = null;
-				
+
 				if (nextIndex < 0) {
 					detach();
 				}
-			}
-			finally {
+			} finally {
 				lock.unlock();
 			}
 		}
@@ -799,7 +785,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 
 			final int cycles = iterators.cycles;
 			final int read = ThreadSafeCircularFifoQueue.this.read;
-			
+
 			int cycleDiff = cycles - prevCycles;
 
 			if (removedIndex < read) {
@@ -862,22 +848,22 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 			}
 			return distance;
 		}
-		
+
 		private boolean indexInvalidated(int index, long dequeues) {
 			if (index < 0) {
 				return false;
 			}
-			
+
 			int distance = distance(index);
-			
+
 			return dequeues > distance;
 		}
-		
+
 		private void updateIndices() {
 			final int cycles = ThreadSafeCircularFifoQueue.this.iterators.cycles;
 			if (cycles != prevCycles || read != prevRead) {
 				long dequeues = (cycles - prevCycles) * maxElements + (read - prevRead);
-				
+
 				if (indexInvalidated(prevIndex, dequeues)) {
 					prevIndex = NONE;
 				}
@@ -885,7 +871,7 @@ public class ThreadSafeCircularFifoQueue<E> extends AbstractQueue<E> implements 
 				if (indexInvalidated(nextIndex, dequeues)) {
 					nextIndex = NONE;
 				}
-				
+
 				if (prevIndex < 0 && nextIndex < 0) {
 					detach();
 				} else {

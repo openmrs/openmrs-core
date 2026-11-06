@@ -9,17 +9,11 @@
  */
 package org.openmrs.module.dtd;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.openmrs.module.dtd.ConfigXmlBuilder.withMinimalTags;
-import static org.openmrs.module.dtd.ConfigXmlBuilder.writeToInputStream;
-import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -28,21 +22,26 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.w3c.dom.Document;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openmrs.module.dtd.ConfigXmlBuilder.withMinimalTags;
+import static org.openmrs.module.dtd.ConfigXmlBuilder.writeToInputStream;
+import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
+
 public class ModuleConfigDTDTest_V2_0 {
-	
+
 	private static final String[] compatibleVersions = new String[] { "2.0" };
-	
+
 	@ParameterizedTest
 	@MethodSource("getCompatibleVersions")
-	public void configXmlServletWithMinimalTags(String version) throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
-		Document configXml = withMinimalTags(version)
-			.build();
+	public void configXmlServletWithMinimalTags(String version)
+	        throws ParserConfigurationException, TransformerException, IOException, URISyntaxException {
+		Document configXml = withMinimalTags(version).build();
 
 		try (InputStream inputStream = writeToInputStream(configXml)) {
 			assertTrue(isValidConfigXml(inputStream));
 		}
 	}
-	
+
 	private static Stream<Arguments> getCompatibleVersions() {
 		return Arrays.stream(compatibleVersions).map(Arguments::of);
 	}

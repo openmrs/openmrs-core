@@ -18,6 +18,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 
@@ -27,12 +28,12 @@ import org.openmrs.web.filter.StartupFilter;
  * authenticate and review the updates before continuing.
  */
 public class StartupErrorFilter extends StartupFilter {
-	
+
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
 	private static final String DEFAULT_PAGE = "generalerror.vm";
-	
+
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
 	 *
@@ -41,13 +42,13 @@ public class StartupErrorFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-		throws IOException, ServletException {
+	        throws IOException, ServletException {
 
 		if (getUpdateFilterModel().errorAtStartup != null) {
 			renderTemplate(DEFAULT_PAGE, new HashMap<>(), httpResponse);
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#doPost(jakarta.servlet.http.HttpServletRequest,
 	 *      jakarta.servlet.http.HttpServletResponse)
@@ -58,7 +59,7 @@ public class StartupErrorFilter extends StartupFilter {
 		// No longer invoking doPost() since core module upload is deprecated
 		httpResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "POST not supported during setup.");
 	}
-	
+
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getUpdateFilterModel()
 	 */
@@ -67,7 +68,7 @@ public class StartupErrorFilter extends StartupFilter {
 		// this object was initialized in the #init(FilterConfig) method
 		return new StartupErrorFilterModel(Listener.getErrorAtStartup());
 	}
-	
+
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#skipFilter(HttpServletRequest)
 	 */
@@ -75,7 +76,7 @@ public class StartupErrorFilter extends StartupFilter {
 	public boolean skipFilter(HttpServletRequest request) {
 		return !Listener.errorOccurredAtStartup();
 	}
-	
+
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
@@ -83,5 +84,5 @@ public class StartupErrorFilter extends StartupFilter {
 	protected String getTemplatePrefix() {
 		return "org/openmrs/web/filter/startuperror/";
 	}
-	
+
 }

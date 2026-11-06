@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LocationDatatype extends BaseMetadataDatatype<Location> {
-	
+
 	/**
 	 * @see org.openmrs.customdatatype.SerializingCustomDatatype#deserialize(String)
 	 * @override

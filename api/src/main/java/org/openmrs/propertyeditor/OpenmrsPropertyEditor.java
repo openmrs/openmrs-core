@@ -20,24 +20,23 @@ import org.openmrs.OpenmrsObject;
  * When setting the {@code value} from text it will try to get the {@code OpenmrsObject} via its id
  * and if that fails using its uuid.
  * </p>
- * 
+ *
  * @param <T> the openmrs object to convert to and from
  * @since 2.2.0
  * @see org.openmrs.OpenmrsObject
  */
 public abstract class OpenmrsPropertyEditor<T extends OpenmrsObject> extends PropertyEditorSupport {
-	
+
 	protected abstract T getObjectById(Integer id);
-	
+
 	protected abstract T getObjectByUuid(String uuid);
-	
+
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.isNotBlank(text)) {
 			try {
 				setValue(getObjectById(Integer.valueOf(text)));
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				T o = getObjectByUuid(text);
 				setValue(o);
 				if (o == null) {
@@ -48,7 +47,7 @@ public abstract class OpenmrsPropertyEditor<T extends OpenmrsObject> extends Pro
 			setValue(null);
 		}
 	}
-	
+
 	@Override
 	public String getAsText() {
 		T t = (T) getValue();

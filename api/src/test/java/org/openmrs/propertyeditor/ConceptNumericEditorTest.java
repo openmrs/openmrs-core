@@ -14,17 +14,17 @@ import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConceptNumericEditorTest extends BasePropertyEditorTest<ConceptNumeric, ConceptNumericEditor> {
-	
+
 	private static final Integer EXISTING_ID = 5089;
-	
+
 	@Autowired
 	private ConceptService conceptService;
-	
+
 	@Override
 	protected ConceptNumericEditor getNewEditor() {
 		return new ConceptNumericEditor();
 	}
-	
+
 	@Override
 	protected ConceptNumeric getExistingObject() {
 		return conceptService.getConceptNumeric(EXISTING_ID);

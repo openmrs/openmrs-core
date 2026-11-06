@@ -22,65 +22,64 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Wraps Response for GZipFilter
- * 
+ *
  * @author Matt Raible, cmurphy@intechtual.com
  */
 public class GZIPResponseWrapper extends HttpServletResponseWrapper {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(GZIPResponseWrapper.class);
-	
+
 	protected HttpServletResponse origResponse;
-	
+
 	protected ServletOutputStream stream = null;
-	
+
 	protected PrintWriter writer = null;
-	
+
 	protected int error = 0;
-	
+
 	public GZIPResponseWrapper(HttpServletResponse response) {
 		super(response);
 		origResponse = response;
 	}
-	
+
 	public ServletOutputStream createOutputStream() throws IOException {
 		return new GZIPResponseStream(origResponse);
 	}
-	
+
 	public void finishResponse() {
 		try {
 			if (writer != null) {
 				writer.close();
 			} else {
-				if (stream != null && !((GZIPResponseStream)stream).closed()) {
+				if (stream != null && !((GZIPResponseStream) stream).closed()) {
 					stream.close();
 				}
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Error during closing writer or stream", e);
 		}
 	}
-	
+
 	@Override
 	public void flushBuffer() throws IOException {
 		if (stream != null) {
 			stream.flush();
 		}
 	}
-	
+
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
 		if (writer != null) {
 			throw new IllegalStateException("getWriter() has already been called!");
 		}
-		
+
 		if (stream == null) {
 			stream = createOutputStream();
 		}
-		
+
 		return stream;
 	}
-	
+
 	@Override
 	public PrintWriter getWriter() throws IOException {
 		// From cmurphy@intechtual.com to fix:
@@ -88,21 +87,21 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 		if (this.origResponse != null && this.origResponse.isCommitted()) {
 			return super.getWriter();
 		}
-		
+
 		if (writer != null) {
 			return writer;
 		}
-		
+
 		if (stream != null) {
 			throw new IllegalStateException("getOutputStream() has already been called!");
 		}
-		
+
 		stream = createOutputStream();
 		writer = new PrintWriter(new OutputStreamWriter(stream, origResponse.getCharacterEncoding()));
-		
+
 		return writer;
 	}
-	
+
 	/**
 	 * @see jakarta.servlet.http.HttpServletResponse#sendError(int, java.lang.String)
 	 */
@@ -110,10 +109,10 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	public void sendError(int error, String message) throws IOException {
 		super.sendError(error, message);
 		this.error = error;
-		
+
 		log.debug("sending error: {} [{}]", error, message);
 	}
-	
+
 	public void setContentLength(int length) {
 		//Intentionally left blank to ignore whatever length the caller sets, because
 		//we are going to zip the response and hence end up with a smaller length.

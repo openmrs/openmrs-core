@@ -27,7 +27,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  */
 @Handler(supports = Order.class)
 public class OrderSaveHandler implements SaveHandler<Order> {
-	
+
 	/**
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)

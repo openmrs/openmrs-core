@@ -9,10 +9,11 @@
  */
 package org.openmrs.util.databasechange;
 
-import jakarta.persistence.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jakarta.persistence.Entity;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -30,29 +31,28 @@ import org.slf4j.LoggerFactory;
  * Validates Hibernate mapping files.
  */
 public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ValidateHibernateMappingsDatabaseIT.class);
-	
-	
+
 	@Test
 	public void shouldValidateHibernateMappings() throws Exception {
 		/*
 		 * Drop all database objects before running the test as previously run tests may have left tables behind.
 		 */
 		this.dropAllDatabaseObjects();
-		
+
 		ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 		Map<String, List<String>> changeLogCombinations = changeLogVersionFinder.getChangeLogCombinations();
-		
+
 		// test all possible combinations of liquibase snapshot and update files
 		//
 		for (List<String> snapshotAndUpdateFileNames : changeLogCombinations.values()) {
-			
+
 			this.initializeDatabase();
-			
+
 			log.info(
 			    "liquibase files used for creating and updating the OpenMRS database are: " + snapshotAndUpdateFileNames);
-			
+
 			for (String fileName : snapshotAndUpdateFileNames) {
 				// process the core data file only for the first generation of liquibase snapshot files
 				//
@@ -60,7 +60,7 @@ public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 					log.info("processing " + fileName);
 					this.updateDatabase(fileName);
 				}
-				
+
 				// exclude the core data file for subsequent generations of liquibase snapshot files
 				//
 				if (!fileName.contains("liquibase-core-data")) {
@@ -68,19 +68,19 @@ public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 					this.updateDatabase(fileName);
 				}
 			}
-			
-			// this is the core of this test: building the session factory validates if the generated database schema 
+
+			// this is the core of this test: building the session factory validates if the generated database schema
 			// corresponds to Hibernate mappings
 			//
 			this.buildSessionFactory();
-			
+
 			this.dropAllDatabaseObjects();
 		}
 	}
-	
+
 	private SessionFactory buildSessionFactory() {
 		Configuration configuration = new Configuration().configure();
-		
+
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
 		entityClasses.remove(OrderServiceTest.SomeTestOrder.class);
 		entityClasses.remove(OpenmrsRevisionEntity.class);
@@ -95,10 +95,11 @@ public class ValidateHibernateMappingsDatabaseIT extends DatabaseIT {
 		configuration.setProperty(Environment.USE_QUERY_CACHE, "false");
 		configuration.setProperty("hibernate.integration.envers.enabled", "false");
 		configuration.setProperty("hibernate.search.backend.type", "lucene");
-		configuration.setProperty("hibernate.search.backend.analysis.configurer", "class:org.openmrs.api.db.hibernate.search.lucene.LuceneConfig");
+		configuration.setProperty("hibernate.search.backend.analysis.configurer",
+		    "class:org.openmrs.api.db.hibernate.search.lucene.LuceneConfig");
 		// Validate HBMs against the actual schema
 		configuration.setProperty(Environment.HBM2DDL_AUTO, "validate");
-		
+
 		return configuration.buildSessionFactory();
 	}
 }

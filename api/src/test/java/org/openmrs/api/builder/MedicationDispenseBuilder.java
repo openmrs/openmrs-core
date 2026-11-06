@@ -10,6 +10,8 @@
 
 package org.openmrs.api.builder;
 
+import java.util.Date;
+
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.MedicationDispense;
@@ -19,20 +21,18 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 
-import java.util.Date;
-
 public class MedicationDispenseBuilder {
-	
+
 	private final MedicationDispense medicationDispense;
-	
+
 	private final PatientService patientService;
-	
+
 	private final OrderService orderService;
-	
+
 	private final EncounterService encounterService;
-	
+
 	private final ConceptService conceptService;
-	
+
 	public MedicationDispenseBuilder() {
 		patientService = Context.getPatientService();
 		conceptService = Context.getConceptService();
@@ -40,26 +40,26 @@ public class MedicationDispenseBuilder {
 		encounterService = Context.getEncounterService();
 		medicationDispense = new MedicationDispense();
 	}
-	
+
 	public MedicationDispense build() {
 		return medicationDispense;
 	}
-	
+
 	public MedicationDispenseBuilder withUuid(String uuid) {
 		medicationDispense.setUuid(uuid);
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withPatient(Integer patientID) {
 		medicationDispense.setPatient(patientService.getPatient(patientID));
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withConcept(Integer conceptID) {
 		medicationDispense.setConcept(conceptService.getConcept(conceptID));
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withStatus(Integer statusConceptId, Integer statusReasonConceptId) {
 		medicationDispense.setStatus(conceptService.getConcept(statusConceptId));
 		if (statusReasonConceptId != null) {
@@ -69,12 +69,12 @@ public class MedicationDispenseBuilder {
 		}
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withType(Integer conceptID) {
 		medicationDispense.setType(conceptService.getConcept(conceptID));
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withEncounter(Integer encounterID) {
 		Encounter e = encounterService.getEncounter(encounterID);
 		medicationDispense.setEncounter(e);
@@ -82,17 +82,17 @@ public class MedicationDispenseBuilder {
 		medicationDispense.setDispenser(e.getActiveEncounterProviders().iterator().next().getProvider());
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withLocation(Integer locationId) {
 		medicationDispense.setLocation(Context.getLocationService().getLocation(locationId));
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withDispenser(Integer providerId) {
 		medicationDispense.setDispenser(Context.getProviderService().getProvider(providerId));
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withDrugOrder(Integer drugOrderId) {
 		DrugOrder drugOrder = (DrugOrder) orderService.getOrder(drugOrderId);
 		medicationDispense.setDrugOrder(drugOrder);
@@ -107,7 +107,7 @@ public class MedicationDispenseBuilder {
 		medicationDispense.setDosingInstructions(drugOrder.getDosingInstructions());
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withDrug(Integer drugID, Integer substitutionTypeConceptId,
 	        Integer substitutionReasonConceptId) {
 		medicationDispense.setDrug(conceptService.getDrug(drugID));
@@ -123,17 +123,17 @@ public class MedicationDispenseBuilder {
 		}
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withDatePrepared(Date datePrepared) {
 		medicationDispense.setDatePrepared(datePrepared);
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withDateHandedOver(Date dateHandedOver) {
 		medicationDispense.setDateHandedOver(dateHandedOver);
 		return this;
 	}
-	
+
 	public MedicationDispenseBuilder withFormNamespaceAndPath(String formNamespaceAndPath) {
 		medicationDispense.setFormNamespaceAndPath(formNamespaceAndPath);
 		return this;

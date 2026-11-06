@@ -15,7 +15,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.springframework.cache.annotation.Cacheable;
 
 public class ServiceTestBeanImpl extends BaseOpenmrsService implements ServiceTestBean {
-	
+
 	@Cacheable("testCache")
 	@Override
 	public String getCachedUUID() {

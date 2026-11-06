@@ -16,34 +16,34 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
  * Has functionality commonly used by unit tests for module activator
  */
 public abstract class BaseModuleActivatorTest extends BaseContextSensitiveTest {
-	
+
 	protected static final String MODULE1_ID = "test1";
-	
+
 	protected static final String MODULE2_ID = "test2";
-	
+
 	protected static final String MODULE3_ID = "test3";
-	
+
 	protected static final String MODULE4_ID = "test4";
-	
+
 	protected static final String MODULE5_ID = "test5";
-	
+
 	protected ModuleTestData moduleTestData;
-	
+
 	@BeforeEach
 	public void beforeEachTest() {
 		moduleTestData = ModuleTestData.getInstance();
-		
+
 		ModuleUtil.shutdown();
-		
+
 		init();
-		
+
 		String modulesToLoad = "org/openmrs/module/include/test3-1.0-SNAPSHOT.omod "
 		        + "org/openmrs/module/include/test1-1.0-SNAPSHOT.omod org/openmrs/module/include/test2-1.0-SNAPSHOT.omod "
 		        + "org/openmrs/module/include/test4-1.0-SNAPSHOT.omod org/openmrs/module/include/test5-1.0-SNAPSHOT.omod";
 		runtimeProperties.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, modulesToLoad);
 		ModuleUtil.startup(runtimeProperties);
 	}
-	
+
 	protected void init() {
 		moduleTestData.init(MODULE1_ID);
 		moduleTestData.init(MODULE2_ID);

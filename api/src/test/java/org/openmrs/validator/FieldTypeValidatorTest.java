@@ -9,60 +9,58 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.FieldType;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link FieldTypeValidator} class.
  */
 public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see FieldTypeValidator#validate(Object,Errors)
-	 * 
 	 */
 	@Test
 	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() {
 		FieldType type = new FieldType();
 		type.setName(null);
 		type.setDescription("Humba humba humba ...");
-		
+
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		type.setName("");
 		errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
-		
+
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("name"));
 	}
-	
+
 	/**
 	 * @see FieldTypeValidator#validate(Object,Errors)
-	 * 
 	 */
 	@Test
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() {
 		FieldType type = new FieldType();
 		type.setName("soccer");
-		
+
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see org.openmrs.validator.FieldTypeValidator#validate(Object, Errors)
 	 */
@@ -70,40 +68,38 @@ public class FieldTypeValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailIfFieldTypeNameIsDuplicate() {
 		FieldType type = new FieldType();
 		type.setName("some field type");
-		
+
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		
+
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see FieldTypeValidator#validate(Object,Errors)
-	 *
 	 */
 	@Test
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		FieldType type = new FieldType();
 		type.setName("soccer");
-		
+
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see FieldTypeValidator#validate(Object,Errors)
-	 *
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		FieldType type = new FieldType();
 		type.setName("too long text too long text too long text too long text");
-		
+
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 	}
 }

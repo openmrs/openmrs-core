@@ -14,19 +14,18 @@ import org.openmrs.api.context.Context;
 
 /**
  * Allows for serializing/deserializing a Patient object to a string so that Spring knows how to
- * pass a Person back and forth through an html form or other medium
- * <br>
+ * pass a Person back and forth through an html form or other medium <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
  *
  * @see Patient
  */
 public class PatientEditor extends OpenmrsPropertyEditor<Patient> {
-	
+
 	@Override
 	protected Patient getObjectById(Integer id) {
 		return Context.getPatientService().getPatient(id);
 	}
-	
+
 	@Override
 	protected Patient getObjectByUuid(String uuid) {
 		return Context.getPatientService().getPatientByUuid(uuid);

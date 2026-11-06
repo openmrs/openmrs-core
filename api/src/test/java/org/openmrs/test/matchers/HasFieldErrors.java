@@ -26,22 +26,22 @@ import org.springframework.validation.Errors;
  * hasFieldErrors("givenName", "GivenName.invalid"));</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.springframework.validation.Errors;
  * @see org.springframework.validation.FieldError;
  * @since 2.2.0
  */
 public final class HasFieldErrors extends TypeSafeMatcher<Errors> {
-	
+
 	private final String field;
-	
+
 	private final String code;
-	
+
 	private HasFieldErrors(String field, String code) {
 		this.field = field;
 		this.code = code;
 	}
-	
+
 	@Override
 	public void describeTo(Description description) {
 		if (field == null) {
@@ -52,7 +52,7 @@ public final class HasFieldErrors extends TypeSafeMatcher<Errors> {
 			description.appendText("to have field errors for '" + field + "' and code '" + code + "'");
 		}
 	}
-	
+
 	@Override
 	protected boolean matchesSafely(Errors item) {
 		if (field == null) {
@@ -63,15 +63,15 @@ public final class HasFieldErrors extends TypeSafeMatcher<Errors> {
 			return item.getFieldErrors(field).stream().map(DefaultMessageSourceResolvable::getCode).anyMatch(code::equals);
 		}
 	}
-	
+
 	public static HasFieldErrors hasFieldErrors() {
 		return new HasFieldErrors(null, null);
 	}
-	
+
 	public static HasFieldErrors hasFieldErrors(String field) {
 		return new HasFieldErrors(field, null);
 	}
-	
+
 	public static HasFieldErrors hasFieldErrors(String field, String code) {
 		return new HasFieldErrors(field, code);
 	}

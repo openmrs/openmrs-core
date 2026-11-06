@@ -15,9 +15,9 @@ import java.util.Collection;
  *
  */
 public class EmptyResult extends Result {
-	
+
 	private static final long serialVersionUID = 6317773013593085780L;
-	
+
 	/**
 	 * @see java.util.ArrayList#add(int, Object)
 	 */
@@ -25,7 +25,7 @@ public class EmptyResult extends Result {
 	public void add(int arg0, Result arg1) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see java.util.ArrayList#add(Object)
 	 */
@@ -33,7 +33,7 @@ public class EmptyResult extends Result {
 	public boolean add(Result value) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#addAll(java.util.Collection)
 	 */
@@ -41,7 +41,7 @@ public class EmptyResult extends Result {
 	public boolean addAll(Collection<? extends Result> newValues) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#addAll(int, java.util.Collection)
 	 */
@@ -49,7 +49,7 @@ public class EmptyResult extends Result {
 	public boolean addAll(int index, Collection<? extends Result> newValues) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#clear()
 	 */
@@ -57,16 +57,18 @@ public class EmptyResult extends Result {
 	public void clear() {
 		throw new ImmutableResultException("Cannot clear EmptyResult");
 	}
-	
+
 	/**
-	 * @see org.openmrs.logic.result.Result#isEmpty()
+	 * <p>
 	 * <strong>Should</strong> return true
+	 *
+	 * @see org.openmrs.logic.result.Result#isEmpty()
 	 */
 	@Override
 	public boolean isEmpty() {
 		return true;
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#toBoolean()
 	 */
@@ -74,16 +76,18 @@ public class EmptyResult extends Result {
 	public Boolean toBoolean() {
 		return Boolean.FALSE;
 	}
-	
+
 	/**
-	 * @see org.openmrs.logic.result.Result#isNull()
+	 * <p>
 	 * <strong>Should</strong> return true
+	 *
+	 * @see org.openmrs.logic.result.Result#isNull()
 	 */
 	@Override
 	public boolean isNull() {
 		return true;
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#remove(int)
 	 */
@@ -91,7 +95,7 @@ public class EmptyResult extends Result {
 	public Result remove(int index) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#remove(java.lang.Object)
 	 */
@@ -99,7 +103,7 @@ public class EmptyResult extends Result {
 	public boolean remove(Object value) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see org.openmrs.logic.result.Result#removeAll(java.util.Collection)
 	 */
@@ -107,7 +111,7 @@ public class EmptyResult extends Result {
 	public boolean removeAll(Collection<?> c) {
 		throw new ImmutableResultException("Cannot add to EmptyResult");
 	}
-	
+
 	/**
 	 * @see java.util.ArrayList#set(int, Object)
 	 */
@@ -115,5 +119,5 @@ public class EmptyResult extends Result {
 	public Result set(int index, Result element) {
 		throw new ImmutableResultException("Cannot set values within EmptyResult");
 	}
-	
+
 }

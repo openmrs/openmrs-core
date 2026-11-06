@@ -29,71 +29,41 @@ import static java.sql.Types.VARCHAR;
 public class H2LessStrictDialect extends H2Dialect {
 
 	@Override
-	public JdbcType resolveSqlTypeDescriptor(String columnTypeName, int jdbcTypeCode, int precision, int scale, JdbcTypeRegistry jdbcTypeRegistry) {
+	public JdbcType resolveSqlTypeDescriptor(String columnTypeName, int jdbcTypeCode, int precision, int scale,
+	        JdbcTypeRegistry jdbcTypeRegistry) {
 		switch (jdbcTypeCode) {
 
 			// H2Dialect incorrectly sets these to synonyms in H2
 			case INTEGER:
-				return super.resolveSqlTypeDescriptor(
-					"BIGINT",
-					BIGINT,
-					precision,
-					scale,
-					jdbcTypeRegistry);
+				return super.resolveSqlTypeDescriptor("BIGINT", BIGINT, precision, scale, jdbcTypeRegistry);
 
 			// Liquibase incorrectly creates varchar for clob in H2 so we just tell Hibernate it's ok
 			case VARCHAR:
-				return super.resolveSqlTypeDescriptor(
-					"CLOB",
-					CLOB,
-					precision,
-					scale,
-					jdbcTypeRegistry);
+				return super.resolveSqlTypeDescriptor("CLOB", CLOB, precision, scale, jdbcTypeRegistry);
 
 			//person.birthdate is not a timestamp, but date in db
 			case DATE:
-				return super.resolveSqlTypeDescriptor(
-					"TIMESTAMP",
-					TIMESTAMP,
-					precision,
-					scale,
-					jdbcTypeRegistry);
+				return super.resolveSqlTypeDescriptor("TIMESTAMP", TIMESTAMP, precision, scale, jdbcTypeRegistry);
 
 			// UUIDs are created as char(38), but H2Dialect maps them to varchars
 			case CHAR:
 				if (precision == 38) {
-					return super.resolveSqlTypeDescriptor(
-						"VARCHAR",
-						VARCHAR,
-						precision,
-						scale,
-						jdbcTypeRegistry);
+					return super.resolveSqlTypeDescriptor("VARCHAR", VARCHAR, precision, scale, jdbcTypeRegistry);
 				}
 				break;
 
-			// These mappings are required for "long" fields of type java.lang.String that are declared as 'text' 
+			// These mappings are required for "long" fields of type java.lang.String that are declared as 'text'
 			// in Hibernate change sets.
 			case CLOB:
 				if (precision == Integer.MAX_VALUE) {
-					return super.resolveSqlTypeDescriptor(
-						"LONGVARCHAR",
-						LONGVARCHAR,
-						precision,
-						scale,
-						jdbcTypeRegistry);
+					return super.resolveSqlTypeDescriptor("LONGVARCHAR", LONGVARCHAR, precision, scale, jdbcTypeRegistry);
 				}
 				break;
-				
-				default:
-					break;
+
+			default:
+				break;
 		}
 
-		return super.resolveSqlTypeDescriptor(
-			columnTypeName,
-			jdbcTypeCode,
-			precision,
-			scale,
-			jdbcTypeRegistry
-		);
+		return super.resolveSqlTypeDescriptor(columnTypeName, jdbcTypeCode, precision, scale, jdbcTypeRegistry);
 	}
 }

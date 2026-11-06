@@ -9,14 +9,15 @@
  */
 package org.openmrs.notification.db.hibernate;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -35,16 +36,16 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("alertDAO")
 public class HibernateAlertDAO implements AlertDAO {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HibernateAlertDAO.class);
-	
+
 	private final SessionFactory sessionFactory;
-	
+
 	@Autowired
 	public HibernateAlertDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.notification.db.AlertDAO#saveAlert(org.openmrs.notification.Alert)
 	 */
@@ -52,7 +53,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	public Alert saveAlert(Alert alert) throws DAOException {
 		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), alert);
 	}
-	
+
 	/**
 	 * @see org.openmrs.notification.db.AlertDAO#getAlert(java.lang.Integer)
 	 */
@@ -60,7 +61,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	public Alert getAlert(Integer alertId) throws DAOException {
 		return sessionFactory.getCurrentSession().get(Alert.class, alertId);
 	}
-	
+
 	/**
 	 * @see org.openmrs.notification.db.AlertDAO#deleteAlert(org.openmrs.notification.Alert)
 	 */
@@ -68,7 +69,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	public void deleteAlert(Alert alert) throws DAOException {
 		sessionFactory.getCurrentSession().remove(alert);
 	}
-	
+
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
 	 */
@@ -81,10 +82,7 @@ public class HibernateAlertDAO implements AlertDAO {
 
 		// exclude the expired alerts unless requested
 		if (!includeExpired) {
-			cq.where(cb.or(
-				cb.isNull(root.get("dateToExpire")), 
-				cb.greaterThan(root.get("dateToExpire"), new Date()))
-			);
+			cq.where(cb.or(cb.isNull(root.get("dateToExpire")), cb.greaterThan(root.get("dateToExpire"), new Date())));
 		}
 
 		return session.createQuery(cq).getResultList();
@@ -128,8 +126,7 @@ public class HibernateAlertDAO implements AlertDAO {
 			predicates.add(cb.isFalse(root.join("recipients").get("alertRead")));
 		}
 
-		cq.where(predicates.toArray(new Predicate[]{}))
-			.orderBy(cb.desc(root.get("dateChanged")));
+		cq.where(predicates.toArray(new Predicate[] {})).orderBy(cb.desc(root.get("dateChanged")));
 
 		return session.createQuery(cq).getResultList();
 	}

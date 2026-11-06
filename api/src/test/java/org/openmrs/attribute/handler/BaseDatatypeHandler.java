@@ -13,9 +13,9 @@ import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.CustomDatatypeHandler;
 
 public abstract class BaseDatatypeHandler<DT extends CustomDatatype<T>, T> implements CustomDatatypeHandler<DT, T> {
-	
+
 	@Override
 	public void setHandlerConfiguration(String handlerConfig) {
-		
+
 	}
 }

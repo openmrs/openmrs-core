@@ -14,17 +14,17 @@ import org.openmrs.api.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PatientIdentifierTypeEditorTest extends BasePropertyEditorTest<PatientIdentifierType, PatientIdentifierTypeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private PatientService patientService;
-	
+
 	@Override
 	protected PatientIdentifierTypeEditor getNewEditor() {
 		return new PatientIdentifierTypeEditor();
 	}
-	
+
 	@Override
 	protected PatientIdentifierType getExistingObject() {
 		return patientService.getPatientIdentifierType(EXISTING_ID);

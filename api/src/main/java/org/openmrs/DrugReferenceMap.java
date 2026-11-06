@@ -9,6 +9,9 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,8 +21,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.io.Serializable;
-import java.util.Date;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -36,7 +37,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
  * @since 1.10
  */
 @Entity
-@Table(name="drug_reference_map")
+@Table(name = "drug_reference_map")
 @Audited
 public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Serializable {
 
@@ -48,18 +49,18 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	@Column(name = "drug_reference_map_id")
 	private Integer drugReferenceMapId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "drug_id", nullable = false)
 	private Drug drug;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_id", nullable = false)
 	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private ConceptReferenceTerm conceptReferenceTerm;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_map_type", nullable = false)
 	private ConceptMapType conceptMapType;
 

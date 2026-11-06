@@ -9,8 +9,6 @@
  */
 package org.openmrs.messagesource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -21,11 +19,13 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.MapBindingResult;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  *
  */
 public class MessageSourceServiceTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * MessageSourceServiceImpl.getMessage()should return last error code if no localization found
 	 *

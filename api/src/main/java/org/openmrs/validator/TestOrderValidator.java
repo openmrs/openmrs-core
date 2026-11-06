@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Validates the {@link org.openmrs.TestOrder} class.
- * 
+ *
  * @since 1.10
  */
 @Handler(supports = { TestOrder.class }, order = 50)

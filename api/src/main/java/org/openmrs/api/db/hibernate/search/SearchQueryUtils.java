@@ -11,17 +11,17 @@ package org.openmrs.api.db.hibernate.search;
 
 /**
  * Provides utils for working with queries in Hibernate Search
- * 
+ *
  * @since 2.8.0
  */
 public class SearchQueryUtils {
-	
+
 	private SearchQueryUtils() {
 	}
-	
+
 	/**
 	 * Escapes special characters such as: <code>()*-+|~"</code>
-	 * 
+	 *
 	 * @param query the query
 	 * @return escaped query
 	 */

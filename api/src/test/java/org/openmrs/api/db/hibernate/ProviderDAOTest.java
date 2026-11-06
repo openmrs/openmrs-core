@@ -9,12 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,26 +24,32 @@ import org.openmrs.api.db.ProviderDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class ProviderDAOTest extends BaseContextSensitiveTest {
-	
+
 	private static final String PROVIDERS_INITIAL_XML = "org/openmrs/api/include/ProviderServiceTest-initial.xml";
-	
+
 	@Autowired
 	private PersonDAO personDao;
-	
+
 	@Autowired
 	private ProviderDAO providerDao;
-	
+
 	/**
 	 * Run this before each unit test in this class.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@BeforeEach
 	public void runBeforeEachTest() {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 	}
-	
+
 	/**
 	 * @see ProviderDAO#getProvidersByPerson(Person,boolean)
 	 */
@@ -59,7 +59,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 		assertEquals(1, providers.size());
 		assertFalse(providers.iterator().next().getRetired());
 	}
-	
+
 	/**
 	 * @see ProviderDAO#getProvidersByPerson(Person,boolean)
 	 */
@@ -68,7 +68,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 		List<Provider> providers = (List<Provider>) providerDao.getProvidersByPerson(personDao.getPerson(2), true);
 		assertTrue(providers.get(1).getRetired());
 	}
-	
+
 	/**
 	 * @see ProviderDAO#getProvidersByPerson(Person,boolean)
 	 */
@@ -76,7 +76,6 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	public void getProvidersByPerson_shouldReturnAllProvidersIfIncludeRetiredTrue() {
 		assertEquals(2, providerDao.getProvidersByPerson(personDao.getPerson(2), true).size());
 	}
-
 
 	/**
 	 * @see ProviderDAO#getProviderRole(Integer)
@@ -95,7 +94,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ProviderDAO#getProviderRoleByUuid(String) 
+	 * @see ProviderDAO#getProviderRoleByUuid(String)
 	 */
 	@Test
 	public void getProviderRoleByUuid_shouldReturnTheProviderRoleIfExists() {
@@ -111,7 +110,7 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see ProviderDAO#getProvidersByRoles(List, boolean) 
+	 * @see ProviderDAO#getProvidersByRoles(List, boolean)
 	 */
 	@Test
 	public void getProvidersByRoles_shouldGetActiveProvidersByGivenRoles() {
@@ -141,5 +140,5 @@ public class ProviderDAOTest extends BaseContextSensitiveTest {
 		List<Provider> providers = providerDao.getProvidersByRoles(roles, true);
 		assertEquals(6, providers.size());
 	}
-	
+
 }

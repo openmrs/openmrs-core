@@ -9,90 +9,91 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.RelationshipType;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
- *Tests methods on the {@link RelationshipTypeValidator} class.
+ * Tests methods on the {@link RelationshipTypeValidator} class.
  *
  * @since 1.10
  */
 public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfaIsToBIsNullOrEmptyOrWhitespace() {
 		RelationshipType type = new RelationshipType();
-		
+
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
-		
+
 		type.setaIsToB("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
-		
+
 		type.setaIsToB(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));
 	}
-	
+
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfbIsToAIsNullOrEmptyOrWhitespace() {
 		RelationshipType type = new RelationshipType();
-		
+
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("bIsToA"));
-		
+
 		type.setbIsToA("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("bIsToA"));
-		
+
 		type.setbIsToA(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("bIsToA"));
 	}
-	
+
 	/**
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() {
 		RelationshipType type = new RelationshipType();
-		
+
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("description"));
-		
+
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("description"));
-		
+
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("description"));
 	}
-	
+
 	/**
 	 * Test for all the field being set to some values
+	 *
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
@@ -105,7 +106,7 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipTypeValidator().validate(type, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see org.openmrs.validator.RelationshipTypeValidator#validate(Object, Errors)
 	 */
@@ -114,14 +115,15 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		RelationshipType type = new RelationshipType();
 		type.setaIsToB("Doctor");
 		type.setbIsToA("Patient");
-		
+
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * Test for all the field being set to some values
+	 *
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
@@ -135,22 +137,23 @@ public class RelationshipTypeValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipTypeValidator().validate(type, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * Test for all the field being set to some values
+	 *
 	 * @see RelationshipTypeValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		RelationshipType type = new RelationshipType();
-		type
-		        .setaIsToB("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-		        .setbIsToA("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-		        .setDescription("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		type
-		        .setRetireReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setaIsToB(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setbIsToA(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setDescription(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+		type.setRetireReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
 		Errors errors = new BindException(type, "type");
 		new RelationshipTypeValidator().validate(type, errors);
 		assertTrue(errors.hasFieldErrors("aIsToB"));

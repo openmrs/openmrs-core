@@ -9,9 +9,10 @@
  */
 package org.openmrs.obs.handler;
 
-import jakarta.activation.MimetypesFileTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
+
+import jakarta.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.Obs;
@@ -33,18 +34,18 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
-	
+
 	/** Views supported by this handler */
 	private static final String[] supportedViews = { ComplexObsHandler.RAW_VIEW, };
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MediaHandler.class);
 
 	private final MimetypesFileTypeMap mimetypes = new MimetypesFileTypeMap();
-	
+
 	public MediaHandler() {
 		super();
 	}
-	
+
 	/**
 	 * Currently supports all views and puts the media file data into the ComplexData object
 	 *
@@ -53,22 +54,21 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		String key = parseDataKey(obs);
-		
+
 		// Raw media
 		if (ComplexObsHandler.RAW_VIEW.equals(view)) {
 			try {
-				
+
 				String filename = parseFilename(obs, "");
-				
+
 				InputStream in = storageService.getData(key);
 				ComplexData complexData = new ComplexData(filename, in);
 				complexData.setMimeType(mimetypes.getContentType(filename));
-				
+
 				// Get the Mime Type and set it
 				injectMissingMetadata(key, complexData);
 				obs.setComplexData(complexData);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				log.error("Trying to create media file stream from {}", key, e);
 			}
 		}
@@ -77,10 +77,10 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 		else {
 			return null;
 		}
-		
+
 		return obs;
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
 	 */
@@ -88,7 +88,7 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 	public String[] getSupportedViews() {
 		return supportedViews;
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
@@ -100,15 +100,14 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 				IOUtils.copy((InputStream) obs.getComplexData().getData(), outputStream);
 				outputStream.flush();
 			}, ObjectMetadata.builder().setFilename(filename).build(), getObsDir());
-			
+
 			obs.setComplexData(null);
 			obs.setValueComplex(filename + "|" + key);
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			throw new APIException("Obs.error.trying.write.complex", null, ioe);
 		}
-		
+
 		return obs;
 	}
-	
+
 }

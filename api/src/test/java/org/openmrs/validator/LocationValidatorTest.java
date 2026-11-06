@@ -9,20 +9,20 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link LocationValidator} class.
  */
 public class LocationValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -30,14 +30,14 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfNameIsNullOrEmpty() {
 		Location location = new Location();
 		location.setDescription("desc");
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertFalse(errors.hasFieldErrors("description"));
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -46,13 +46,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Location location = new Location();
 		location.setName("County General");
 		location.setRetired(true);
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("retireReason"));
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -61,13 +61,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Location location = new Location();
 		location.setName("County General");
 		location.setRetired(true);
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertFalse(location.getRetired());
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -76,13 +76,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Location location = new Location();
 		location.setName("County General");
 		location.setDescription("desc");
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -93,13 +93,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		location.setDescription("desc");
 		location.setRetired(true);
 		location.setRetireReason("Because I don't like County General");
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -114,13 +114,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		location3.setParentLocation(location2);
 		location2.setParentLocation(location1);
 		location1.setParentLocation(location3);
-		
+
 		Errors errors = new BindException(location1, "location");
 		new LocationValidator().validate(location1, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("parentLocation"));
 	}
-	
+
 	/**
 	 * @see org.openmrs.validator.LocationValidator#validate(Object,Errors)
 	 */
@@ -129,13 +129,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		Location location = new Location();
 		location.setName("Unknown Location");
 		location.setDescription("desc");
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -158,13 +158,13 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		location.setLongitude("longitude");
 		location.setCountyDistrict("countyDistrict");
 		location.setRetireReason("retireReason");
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see LocationValidator#validate(Object,Errors)
 	 */
@@ -197,10 +197,10 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		location.setLongitude(longString);
 		location.setCountyDistrict(longString);
 		location.setRetireReason(longString);
-		
+
 		Errors errors = new BindException(location, "location");
 		new LocationValidator().validate(location, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("name"));
 		assertTrue(errors.hasFieldErrors("description"));
 		assertTrue(errors.hasFieldErrors("address1"));

@@ -30,21 +30,20 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
 public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements CustomTaskChange {
-	
+
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		JdbcConnection connection = (JdbcConnection) database.getConnection();
-		
+
 		try {
 			Set<String> uniqueFrequencies = DatabaseUtil.getUniqueNonNullColumnValues("frequency_text", "drug_order",
 			    String.class, connection.getUnderlyingConnection());
 			insertUniqueFrequencies(connection, uniqueFrequencies);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CustomChangeException(e);
 		}
 	}
-	
+
 	private void insertUniqueFrequencies(JdbcConnection connection, Set<String> uniqueFrequencies)
 	        throws CustomChangeException, SQLException, DatabaseException {
 		PreparedStatement insertOrderFrequencyStatement = null;
@@ -54,46 +53,44 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			connection.setAutoCommit(false);
 			insertOrderFrequencyStatement = connection.prepareStatement("insert into order_frequency "
 			        + "(concept_id, creator, date_created, retired, uuid) values (?, ?, ?, ?, ?)");
-			
+
 			Date date = new Date(new java.util.Date().getTime());
-			
+
 			for (String frequency : uniqueFrequencies) {
 				if (StringUtils.isBlank(frequency)) {
 					continue;
 				}
-				
+
 				Integer conceptIdForFrequency = UpgradeUtil.getConceptIdForUnits(frequency);
 				if (conceptIdForFrequency == null) {
 					throw new CustomChangeException("No concept mapping found for frequency: " + frequency);
 				}
-				
+
 				Integer orderFrequencyId = UpgradeUtil.getOrderFrequencyIdForConceptId(connection.getUnderlyingConnection(),
 				    conceptIdForFrequency);
 				if (orderFrequencyId != null) {
 					//a single concept is mapped to more than one text or there is an order frequency already
 					continue;
 				}
-				
+
 				//Generating UUID for order frequency. Generated UUIDs will be the same if concepts UUIDs are the same.
 				String uuid = UpgradeUtil.getConceptUuid(connection.getUnderlyingConnection(), conceptIdForFrequency);
 				uuid += "-6925ebb0-7c69-11e3-baa7-0800200c9a66"; //Adding random value for order frequency
 				uuid = UUID.nameUUIDFromBytes(uuid.getBytes(StandardCharsets.UTF_8)).toString();
-				
+
 				insertOrderFrequencyStatement.setInt(1, conceptIdForFrequency);
 				insertOrderFrequencyStatement.setInt(2, 1);
 				insertOrderFrequencyStatement.setDate(3, date);
 				insertOrderFrequencyStatement.setBoolean(4, false);
 				insertOrderFrequencyStatement.setString(5, uuid);
-				
+
 				insertOrderFrequencyStatement.executeUpdate();
 				insertOrderFrequencyStatement.clearParameters();
 			}
 			connection.commit();
-		}
-		catch (DatabaseException | SQLException e) {
+		} catch (DatabaseException | SQLException e) {
 			handleError(connection, e);
-		}
-		finally {
+		} finally {
 			if (autoCommit != null) {
 				connection.setAutoCommit(autoCommit);
 			}
@@ -102,25 +99,25 @@ public class CreateCodedOrderFrequencyForDrugOrderFrequencyChangeset implements 
 			}
 		}
 	}
-	
+
 	private void handleError(JdbcConnection connection, Exception e) throws DatabaseException, CustomChangeException {
 		connection.rollback();
 		throw new CustomChangeException(e);
 	}
-	
+
 	@Override
 	public String getConfirmationMessage() {
 		return "Finished creating coded order frequencies for drug order frequencies";
 	}
-	
+
 	@Override
 	public void setUp() throws SetupException {
 	}
-	
+
 	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
-	
+
 	@Override
 	public ValidationErrors validate(Database database) {
 		return null;

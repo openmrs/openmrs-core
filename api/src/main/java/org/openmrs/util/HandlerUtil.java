@@ -10,10 +10,11 @@
 package org.openmrs.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
@@ -27,27 +28,38 @@ import org.springframework.stereotype.Component;
 /**
  * Utility class that provides useful methods for working with classes that are annotated with the
  * {@link Handler} annotation
- * 
+ *
  * @since 1.5
  */
 @Component
 public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(HandlerUtil.class);
-	
-	private static volatile Map<Key, List<?>> cachedHandlers = new WeakHashMap<>();
-	
+
+	/**
+	 * Handler lists keyed by the handler type and the type they must support. A miss collects every
+	 * bean of the handler type from the service application context and its parents and reflects over
+	 * each one, and RequiredDataAdvice and HibernateAdministrationDAO drive that lookup once per object
+	 * in the graph being saved or validated. Entries therefore live until the application context is
+	 * refreshed, which is also what makes module-contributed handlers visible.
+	 * <p>
+	 * Invalidation replaces the map instead of clearing it, so that a lookup already in flight writes
+	 * its result into the map it read from; no lookup starting after the invalidation can reach that
+	 * map, so handlers from the outgoing context cannot reappear in the live cache.
+	 */
+	private static volatile ConcurrentMap<Key, List<?>> cachedHandlers = new ConcurrentHashMap<>();
+
 	private static class Key {
-		
+
 		public final Class<?> handlerType;
-		
+
 		public final Class<?> type;
-		
+
 		public Key(Class<?> handlerType, Class<?> type) {
 			this.handlerType = handlerType;
 			this.type = type;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -56,7 +68,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 			result = prime * result + ((type == null) ? 0 : type.hashCode());
 			return result;
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
@@ -82,38 +94,48 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 				return type.equals(other.type);
 			}
 		}
-		
+
 	}
-	
+
 	public static void clearCachedHandlers() {
-		cachedHandlers = new WeakHashMap<>();
+		cachedHandlers = new ConcurrentHashMap<>();
 	}
-	
+
 	/**
-	 * Retrieves a List of all registered components from the Context that are of the passed
-	 * handlerType and one or more of the following is true:
+	 * Retrieves a List of all registered components from the Context that are of the passed handlerType
+	 * and one or more of the following is true:
 	 * <ul>
 	 * <li>The handlerType is annotated as a {@link Handler} that supports the passed type</li>
 	 * <li>The passed type is null - this effectively returns all components of the passed
 	 * handlerType</li>
 	 * </ul>
-	 * The returned handlers are ordered in the list based upon the order property.
-	 * 
+	 * The returned handlers are ordered in the list based upon the order property. The list is
+	 * unmodifiable because it is shared with the other callers asking for the same handlerType and
+	 * type: copy it before sorting or filtering. Its identity is not stable across context refreshes.
+	 * <p>
+	 * <strong>Should</strong> return a list of all classes that can handle the passed type<br/>
+	 * <strong>Should</strong> return classes registered in a module<br/>
+	 * <strong>Should</strong> return an empty list if no classes can handle the passed type
+	 *
 	 * @param handlerType Indicates the type of class to return
 	 * @param type Indicates the type that the given handlerType must support (or null for any)
-	 * @return a List of all matching Handlers for the given parameters, ordered by Handler#order
-	 * <strong>Should</strong> return a list of all classes that can handle the passed type
-	 * <strong>Should</strong> return classes registered in a module
-	 * <strong>Should</strong> return an empty list if no classes can handle the passed type
+	 * @return an unmodifiable List of all matching Handlers for the given parameters, ordered by
+	 *         Handler#order
 	 */
+	@SuppressWarnings("unchecked")
 	public static <H, T> List<H> getHandlersForType(Class<H> handlerType, Class<T> type) {
-		List<?> list = cachedHandlers.get(new Key(handlerType, type));
+		// snapshot the cache so the lookup and the write below land in the same map: if it is
+		// invalidated while we are scanning, our result goes into the map that was discarded rather than
+		// into the live one. Do not replace this local with direct reads of the field
+		ConcurrentMap<Key, List<?>> handlerCache = cachedHandlers;
+		Key key = new Key(handlerType, type);
+		List<?> list = handlerCache.get(key);
 		if (list != null) {
 			return (List<H>) list;
 		}
-		
+
 		List<H> handlers = new ArrayList<>();
-		
+
 		// First get all registered components of the passed class
 		log.debug("Getting handlers of type " + handlerType + (type == null ? "" : " for class " + type.getName()));
 		for (H handler : Context.getRegisteredComponents(handlerType)) {
@@ -137,34 +159,41 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 				}
 			}
 		}
-		
+
 		// Return the list of handlers based on the order specified in the Handler annotation
 		handlers.sort(Comparator.comparing(o -> getOrderOfHandler(o.getClass())));
-		
-		Map<Key, List<?>> newCachedHandlers = new WeakHashMap<>(cachedHandlers);
-		newCachedHandlers.put(new Key(handlerType, type), handlers);
-		cachedHandlers = newCachedHandlers;
-		
-		return handlers;
+
+		List<H> sharedHandlers = Collections.unmodifiableList(handlers);
+		// an entry sticks until the next context refresh, so record what is being frozen: a list that is
+		// unexpectedly empty is otherwise invisible, since callers read it as "nothing to do"
+		log.debug("Caching {} handler(s) of type {} for type {}", handlers.size(), handlerType, type);
+		// deliberately scanned outside computeIfAbsent, whose mapping function "should be short and
+		// simple, and must not attempt to update any other mappings of this map": the scan is neither,
+		// since it calls back into Spring, which may instantiate beans that look up handlers of their own
+		List<?> winner = handlerCache.putIfAbsent(key, sharedHandlers);
+		// threads that missed together normally compute equal lists, so hand back whichever one got
+		// cached and let every caller share a single instance
+		return winner == null ? sharedHandlers : (List<H>) winner;
 	}
-	
+
 	/**
-	 * Retrieves the preferred Handler for a given handlerType and type. A <em>preferred</em>
-	 * handler is the Handler that has the lowest defined <em>order</em> attribute in it's
-	 * annotation. If multiple Handlers are found for the passed parameters at the lowest specified
-	 * order, then an APIException is thrown.
-	 * 
+	 * Retrieves the preferred Handler for a given handlerType and type. A <em>preferred</em> handler is
+	 * the Handler that has the lowest defined <em>order</em> attribute in it's annotation. If multiple
+	 * Handlers are found for the passed parameters at the lowest specified order, then an APIException
+	 * is thrown.
+	 * <p>
+	 * <strong>Should</strong> return the preferred handler for the passed handlerType and type<br/>
+	 * <strong>Should</strong> throw a APIException if no handler is found<br/>
+	 * <strong>Should</strong> throw a APIException if multiple preferred handlers are found<br/>
+	 * <strong>Should</strong> should return patient validator for patient<br/>
+	 * <strong>Should</strong> should return person validator for person
+	 *
 	 * @param handlerType the class that is an annotated {@link Handler} to retrieve
 	 * @param type the class that the annotated {@link Handler} must support
 	 * @return the class of the passed handlerType with the lowest configured order
-	 * <strong>Should</strong> return the preferred handler for the passed handlerType and type
-	 * <strong>Should</strong> throw a APIException if no handler is found
-	 * <strong>Should</strong> throw a APIException if multiple preferred handlers are found
-	 * <strong>Should</strong> should return patient validator for patient
-	 * <strong>Should</strong> should return person validator for person
 	 */
 	public static <H, T> H getPreferredHandler(Class<H> handlerType, Class<T> type) {
-		
+
 		if (handlerType == null || type == null) {
 			throw new IllegalArgumentException("You must specify both a handlerType and a type");
 		}
@@ -172,7 +201,7 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		if (handlers == null || handlers.isEmpty()) {
 			throw new APIException("handler.type.not.found", new Object[] { handlerType, type });
 		}
-		
+
 		if (handlers.size() > 1) {
 			int order1 = getOrderOfHandler(handlers.get(0).getClass());
 			int order2 = getOrderOfHandler(handlers.get(1).getClass());
@@ -180,15 +209,15 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 				throw new APIException("handler.type.multiple", new Object[] { handlerType, type });
 			}
 		}
-		
+
 		return handlers.get(0);
 	}
-	
+
 	/**
 	 * Utility method to return the order attribute of the {@link Handler} annotation on the passed
 	 * class. If the passed class does not have a {@link Handler} annotation, a RuntimeException is
 	 * thrown
-	 * 
+	 *
 	 * @param handlerClass
 	 * @return the order attribute value
 	 */
@@ -199,7 +228,11 @@ public class HandlerUtil implements ApplicationListener<ContextRefreshedEvent> {
 		}
 		return annotation.order();
 	}
-	
+
+	/**
+	 * Invalidates the cache when an application context is refreshed, so that handlers contributed by
+	 * modules started since the last refresh are picked up.
+	 */
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		clearCachedHandlers();

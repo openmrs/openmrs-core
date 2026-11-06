@@ -12,18 +12,19 @@ package org.openmrs.liquibase;
 import liquibase.Liquibase;
 
 /**
- * Provides access to Liquibase instances. The interface was introduced for two reasons: <li>to
- * decouple the org.openmrs.liquibase.ChangeLogDetective class from the
- * org.openmrs.util.DatabaseUpdater class <li>to support integration testing of the
- * org.openmrs.liquibase.ChangeLogDetective class with the H2 database.
- * 
+ * Provides access to Liquibase instances. The interface was introduced for two reasons:
+ * <li>to decouple the org.openmrs.liquibase.ChangeLogDetective class from the
+ * org.openmrs.util.DatabaseUpdater class
+ * <li>to support integration testing of the org.openmrs.liquibase.ChangeLogDetective class with the
+ * H2 database.
+ *
  * @since 2.4
  */
 public interface LiquibaseProvider {
-	
+
 	/**
 	 * Returns a Liquibase instance
-	 * 
+	 *
 	 * @param changeLogFile name of a Liquibase changelog file
 	 * @return a Liquibase instance
 	 */

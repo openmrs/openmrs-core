@@ -15,24 +15,24 @@ import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConceptAttributeTypeEditorTest extends BasePropertyEditorTest<ConceptAttributeType, ConceptAttributeTypeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	private static final String DATA = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
-	
+
 	@Autowired
 	private ConceptService conceptService;
-	
+
 	@BeforeEach
 	public void initializeDb() {
 		executeDataSet(DATA);
 	}
-	
+
 	@Override
 	protected ConceptAttributeTypeEditor getNewEditor() {
 		return new ConceptAttributeTypeEditor();
 	}
-	
+
 	@Override
 	protected ConceptAttributeType getExistingObject() {
 		return conceptService.getConceptAttributeType(EXISTING_ID);

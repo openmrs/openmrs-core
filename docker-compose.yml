@@ -27,6 +27,8 @@ services:
 
     api:
         image: openmrs/openmrs-core:${TAG:-nightly}
+        depends_on:
+            - db
         build:
             context: .
             cache_from:
@@ -43,10 +45,11 @@ services:
             OMRS_ADMIN_USER_PASSWORD: ${OMRS_ADMIN_USER_PASSWORD:-Admin123}
             OMRS_ADMIN_PASSWORD_LOCKED: ${OMRS_ADMIN_PASSWORD_LOCKED:-true}
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs"]
-            interval: 3s
+            test: ["CMD", "curl", "-f", "http://localhost:8080/openmrs/health/alive"]
+            interval: 5s
             timeout: 5s
             retries: 3
+            start_period: 1m
         volumes:
             - openmrs-data:/openmrs/data/
 

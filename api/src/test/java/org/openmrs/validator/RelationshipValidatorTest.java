@@ -9,9 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,11 +23,14 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests methods on the {@link RelationshipValidator} class.
  */
 public class RelationshipValidatorTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @throws ParseException
 	 * @see RelationshipValidator#validate(Object,Errors)
@@ -45,7 +45,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipValidator().validate(relationship, errors);
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @throws ParseException
 	 * @see RelationshipValidator#validate(Object,Errors)
@@ -60,7 +60,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipValidator().validate(relationship, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
@@ -68,27 +68,27 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldPassValidationIfFieldLengthsAreCorrect() {
 		Relationship relationship = new Relationship(1);
 		relationship.setVoidReason("voidReason");
-		
+
 		Map<String, String> map = new HashMap<>();
 		MapBindingResult errors = new MapBindingResult(map, Relationship.class.getName());
 		new RelationshipValidator().validate(relationship, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
 	@Test
 	public void validate_shouldFailValidationIfFieldLengthsAreNotCorrect() {
 		Relationship relationship = new Relationship(1);
-		relationship
-		        .setVoidReason("too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
-		
+		relationship.setVoidReason(
+		    "too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text too long text");
+
 		Errors errors = new BindException(relationship, "relationship");
 		new RelationshipValidator().validate(relationship, errors);
 		assertTrue(errors.hasFieldErrors("voidReason"));
 	}
-	
+
 	/**
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
@@ -104,7 +104,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipValidator().validate(relationship, errors);
 		assertTrue(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */
@@ -120,7 +120,7 @@ public class RelationshipValidatorTest extends BaseContextSensitiveTest {
 		new RelationshipValidator().validate(relationship, errors);
 		assertFalse(errors.hasErrors());
 	}
-	
+
 	/**
 	 * @see RelationshipValidator#validate(Object,Errors)
 	 */

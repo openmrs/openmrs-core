@@ -63,7 +63,7 @@ RUN mvn $MVN_SETTINGS $MVN_ARGS
 ### Development Stage
 FROM maven:3.9-$DEV_JDK AS dev
 
-RUN apt-get update && apt-get install -y tar gzip git && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y tar gzip git curl mariadb-client && rm -rf /var/lib/apt/lists/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -86,6 +86,18 @@ RUN curl -fL -o /tmp/apache-tomcat.tar.gz "$TOMCAT_URL" \
     && tar -xvf /tmp/apache-tomcat.tar -C /usr/local/tomcat/ --strip-components=1 \
     && rm -rf /tmp/apache-tomcat.tar.gz /usr/local/tomcat/webapps/* 
 
+# Setup OpenTelemetry Java agent
+# Pure Java, so no TARGETARCH handling needed.
+# Bump OTEL_AGENT_VERSION and OTEL_AGENT_SHA together.
+ARG OTEL_AGENT_VERSION=2.31.1
+ARG OTEL_AGENT_SHA="bbf83c151b6400709e2f225bdd07a04f839d9d13b8b93464241333fd25d3e3ba"
+ARG OTEL_AGENT_URL="https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_AGENT_VERSION}/opentelemetry-javaagent.jar"
+
+RUN mkdir -p /openmrs/java-agents \
+    && curl -fsSL -o /openmrs/java-agents/opentelemetry-javaagent.jar "${OTEL_AGENT_URL}" \
+    && echo "${OTEL_AGENT_SHA}  /openmrs/java-agents/opentelemetry-javaagent.jar" | sha256sum -c \
+    && chmod g+r /openmrs/java-agents/opentelemetry-javaagent.jar
+
 WORKDIR /openmrs_core
 
 COPY --from=compile /usr/share/maven/ref /usr/share/maven/ref
@@ -100,6 +112,9 @@ RUN mkdir -p /openmrs/distribution/openmrs_core/ \
 
 EXPOSE 8080
 
+HEALTHCHECK --interval=5s --timeout=5s --start-period=1m --retries=3 \
+  CMD curl -f http://localhost:8080/openmrs/health/alive || exit 1
+
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/mvn-entrypoint.sh"]
 
 # See startup-init.sh for all configurable environment variables
@@ -109,7 +124,7 @@ CMD ["/openmrs/startup-dev.sh"]
 ### Production Stage
 FROM tomcat:11-$RUNTIME_JDK
 
-RUN apt-get update && rm -rf /var/lib/apt/lists/* && rm -rf /usr/local/tomcat/webapps/*
+RUN apt-get update && apt-get install -y curl mariadb-client && rm -rf /var/lib/apt/lists/* && rm -rf /usr/local/tomcat/webapps/*
 
 # Setup Tini
 ARG TARGETARCH
@@ -135,8 +150,12 @@ RUN mkdir -p /openmrs/data/modules \
     && mkdir -p /openmrs/data/configuration_checksums \
     && mkdir -p /openmrs/data/complex_obs \
     && mkdir -p /openmrs/data/activemq-data \
+    && mkdir -p /openmrs/java-agents \
     && chmod -R g+rw /openmrs \
     && chown -R 1001 /openmrs
+
+COPY --from=dev /openmrs/java-agents/opentelemetry-javaagent.jar /openmrs/java-agents/opentelemetry-javaagent.jar
+RUN chmod g+r /openmrs/java-agents/opentelemetry-javaagent.jar
     
 # Copy in the start-up scripts
 COPY --from=dev /openmrs/wait-for-it.sh /openmrs/startup-init.sh /openmrs/startup.sh /openmrs/
@@ -150,6 +169,9 @@ COPY --from=dev /openmrs/distribution/openmrs_core/openmrs.war /openmrs/distribu
 
 EXPOSE 8080
 
+HEALTHCHECK --interval=5s --timeout=5s --start-period=1m --retries=3 \
+  CMD curl -f http://localhost:8080/openmrs/health/alive || exit 1
+
 # Run as non-root user using Bitnami approach, see e.g.
 # https://github.com/bitnami/containers/blob/6c8f10bbcf192ab4e575614491abf10697c46a3e/bitnami/tomcat/8.5/debian-11/Dockerfile#L54
 USER 1001
@@ -158,4 +180,3 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # See startup-init.sh for all configurable environment variables
 CMD ["/openmrs/startup.sh"]
-

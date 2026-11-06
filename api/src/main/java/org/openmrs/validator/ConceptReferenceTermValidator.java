@@ -30,7 +30,7 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { ConceptReferenceTerm.class }, order = 50)
 public class ConceptReferenceTermValidator implements Validator {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
 	 *
@@ -40,40 +40,42 @@ public class ConceptReferenceTermValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return ConceptReferenceTerm.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks that a given concept reference term object is valid.
+	 * <p>
+	 * <strong>Should</strong> fail if the concept reference term object is null<br/>
+	 * <strong>Should</strong> fail if the name is a white space character<br/>
+	 * <strong>Should</strong> fail if the code is null<br/>
+	 * <strong>Should</strong> fail if the code is an empty string<br/>
+	 * <strong>Should</strong> fail if the code is a white space character<br/>
+	 * <strong>Should</strong> fail if the concept reference term code is a duplicate in its concept
+	 * source<br/>
+	 * <strong>Should</strong> fail if the concept source is null<br/>
+	 * <strong>Should</strong> pass if all the required fields are set and valid<br/>
+	 * <strong>Should</strong> pass if the duplicate name is for a term from another concept source<br/>
+	 * <strong>Should</strong> pass if the duplicate code is for a term from another concept source<br/>
+	 * <strong>Should</strong> fail if a concept reference term map has no concept map type<br/>
+	 * <strong>Should</strong> fail if termB of a concept reference term map is not set<br/>
+	 * <strong>Should</strong> fail if a term is mapped to itself<br/>
+	 * <strong>Should</strong> fail if a term is mapped multiple times to the same term<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct<br/>
+	 * <strong>Should</strong> pass validation if the duplicate concept reference term is retired
 	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if the concept reference term object is null
-	 * <strong>Should</strong> fail if the name is a white space character
-	 * <strong>Should</strong> fail if the code is null
-	 * <strong>Should</strong> fail if the code is an empty string
-	 * <strong>Should</strong> fail if the code is a white space character
-	 * <strong>Should</strong> fail if the concept reference term code is a duplicate in its concept source
-	 * <strong>Should</strong> fail if the concept source is null
-	 * <strong>Should</strong> pass if all the required fields are set and valid
-	 * <strong>Should</strong> pass if the duplicate name is for a term from another concept source
-	 * <strong>Should</strong> pass if the duplicate code is for a term from another concept source
-	 * <strong>Should</strong> fail if a concept reference term map has no concept map type
-	 * <strong>Should</strong> fail if termB of a concept reference term map is not set
-	 * <strong>Should</strong> fail if a term is mapped to itself
-	 * <strong>Should</strong> fail if a term is mapped multiple times to the same term
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
-	 * <strong>Should</strong> pass validation if the duplicate concept reference term is retired
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
-		
+
 		if (obj == null || !(obj instanceof ConceptReferenceTerm)) {
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type"
-			        + ConceptReferenceTerm.class);
+			throw new IllegalArgumentException(
+			        "The parameter obj should not be null and must be of type" + ConceptReferenceTerm.class);
 		}
-		
+
 		ConceptReferenceTerm conceptReferenceTerm = (ConceptReferenceTerm) obj;
-		
+
 		String code = conceptReferenceTerm.getCode();
 		boolean hasBlankFields = false;
 		if (!StringUtils.hasText(code)) {
@@ -89,7 +91,7 @@ public class ConceptReferenceTermValidator implements Validator {
 		if (hasBlankFields) {
 			return;
 		}
-		
+
 		code = code.trim();
 		//Ensure that there are no terms with the same code in the same source
 		ConceptReferenceTerm termWithDuplicateCode = Context.getConceptService().getConceptReferenceTermByCode(code,
@@ -99,7 +101,7 @@ public class ConceptReferenceTermValidator implements Validator {
 			errors.rejectValue("code", "ConceptReferenceTerm.duplicate.code",
 			    "Duplicate concept reference term code in its concept source: " + code);
 		}
-		
+
 		//validate the concept reference term maps
 		if (CollectionUtils.isNotEmpty(conceptReferenceTerm.getConceptReferenceTermMaps())) {
 			int index = 0;
@@ -108,7 +110,7 @@ public class ConceptReferenceTermValidator implements Validator {
 				if (map == null) {
 					throw new APIException("ConceptReferenceTerm.add.null", (Object[]) null);
 				}
-				
+
 				if (map.getConceptMapType() == null) {
 					errors.rejectValue("conceptReferenceTermMaps[" + index + "].conceptMapType",
 					    "ConceptReferenceTerm.error.mapTypeRequired", "Concept Map Type is required");
@@ -119,23 +121,23 @@ public class ConceptReferenceTermValidator implements Validator {
 					errors.rejectValue("conceptReferenceTermMaps[" + index + "].termB", "ConceptReferenceTerm.map.sameTerm",
 					    "Cannot map a concept reference term to itself");
 				}
-				
+
 				//don't proceed to the next map
 				if (errors.hasErrors()) {
 					return;
 				}
-				
+
 				if (mappedTermUuids == null) {
 					mappedTermUuids = new HashSet<>();
 				}
-				
+
 				//if we already have a mapping to this term, reject it this map
 				if (!mappedTermUuids.add(map.getTermB().getUuid())) {
 					errors.rejectValue("conceptReferenceTermMaps[" + index + "].termB",
 					    "ConceptReferenceTerm.termToTerm.alreadyMapped",
 					    "Cannot map a reference term multiple times to the same concept reference term");
 				}
-				
+
 				index++;
 			}
 		}

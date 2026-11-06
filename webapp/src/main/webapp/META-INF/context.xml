@@ -29,7 +29,7 @@
 	<Resource
 		name="mail/OpenmrsMailSession"
 		auth="Container"
-		type="javax.mail.Session"
+		type="jakarta.mail.Session"
 		mail.smtp.host="localhost"
         mail.smtp.port="25"
         mail.transport.protocol="smtp"

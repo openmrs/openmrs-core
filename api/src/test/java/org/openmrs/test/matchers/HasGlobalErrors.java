@@ -27,22 +27,22 @@ import org.springframework.validation.Errors;
  * {@code assertThat(errors, hasGlobalErrors("error.name"));}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.springframework.validation.Errors;
  * @since 2.2.0
  */
 public final class HasGlobalErrors extends TypeSafeMatcher<Errors> {
-	
+
 	private final String code;
-	
+
 	private HasGlobalErrors() {
 		this(null);
 	}
-	
+
 	private HasGlobalErrors(String code) {
 		this.code = code;
 	}
-	
+
 	@Override
 	public void describeTo(Description description) {
 		if (code == null) {
@@ -51,7 +51,7 @@ public final class HasGlobalErrors extends TypeSafeMatcher<Errors> {
 			description.appendText("to have global error of code '" + code + "'");
 		}
 	}
-	
+
 	@Override
 	protected boolean matchesSafely(Errors item) {
 		if (code == null) {
@@ -60,14 +60,14 @@ public final class HasGlobalErrors extends TypeSafeMatcher<Errors> {
 			return item.getGlobalErrors().stream().anyMatch(c -> code.equals(c.getCode()));
 		}
 	}
-	
+
 	/**
 	 * Creates a matcher to assert global errors.
 	 */
 	public static HasGlobalErrors hasGlobalErrors() {
 		return new HasGlobalErrors();
 	}
-	
+
 	/**
 	 * Creates a matcher to assert global errors of a specific code.
 	 */

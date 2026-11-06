@@ -29,9 +29,9 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Encounter.class }, order = 50)
 public class EncounterValidator implements Validator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(EncounterValidator.class);
-	
+
 	/**
 	 * Returns whether or not this validator supports validating a given class.
 	 *
@@ -43,59 +43,61 @@ public class EncounterValidator implements Validator {
 		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Encounter.class.isAssignableFrom(c);
 	}
-	
+
 	/**
-	 * Validates the given Encounter. Currently checks if the patient has been set and also ensures
-	 * that the patient for an encounter and the visit it is associated to if any, are the same.
+	 * Validates the given Encounter. Currently checks if the patient has been set and also ensures that
+	 * the patient for an encounter and the visit it is associated to if any, are the same.
+	 * <p>
+	 * <strong>Should</strong> fail if the patients for the visit and the encounter dont match<br/>
+	 * <strong>Should</strong> fail if patient is not set<br/>
+	 * <strong>Should</strong> fail if encounter type is not set<br/>
+	 * <strong>Should</strong> fail if encounter dateTime is not set<br/>
+	 * <strong>Should</strong> fail if encounter dateTime is after current dateTime<br/>
+	 * <strong>Should</strong> fail if encounter dateTime is before visit startDateTime<br/>
+	 * <strong>Should</strong> fail if encounter dateTime is after visit stopDateTime<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 *
 	 * @param obj The encounter to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if the patients for the visit and the encounter dont match
-	 * <strong>Should</strong> fail if patient is not set
-	 * <strong>Should</strong> fail if encounter type is not set
-	 * <strong>Should</strong> fail if encounter dateTime is not set
-	 * <strong>Should</strong> fail if encounter dateTime is after current dateTime
-	 * <strong>Should</strong> fail if encounter dateTime is before visit startDateTime
-	 * <strong>Should</strong> fail if encounter dateTime is after visit stopDateTime
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (obj == null || !(obj instanceof Encounter)) {
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Encounter.class);
+			throw new IllegalArgumentException(
+			        "The parameter obj should not be null and must be of type " + Encounter.class);
 		}
-		
+
 		Encounter encounter = (Encounter) obj;
-		
+
 		ValidationUtils.rejectIfEmpty(errors, "encounterType", "Encounter.error.encounterType.required",
 		    "Encounter type is Required");
-		
+
 		ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "Encounter.datetime.required");
 		if (encounter.getVisit() != null && !ObjectUtils.equals(encounter.getVisit().getPatient(), encounter.getPatient())) {
 			errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 			    "The patient for the encounter and visit should be the same");
 		}
-		
+
 		Date encounterDateTime = encounter.getEncounterDatetime();
-		
+
 		if (encounterDateTime != null && encounterDateTime.after(new Date())) {
 			errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeBeforeCurrent",
 			    "The encounter datetime should be before the current date.");
 		}
-		
+
 		Visit visit = encounter.getVisit();
 		if (visit != null && encounterDateTime != null) {
 			if (visit.getStartDatetime() != null && encounterDateTime.before(visit.getStartDatetime())) {
 				errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
 				    "The encounter datetime should be between the visit start and stop dates.");
 			}
-			
+
 			if (visit.getStopDatetime() != null && encounterDateTime.after(visit.getStopDatetime())) {
 				errors.rejectValue("encounterDatetime", "Encounter.datetimeShouldBeInVisitDatesRange",
 				    "The encounter datetime should be between the visit start and stop dates.");

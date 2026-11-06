@@ -27,73 +27,76 @@ import org.openmrs.parameter.VisitSearchCriteria;
 
 /**
  * Database access functions for visits.
- * 
+ *
  * @since 1.9
  */
 public interface VisitDAO {
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitTypes()
 	 */
 	List<VisitType> getAllVisitTypes() throws APIException;
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#getAllVisitTypes(boolean)
 	 */
 	public List<VisitType> getAllVisitTypes(boolean includeRetired) throws DAOException;
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitType(java.lang.Integer)
 	 */
 	VisitType getVisitType(Integer visitTypeId);
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypeByUuid(java.lang.String)
 	 */
 	VisitType getVisitTypeByUuid(String uuid);
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypes(java.lang.String)
 	 */
 	List<VisitType> getVisitTypes(String fuzzySearchPhrase);
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#saveVisitType(org.openmrs.VisitType)
 	 */
 	VisitType saveVisitType(VisitType visitType);
-	
+
 	/**
 	 * @see org.openmrs.api.VisitService#purgeVisitType(org.openmrs.VisitType)
 	 */
 	void purgeVisitType(VisitType visitType);
-	
+
 	/**
 	 * @see VisitService#getVisit(Integer)
 	 * @throws DAOException
 	 */
 	public Visit getVisit(Integer visitId) throws DAOException;
-	
+
 	/**
 	 * @see VisitService#getVisitByUuid(String)
 	 * @throws DAOException
 	 */
 	public Visit getVisitByUuid(String uuid) throws DAOException;
-	
+
 	/**
 	 * @see VisitService#saveVisit(Visit)
 	 * @throws DAOException
 	 */
 	public Visit saveVisit(Visit visit) throws DAOException;
-	
+
 	/**
 	 * @see VisitService#purgeVisit(Visit)
 	 * @throws DAOException
 	 */
 	public void deleteVisit(Visit visit) throws DAOException;
-	
+
 	/**
 	 * Gets the visits matching the specified arguments
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return all unvoided visits if includeEnded is set to true<br/>
+	 * <strong>Should</strong> return only active visits if includeEnded is set to false
+	 *
 	 * @param visitTypes a list of visit types to match against
 	 * @param patients a list of patients to match against
 	 * @param locations a list of locations to match against
@@ -106,67 +109,66 @@ public interface VisitDAO {
 	 * @param includeVoided specifies if voided visits should also be returned
 	 * @return a list of visits
 	 * @throws DAOException
-	 * <strong>Should</strong> return all unvoided visits if includeEnded is set to true
-	 * <strong>Should</strong> return only active visits if includeEnded is set to false
 	 */
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
 	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
 	        boolean includeInactive, boolean includeVoided) throws DAOException;
-	
+
 	/**
 	 * Gets the visits matching the specified search criteria
-	 * 
+	 *
 	 * @param criteria the search criteria
 	 * @return a list of visits
 	 * @throws DAOException
-	 * 
 	 * @since 2.6.8
 	 * @since 2.7.0
 	 */
 	public List<Visit> getVisits(VisitSearchCriteria criteria) throws DAOException;
-	
+
 	/**
 	 * @see VisitService#getAllVisitAttributeTypes()
 	 */
 	List<VisitAttributeType> getAllVisitAttributeTypes();
-	
+
 	/**
 	 * @see VisitService#getVisitAttributeType(Integer)
 	 */
 	VisitAttributeType getVisitAttributeType(Integer id);
-	
+
 	/**
 	 * @see VisitService#getVisitAttributeTypeByUuid(String)
 	 */
 	VisitAttributeType getVisitAttributeTypeByUuid(String uuid);
-	
+
 	/**
 	 * @see VisitService#saveVisitAttributeType(VisitAttributeType)
 	 */
 	VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType);
-	
+
 	/**
 	 * Completely removes a visit attribute type from the database
-	 * 
+	 *
 	 * @param visitAttributeType
 	 */
 	void deleteVisitAttributeType(VisitAttributeType visitAttributeType);
-	
+
 	/**
 	 * @see VisitService#getVisitAttributeByUuid(String)
 	 */
 	VisitAttribute getVisitAttributeByUuid(String uuid);
-	
+
 	/**
 	 * Gets the next active visit which matches the specified visit types
-	 * 
+	 * <p>
+	 * <strong>Should</strong> return the next unvoided active visit matching the specified types and
+	 * startDate
+	 *
 	 * @param previousVisit the visit that precedes the one we are fetching
 	 * @param visitTypes a collection of visit types to match against
 	 * @param maximumStartDate the next visit should have been created before or at this date time
 	 * @return a {@link Visit}
-	 * <strong>Should</strong> return the next unvoided active visit matching the specified types and startDate
 	 */
 	public Visit getNextVisit(Visit previousVisit, Collection<VisitType> visitTypes, Date maximumStartDate);
-	
+
 }

@@ -9,14 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +39,14 @@ import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -240,8 +240,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure form is returned when matching against any formFieldId in a list
 	 *
-	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
-
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection)
 	 */
 	@Test
 	public void getFormCriteria_shouldReturnFormsWithAnyFormField() throws DAOException {
@@ -252,16 +252,15 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		List<FormField> containingAnyFormField = new ArrayList<>();
 		FormField formField = new FormField();
-		formField.setFormFieldId(2); 
+		formField.setFormFieldId(2);
 		containingAnyFormField.add(formField);
 
 		List<Form> forms = formService.getForms(null, null, null, null, containingAnyFormField, null, null);
 
 		assertEquals(1, forms.size());
 
-		Set<Integer> expectedFormFieldIds = containingAnyFormField.stream()
-			.map(FormField::getFormFieldId)
-			.collect(Collectors.toSet());
+		Set<Integer> expectedFormFieldIds = containingAnyFormField.stream().map(FormField::getFormFieldId)
+		        .collect(Collectors.toSet());
 
 		for (Form form : forms) {
 			Collection<FormField> formFields = form.getFormFields();
@@ -273,8 +272,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure form is returned when matching against all formFieldIds in a list
 	 *
-	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
-
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection)
 	 */
 	@Test
 	public void getFormCriteria_shouldReturnFormsWithAllFormFields() throws DAOException {
@@ -294,25 +293,22 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		List<Form> forms = formService.getForms(null, null, null, null, null, containingAllFormFields, null);
 
-		Set<Integer> expectedFormFieldIds = containingAllFormFields.stream()
-			.map(FormField::getFormFieldId)
-			.collect(Collectors.toSet());
-		
+		Set<Integer> expectedFormFieldIds = containingAllFormFields.stream().map(FormField::getFormFieldId)
+		        .collect(Collectors.toSet());
+
 		assertEquals(1, forms.size());
-		
+
 		Form form = forms.get(0);
 		Collection<FormField> formFields = form.getFormFields();
 		Set<Integer> formFieldIds = formFields.stream().map(FormField::getFormFieldId).collect(Collectors.toSet());
 
-   		assertTrue(formFieldIds.containsAll(expectedFormFieldIds));
+		assertTrue(formFieldIds.containsAll(expectedFormFieldIds));
 	}
 
 	/**
-	 * Make sure form is not returned when matching against all formFieldId in a list where a single formFieldId is not 
-	 * present
-	 *
-	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection
-
+	 * Make sure form is not returned when matching against all formFieldId in a list where a single
+	 * formFieldId is not present @see FormService#getForms(String, Boolean, java.util.Collection,
+	 * Boolean, java.util.Collection, java.util.Collection, java.util.Collection
 	 */
 	@Test
 	public void getFormCriteria_shouldNotReturnFormWithMissingFormFieldId() throws DAOException {
@@ -334,7 +330,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		FormField formField3 = new FormField();
 		formField3.setFormFieldId(8);
 		containingAllFormFields.add(formField3);
-		
+
 		List<Form> forms = formService.getForms(null, null, null, null, null, containingAllFormFields, null);
 
 		assertEquals(0, forms.size());
@@ -343,7 +339,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure form is returned with the name starting with the partial name.
 	 *
-	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection)
 	 */
 	@Test
 	public void getFormCriteria_shouldReturnFormsWithNameStartingWithPartialName() throws DAOException {
@@ -358,10 +355,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Make sure form is returned with the name containing the partial name
-	 * after a space character.
+	 * Make sure form is returned with the name containing the partial name after a space character.
 	 *
-	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 * @see FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection)
 	 */
 	@Test
 	public void getFormCriteria_shouldReturnFormsWithNameContainingPartialName() throws DAOException {
@@ -376,8 +373,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @
-	 * @see FormService#getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)
+	 * @ @see FormService#getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)
 	 */
 	@Test
 	public void getForms_shouldReturnFormsContainingAllFormFieldsInContainingAllFormFields() {
@@ -405,10 +401,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * ensure that FormFields in containingAnyFormField parameter are considered when filtering the results
+	 * ensure that FormFields in containingAnyFormField parameter are considered when filtering the
+	 * results
 	 *
 	 * @see {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
-
 	 */
 	@Test
 	public void getForms_shouldReturnFormsThatHaveAnyMatchingFormFieldsInContainingAnyFormField() {
@@ -426,8 +422,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Integer currentNumberOfForms = formsReturned.size();
 
 		assertEquals(numberOfExpectedForms, currentNumberOfForms);
-		assertTrue(wasFormsSuccessfullyFilteredByMatchingFormFieldsInContainingAnyFormField(containingAnyFormField,
-			formsReturned));
+		assertTrue(
+		    wasFormsSuccessfullyFilteredByMatchingFormFieldsInContainingAnyFormField(containingAnyFormField, formsReturned));
 
 	}
 
@@ -444,7 +440,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 
 	private boolean wasFormsSuccessfullyFilteredByMatchingFormFieldsInContainingAnyFormField(
-		Collection<FormField> containingAnyFormField, List<Form> formsReturned) {
+	        Collection<FormField> containingAnyFormField, List<Form> formsReturned) {
 
 		for (Form form : formsReturned) {
 			if (!doesFormContainAnyFormField(form, containingAnyFormField)) {
@@ -947,11 +943,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		@Override
 		public Set<FormField> getFormFields() {
 			Set<FormField> formFields = new HashSet<>();
-			
+
 			Field firstName = new Field();
 			firstName.setName("firstName");
 			firstName.setFieldType(new FieldType(1));
-			
+
 			Field lastName = new Field();
 			lastName.setName("lastName");
 			lastName.setFieldType(new FieldType(1));
@@ -1000,6 +996,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * Creates a new Global Property to lock forms by setting its value
+	 *
 	 * @param propertyValue value for forms locked GP
 	 */
 	public void createFormsLockedGPAndSetValue(String propertyValue) {
@@ -1137,8 +1134,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		if (retried) {
 			form1.setRetired(true);
 			form1.setRetireReason("For testing");
-		}
-		else {
+		} else {
 			form1.setRetired(false);
 		}
 		return form1;
@@ -1186,7 +1182,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Context.getFormService().saveForm(createMockForm(true));
 
 		forms = Context.getFormService().getAllForms(true);
-		assertEquals(currentFormsSize + 1 , forms.size());
+		assertEquals(currentFormsSize + 1, forms.size());
 	}
 
 	/**
@@ -1201,7 +1197,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Context.getFormService().saveForm(createMockForm(true));
 
 		forms = Context.getFormService().getAllForms(false);
-		assertEquals(currentFormsSize , forms.size());
+		assertEquals(currentFormsSize, forms.size());
 	}
 
 	/**
@@ -1212,7 +1208,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = Context.getFormService().getAllForms();
 		boolean formNameFound = false;
 		final String formName = "Sample_Form_Not_In_List";
-		for (Form node:forms) {
+		for (Form node : forms) {
 			if (node.getName().equals(formName)) {
 				formNameFound = true;
 			}

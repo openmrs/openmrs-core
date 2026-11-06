@@ -18,28 +18,28 @@ import org.openmrs.layout.LayoutTemplate;
  * @since 1.12
  */
 public class AddressTemplate extends LayoutTemplate implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public AddressTemplate(String string) {
 		super(string);
 	}
-	
+
 	@Override
 	public String getLayoutToken() {
 		return "IS_ADDR_TOKEN";
 	}
-	
+
 	@Override
 	public String getNonLayoutToken() {
 		return "IS_NOT_ADDR_TOKEN";
 	}
-	
+
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return AddressSupport.getInstance();
 	}
-	
+
 	@Override
 	public String getCodeName() {
 		if (this.codeName == null) {

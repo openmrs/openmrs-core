@@ -29,24 +29,25 @@ import org.openmrs.api.context.Context;
  */
 @Handler(supports = Person.class)
 public class PersonVoidHandler implements VoidHandler<Person> {
-	
+
 	/**
 	 * Sets all personVoid* attributes to the given parameters.
+	 * <p>
+	 * <strong>Should</strong> set the personVoided bit<br/>
+	 * <strong>Should</strong> set the personVoidReason<br/>
+	 * <strong>Should</strong> set personVoidedBy<br/>
+	 * <strong>Should</strong> not set personVoidedBy if non null<br/>
+	 * <strong>Should</strong> set personDateVoided<br/>
+	 * <strong>Should</strong> not set personDateVoided if non null<br/>
+	 * <strong>Should</strong> not set the personVoidReason if already personVoided<br/>
+	 * <strong>Should</strong> retire users
 	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> set the personVoided bit
-	 * <strong>Should</strong> set the personVoidReason
-	 * <strong>Should</strong> set personVoidedBy
-	 * <strong>Should</strong> not set personVoidedBy if non null
-	 * <strong>Should</strong> set personDateVoided
-	 * <strong>Should</strong> not set personDateVoided if non null
-	 * <strong>Should</strong> not set the personVoidReason if already personVoided
-	 * <strong>Should</strong> retire users
 	 */
 	@Override
 	public void handle(Person person, User voidingUser, Date voidedDate, String voidReason) {
-		
+
 		// skip over all work if the object is already voided
 		if (!person.getPersonVoided()) {
 			if (person.getPersonId() != null) {
@@ -56,10 +57,10 @@ public class PersonVoidHandler implements VoidHandler<Person> {
 					us.retireUser(user, voidReason);
 				}
 			}
-			
+
 			person.setPersonVoided(true);
 			person.setPersonVoidReason(voidReason);
-			
+
 			if (person.getPersonVoidedBy() == null) {
 				person.setPersonVoidedBy(voidingUser);
 			}
@@ -68,5 +69,5 @@ public class PersonVoidHandler implements VoidHandler<Person> {
 			}
 		}
 	}
-	
+
 }

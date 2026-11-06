@@ -9,8 +9,6 @@
  */
 package org.openmrs.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.handler.DateDatatypeHandler;
@@ -21,8 +19,10 @@ import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.customdatatype.datatype.LocationDatatype;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class DatatypeServiceTest extends BaseContextSensitiveTest {
-	
+
 	/**
 	 * @see DatatypeService#getHandler(CustomDatatype,String)
 	 */
@@ -32,7 +32,7 @@ public class DatatypeServiceTest extends BaseContextSensitiveTest {
 		CustomDatatype dateDatatype = CustomDatatypeUtil.getDatatype(DateDatatype.class.getName(), null);
 		assertEquals(DateDatatypeHandler.class, service.getHandler(dateDatatype, null).getClass());
 	}
-	
+
 	/**
 	 * @see DatatypeService#getHandler(CustomDatatype,String)
 	 */

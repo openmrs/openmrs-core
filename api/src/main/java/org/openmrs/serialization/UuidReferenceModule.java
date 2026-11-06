@@ -35,126 +35,126 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
 /**
- * A custom Jackson module that enables UUID-based serialization and deserialization 
- * of {@link OpenmrsObject} references.
+ * A custom Jackson module that enables UUID-based serialization and deserialization of
+ * {@link OpenmrsObject} references.
  * <p>
- * During serialization, fields referencing {@code OpenmrsObject}s are serialized 
- * as their UUIDs rather than as full nested objects. 
- * During deserialization, UUID strings are resolved back to full {@code OpenmrsObject} 
- * instances using the {@link DomainService}.
+ * During serialization, fields referencing {@code OpenmrsObject}s are serialized as their UUIDs
+ * rather than as full nested objects. During deserialization, UUID strings are resolved back to
+ * full {@code OpenmrsObject} instances using the {@link DomainService}.
  * </p>
- *
  * This approach helps to:
  * <ul>
- *   <li>Reduce object size by avoiding full object nesting</li>
- *   <li>Enable reference-based object graph resolution</li>
- *   <li>Support lazy loading of related entities based on UUIDs</li>
+ * <li>Reduce object size by avoiding full object nesting</li>
+ * <li>Enable reference-based object graph resolution</li>
+ * <li>Support lazy loading of related entities based on UUIDs</li>
  * </ul>
  *
  * @since 3.0.0
  */
 public class UuidReferenceModule extends SimpleModule {
 
-    protected DomainService domainService;
+	protected DomainService domainService;
 
-    /**
-     * Constructs a new {@code UuidReferenceModule} with the given domain service.
-     *
-     * @param domainService the domain service used to resolve UUIDs into {@code OpenmrsObject}s
-     */
-    public UuidReferenceModule(DomainService domainService) {
-        super("UuidReferenceModule");
-        this.domainService = domainService;
-    }
+	/**
+	 * Constructs a new {@code UuidReferenceModule} with the given domain service.
+	 *
+	 * @param domainService the domain service used to resolve UUIDs into {@code OpenmrsObject}s
+	 */
+	public UuidReferenceModule(DomainService domainService) {
+		super("UuidReferenceModule");
+		this.domainService = domainService;
+	}
 
-    /**
-     * Sets up custom serializer and deserializer modifiers to intercept and override 
-     * Jackson's default behavior for properties referencing {@link OpenmrsObject}s.
-     *
-     * @param context the Jackson setup context
-     */
-    @Override
-    public void setupModule(SetupContext context) {
-        super.setupModule(context);
+	/**
+	 * Sets up custom serializer and deserializer modifiers to intercept and override Jackson's default
+	 * behavior for properties referencing {@link OpenmrsObject}s.
+	 *
+	 * @param context the Jackson setup context
+	 */
+	@Override
+	public void setupModule(SetupContext context) {
+		super.setupModule(context);
 
-        // Serialization: override field serialization logic
-        context.addBeanSerializerModifier(new BeanSerializerModifier() {
-            @Override
-            public List<BeanPropertyWriter> changeProperties(
-                    SerializationConfig config,
-                    BeanDescription beanDesc,
-                    List<BeanPropertyWriter> beanProperties) {
+		// Serialization: override field serialization logic
+		context.addBeanSerializerModifier(new BeanSerializerModifier() {
 
-                Map<String, BeanPropertyDefinition> propertyDefMap = beanDesc.findProperties().stream().collect(Collectors.toMap(BeanPropertyDefinition::getName, def -> def));
-                Iterator<BeanPropertyWriter> propIt = beanProperties.iterator();
+			@Override
+			public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+			        List<BeanPropertyWriter> beanProperties) {
 
-                while (propIt.hasNext()) {
-                    BeanPropertyWriter writer = propIt.next();
-                    BeanPropertyDefinition def = propertyDefMap.get(writer.getName());
+				Map<String, BeanPropertyDefinition> propertyDefMap = beanDesc.findProperties().stream()
+				        .collect(Collectors.toMap(BeanPropertyDefinition::getName, def -> def));
+				Iterator<BeanPropertyWriter> propIt = beanProperties.iterator();
 
-                    if (def == null || !def.hasField()) {
-                        // Exclude from serialization if there's no backing field
-                        propIt.remove();
-                        continue;
-                    }
-                }
-                for (int i = 0; i < beanProperties.size(); i++) {
-                    BeanPropertyWriter original = beanProperties.get(i);
+				while (propIt.hasNext()) {
+					BeanPropertyWriter writer = propIt.next();
+					BeanPropertyDefinition def = propertyDefMap.get(writer.getName());
 
-                    beanProperties.set(i, new BeanPropertyWriter(original) {
-                        @Override
-                        public void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception {
-                            Object value = get(bean);
-                            if (value instanceof OpenmrsObject) {
-                                gen.writeStringField(getName(), ((OpenmrsObject) value).getUuid());
-                            } else {
-                                super.serializeAsField(bean, gen, prov);
-                            }
-                        }
-                    });
-                }
-                return beanProperties;
-            }
-        });
+					if (def == null || !def.hasField()) {
+						// Exclude from serialization if there's no backing field
+						propIt.remove();
+						continue;
+					}
+				}
+				for (int i = 0; i < beanProperties.size(); i++) {
+					BeanPropertyWriter original = beanProperties.get(i);
 
-        // Deserialization: override field deserialization logic
-        context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
-            @Override
-            public BeanDeserializerBuilder updateBuilder(
-                    DeserializationConfig config,
-                    BeanDescription beanDesc,
-                    BeanDeserializerBuilder builder) {
+					beanProperties.set(i, new BeanPropertyWriter(original) {
 
-                Iterator<SettableBeanProperty> properties = builder.getProperties();
-                while (properties.hasNext()) {
-                    SettableBeanProperty prop = properties.next();
-                    Class<?> rawType = prop.getType().getRawClass();
+						@Override
+						public void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov)
+						        throws Exception {
+							Object value = get(bean);
+							if (value instanceof OpenmrsObject) {
+								gen.writeStringField(getName(), ((OpenmrsObject) value).getUuid());
+							} else {
+								super.serializeAsField(bean, gen, prov);
+							}
+						}
+					});
+				}
+				return beanProperties;
+			}
+		});
 
-                    if (OpenmrsObject.class.isAssignableFrom(rawType)) {
-                        JsonDeserializer<?> uuidDeserializer = new JsonDeserializer<Object>() {
-                            @Override
-                            public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-                                String uuid = p.getValueAsString();
-                                if (uuid == null || uuid.isEmpty()) {
-                                    return null;
-                                };
-                                return domainService.fetchByUuid((Class<?>) rawType, uuid);
-                            }
-                        };
+		// Deserialization: override field deserialization logic
+		context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
 
-                        SettableBeanProperty newProp = prop.withValueDeserializer(uuidDeserializer);
-                        builder.addOrReplaceProperty(newProp, true);
-                    }
-                }
-                return builder;
-            }
-            @Override
-            public List<BeanPropertyDefinition> updateProperties(DeserializationConfig config, 
-                    BeanDescription beanDesc, List<BeanPropertyDefinition> propDefs) {
-                return propDefs.stream()
-                    .filter(def -> def.hasField())
-                    .collect(Collectors.toList());
-            }
-        });
-    }
+			@Override
+			public BeanDeserializerBuilder updateBuilder(DeserializationConfig config, BeanDescription beanDesc,
+			        BeanDeserializerBuilder builder) {
+
+				Iterator<SettableBeanProperty> properties = builder.getProperties();
+				while (properties.hasNext()) {
+					SettableBeanProperty prop = properties.next();
+					Class<?> rawType = prop.getType().getRawClass();
+
+					if (OpenmrsObject.class.isAssignableFrom(rawType)) {
+						JsonDeserializer<?> uuidDeserializer = new JsonDeserializer<Object>() {
+
+							@Override
+							public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+								String uuid = p.getValueAsString();
+								if (uuid == null || uuid.isEmpty()) {
+									return null;
+								}
+								;
+								return domainService.fetchByUuid((Class<?>) rawType, uuid);
+							}
+						};
+
+						SettableBeanProperty newProp = prop.withValueDeserializer(uuidDeserializer);
+						builder.addOrReplaceProperty(newProp, true);
+					}
+				}
+				return builder;
+			}
+
+			@Override
+			public List<BeanPropertyDefinition> updateProperties(DeserializationConfig config, BeanDescription beanDesc,
+			        List<BeanPropertyDefinition> propDefs) {
+				return propDefs.stream().filter(def -> def.hasField()).collect(Collectors.toList());
+			}
+		});
+	}
 }

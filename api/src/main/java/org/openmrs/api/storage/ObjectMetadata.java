@@ -15,20 +15,26 @@ import java.util.Map;
 
 /**
  * Used to store and retrieve metadata.
- * 
+ *
  * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 public class ObjectMetadata {
-	private Map<String, String> customMetadata = new HashMap<>();
-	private Long length;
-	private String mimeType;
-	private String filename;
-	private Instant creationTime;
-	
-	public ObjectMetadata() {}
 
-	public ObjectMetadata(Long length, String mimeType, String filename, Instant creationTime, 
-						  Map<String, String> customMetadata) {
+	private Map<String, String> customMetadata = new HashMap<>();
+
+	private Long length;
+
+	private String mimeType;
+
+	private String filename;
+
+	private Instant creationTime;
+
+	public ObjectMetadata() {
+	}
+
+	public ObjectMetadata(Long length, String mimeType, String filename, Instant creationTime,
+	    Map<String, String> customMetadata) {
 		this();
 		this.length = length;
 		this.mimeType = mimeType;
@@ -36,7 +42,7 @@ public class ObjectMetadata {
 		this.creationTime = creationTime;
 		this.customMetadata = customMetadata;
 	}
-	
+
 	public static ObjectMetadata.Builder builder() {
 		return new ObjectMetadata.Builder();
 	}
@@ -97,10 +103,15 @@ public class ObjectMetadata {
 	}
 
 	public static class Builder {
+
 		private Long length;
+
 		private String mimeType;
+
 		private String filename;
+
 		private Instant creationTime;
+
 		private Map<String, String> customMetadata;
 
 		public Builder setLength(Long length) {
@@ -122,7 +133,7 @@ public class ObjectMetadata {
 			this.creationTime = creationTime;
 			return this;
 		}
-		
+
 		public Builder setCustomMetadata(Map<String, String> customMetadata) {
 			this.customMetadata = customMetadata;
 			return this;

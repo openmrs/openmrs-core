@@ -25,7 +25,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 @Handler(supports = ConceptProposal.class)
 public class ConceptProposalHandler implements SaveHandler<ConceptProposal> {
-	
+
 	/**
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
@@ -35,14 +35,14 @@ public class ConceptProposalHandler implements SaveHandler<ConceptProposal> {
 		if (cp.getState() == null) {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 		}
-		
+
 		// set the creator and date created
 		if (cp.getCreator() == null && cp.getEncounter() != null) {
 			cp.setCreator(cp.getEncounter().getCreator());
 		} else {
 			cp.setCreator(creator);
 		}
-		
+
 		if (cp.getDateCreated() == null && cp.getEncounter() != null) {
 			cp.setDateCreated(cp.getEncounter().getDateCreated());
 		} else {

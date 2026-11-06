@@ -14,17 +14,17 @@ import org.openmrs.api.ConceptService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConceptMapTypeEditorTest extends BasePropertyEditorTest<ConceptMapType, ConceptMapTypeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	ConceptService conceptService;
-	
+
 	@Override
 	protected ConceptMapTypeEditor getNewEditor() {
 		return new ConceptMapTypeEditor();
 	}
-	
+
 	@Override
 	protected ConceptMapType getExistingObject() {
 		return conceptService.getConceptMapType(EXISTING_ID);

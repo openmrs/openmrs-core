@@ -9,13 +9,6 @@
  */
 package org.openmrs.validator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,27 +22,33 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Contains test methods for the {@link CohortValidator}
  */
 public class CohortValidatorTest extends BaseContextSensitiveTest {
-	
+
 	private static final String nullOrIncompatibleObjErrorMessage = "The parameter obj should not be null and must be of type"
 	        + Cohort.class;
-	
-	
+
 	private CohortValidator validator;
-	
+
 	private Cohort cohort;
 
 	private Patient patient;
-	
+
 	private CohortMembership cohortMembership;
 
 	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
 
 	private Errors errors;
-	
+
 	@BeforeEach
 	public void setUp() {
 		validator = new CohortValidator();
@@ -59,34 +58,36 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 		patient = Context.getPatientService().getPatient(7);
 		cohortMembership = new CohortMembership(patient.getPatientId());
 		cohort.addMembership(cohortMembership);
-		
+
 		errors = new BindException(cohort, "cohort");
 	}
-	
+
 	@Test
-	public void shouldFailIfGivenNull() { 
-		
-		IllegalArgumentException exception =assertThrows(IllegalArgumentException.class, () -> validator.validate(null, errors));
+	public void shouldFailIfGivenNull() {
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+		    () -> validator.validate(null, errors));
 		assertThat(exception.getMessage(), is(nullOrIncompatibleObjErrorMessage));
 	}
-	
+
 	@Test
 	public void shouldFailIfGivenInstanceOfOtherClassThanCohort() {
-		
-		IllegalArgumentException exception =assertThrows(IllegalArgumentException.class, () -> validator.validate(new Patient(), errors));
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+		    () -> validator.validate(new Patient(), errors));
 		assertThat(exception.getMessage(), is(nullOrIncompatibleObjErrorMessage));
 	}
-	
+
 	/**
 	 * @see CohortValidator#validate(Object, Errors)
 	 */
 	@Test
 	public void validate_shouldFailIfPatientIsVoided() {
-		
+
 		patient.setVoided(true);
 
 		validator.validate(cohort, errors);
-		
+
 		assertTrue(errors.hasFieldErrors("memberships"));
 		String eMessage = "Patient " + patient.getPatientId() + " is voided, cannot add voided members to a cohort";
 		assertEquals(eMessage, errors.getFieldError("memberships").getDefaultMessage());
@@ -94,32 +95,32 @@ public class CohortValidatorTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void validate_shouldPassIfPatientIsNonVoided() {
-		
+
 		validator.validate(cohort, errors);
-		
+
 		assertFalse(errors.hasErrors());
 		assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
 	public void validate_shouldPassIfMembershipisVoided() {
-		
+
 		cohortMembership.setVoided(true);
 
 		validator.validate(cohort, errors);
-		
+
 		assertFalse(errors.hasErrors());
 		assertFalse(errors.hasFieldErrors("memberships"));
 	}
 
 	@Test
 	public void validate_shouldPassIfPatientAndMembershipAreVoided() {
-		
+
 		patient.setVoided(true);
 		cohortMembership.setVoided(true);
 
 		validator.validate(cohort, errors);
-		
+
 		assertFalse(errors.hasErrors());
 		assertFalse(errors.hasFieldErrors("memberships"));
 	}

@@ -1,4 +1,4 @@
-package org.openmrs.module.testmodule.api; /**
+/**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -7,12 +7,17 @@ package org.openmrs.module.testmodule.api; /**
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package org.openmrs.module.testmodule.api;
+
+/**
+* This Source Code Form is subject to the terms of the Mozilla Public License,
+* v. 2.0. If a copy of the MPL was not distributed with this file, You can
+* obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+* the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+*
+* Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+* graphic logo is a trademark of OpenMRS Inc.
+*/
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,20 +25,24 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
-import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Testing with JUnit 5
  */
 public class TestModuleServiceTest extends BaseModuleContextSensitiveTest {
-	
+
 	@Autowired
 	@Qualifier("testModuleService")
 	private TestModuleService testModuleService;
-	
+
 	@Test
 	public void testHello() {
 		assertThat(testModuleService.hello(), is("hello"));
@@ -45,10 +54,10 @@ public class TestModuleServiceTest extends BaseModuleContextSensitiveTest {
 
 		Advised advised = (Advised) testModuleService;
 
-		List<String> actualAdvices = Arrays.stream(advised.getAdvisors()).map(advisor -> advisor.getAdvice().getClass()
-			.getSimpleName()).collect(Collectors.toList());
+		List<String> actualAdvices = Arrays.stream(advised.getAdvisors())
+		        .map(advisor -> advisor.getAdvice().getClass().getSimpleName()).collect(Collectors.toList());
 
-		assertThat(actualAdvices, contains("AuthorizationAdvice", 
-			"LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor", "TransactionInterceptor"));
+		assertThat(actualAdvices, contains("AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor",
+		    "TransactionInterceptor"));
 	}
 }

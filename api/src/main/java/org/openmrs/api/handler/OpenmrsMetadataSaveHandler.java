@@ -19,22 +19,24 @@ import org.openmrs.User;
  * trailing whitespace around the name and description
  */
 public class OpenmrsMetadataSaveHandler implements SaveHandler<OpenmrsMetadata> {
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> trim whitespace from name<br/>
+	 * <strong>Should</strong> trim whitespace from description
+	 *
 	 * @see org.openmrs.api.handler.SaveHandler#handle(org.openmrs.OpenmrsObject, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
-	 * <strong>Should</strong> trim whitespace from name
-	 * <strong>Should</strong> trim whitespace from description
 	 */
 	@Override
 	public void handle(OpenmrsMetadata object, User creator, Date dateCreated, String other) {
 		if (object.getName() != null) {
 			object.setName(object.getName().trim());
 		}
-		
+
 		if (object.getDescription() != null) {
 			object.setDescription(object.getDescription().trim());
 		}
 	}
-	
+
 }

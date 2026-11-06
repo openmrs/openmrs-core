@@ -13,21 +13,21 @@ package org.openmrs.api;
 /**
  * Superclass of all order entry related exceptions and should typically be thrown whenever there is
  * no more specific type can be thrown.
- * 
+ *
  * @since 2.1
  */
 public class OrderEntryException extends APIException {
-	
+
 	public OrderEntryException(String message) {
 		super(message);
 	}
-	
+
 	public OrderEntryException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public OrderEntryException(String messageKey, Object[] parameters) {
 		super(messageKey, parameters);
 	}
-	
+
 }

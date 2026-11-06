@@ -27,28 +27,28 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
  */
 @Disabled
 public class CreateInitialDataSet extends BaseContextSensitiveTest {
-	
+
 	/**
-	 * This test creates an xml dbunit file from the current database connection information found
-	 * in the runtime properties. This method has to "skip over the base setup" because it tries to
-	 * do things (like initialize the database) that shouldn't be done to a standard mysql database.
-	 * 
+	 * This test creates an xml dbunit file from the current database connection information found in
+	 * the runtime properties. This method has to "skip over the base setup" because it tries to do
+	 * things (like initialize the database) that shouldn't be done to a standard mysql database.
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	@SkipBaseSetup
 	public void shouldCreateInitialTestDataSetXmlFile() throws Exception {
-		
+
 		// only run this test if it is being run alone.
 		// this allows the junit-report ant target and the "right-
 		// click-on-/test/api-->run as-->junit test" methods to skip
 		// over this whole "test"
 		if (getLoadCount() != 1)
 			return;
-		
+
 		// database connection for dbunit
 		IDatabaseConnection connection = new DatabaseConnection(getConnection());
-		
+
 		// partial database export
 		QueryDataSet initialDataSet = new QueryDataSet(connection);
 		initialDataSet.addTable("concept", "SELECT * FROM concept");
@@ -88,7 +88,7 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 		initialDataSet.addTable("role_role", "SELECT * FROM role_role");
 		initialDataSet.addTable("user_role", "SELECT * FROM user_role");
 		initialDataSet.addTable("users", "SELECT * FROM users");
-		
+
 		/*
 		initialDataSet.addTable("field", "SELECT * FROM field");
 		initialDataSet.addTable("field_answer", "SELECT * FROM field_answer");
@@ -99,24 +99,24 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 		*/
 
 		FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/org/openmrs/logic/include/LogicBasicTest.xml"));
-		
+
 		// full database export
 		//IDataSet fullDataSet = connection.createDataSet();
 		//FlatXmlDataSet.write(fullDataSet, new FileOutputStream("full.xml"));
-		
+
 		// dependent tables database export: export table X and all tables that
 		// have a PK which is a FK on X, in the right order for insertion
 		//String[] depTableNames = TablesDependencyHelper.getAllDependentTables(connection, "X");
 		//IDataSet depDataset = connection.createDataSet( depTableNames );
-		//FlatXmlDataSet.write(depDataSet, new FileOutputStream("dependents.xml")); 
-		
+		//FlatXmlDataSet.write(depDataSet, new FileOutputStream("dependents.xml"));
+
 		//TestUtil.printOutTableContents(getConnection(), "encounter_type", "encounter");
 	}
-	
+
 	/**
 	 * Make sure we use the database defined by the runtime properties and not the hsql in-memory
 	 * database
-	 * 
+	 *
 	 * @see BaseContextSensitiveTest#useInMemoryDatabase()
 	 */
 	@Override

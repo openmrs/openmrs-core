@@ -31,7 +31,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * {@link Retireable} that are themselves a {@link Retireable} and retiredBy/dateRetired are set,
  * but <b>ONLY IF</b> the retired bit was set on them as well. Using the associated retire* method
  * in the service on the parent instance is preferred so that all child objects are indeed retired.
- * 
+ *
  * @see RequiredDataAdvice
  * @see SaveHandler
  * @see RequiredDataAdvice
@@ -39,34 +39,35 @@ import org.openmrs.aop.RequiredDataAdvice;
  */
 @Handler(supports = Retireable.class)
 public class RetireSaveHandler implements SaveHandler<Retireable> {
-	
+
 	/**
 	 * This method does not set "retired" to true, but rather only sets the retiredBy/dateRetired if
 	 * they are null and retired==true. <br>
 	 * <br>
 	 * If retired is set to false, the retired attributes are cleared nullified.
-	 * 
+	 * <p>
+	 * <strong>Should</strong> not set the retired bit<br/>
+	 * <strong>Should</strong> not set the retireReason<br/>
+	 * <strong>Should</strong> set retired by<br/>
+	 * <strong>Should</strong> not set retired by if non null<br/>
+	 * <strong>Should</strong> set dateRetired<br/>
+	 * <strong>Should</strong> not set dateRetired if non null<br/>
+	 * <strong>Should</strong> not set the dateRetired if retired is false<br/>
+	 * <strong>Should</strong> set retireReason to null if retired is true<br/>
+	 * <strong>Should</strong> set dateRetired to null if retired is true<br/>
+	 * <strong>Should</strong> set retiredBy to null if retired is true
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> not set the retired bit
-	 * <strong>Should</strong> not set the retireReason
-	 * <strong>Should</strong> set retired by
-	 * <strong>Should</strong> not set retired by if non null
-	 * <strong>Should</strong> set dateRetired
-	 * <strong>Should</strong> not set dateRetired if non null
-	 * <strong>Should</strong> not set the dateRetired if retired is false
-	 * <strong>Should</strong> set retireReason to null if retired is true
-	 * <strong>Should</strong> set dateRetired to null if retired is true
-	 * <strong>Should</strong> set retiredBy to null if retired is true
 	 */
 	@Override
 	public void handle(Retireable retireableObject, User currentUser, Date currentDate, String notUsed) {
-		
+
 		// retire reason is not set here, it should be set prior to this method
-		
+
 		// only set the values if the user saved this object and set the retired bit
 		if (retireableObject.getRetired()) {
-			
+
 			if (retireableObject.getRetiredBy() == null) {
 				retireableObject.setRetiredBy(currentUser);
 			}
@@ -79,7 +80,7 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 			retireableObject.setDateRetired(null);
 			retireableObject.setRetireReason(null);
 		}
-		
+
 	}
-	
+
 }

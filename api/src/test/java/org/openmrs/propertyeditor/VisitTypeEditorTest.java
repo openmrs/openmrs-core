@@ -14,17 +14,17 @@ import org.openmrs.api.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class VisitTypeEditorTest extends BasePropertyEditorTest<VisitType, VisitTypeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private VisitService visitService;
-	
+
 	@Override
 	protected VisitTypeEditor getNewEditor() {
 		return new VisitTypeEditor();
 	}
-	
+
 	@Override
 	protected VisitType getExistingObject() {
 		return visitService.getVisitType(EXISTING_ID);

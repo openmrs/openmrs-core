@@ -27,7 +27,7 @@ import org.openmrs.api.context.Context;
  * class. <br>
  * This class does a lookup on all tag name for all child {@link ConceptNameTag}s that have a null
  * {@link ConceptNameTag#getConceptNameTagId()}.
- * 
+ *
  * @see RequiredDataHandler
  * @see SaveHandler
  * @see ConceptName
@@ -35,43 +35,44 @@ import org.openmrs.api.context.Context;
  */
 @Handler(supports = ConceptName.class)
 public class ConceptNameSaveHandler implements SaveHandler<ConceptName> {
-	
+
 	/**
-	 * This method does a lookup on all tag name for all child {@link ConceptNameTag}s that have a
-	 * null {@link ConceptNameTag#getConceptNameTagId()}.
-	 * 
+	 * This method does a lookup on all tag name for all child {@link ConceptNameTag}s that have a null
+	 * {@link ConceptNameTag#getConceptNameTagId()}.
+	 * <p>
+	 * <strong>Should</strong> not fail if tags is null<br/>
+	 * <strong>Should</strong> replace tags without ids with database fetched tag<br/>
+	 * <strong>Should</strong> not replace tags without ids that are not in the database<br/>
+	 * <strong>Should</strong> not replace tags that have ids
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> not fail if tags is null
-	 * <strong>Should</strong> replace tags without ids with database fetched tag
-	 * <strong>Should</strong> not replace tags without ids that are not in the database
-	 * <strong>Should</strong> not replace tags that have ids
 	 */
 	@Override
 	public void handle(ConceptName conceptName, User currentUser, Date currentDate, String reason) {
-		
+
 		// put Integer conceptNameTagIds onto ConceptNameTags that are missing them
 		if (conceptName.getTags() != null) {
 			Collection<ConceptNameTag> replacementTags = new ArrayList<>();
-			
+
 			Iterator<ConceptNameTag> tagsIt = conceptName.getTags().iterator();
 			while (tagsIt.hasNext()) {
 				ConceptNameTag tag = tagsIt.next();
-				
+
 				if (tag.getConceptNameTagId() == null) {
 					ConceptNameTag replacementTag = Context.getConceptService().getConceptNameTagByName(tag.getTag());
-					
+
 					if (replacementTag != null) {
 						tagsIt.remove();
 						replacementTags.add(replacementTag);
 					}
 				}
 			}
-			
+
 			if (!replacementTags.isEmpty()) {
 				conceptName.getTags().addAll(replacementTags);
 			}
 		}
 	}
-	
+
 }

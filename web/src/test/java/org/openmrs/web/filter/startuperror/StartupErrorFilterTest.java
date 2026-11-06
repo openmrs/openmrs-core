@@ -9,11 +9,6 @@
  */
 package org.openmrs.web.filter.startuperror;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,50 +16,51 @@ import org.openmrs.web.Listener;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests {@link StartupErrorFilter}.
  */
 public class StartupErrorFilterTest {
 
 	private StartupErrorFilter filter;
-	
+
 	@BeforeEach
 	public void setUp() {
 		filter = new StartupErrorFilter();
 	}
-	
+
 	@AfterEach
-	public void reverterrorAtStartup() { 
+	public void reverterrorAtStartup() {
 		Throwable errorAtStartup = null;
 		ReflectionTestUtils.setField(Listener.class, "errorAtStartup", errorAtStartup);
 	}
-	
+
 	@Test
 	public void getModel_shouldReturnAStartupErrorFilterModelContainingTheStartupError() {
-		
+
 		Exception e = new Exception();
 		ReflectionTestUtils.setField(Listener.class, "errorAtStartup", e);
-		
-		
+
 		StartupErrorFilterModel model = filter.getUpdateFilterModel();
-		
+
 		assertThat(model.errorAtStartup, is(e));
 	}
-	
+
 	@Test
 	public void skipFilter_shouldReturnTrueIfNoErrorHasOccuredOnStartup() {
-		
-		
-		
+
 		assertTrue(filter.skipFilter(new MockHttpServletRequest()), "should be true on start without error");
 	}
-	
+
 	@Test
 	public void skipFilter_shouldReturnFalseIfAnErrorHasOccuredOnStartup() {
 		Exception e = new Exception();
 		ReflectionTestUtils.setField(Listener.class, "errorAtStartup", e);
-		
-		
+
 		assertFalse(filter.skipFilter(new MockHttpServletRequest()), "should be false on start with error");
 	}
 }

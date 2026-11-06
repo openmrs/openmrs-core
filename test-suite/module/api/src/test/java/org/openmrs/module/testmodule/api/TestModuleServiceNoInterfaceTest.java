@@ -9,11 +9,6 @@
  */
 package org.openmrs.module.testmodule.api;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,11 +18,16 @@ import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class TestModuleServiceNoInterfaceTest extends BaseModuleContextSensitiveTest {
-	
+
 	@Autowired
 	private TestModuleServiceNoInterface testModuleServiceNoInterface;
-	
+
 	@Test
 	public void testHello() {
 		assertThat(testModuleServiceNoInterface.hello(), is("Hello!"));
@@ -39,10 +39,10 @@ public class TestModuleServiceNoInterfaceTest extends BaseModuleContextSensitive
 
 		Advised advised = (Advised) testModuleServiceNoInterface;
 
-		List<String> actualAdvices = Arrays.stream(advised.getAdvisors()).map(advisor -> advisor.getAdvice().getClass()
-			.getSimpleName()).collect(Collectors.toList());
+		List<String> actualAdvices = Arrays.stream(advised.getAdvisors())
+		        .map(advisor -> advisor.getAdvice().getClass().getSimpleName()).collect(Collectors.toList());
 
-		assertThat(actualAdvices, contains("AuthorizationAdvice", "LoggingAdvice",
-			"RequiredDataAdvice", "CacheInterceptor", "TransactionInterceptor"));
+		assertThat(actualAdvices, contains("AuthorizationAdvice", "LoggingAdvice", "RequiredDataAdvice", "CacheInterceptor",
+		    "TransactionInterceptor"));
 	}
 }

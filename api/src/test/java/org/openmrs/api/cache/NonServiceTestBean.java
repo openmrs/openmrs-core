@@ -10,6 +10,6 @@
 package org.openmrs.api.cache;
 
 public interface NonServiceTestBean {
-	
+
 	String getCachedUUID();
 }

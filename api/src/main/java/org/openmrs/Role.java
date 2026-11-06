@@ -9,14 +9,16 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.Cacheable;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,57 +35,57 @@ import org.slf4j.LoggerFactory;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Audited
 public class Role extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 1234233L;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Role.class);
-	
+
 	// Fields
-	
+
 	private String role;
-	
+
 	private Set<Privilege> privileges;
-	
+
 	private Set<Role> inheritedRoles;
-	
+
 	private Set<Role> childRoles;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public Role() {
 	}
-	
+
 	/** constructor with id */
 	public Role(String role) {
 		this.role = role;
 	}
-	
+
 	/** constructor with all database required properties */
 	public Role(String role, String description) {
 		this.role = role;
 		setDescription(description);
 	}
-	
+
 	/**
 	 * @return Returns the privileges.
 	 */
 	public Set<Privilege> getPrivileges() {
 		return privileges;
 	}
-	
+
 	/**
 	 * @param privileges The privileges to set.
 	 */
 	public void setPrivileges(Set<Privilege> privileges) {
-		this.privileges = privileges;
+		this.privileges = CollectionUtil.setCollection(this.privileges, privileges);
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.getRole();
 	}
-	
+
 	/**
 	 * Adds the given Privilege to the list of privileges
 	 *
@@ -97,16 +99,16 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			privileges.add(privilege);
 		}
 	}
-	
+
 	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
 		for (Privilege privilege : privileges) {
-			if (privilege.getPrivilege().equals(privilegeName)) {
+			if (privilege.getPrivilege().equalsIgnoreCase(privilegeName)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Removes the given Privilege from the list of privileges
 	 *
@@ -117,21 +119,21 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 			privileges.remove(privilege);
 		}
 	}
-	
+
 	/**
 	 * @return Returns the role.
 	 */
 	public String getRole() {
 		return role;
 	}
-	
+
 	/**
 	 * @param role The role to set.
 	 */
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -139,24 +141,25 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public String toString() {
 		return this.role;
 	}
-	
+
 	/**
 	 * Looks for the given <code>privilegeName</code> privilege name in this roles privileges. This
 	 * method does not recurse through the inherited roles
+	 * <p>
+	 * <strong>Should</strong> return false if not found<br/>
+	 * <strong>Should</strong> return true if found<br/>
+	 * <strong>Should</strong> not fail given null parameter<br/>
+	 * <strong>Should</strong> return true for any privilegeName if super user
 	 *
 	 * @param privilegeName String name of a privilege
 	 * @return true/false whether this role has the given privilege
-	 * <strong>Should</strong> return false if not found
-	 * <strong>Should</strong> return true if found
-	 * <strong>Should</strong> not fail given null parameter
-	 * <strong>Should</strong> return true for any privilegeName if super user
 	 */
 	public boolean hasPrivilege(String privilegeName) {
-		
-		if (RoleConstants.SUPERUSER.equals(this.role)) {
+
+		if (RoleConstants.SUPERUSER.equalsIgnoreCase(this.role)) {
 			return true;
 		}
-		
+
 		if (privileges != null) {
 			for (Privilege p : privileges) {
 				if (p.getPrivilege().equalsIgnoreCase(privilegeName)) {
@@ -164,10 +167,10 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * @return Returns the inheritedRoles.
 	 */
@@ -177,14 +180,14 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return inheritedRoles;
 	}
-	
+
 	/**
 	 * @param inheritedRoles The inheritedRoles to set.
 	 */
 	public void setInheritedRoles(Set<Role> inheritedRoles) {
-		this.inheritedRoles = inheritedRoles;
+		this.inheritedRoles = CollectionUtil.setCollection(this.inheritedRoles, inheritedRoles);
 	}
-	
+
 	/**
 	 * Convenience method to test whether or not this role extends/ inherits from any other roles
 	 *
@@ -193,11 +196,12 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public boolean inheritsRoles() {
 		return getInheritedRoles() != null && !getInheritedRoles().isEmpty();
 	}
-	
+
 	/**
 	 * Recursive (if need be) method to return all parent roles of this role
-	 *
+	 * <p>
 	 * <strong>Should</strong> only return parent roles
+	 *
 	 * @return Return this role's parents
 	 */
 	public Set<Role> getAllParentRoles() {
@@ -207,7 +211,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return parents;
 	}
-	
+
 	/**
 	 * Returns the full set of roles be looping over inherited roles. Duplicate roles are dropped.
 	 *
@@ -223,20 +227,20 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		Set<Role> myRoles = new HashSet<>(this.getInheritedRoles());
 		myRoles.removeAll(total);
 		// prevent an obvious looping problem
-		myRoles.remove(this); 
+		myRoles.remove(this);
 		allRoles.addAll(myRoles);
-		
+
 		for (Role r : myRoles) {
 			if (r.inheritsRoles()) {
 				allRoles.addAll(r.recurseOverParents(allRoles));
 			}
 		}
-		
+
 		log.debug("Total roles: {}", allRoles);
-		
+
 		return allRoles;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -245,7 +249,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -254,7 +258,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @since 1.9
 	 * @return immediate children
@@ -265,15 +269,15 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return childRoles;
 	}
-	
+
 	/**
 	 * @since 1.9
 	 * @param childRoles the immediate children to set
 	 */
 	public void setChildRoles(Set<Role> childRoles) {
-		this.childRoles = childRoles;
+		this.childRoles = CollectionUtil.setCollection(this.childRoles, childRoles);
 	}
-	
+
 	/**
 	 * Convenience method to test whether or not this role is a parent of another role
 	 *
@@ -283,11 +287,12 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	public boolean hasChildRoles() {
 		return getChildRoles() != null && !getChildRoles().isEmpty();
 	}
-	
+
 	/**
 	 * Recursive (if need be) method to return all child roles of this role
-	 *
+	 * <p>
 	 * <strong>Should</strong> only return child roles
+	 *
 	 * @return this role's children
 	 * @since 1.9
 	 */
@@ -298,7 +303,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		}
 		return children;
 	}
-	
+
 	/**
 	 * Returns the full set of child roles be looping over children. Duplicate roles are dropped.
 	 *
@@ -316,17 +321,17 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 		Set<Role> myRoles = new HashSet<>(this.getChildRoles());
 		myRoles.removeAll(total);
 		// prevent an obvious looping problem
-		myRoles.remove(this); 
+		myRoles.remove(this);
 		allRoles.addAll(myRoles);
-		
+
 		for (Role r : myRoles) {
 			if (r.hasChildRoles()) {
 				allRoles.addAll(r.recurseOverChildren(allRoles));
 			}
 		}
-		
+
 		log.debug("Total roles: {}", allRoles);
-		
+
 		return allRoles;
 	}
 }

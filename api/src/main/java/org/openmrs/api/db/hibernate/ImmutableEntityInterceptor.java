@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Interceptor;
@@ -20,63 +23,59 @@ import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Superclass for all Interceptors that would like to ensure that changes to immutable entities of
  * specific types don't get persisted to the database, more granularity of the immutable properties
- * is also supported so as to allow editing some properties while not for others
- * 
- * <pre>
- * <b>NOTE:</b> Subclasses MUST not make any changes to the persistent object because they get 
+ * is also supported so as to allow editing some properties while not for others <pre>
+ * <b>NOTE:</b> Subclasses MUST not make any changes to the persistent object because they get
  * called last, if they make any changes other interceptors would never know about them.
  * </pre>
- * 
+ *
  * @since 1.10
  */
 public abstract class ImmutableEntityInterceptor implements Interceptor {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ImmutableEntityInterceptor.class);
-	
+
 	// This thread local enables storing additional mutable properties to allow for a given thread
 	private final ThreadLocal<String[]> additionalMutableProperties = new ThreadLocal<>();
-	
+
 	/**
 	 * Returns the class handled by the interceptor
 	 */
 	protected abstract Class<?> getSupportedType();
-	
+
 	/**
-	 * Subclasses can override this to return fields that are allowed to be edited, returning null
-	 * or an empty array implies the entity is immutable
+	 * Subclasses can override this to return fields that are allowed to be edited, returning null or an
+	 * empty array implies the entity is immutable
 	 *
 	 * @return an array of properties
 	 */
 	protected String[] getMutablePropertyNames() {
 		return null;
 	}
-	
+
 	/**
 	 * Subclasses can override this to specify whether voided or retired items are mutable
-	 * 
-	 * @return true if voided or retired objects are mutable otherwise false means they are
-	 *         immutable
+	 *
+	 * @return true if voided or retired objects are mutable otherwise false means they are immutable
 	 */
 	protected boolean ignoreVoidedOrRetiredObjects() {
 		return false;
 	}
-	
+
 	/**
-	 * <strong>Should</strong> fail if an entity has a changed property
-	 * <strong>Should</strong> pass if an entity has changes for an allowed mutable property
-	 * <strong>Should</strong> pass if the edited object is voided or retired and ignore is set to true
+	 * <p>
+	 * <strong>Should</strong> fail if an entity has a changed property<br/>
+	 * <strong>Should</strong> pass if an entity has changes for an allowed mutable property<br/>
+	 * <strong>Should</strong> pass if the edited object is voided or retired and ignore is set to
+	 * true<br/>
 	 * <strong>Should</strong> fail if the edited object is voided or retired and ignore is set to false
 	 */
 	@Override
 	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState,
-	                            String[] propertyNames, Type[] types) {
-		
+	        String[] propertyNames, Type[] types) {
+
 		if (getSupportedType().isAssignableFrom(entity.getClass())) {
 			List<String> changedProperties = null;
 			for (int i = 0; i < propertyNames.length; i++) {
@@ -84,7 +83,7 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 				if (isMutableProperty(property)) {
 					continue;
 				}
-				
+
 				boolean isVoidedOrRetired = false;
 				if (Voidable.class.isAssignableFrom(entity.getClass())) {
 					isVoidedOrRetired = ((Voidable) entity).getVoided();
@@ -94,7 +93,7 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 				if (isVoidedOrRetired && ignoreVoidedOrRetiredObjects()) {
 					continue;
 				}
-				
+
 				Object previousValue = (previousState != null) ? previousState[i] : null;
 				Object currentValue = (currentState != null) ? currentState[i] : null;
 				if (!OpenmrsUtil.nullSafeEquals(currentValue, previousValue)) {
@@ -106,12 +105,12 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 			}
 			if (CollectionUtils.isNotEmpty(changedProperties)) {
 				log.debug("The following fields cannot be changed for {} : {}", getSupportedType(), changedProperties);
-				
-				throw new UnchangeableObjectException("editing.fields.not.allowed", new Object[] { changedProperties,
-				        getSupportedType().getSimpleName() });
+
+				throw new UnchangeableObjectException("editing.fields.not.allowed",
+				        new Object[] { changedProperties, getSupportedType().getSimpleName() });
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -130,10 +129,11 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	}
 
 	/**
-	 *  This allows code that is attempting to save immutable entities to bypass standard validation by allowing
-	 *  additional properties to be considered mutable for the duration of the thread.
-	 *  Note that the caller should ensure that {@link #removeMutablePropertiesForThread} is invoked when the operation is done
-	 *  
+	 * This allows code that is attempting to save immutable entities to bypass standard validation by
+	 * allowing additional properties to be considered mutable for the duration of the thread. Note that
+	 * the caller should ensure that {@link #removeMutablePropertiesForThread} is invoked when the
+	 * operation is done
+	 *
 	 * @param properties any additional properties that one wishes to make mutable for a given thread
 	 */
 	public void addMutablePropertiesForThread(String... properties) {
@@ -141,9 +141,10 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 	}
 
 	/**
-	 * If any additional properties were added for a given thread by invoking {@link #addMutablePropertiesForThread}, 
-	 * this removes them.  NOTE, any usage of {@link #addMutablePropertiesForThread} should typically be followed by
-	 * an invocation of this method in a finally block
+	 * If any additional properties were added for a given thread by invoking
+	 * {@link #addMutablePropertiesForThread}, this removes them. NOTE, any usage of
+	 * {@link #addMutablePropertiesForThread} should typically be followed by an invocation of this
+	 * method in a finally block
 	 */
 	public void removeMutablePropertiesForThread() {
 		additionalMutableProperties.remove();

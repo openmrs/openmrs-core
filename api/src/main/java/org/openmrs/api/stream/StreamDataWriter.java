@@ -13,16 +13,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Used by {@link StreamDataService} to convert OutputStream to InputStream without
- * loading all data in memory. 
+ * Used by {@link StreamDataService} to convert OutputStream to InputStream without loading all data
+ * in memory.
  * <p>
- * The write operation may be executed in a separate thread and is typically implemented as a lambda. 
- * Please take extra care and avoid modifying references used in the write operation as they are accessed by 
- * different threads.
- * 
+ * The write operation may be executed in a separate thread and is typically implemented as a
+ * lambda. Please take extra care and avoid modifying references used in the write operation as they
+ * are accessed by different threads.
+ *
  * @since 2.8.0, 2.7.5, 2.6.16, 2.5.15
  */
 @FunctionalInterface
 public interface StreamDataWriter {
+
 	void write(OutputStream outputStream) throws IOException;
 }

@@ -9,17 +9,18 @@
  */
 package org.openmrs;
 
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
 /**
@@ -27,14 +28,12 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Table(name = "program_workflow_state")
-@AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255))
-})
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true, length = 255)) })
 @Audited
 public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	// ******************
 	// Properties
 	// ******************
@@ -43,87 +42,87 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "program_workflow_state_id")
 	private Integer programWorkflowStateId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "program_workflow_id", nullable = false)
 	private ProgramWorkflow programWorkflow;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
-	
+
 	@Column(name = "initial", nullable = false, length = 1)
 	private Boolean initial;
-	
+
 	@Column(name = "terminal", nullable = false, length = 1)
 	private Boolean terminal;
-	
+
 	// ******************
 	// Constructors
 	// ******************
-	
+
 	/** Default Constructor */
 	public ProgramWorkflowState() {
 	}
-	
+
 	/** Constructor with id */
 	public ProgramWorkflowState(Integer programWorkflowStateId) {
 		setProgramWorkflowStateId(programWorkflowStateId);
 	}
-	
+
 	// ******************
 	// Instance methods
 	// ******************
-	
+
 	/** @see Object#toString() */
 	@Override
 	public String toString() {
 		return "State " + getConcept().toString() + " initial=" + getInitial() + " terminal=" + getTerminal();
 	}
-	
+
 	// ******************
 	// Property Access
 	// ******************
-	
+
 	public Concept getConcept() {
 		return concept;
 	}
-	
+
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
+
 	public Boolean getInitial() {
 		return initial;
 	}
-	
+
 	public void setInitial(Boolean initial) {
 		this.initial = initial;
 	}
-	
+
 	public Boolean getTerminal() {
 		return terminal;
 	}
-	
+
 	public void setTerminal(Boolean terminal) {
 		this.terminal = terminal;
 	}
-	
+
 	public ProgramWorkflow getProgramWorkflow() {
 		return programWorkflow;
 	}
-	
+
 	public void setProgramWorkflow(ProgramWorkflow programWorkflow) {
 		this.programWorkflow = programWorkflow;
 	}
-	
+
 	public Integer getProgramWorkflowStateId() {
 		return programWorkflowStateId;
 	}
-	
+
 	public void setProgramWorkflowStateId(Integer programWorkflowStateId) {
 		this.programWorkflowStateId = programWorkflowStateId;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -132,7 +131,7 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	public Integer getId() {
 		return getProgramWorkflowStateId();
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -140,6 +139,6 @@ public class ProgramWorkflowState extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		setProgramWorkflowStateId(id);
-		
+
 	}
 }

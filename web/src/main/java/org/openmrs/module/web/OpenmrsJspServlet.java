@@ -9,6 +9,13 @@
  */
 package org.openmrs.module.web;
 
+import java.io.IOException;
+
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.jasper.Constants;
@@ -22,21 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 /**
- * The purpose of this class is to provide a custom JspServlet implementation that accounts for TLD files introduced
- * by OpenMRS modules.  From Tomcat 8 onward, a change to the Tomcat TLD processing necessitates this step.
- * See:  https://issues.openmrs.org/browse/LUI-169
+ * The purpose of this class is to provide a custom JspServlet implementation that accounts for TLD
+ * files introduced by OpenMRS modules. From Tomcat 8 onward, a change to the Tomcat TLD processing
+ * necessitates this step. See: https://issues.openmrs.org/browse/LUI-169
  */
 public class OpenmrsJspServlet extends JspServlet {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(OpenmrsJspServlet.class);
-	
+
 	public static final String OPENMRS_TLD_SCAN_NEEDED = "OPENMRS_TLD_SCAN_NEEDED";
 
 	@Override
@@ -44,7 +45,7 @@ public class OpenmrsJspServlet extends JspServlet {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		super.init(config);
 	}
-	
+
 	@Override
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		rescanTldsIfNeeded();
@@ -69,7 +70,8 @@ public class OpenmrsJspServlet extends JspServlet {
 					getServletContext().addListener(listener);
 				}
 
-				TldCache tldCache = new TldCache(getServletContext(), scanner.getUriTldResourcePathMap(), scanner.getTldResourcePathTaglibXmlMap());
+				TldCache tldCache = new TldCache(getServletContext(), scanner.getUriTldResourcePathMap(),
+				        scanner.getTldResourcePathTaglibXmlMap());
 				getServletContext().setAttribute(TldCache.SERVLET_CONTEXT_ATTRIBUTE_NAME, tldCache);
 				log.info("TldCache updated on ServletContext");
 				try {
@@ -105,7 +107,7 @@ public class OpenmrsJspServlet extends JspServlet {
 	}
 
 	private boolean getBooleanAttribute(String attribute, boolean defaultValue) {
-		Boolean val = (Boolean)getServletContext().getAttribute(attribute);
+		Boolean val = (Boolean) getServletContext().getAttribute(attribute);
 		if (val != null) {
 			return val;
 		}

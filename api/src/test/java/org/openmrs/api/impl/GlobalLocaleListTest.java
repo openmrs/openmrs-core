@@ -9,15 +9,15 @@
  */
 package org.openmrs.api.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-
 import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.util.OpenmrsConstants;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 
 /**
  * Tests {@link GlobalLocaleList}.
@@ -40,7 +40,7 @@ public class GlobalLocaleListTest {
 
 		assertThat(globalLocaleList.getAllowedLocales(), contains(Locale.ROOT));
 	}
-	
+
 	@Test
 	public void globalPropertyChanged_shouldSetAllowedLocalesIfGlobalPropertyContainsTwoLocales() {
 

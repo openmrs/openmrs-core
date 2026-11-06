@@ -15,24 +15,25 @@ import org.springframework.validation.Errors;
 
 /**
  * Validates attributes on the {@link VisitAttributeType} object.
- * 
+ *
  * @since 1.9
  */
 @Handler(supports = { VisitAttributeType.class }, order = 50)
 public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<VisitAttributeType> {
-	
+
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return c.equals(VisitAttributeType.class);
 	}
-	
+
 	/**
-	 * <strong>Should</strong> pass validation if field lengths are correct
+	 * <p>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override

@@ -9,18 +9,19 @@
  */
 package org.openmrs.liquibase;
 
-import liquibase.changelog.ChangeSet;
 import org.openmrs.util.DatabaseUpdater;
+
+import liquibase.changelog.ChangeSet;
 
 /**
  * Interface used for callbacks when updating the database. Implement this interface and pass it to
  * {@link DatabaseUpdater#executeChangelog(String, ChangeSetExecutorCallback)}
  */
 public interface ChangeSetExecutorCallback {
-	
+
 	/**
 	 * This method is called after each changeset is executed.
-	 * 
+	 *
 	 * @param changeSet the liquibase changeset that was just run
 	 * @param numChangeSetsToRun the total number of changesets in the current file
 	 */

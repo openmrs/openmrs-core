@@ -20,27 +20,28 @@ import org.openmrs.aop.RequiredDataAdvice;
  * {@link RequiredDataAdvice} class uses AOP around each method in every service to check to see if
  * its a unretire* method. If it is a unretire* method, this class is called to handle setting the
  * {@link Retireable#isRetired()}, {@link Retireable#setRetireReason(String)},
- * {@link Retireable#setRetiredBy(User)}, and {@link Retireable#setDateRetired(Date)} all to null. <br>
+ * {@link Retireable#setRetiredBy(User)}, and {@link Retireable#setDateRetired(Date)} all to null.
+ * <br>
  * <br>
  * Child collections on this {@link Retireable} that are themselves a {@link Retireable} are looped
  * over and also unretired by the {@link RequiredDataAdvice} class. <br>
  * <br>
- * 
+ *
  * @see BaseUnretireHandler
  * @see RequiredDataAdvice
  * @see RetireHandler
  * @since 1.5
  */
 public interface UnretireHandler<R extends Retireable> extends RequiredDataHandler<R> {
-	
+
 	/**
 	 * Called around every unretire* method to set {@link Retireable} attributes to null.<br>
 	 * <br>
-	 * 
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	@Override
 	public void handle(R retireableObject, User retiringUser, Date origParentRetiredDate, String unused);
-	
+
 }

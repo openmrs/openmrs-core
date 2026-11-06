@@ -30,22 +30,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Abstract handler for some convenience methods Files are stored in the location specified by the
  * global property: "obs.complex_obs_dir"
- * 
+ *
  * @since 1.5
  */
 public class AbstractHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
-	
+
 	@Autowired
 	StorageService storageService;
-	
+
 	@Autowired
 	AdministrationService adminService;
-	
+
 	public AbstractHandler() {
 	}
-	
+
 	public AbstractHandler(AdministrationService adminService, StorageService storageService) {
 		this();
 		this.adminService = adminService;
@@ -65,15 +65,14 @@ public class AbstractHandler {
 	 */
 	public Obs getObs(Obs obs, String view) {
 		String key = parseDataKey(obs);
-		
+
 		byte[] bytes;
 		try (InputStream is = storageService.getData(key)) {
 			bytes = IOUtils.toByteArray(is);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		
+
 		ComplexData complexData = new ComplexData(parseDataTitle(obs), bytes);
 		injectMissingMetadata(key, complexData);
 		obs.setComplexData(complexData);
@@ -81,32 +80,31 @@ public class AbstractHandler {
 	}
 
 	/**
-	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(Obs) 
+	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(Obs)
 	 */
 	public Obs saveObs(Obs obs) throws APIException {
 		try {
 			byte[] data = (byte[]) obs.getComplexData().getData();
-			
+
 			String key = storageService.saveData(outputStream -> {
-				IOUtils.write( data, outputStream);
+				IOUtils.write(data, outputStream);
 			}, ObjectMetadata.builder().setLength((long) data.length).build(), getObsDir());
 			// Store the filename in the Obs
 			obs.setValueComplex(StringUtils.defaultIfBlank(obs.getComplexData().getTitle(), key) + "|" + key);
 			obs.setComplexData(null);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new APIException("Obs.error.writing.binary.data.complex", null, e);
 		}
 
 		return obs;
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#purgeComplexData(org.openmrs.Obs)
 	 */
 	public boolean purgeComplexData(Obs obs) {
 		String key = parseDataKey(obs);
-		
+
 		try {
 			storageService.purgeData(key);
 			obs.setComplexData(null);
@@ -118,7 +116,6 @@ public class AbstractHandler {
 	}
 
 	/**
-	 * 
 	 * @param obs complex obs
 	 * @return key
 	 * @since 2.8.0
@@ -147,7 +144,7 @@ public class AbstractHandler {
 	protected void injectMissingMetadata(String key, ComplexData complexData) {
 		try {
 			ObjectMetadata metadata = storageService.getMetadata(key);
-			
+
 			if (complexData.getMimeType() == null) {
 				complexData.setMimeType(metadata.getMimeType());
 			}
@@ -162,23 +159,22 @@ public class AbstractHandler {
 		String filename = names[0];
 		// to handle problem with downloading/saving files with blank spaces or commas in their names
 		// also need to remove the suffix text appended to the end of the file name
-		return filename.replaceAll(",", "")
-			.replaceAll(" ", "").replaceAll(suffix + "$", "");
+		return filename.replaceAll(",", "").replaceAll(" ", "").replaceAll(suffix + "$", "");
 
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getSupportedViews()
 	 */
 	public String[] getSupportedViews() {
 		return new String[0];
 	}
-	
+
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#supportsView(java.lang.String)
 	 */
 	public boolean supportsView(String view) {
 		return Arrays.asList(getSupportedViews()).contains(view);
 	}
-	
+
 }

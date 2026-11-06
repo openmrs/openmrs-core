@@ -12,9 +12,7 @@ package org.openmrs.module;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
@@ -32,18 +30,18 @@ import static org.openmrs.util.XmlUtils.createDocumentBuilder;
  * @version 1.0
  */
 public class UpdateFileParser {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(UpdateFileParser.class);
-	
+
 	private String content;
-	
+
 	// these properties store the 'best fit' (most recent update that will fit with the current code version)
 	private String moduleId = null;
-	
+
 	private String currentVersion = null;
-	
+
 	private String downloadURL = null;
-	
+
 	/**
 	 * Default constructor
 	 *
@@ -52,14 +50,15 @@ public class UpdateFileParser {
 	public UpdateFileParser(String s) {
 		this.content = s;
 	}
-	
+
 	/**
 	 * Parse the contents of the update.rdf file.
+	 * <p>
+	 * <strong>Should</strong> set properties from xml file<br/>
+	 * <strong>Should</strong> set properties using the newest update<br/>
+	 * <strong>Should</strong> not set properties using updates ahead of current openmrs version
 	 *
 	 * @throws ModuleException
-	 * <strong>Should</strong> set properties from xml file
-	 * <strong>Should</strong> set properties using the newest update
-	 * <strong>Should</strong> not set properties using updates ahead of current openmrs version
 	 */
 	public void parse() throws ModuleException {
 		StringReader stringReader = null;
@@ -69,36 +68,35 @@ public class UpdateFileParser {
 				stringReader = new StringReader(content);
 				InputSource inputSource = new InputSource(stringReader);
 				inputSource.setSystemId("./");
-				
+
 				DocumentBuilder db = createDocumentBuilder();
 				updateDoc = db.parse(inputSource);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.warn("Unable to parse content");
 				throw new ModuleException("Error parsing update.rdf file: " + content, e);
 			}
-			
+
 			Element rootNode = updateDoc.getDocumentElement();
-			
+
 			String configVersion = rootNode.getAttribute("configVersion");
-			
+
 			if (!validConfigVersions().contains(configVersion)) {
 				throw new ModuleException("Invalid configVersion: '" + configVersion + "' found In content: " + content);
 			}
-			
+
 			if ("1.0".equals(configVersion)) {
 				// the only update in the xml file is the 'best fit'
 				this.moduleId = getElement(rootNode, configVersion, "moduleId");
 				this.currentVersion = getElement(rootNode, configVersion, "currentVersion");
 				this.downloadURL = getElement(rootNode, configVersion, "downloadURL");
 			} else if ("1.1".equals(configVersion)) {
-				
+
 				this.moduleId = rootNode.getAttribute("moduleId");
-				
+
 				NodeList nodes = rootNode.getElementsByTagName("update");
 				// default to the lowest version possible
 				this.currentVersion = "";
-				
+
 				// loop over all 'update' tags
 				for (int i = 0; i < nodes.getLength(); i++) {
 					Element currentNode = (Element) nodes.item(i);
@@ -107,28 +105,25 @@ public class UpdateFileParser {
 					if (ModuleUtil.compareVersion(this.currentVersion, currentVersion) < 0) {
 						String requireOpenMRSVersion = getElement(currentNode, configVersion, "requireOpenMRSVersion");
 						// if the openmrs code version is compatible, this node is a winner
-						if (requireOpenMRSVersion == null
-						        || ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT,
-						            requireOpenMRSVersion)) {
+						if (requireOpenMRSVersion == null || ModuleUtil
+						        .matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireOpenMRSVersion)) {
 							this.currentVersion = currentVersion;
 							this.downloadURL = getElement(currentNode, configVersion, "downloadURL");
 						}
 					}
 				}
 			}
-		}
-		catch (ModuleException e) {
+		} catch (ModuleException e) {
 			// rethrow the moduleException
 			throw e;
-		}
-		finally {
+		} finally {
 			if (stringReader != null) {
 				stringReader.close();
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Generic method to get a module tag
 	 *
@@ -143,7 +138,7 @@ public class UpdateFileParser {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * List of the valid sqldiff versions
 	 *
@@ -155,26 +150,26 @@ public class UpdateFileParser {
 		versions.add("1.1");
 		return versions;
 	}
-	
+
 	/**
 	 * @return the downloadURL
 	 */
 	public String getDownloadURL() {
 		return downloadURL;
 	}
-	
+
 	/**
 	 * @return the moduleId
 	 */
 	public String getModuleId() {
 		return moduleId;
 	}
-	
+
 	/**
 	 * @return the version
 	 */
 	public String getCurrentVersion() {
 		return currentVersion;
 	}
-	
+
 }

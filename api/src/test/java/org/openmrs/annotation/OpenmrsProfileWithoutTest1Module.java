@@ -13,5 +13,4 @@ package org.openmrs.annotation;
  * Test bean which should be only loaded when module 'test1' is missing
  */
 @OpenmrsProfile(modules = { "!test1" })
-public class OpenmrsProfileWithoutTest1Module {
-}
+public class OpenmrsProfileWithoutTest1Module {}

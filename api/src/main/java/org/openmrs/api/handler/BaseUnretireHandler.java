@@ -27,30 +27,31 @@ import org.openmrs.aop.RequiredDataAdvice;
  * Child collections on this {@link Retireable} that are themselves a {@link Retireable} are looped
  * over and also unretired by the {@link RequiredDataAdvice} class. <br>
  * <br>
- * 
+ *
  * @see RequiredDataAdvice
  * @see RetireHandler
  * @since 1.5
  */
 @Handler(supports = Retireable.class)
 public class BaseUnretireHandler implements UnretireHandler<Retireable> {
-	
+
 	/**
 	 * Called around every unretire* method to set {@link Retireable} attributes to null.<br>
 	 * <br>
-	 * 
+	 * <p>
+	 * <strong>Should</strong> unset the retired bit<br/>
+	 * <strong>Should</strong> unset the retirer<br/>
+	 * <strong>Should</strong> unset the date retired<br/>
+	 * <strong>Should</strong> unset the retire reason<br/>
+	 * <strong>Should</strong> not act on already unretired objects<br/>
+	 * <strong>Should</strong> not act on retired objects with a different dateRetired
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
-	 * <strong>Should</strong> unset the retired bit
-	 * <strong>Should</strong> unset the retirer
-	 * <strong>Should</strong> unset the date retired
-	 * <strong>Should</strong> unset the retire reason
-	 * <strong>Should</strong> not act on already unretired objects
-	 * <strong>Should</strong> not act on retired objects with a different dateRetired
 	 */
 	@Override
 	public void handle(Retireable retireableObject, User retiringUser, Date origParentRetiredDate, String unused) {
-		
+
 		// only act on retired objects
 		if (retireableObject.getRetired()
 		        && (origParentRetiredDate == null || origParentRetiredDate.equals(retireableObject.getDateRetired()))) {
@@ -61,5 +62,5 @@ public class BaseUnretireHandler implements UnretireHandler<Retireable> {
 			retireableObject.setRetireReason(null);
 		}
 	}
-	
+
 }

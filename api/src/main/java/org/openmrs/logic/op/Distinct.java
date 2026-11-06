@@ -17,7 +17,7 @@ package org.openmrs.logic.op;
  * The above will give us a criteria to get all distinct encounter type from the system
  */
 public class Distinct implements TransformOperator {
-	
+
 	@Override
 	public String toString() {
 		return "DISTINCT";

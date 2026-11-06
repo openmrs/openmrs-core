@@ -17,7 +17,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link PersonMergeLog} class.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { PersonMergeLog.class }, order = 50)
@@ -25,31 +25,32 @@ public class PersonMergeLogValidator implements Validator {
 
 	/**
 	 * Determines if the command object being submitted is a valid type
-	 * 
+	 *
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@Override
 	public boolean supports(Class<?> c) {
 		return PersonMergeLog.class.isAssignableFrom(c);
 	}
-	
+
 	/**
 	 * Checks the form object for any inconsistencies/errors
-	 * 
+	 * <p>
+	 * <strong>Should</strong> fail validation if personMergeLogData is null<br/>
+	 * <strong>Should</strong> fail validation if winner is null<br/>
+	 * <strong>Should</strong> fail validation if loser is null<br/>
+	 * <strong>Should</strong> pass validation if all fields are correct<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if personMergeLogData is null
-	 * <strong>Should</strong> fail validation if winner is null 
-	 * <strong>Should</strong> fail validation if loser is null 
-	 * <strong>Should</strong> pass validation if all fields are correct
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
-		
+
 		PersonMergeLog personMergeLog = (PersonMergeLog) obj;
-		
+
 		if (personMergeLog == null) {
 			errors.rejectValue("persnMergeLog", "error.general");
 		} else {
@@ -59,5 +60,5 @@ public class PersonMergeLogValidator implements Validator {
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "voidReason");
 		}
 	}
-	
+
 }

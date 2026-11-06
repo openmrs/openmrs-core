@@ -15,188 +15,223 @@ import org.openmrs.OrderSet;
 import org.openmrs.OrderSetAttribute;
 import org.openmrs.OrderSetAttributeType;
 import org.openmrs.OrderSetMember;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderSetDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods pertaining to creating/deleting/voiding Order Sets.
- * 
+ *
  * @since 1.12
  */
 public interface OrderSetService extends OpenmrsService {
-	
+
 	/**
-	 * Setter for the OrderSet data access object. The dao is used for saving and getting orders
-	 * to/from the database
+	 * Setter for the OrderSet data access object. The dao is used for saving and getting orders to/from
+	 * the database
 	 *
 	 * @param dao The data access object to use
 	 */
 	void setOrderSetDAO(OrderSetDAO dao);
-	
+
 	/**
-	 * Save or update the given <code>orderSet</code> in the database. If the OrderSet is retired
-	 * it will set retired by and retired date.
-	 * If OrderSetMembers are retired, it will set retired by and retired date.
+	 * Save or update the given <code>orderSet</code> in the database. If the OrderSet is retired it
+	 * will set retired by and retired date. If OrderSetMembers are retired, it will set retired by and
+	 * retired date.
 	 *
 	 * @param orderSet the OrderSet to save
 	 * @return the OrderSet that was saved
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ORDER_SETS })
+	@PreAuthorize("hasPermission(#orderSet, '" + PrivilegeConstants.MANAGE_ORDER_SETS + "')")
 	OrderSet saveOrderSet(OrderSet orderSet) throws APIException;
-	
+
 	/**
 	 * Gets all OrderSets that match the specified parameters excluding discontinuation orderSets.
 	 *
 	 * @param includeRetired Specifies whether retired orders should be included or not
 	 * @return list of OrderSets matching the parameters
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_SETS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	List<OrderSet> getOrderSets(boolean includeRetired) throws APIException;
-	
+
 	/**
 	 * Gets a specific OrderSet with the matched orderSet Id.
 	 *
 	 * @param orderSetId Specifies a saved orderSet id.
 	 * @return OrderSet
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#orderSetId, 'OrderSet', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSet getOrderSet(Integer orderSetId) throws APIException;
-	
+
 	/**
 	 * Gets a specific OrderSet with the matched orderSet uuid.
 	 *
 	 * @param orderSetUuid Specifies a saved orderSet uuid.
 	 * @return an orderSet
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#orderSetUuid, 'OrderSet', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSet getOrderSetByUuid(String orderSetUuid) throws APIException;
-	
+
 	/**
 	 * Retires and OrderSet, with matched OrderSet
-	 * 
+	 *
 	 * @param orderSet Specifies the OrderSet to be retired
 	 * @param retireReason Specifies the reason why the OrderSet has to be retired
 	 * @return an orderSet
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ORDER_SETS })
+	@PreAuthorize("hasPermission(#orderSet, '" + PrivilegeConstants.MANAGE_ORDER_SETS + "')")
 	OrderSet retireOrderSet(OrderSet orderSet, String retireReason) throws APIException;
-	
+
 	/**
 	 * UnRetires and OrderSet, with matched OrderSet
-	 * 
+	 *
 	 * @param orderSet Specifies the OrderSet to be retired
 	 * @return an orderSet
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ORDER_SETS })
+	@PreAuthorize("hasPermission(#orderSet, '" + PrivilegeConstants.MANAGE_ORDER_SETS + "')")
 	OrderSet unretireOrderSet(OrderSet orderSet) throws APIException;
-	
 
 	/**
 	 * Get OrderSetMember by uuid
+	 * <p>
+	 * <strong>Should</strong> find object given valid uuid<br/>
+	 * <strong>Should</strong> return null if no object found with given uuid
 	 *
 	 * @param uuid
 	 * @return
-	 * <strong>Should</strong> find object given valid uuid
-	 * <strong>Should</strong> return null if no object found with given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderSetMember', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSetMember getOrderSetMemberByUuid(String uuid);
 
 	/**
-	 * Get order set attribute by uuid 
-	 * 
+	 * Get order set attribute by uuid
+	 *
 	 * @param uuid specifies the order set attribute uuid
 	 * @return the {@link OrderSetAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should get the order set attribute with the given uuid
 	 * @should return null if no order set attribute has the given uuid
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SETS)
+	@PreAuthorize("hasPermission(#uuid, 'OrderSetAttribute', '" + PrivilegeConstants.GET_ORDER_SETS + "')")
 	OrderSetAttribute getOrderSetAttributeByUuid(String uuid);
 
 	/**
-	 * Get all order set attribute types 
-	 * 
+	 * Get all order set attribute types
+	 *
 	 * @return all {@link OrderSetAttributeType}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should return all orderSet attribute types including retired ones
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	List<OrderSetAttributeType> getAllOrderSetAttributeTypes();
 
 	/**
 	 * Get order set attribute type from the database by a given internal id
-	 * 
+	 *
 	 * @param id specifies the set attribute type id
 	 * @return the {@link OrderSetAttributeType} with the given internal id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should return the orderSet attribute type with the given id
 	 * @should return null if no orderSet attribute type exists with the given id
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#id, 'OrderSetAttributeType', '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType getOrderSetAttributeType(Integer id);
 
 	/**
-	 * Get order set attribute type by uuid 
-	 * 
+	 * Get order set attribute type by uuid
+	 *
 	 * @param uuid specifies the order set attribute type uuid
 	 * @return the {@link OrderSetAttributeType} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should return the orderSet attribute type with the given uuid
 	 * @should return null if no orderSet attribute type exists with the given uuid
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#uuid, 'OrderSetAttributeType', '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES
+	        + "')")
 	OrderSetAttributeType getOrderSetAttributeTypeByUuid(String uuid);
 
 	/**
-	 * Creates or updates the given order set attribute type 
-	 * 
+	 * Creates or updates the given order set attribute type
+	 *
 	 * @param orderSetAttributeType the order set attribute type to save
 	 * @return the OrderSetAttributeType created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should create a new orderSet attribute type
 	 * @should edit an existing orderSet attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType saveOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
-	 * Retires the given order set attribute type 
-	 * 
-	 * @param orderSetAttributeType specifies the order set attribute type to be retired 
+	 * Retires the given order set attribute type
+	 *
+	 * @param orderSetAttributeType specifies the order set attribute type to be retired
 	 * @return the orderSetAttribute retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should retire a orderSet attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType retireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType, String reason);
 
 	/**
-	 * Restores an order set attribute type that was previous retired 
-	 * 
+	 * Restores an order set attribute type that was previous retired
+	 *
 	 * @param orderSetAttributeType the order set attribute type to be un-retired
 	 * @return the OrderSetAttributeType unretired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should unretire a retired orderSet attribute type
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.MANAGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType unretireOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
-	 * Completely removes an order set attribute type 
-	 * 
+	 * Completely removes an order set attribute type
+	 *
 	 * @param orderSetAttributeType the order set attribute type to be purged
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should completely remove an order set attribute type
 	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#orderSetAttributeType, '" + PrivilegeConstants.PURGE_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	void purgeOrderSetAttributeType(OrderSetAttributeType orderSetAttributeType);
 
 	/**
@@ -204,12 +239,14 @@ public interface OrderSetService extends OpenmrsService {
 	 *
 	 * @param orderSetAttributeTypeName fetches a given order set attribute type by name
 	 * @return the {@link OrderSetAttributeType} with the specified name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.4.0
 	 * @should return the orderSet attribute type with the specified name
-	 * @should return null if no orderSet attribute type exists with the specified
-	 *         name
+	 * @should return null if no orderSet attribute type exists with the specified name
 	 */
-	@Authorized(PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_ORDER_SET_ATTRIBUTE_TYPES + "')")
 	OrderSetAttributeType getOrderSetAttributeTypeByName(String orderSetAttributeTypeName);
 
 }

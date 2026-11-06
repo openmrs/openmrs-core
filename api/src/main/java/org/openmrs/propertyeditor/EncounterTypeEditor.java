@@ -17,19 +17,19 @@ import org.openmrs.api.context.Context;
  * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see EncounterType
  */
 public class EncounterTypeEditor extends OpenmrsPropertyEditor<EncounterType> {
-	
+
 	public EncounterTypeEditor() {
 	}
-	
+
 	@Override
 	protected EncounterType getObjectById(Integer id) {
 		return Context.getEncounterService().getEncounterType(id);
 	}
-	
+
 	@Override
 	protected EncounterType getObjectByUuid(String uuid) {
 		return Context.getEncounterService().getEncounterTypeByUuid(uuid);

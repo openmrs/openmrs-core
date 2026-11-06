@@ -16,5 +16,5 @@ import org.openmrs.api.APIException;
  * yet been persisted
  */
 public class NotYetPersistedException extends APIException {
-	
+
 }

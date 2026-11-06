@@ -15,17 +15,17 @@ import org.openmrs.util.OpenmrsUtil;
  * Password exception when the length is less than the minimum allowed.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
- * 
+ *
  * @since 1.5
  */
 public class ShortPasswordException extends PasswordException {
-	
+
 	private static final long serialVersionUID = 31620091002L;
-	
+
 	public ShortPasswordException() {
 		super("error.password.short");
 	}
-	
+
 	public ShortPasswordException(String message) {
 		super(message);
 	}

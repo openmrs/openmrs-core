@@ -25,9 +25,9 @@ import org.springframework.validation.Validator;
  */
 @Handler(supports = { Field.class }, order = 50)
 public class FieldValidator implements Validator {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(FieldValidator.class);
-	
+
 	/**
 	 * Returns whether or not this validator supports validating a given class.
 	 *
@@ -39,35 +39,35 @@ public class FieldValidator implements Validator {
 		log.debug("{}.supports: {}", this.getClass().getName(), c.getName());
 		return Field.class.isAssignableFrom(c);
 	}
-	
+
 	/**
-	 * Validates the given Field. 
-	 * Ensures that the field name is present and valid
+	 * Validates the given Field. Ensures that the field name is present and valid
+	 * <p>
+	 * <strong>Should</strong> fail if field name is null<br/>
+	 * <strong>Should</strong> fail if field name is empty<br/>
+	 * <strong>Should</strong> fail if field name is all whitespace<br/>
+	 * <strong>Should</strong> fail if selectMultiple is null<br/>
+	 * <strong>Should</strong> fail if retired is null<br/>
+	 * <strong>Should</strong> pass if name is ok and fieldType, selectMultiple, and retired are
+	 * non-null<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 *
 	 * @param obj The Field to validate.
 	 * @param errors Errors
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail if field name is null
-	 * <strong>Should</strong> fail if field name is empty
-	 * <strong>Should</strong> fail if field name is all whitespace
-	 * <strong>Should</strong> fail if selectMultiple is null
-	 * <strong>Should</strong> fail if retired is null
-	 * <strong>Should</strong> pass if name is ok and fieldType, selectMultiple, and retired are non-null
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
-	 * should not fail if fieldType is null
+	 *      org.springframework.validation.Errors) should not fail if fieldType is null
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) throws APIException {
 		log.debug("{}.validate...", this.getClass().getName());
-		
+
 		if (obj == null || !(obj instanceof Field)) {
 			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Field.class);
 		}
-		
+
 		Field field = (Field) obj;
-		
+
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null", "Field name is required");
 		if (field.getSelectMultiple() == null) {
 			errors.rejectValue("selectMultiple", "error.general");

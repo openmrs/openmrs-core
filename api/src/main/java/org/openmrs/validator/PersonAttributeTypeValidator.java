@@ -9,22 +9,24 @@
  */
 package org.openmrs.validator;
 
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link PersonAttributeType} class.
- * 
+ *
  * @since 1.5
  */
 @Handler(supports = { PersonAttributeType.class }, order = 50)
 public class PersonAttributeTypeValidator implements Validator {
-	
+
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -32,23 +34,40 @@ public class PersonAttributeTypeValidator implements Validator {
 	public boolean supports(Class<?> c) {
 		return PersonAttributeType.class.isAssignableFrom(c);
 	}
-	
+
 	/**
+	 * <p>
+	 * <strong>Should</strong> fail validation if name is null<br/>
+	 * <strong>Should</strong> fail validation if format is empty<br/>
+	 * <strong>Should</strong> fail validation if name already in use<br/>
+	 * <strong>Should</strong> pass validation if description is null or empty or whitespace<br/>
+	 * <strong>Should</strong> pass validation if all fields are correct<br/>
+	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
+	 * <strong>Should</strong> fail validation if field lengths are not correct<br/>
+	 * <strong>Should</strong> fail validation if format is an invalid class type<br/>
+	 * <strong>Should</strong> pass validation if format is an openmrs object class<br/>
+	 * <strong>Should</strong> pass validation if format is character
+	 *
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * <strong>Should</strong> fail validation if name is null
-	 * <strong>Should</strong> fail validation if format is empty
-	 * <strong>Should</strong> fail validation if name already in use
-	 * <strong>Should</strong> pass validation if description is null or empty or whitespace
-	 * <strong>Should</strong> pass validation if all fields are correct
-	 * <strong>Should</strong> pass validation if field lengths are correct
-	 * <strong>Should</strong> fail validation if field lengths are not correct
 	 */
 	@Override
 	public void validate(Object obj, Errors errors) {
 		PersonAttributeType patObj = (PersonAttributeType) obj;
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "PersonAttributeType.error.nameEmpty");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "format", "PersonAttributeType.error.formatEmpty");
+
+		if (!errors.hasFieldErrors("format")) {
+			try {
+				Class<?> c = OpenmrsClassLoader.getInstance().loadClass(patObj.getFormat());
+				if (!PersonAttribute.isPermittedClass(c)) {
+					errors.rejectValue("format", "PersonAttributeType.error.formatInvalid");
+				}
+			} catch (ClassNotFoundException e) {
+				errors.rejectValue("format", "PersonAttributeType.error.formatInvalid");
+			}
+		}
+
 		PersonService ps = Context.getPersonService();
 		PersonAttributeType pat = ps.getPersonAttributeTypeByName(patObj.getName());
 		if (pat != null && !pat.getUuid().equals(patObj.getUuid())) {

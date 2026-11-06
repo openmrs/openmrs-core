@@ -17,17 +17,17 @@ import org.openmrs.util.OpenmrsUtil;
  * system id.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
- * 
+ *
  * @since 1.5
  */
 public class WeakPasswordException extends PasswordException {
-	
+
 	private static final long serialVersionUID = 31620091004L;
-	
+
 	public WeakPasswordException() {
 		super("error.password.weak");
 	}
-	
+
 	public WeakPasswordException(String message) {
 		super(message);
 	}

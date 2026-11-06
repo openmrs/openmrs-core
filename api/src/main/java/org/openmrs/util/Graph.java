@@ -15,61 +15,61 @@ import java.util.List;
 import java.util.Set;
 
 public class Graph<T> {
-	
+
 	private Set<T> nodes = new HashSet<>();
-	
+
 	private Set<Edge> edges = new HashSet<>();
-	
+
 	public class Edge {
-		
+
 		private T fromNode;
-		
+
 		private T toNode;
-		
+
 		public Edge(T aFromNode, T aToNode) {
 			fromNode = aFromNode;
 			toNode = aToNode;
 		}
-		
+
 		public T getFromNode() {
 			return fromNode;
 		}
-		
+
 		public void setFromNode(T fromNode) {
 			this.fromNode = fromNode;
 		}
-		
+
 		public T getToNode() {
 			return toNode;
 		}
-		
+
 		public void setToNode(T toNode) {
 			this.toNode = toNode;
 		}
-		
+
 		@Override
 		public String toString() {
 			return toNode.toString() + "->" + fromNode.toString();
 		}
-		
+
 	}
-	
+
 	public void addNode(T aNode) {
 		nodes.add(aNode);
 	}
-	
+
 	public void addEdge(Edge anEdge) {
 		edges.add(anEdge);
 	}
-	
+
 	public Set<T> getNodes() {
 		return nodes;
 	}
-	
+
 	public Set<Edge> getEdges() {
 		return edges;
 	}
-	
+
 	public T getNode(T element) {
 		for (T node : nodes) {
 			if (node.equals(element)) {
@@ -78,9 +78,10 @@ public class Graph<T> {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Obtains all nodes without incoming edges 
+	 * Obtains all nodes without incoming edges
+	 *
 	 * @return set of nodes
 	 */
 	private Set<T> getNodesWithNoIncomingEdges() {
@@ -94,9 +95,10 @@ public class Graph<T> {
 		}
 		return nodesWithoutIncomingEdges;
 	}
-	
+
 	/**
-	 * Determines if a node has incoming edges 
+	 * Determines if a node has incoming edges
+	 *
 	 * @param node
 	 * @return true if the node has an incoming edge, otherwise false
 	 */
@@ -108,9 +110,10 @@ public class Graph<T> {
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Obtains the edges starting with a given node 
+	 * Obtains the edges starting with a given node
+	 *
 	 * @param aNode
 	 * @return set of edges
 	 */
@@ -123,9 +126,10 @@ public class Graph<T> {
 		}
 		return edgesPointing;
 	}
-	
+
 	/**
-	 * Obtains the edges ending with a given node 
+	 * Obtains the edges ending with a given node
+	 *
 	 * @param aNode
 	 * @return set of edges
 	 */
@@ -138,18 +142,18 @@ public class Graph<T> {
 		}
 		return edgesPointing;
 	}
-	
+
 	/**
 	 * Sort a graph in topological order
-	 * 
+	 *
 	 * @return sorted nodes
 	 * @throws CycleException
 	 */
 	public List<T> topologicalSort() throws CycleException {
-		
+
 		Set<T> queue = getNodesWithNoIncomingEdges();
 		List<T> result = new ArrayList<>();
-		
+
 		// The initial edges are stored.
 		List<Edge> initialEdges = new ArrayList<>(edges);
 		while (!queue.isEmpty()) {
@@ -171,5 +175,5 @@ public class Graph<T> {
 		edges.addAll(initialEdges);
 		return result;
 	}
-	
+
 }

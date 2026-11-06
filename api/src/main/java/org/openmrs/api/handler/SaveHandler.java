@@ -20,17 +20,17 @@ import org.openmrs.aop.RequiredDataAdvice;
  * This is the super interface for all save* actions that take place on all services. AOP is used
  * around each method to see if its a save* method. If it is, then all handlers that implement this
  * class (that also {@link Handler#supports() support} the current object being saved) are called.
- * 
+ *
  * @see RequiredDataAdvice
  * @see OpenmrsObjectSaveHandler
  * @see ConceptNameSaveHandler
  * @since 1.5
  */
 public interface SaveHandler<O extends OpenmrsObject> extends RequiredDataHandler<O> {
-	
+
 	/**
 	 * This method is used by the implementing classes to set any required data that it needs to.
-	 * 
+	 *
 	 * @param object an OpenmrsObject that needs to have some required data set
 	 * @param creator the user who is saving this object
 	 * @param dateCreated the datetime this object is being saved
@@ -40,5 +40,5 @@ public interface SaveHandler<O extends OpenmrsObject> extends RequiredDataHandle
 	 */
 	@Override
 	public void handle(O object, User creator, Date dateCreated, String other);
-	
+
 }

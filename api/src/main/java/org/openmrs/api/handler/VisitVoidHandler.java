@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -23,21 +25,24 @@ import org.openmrs.api.context.Context;
  * This class sets the void attributes on the given {@link Visit} object when a void* method is
  * called with this class. This differs from the {@link BaseVoidHandler} because voiding the Visit
  * object implies voiding encounters.
- * 
+ *
  * @see RequiredDataAdvice
  * @see VoidHandler
  * @since 1.9
  */
 @Handler(supports = Visit.class)
 public class VisitVoidHandler implements VoidHandler<Visit> {
-	
+
 	@Override
 	public void handle(Visit voidableObject, User voidingUser, Date voidedDate, String voidReason) {
 		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(voidableObject, false);
+		// void the encounters in reverse order of encounterDatetime, so that
+		// encounters that require another prior encounter (ex: a discharge must happen after an admission encounter) are voided properly.
+		Collections.sort(encountersByVisit, Comparator.comparing(Encounter::getEncounterDatetime).reversed());
 		for (Encounter encounter : encountersByVisit) {
 			encounter.setDateVoided(voidedDate);
 			Context.getEncounterService().voidEncounter(encounter, voidReason);
 		}
 	}
-	
+
 }

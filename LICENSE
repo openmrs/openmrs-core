@@ -361,6 +361,8 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
       With Secondary Licenses", as defined by
       the Mozilla Public License, v. 2.0.
 
+SPDX-License-Identifier: MPL-2.0
+
 ---------------------
 
 Healthcare Disclaimer

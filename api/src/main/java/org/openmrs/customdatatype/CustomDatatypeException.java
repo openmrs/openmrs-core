@@ -15,16 +15,16 @@ import org.openmrs.api.APIException;
  * Exception related to {@link CustomDatatype} or {@link CustomDatatypeHandler}
  */
 public class CustomDatatypeException extends APIException {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * @param msg
 	 */
 	public CustomDatatypeException(String msg) {
 		super(msg);
 	}
-	
+
 	/**
 	 * @param msg
 	 * @param cause
@@ -32,5 +32,5 @@ public class CustomDatatypeException extends APIException {
 	public CustomDatatypeException(String msg, Exception cause) {
 		super(msg, cause);
 	}
-	
+
 }

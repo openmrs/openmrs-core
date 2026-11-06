@@ -9,15 +9,16 @@
  */
 package org.openmrs.web.filter;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Properties;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.context.Context;
@@ -30,53 +31,52 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * <p/>
  * This filter is configurable at runtime using the following runtime properties:
  * <ul>
- *     <li><tt>cookieClearingFilter.toClear = comma separated list of cookies to clear</tt>
- *     determines the cookies we will try to clear. If unset, will default to just clearing the JSESSIONID cookie.</li>
+ * <li><tt>cookieClearingFilter.toClear = comma separated list of cookies to clear</tt> determines
+ * the cookies we will try to clear. If unset, will default to just clearing the JSESSIONID
+ * cookie.</li>
  * </ul>
  */
 public class CookieClearingFilter extends OncePerRequestFilter {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(CookieClearingFilter.class);
-	
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-		throws ServletException, IOException {
-		
+	        throws ServletException, IOException {
+
 		// if an earlier filter has already written a response, we cannot do anything
 		if (response.isCommitted()) {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		
+
 		String[] cookiesToClear = new String[0];
-		
+
 		// the try-catch here is defensive; if, for whatever reason, we cannot parse this setting, this filter should not
 		// stop the request
 		try {
 			Properties properties = Context.getRuntimeProperties();
 			String cookiesToClearSetting = properties.getProperty("cookieClearingFilter.toClear", "JSESSIONID");
-			
+
 			if (StringUtils.isNotBlank(cookiesToClearSetting)) {
-				cookiesToClear = Arrays.stream(cookiesToClearSetting.split("\\s*,\\s*")).map(String::trim).toArray(
-					String[]::new);
+				cookiesToClear = Arrays.stream(cookiesToClearSetting.split("\\s*,\\s*")).map(String::trim)
+				        .toArray(String[]::new);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warn("Caught exception while trying to determine cookies to clear", e);
 		}
-		
+
 		boolean requestHasSession = false;
 		if (cookiesToClear.length > 0) {
 			// we need to track whether this request initially was part of a session
 			// if it was and there is no valid request at the end of the session, we clear the session cookies
 			requestHasSession = request.getRequestedSessionId() != null;
 		}
-		
+
 		// handle the request
 		try {
 			filterChain.doFilter(request, response);
-		}
-		finally {
+		} finally {
 			if (cookiesToClear.length > 0 && !response.isCommitted()) {
 				HttpSession session = request.getSession(false);
 				// session was invalidated
@@ -86,8 +86,8 @@ public class CookieClearingFilter extends OncePerRequestFilter {
 							if (cookieToClear.equalsIgnoreCase(cookie.getName())) {
 								Cookie clearedCookie = new Cookie(cookie.getName(), null);
 								String contextPath = request.getContextPath();
-								clearedCookie.setPath(
-									contextPath == null || contextPath.trim().equals("") ? "/" : contextPath);
+								clearedCookie
+								        .setPath(contextPath == null || contextPath.trim().equals("") ? "/" : contextPath);
 								clearedCookie.setMaxAge(0);
 								clearedCookie.setHttpOnly(true);
 								clearedCookie.setSecure(request.isSecure());

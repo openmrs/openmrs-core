@@ -9,21 +9,21 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
  * Privilege
- * 
+ *
  * @version 1.0
  */
 @Audited
@@ -31,55 +31,53 @@ import org.hibernate.envers.Audited;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "privilege")
-@AttributeOverrides({
-	@AttributeOverride(name = "name", column = @Column(name = "name", nullable = true))
-})
+@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })
 public class Privilege extends BaseChangeableOpenmrsMetadata {
-	
+
 	public static final long serialVersionUID = 312L;
-	
+
 	// Fields
 	@Id
 	@Column(name = "privilege", length = 250)
 	private String privilege;
-	
+
 	// Constructors
-	
+
 	/** default constructor */
 	public Privilege() {
 	}
-	
+
 	/** constructor with id */
 	public Privilege(String privilege) {
 		this.privilege = privilege;
 	}
-	
+
 	public Privilege(String privilege, String description) {
 		this.privilege = privilege;
 		setDescription(description);
 	}
-	
+
 	// Property accessors
-	
+
 	/**
 	 * @return Returns the privilege.
 	 */
 	public String getPrivilege() {
 		return privilege;
 	}
-	
+
 	/**
 	 * @param privilege The privilege to set.
 	 */
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.getPrivilege();
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -87,7 +85,7 @@ public class Privilege extends BaseChangeableOpenmrsMetadata {
 	public String toString() {
 		return this.privilege;
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -95,9 +93,9 @@ public class Privilege extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public Integer getId() {
 		throw new UnsupportedOperationException();
-		
+
 	}
-	
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
@@ -105,6 +103,6 @@ public class Privilege extends BaseChangeableOpenmrsMetadata {
 	@Override
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
-		
+
 	}
 }

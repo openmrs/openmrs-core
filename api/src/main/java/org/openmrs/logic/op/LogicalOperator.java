@@ -13,11 +13,11 @@ package org.openmrs.logic.op;
  * Marker for the logical operator
  */
 public interface LogicalOperator extends Operator {
-	
+
 	public static final LogicalOperator AND = new And();
-	
+
 	public static final LogicalOperator OR = new Or();
-	
+
 	public static final LogicalOperator NOT = new Not();
-	
+
 }

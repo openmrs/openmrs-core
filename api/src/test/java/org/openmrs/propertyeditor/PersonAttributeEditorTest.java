@@ -14,17 +14,17 @@ import org.openmrs.api.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PersonAttributeEditorTest extends BasePropertyEditorTest<PersonAttribute, PersonAttributeEditor> {
-	
+
 	private static final Integer EXISTING_ID = 1;
-	
+
 	@Autowired
 	private PersonService personService;
-	
+
 	@Override
 	protected PersonAttributeEditor getNewEditor() {
 		return new PersonAttributeEditor();
 	}
-	
+
 	@Override
 	protected PersonAttribute getExistingObject() {
 		return personService.getPersonAttribute(EXISTING_ID);

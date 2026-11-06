@@ -28,24 +28,22 @@ import org.hibernate.search.engine.search.query.dsl.spi.AbstractDelegatingSearch
 import org.openmrs.api.db.hibernate.search.SearchQueryContributor;
 
 /**
- * Allows to set final predicate. See {@link SearchQueryContributor}.
- * For internal use only.
- * 
+ * Allows to set final predicate. See {@link SearchQueryContributor}. For internal use only.
+ *
  * @param <SR>
  * @param <R>
  * @param <E>
  * @param <LOS>
- *     
  * @since 2.8.0
  */
 class SearchQuerySelectDelegate<SR, R, E, LOS> extends AbstractDelegatingSearchQuerySelectStep<SR, R, E, LOS> implements SearchQueryContributor {
 
 	private Function<SearchPredicateFactory, SearchPredicate> finalPredicate;
-	
+
 	public SearchQuerySelectDelegate(SearchQuerySelectStep<SR, ?, R, E, LOS, ?, ?> delegate) {
 		super(delegate);
 	}
-	
+
 	@Override
 	public void setFinalPredicate(Function<SearchPredicateFactory, SearchPredicate> finalPredicate) {
 		this.finalPredicate = finalPredicate;
@@ -69,7 +67,8 @@ class SearchQuerySelectDelegate<SR, R, E, LOS> extends AbstractDelegatingSearchQ
 	}
 
 	@Override
-	public SearchQueryOptionsStep<SR, ?, E, LOS, ?, ?> where(BiConsumer<? super TypedSearchPredicateFactory<SR>, ? super SimpleBooleanPredicateClausesCollector<SR, ?>> predicateContributor) {
+	public SearchQueryOptionsStep<SR, ?, E, LOS, ?, ?> where(
+	        BiConsumer<? super TypedSearchPredicateFactory<SR>, ? super SimpleBooleanPredicateClausesCollector<SR, ?>> predicateContributor) {
 		if (finalPredicate != null) {
 			return super.where((f, root) -> {
 				predicateContributor.accept(f, root);
@@ -81,7 +80,8 @@ class SearchQuerySelectDelegate<SR, R, E, LOS> extends AbstractDelegatingSearchQ
 	}
 
 	@Override
-	public SearchQueryOptionsStep<SR, ?, E, LOS, ?, ?> where(Function<? super TypedSearchPredicateFactory<SR>, ? extends PredicateFinalStep> predicateContributor) {
+	public SearchQueryOptionsStep<SR, ?, E, LOS, ?, ?> where(
+	        Function<? super TypedSearchPredicateFactory<SR>, ? extends PredicateFinalStep> predicateContributor) {
 		if (finalPredicate != null) {
 			return super.where((f, root) -> {
 				root.add(predicateContributor.apply(f));
@@ -90,7 +90,7 @@ class SearchQuerySelectDelegate<SR, R, E, LOS> extends AbstractDelegatingSearchQ
 		} else {
 			return super.where(predicateContributor);
 		}
-		
+
 	}
 
 	@Override
@@ -109,7 +109,8 @@ class SearchQuerySelectDelegate<SR, R, E, LOS> extends AbstractDelegatingSearchQ
 	}
 
 	@Override
-	public <P> SearchQueryWhereStep<SR, ?, P, LOS, ?> select(Function<? super TypedSearchProjectionFactory<SR, R, E>, ? extends ProjectionFinalStep<P>> projectionContributor) {
+	public <P> SearchQueryWhereStep<SR, ?, P, LOS, ?> select(
+	        Function<? super TypedSearchProjectionFactory<SR, R, E>, ? extends ProjectionFinalStep<P>> projectionContributor) {
 		return new SearchQueryWhereDelegate<>(super.select(projectionContributor), finalPredicate);
 	}
 

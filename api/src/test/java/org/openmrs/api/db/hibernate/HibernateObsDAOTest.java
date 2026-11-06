@@ -9,15 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -27,26 +26,30 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 /**
  * Tests for {@link org.openmrs.api.db.hibernate.HibernateObsDAO}
  */
 public class HibernateObsDAOTest extends BaseContextSensitiveTest {
-	
+
 	private HibernateObsDAO dao = null;
-	
+
 	private SessionFactory sessionFactory = null;
-	
+
 	@BeforeEach
 	public void setUp() {
 		if (dao == null)
 			// fetch the dao from the spring application context
 			dao = (HibernateObsDAO) applicationContext.getBean("obsDAO");
-		
+
 		sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
 	}
-	
+
 	/**
-	 * @see org.openmrs.api.db.hibernate.HibernateObsDAO#getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, Integer, Integer, java.util.Date, java.util.Date, boolean)
+	 * @see org.openmrs.api.db.hibernate.HibernateObsDAO#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, Integer,
+	 *      Integer, java.util.Date, java.util.Date, boolean)
 	 */
 	@Test
 	public void getObservations_shouldBeOrderedCorrectly() {
@@ -61,8 +64,8 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		cqDesc.orderBy(cb.desc(rootDesc.get("obsId")));
 		obsListExpected = session.createQuery(cqDesc).getResultList();
 
-		obsListActual = dao.getObservations(null, null, null, null, null, null, Collections.singletonList("obsId desc"), null, null, null,
-			null, false, null);
+		obsListActual = dao.getObservations(null, null, null, null, null, null, Collections.singletonList("obsId desc"),
+		    null, null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 
 		//Order by obsId asc
@@ -71,8 +74,8 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		cqAsc.orderBy(cb.asc(rootAsc.get("obsId")));
 		obsListExpected = session.createQuery(cqAsc).getResultList();
 
-		obsListActual = dao.getObservations(null, null, null, null, null, null, Collections.singletonList("obsId asc"), null, null, null,
-			null, false, null);
+		obsListActual = dao.getObservations(null, null, null, null, null, null, Collections.singletonList("obsId asc"), null,
+		    null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 
 		// Order by person_id asc and id desc
@@ -82,8 +85,8 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		cqAscDesc.orderBy(cb.asc(personJoinAscDesc.get("personId")), cb.desc(rootAscDesc.get("obsId")));
 		obsListExpected = session.createQuery(cqAscDesc).getResultList();
 
-		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("personId asc", "obsId desc"), null,
-			null, null, null, false, null);
+		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("personId asc", "obsId desc"),
+		    null, null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 
 		//Order by person_id asc and id asc
@@ -94,7 +97,7 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		obsListExpected = session.createQuery(cqAscAsc).getResultList();
 
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("personId asc", "obsId asc"),
-			null, null, null, null, false, null);
+		    null, null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
 	}
 }

@@ -25,43 +25,42 @@ import ca.uhn.hl7v2.HL7Exception;
  * @version 1.0
  */
 @Transactional
-public class HL7InQueueProcessor /* implements Runnable */{
-	
+public class HL7InQueueProcessor /* implements Runnable */ {
+
 	private static final Logger log = LoggerFactory.getLogger(HL7InQueueProcessor.class);
-	
+
 	private static Boolean isRunning = false; // allow only one running
 
 	private static final Object lock = new Object();
-	
+
 	private static Integer count = 0;
-	
+
 	// processor per JVM
-	
+
 	/**
 	 * Empty constructor (requires context to be set using <code>setContext(Context)</code> method
 	 * before any other calls are made)
 	 */
 	public HL7InQueueProcessor() {
 	}
-	
+
 	public static void setCount(Integer count) {
 		HL7InQueueProcessor.count = count;
 	}
-	
+
 	/**
 	 * Process a single queue entry from the inbound HL7 queue
 	 *
 	 * @param hl7InQueue queue entry to be processed
 	 */
 	public void processHL7InQueue(HL7InQueue hl7InQueue) {
-		
+
 		log.debug("Processing HL7 inbound queue (id={} ,key={})", hl7InQueue.getHL7InQueueId(),
 		    hl7InQueue.getHL7SourceKey());
-		
+
 		try {
 			Context.getHL7Service().processHL7InQueue(hl7InQueue);
-		}
-		catch (HL7Exception e) {
+		} catch (HL7Exception e) {
 			log.error("Unable to process hl7 in queue", e);
 		}
 		setCount(count + 1);
@@ -70,17 +69,16 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			// memory-intensive process may crash or eat up all our memory)
 			try {
 				Context.getHL7Service().garbageCollect();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.error("Exception while performing garbagecollect in hl7 inbound processor", e);
 			}
 		}
-		
+
 	}
-	
+
 	/**
-	 * Transform the next pending HL7 inbound queue entry. If there are no pending items in the
-	 * queue, this method simply returns quietly.
+	 * Transform the next pending HL7 inbound queue entry. If there are no pending items in the queue,
+	 * this method simply returns quietly.
 	 *
 	 * @return true if a queue entry was processed, false if queue was empty
 	 */
@@ -94,7 +92,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		}
 		return entryProcessed;
 	}
-	
+
 	/**
 	 * Starts up a thread to process all existing HL7InQueue entries
 	 */
@@ -112,10 +110,9 @@ public class HL7InQueueProcessor /* implements Runnable */{
 				// loop until queue is empty
 			}
 			log.debug("Done processing hl7 in queue");
-		}
-		finally {
+		} finally {
 			isRunning = false;
 		}
 	}
-	
+
 }

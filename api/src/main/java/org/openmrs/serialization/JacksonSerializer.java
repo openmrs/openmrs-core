@@ -20,23 +20,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * {@code JacksonSerializer} is a JSON serialization implementation for OpenMRS
- * that uses the Jackson library to convert Java objects to JSON and vice versa.
+ * {@code JacksonSerializer} is a JSON serialization implementation for OpenMRS that uses the
+ * Jackson library to convert Java objects to JSON and vice versa.
  * <p>
- * It supports UUID-based references for {@code OpenmrsObject}s using
- * {@link UuidReferenceModule} and handles Hibernate proxies via {@link Hibernate5Module},
+ * It supports UUID-based references for {@code OpenmrsObject}s using {@link UuidReferenceModule}
+ * and handles Hibernate proxies via {@link Hibernate5Module},
  * </p>
- * 
- * @since 3.0.0
  *
+ * @since 3.0.0
  * @see UuidReferenceModule
  * @see OpenmrsSerializer
  * @see SerializationException
@@ -46,14 +45,14 @@ public class JacksonSerializer implements OpenmrsSerializer {
 
 	private static final Logger log = LoggerFactory.getLogger(JacksonSerializer.class);
 
-	private ObjectMapper objectMapper =  null;
+	private ObjectMapper objectMapper = null;
 
 	@Autowired
 	private AdministrationService adminService;
-	
+
 	/**
-	 * Constructs and configures a new {@code JacksonSerializer} instance with
-	 * necessary modules, date formatting, and visibility rules.
+	 * Constructs and configures a new {@code JacksonSerializer} instance with necessary modules, date
+	 * formatting, and visibility rules.
 	 *
 	 * @param domainService the {@link DomainService} used to resolve UUIDs during deserialization
 	 * @throws SerializationException if initialization fails
@@ -68,29 +67,30 @@ public class JacksonSerializer implements OpenmrsSerializer {
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 		objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.PUBLIC_ONLY);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		objectMapper.setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
+		objectMapper.setDefaultPropertyInclusion(
+		    JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
 	}
 
 	/**
 	 * Constructor that accepts a {@link ObjectMapper}.
-	 * 
+	 *
 	 * @param objectMapper the preconfigured ObjectMapper to use
 	 * @throws SerializationException if initialization fails
 	 */
 	public JacksonSerializer(ObjectMapper objectMapper) throws SerializationException {
 		this.objectMapper = objectMapper;
 	}
-	
+
 	/**
-	 * Returns the internal {@link ObjectMapper}, allowing further configuration
-	 * by other modules or extensions.
+	 * Returns the internal {@link ObjectMapper}, allowing further configuration by other modules or
+	 * extensions.
 	 *
 	 * @return the underlying ObjectMapper
 	 */
 	protected ObjectMapper getObjectMapper() {
 		return objectMapper;
 	}
-	
+
 	/**
 	 * Serializes an object to a JSON string if it passes the whitelist check.
 	 *
@@ -109,13 +109,13 @@ public class JacksonSerializer implements OpenmrsSerializer {
 			throw new SerializationException("Unable to serialize class: " + o.getClass().getName(), e);
 		}
 	}
-	
+
 	/**
 	 * Deserializes a JSON string to a Java object of the specified type.
 	 *
 	 * @param serializedObject the JSON string
-	 * @param clazz            the target class to deserialize to
-	 * @param <T>              the type parameter
+	 * @param clazz the target class to deserialize to
+	 * @param <T> the type parameter
 	 * @return the deserialized Java object
 	 * @throws SerializationException if deserialization fails or provided clazz is null
 	 */
@@ -132,8 +132,7 @@ public class JacksonSerializer implements OpenmrsSerializer {
 
 		try {
 			return (T) getObjectMapper().readValue(serializedObject, clazz);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new SerializationException("Unable to deserialize class: " + clazz.getName(), e);
 		}
 	}

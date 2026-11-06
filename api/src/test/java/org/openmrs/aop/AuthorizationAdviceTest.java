@@ -7,20 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openmrs.aop;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import jakarta.annotation.Resource;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import jakarta.annotation.Resource;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -30,56 +22,65 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Component;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests {@link AuthorizationAdvice}.
  */
 public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
-	
+
 	@Resource(name = "listener1")
 	Listener1 listener1;
-	
+
 	@Resource(name = "listener2")
 	Listener2 listener2;
-	
+
 	@Test
 	public void before_shouldNotifyListenersAboutCheckedPrivileges() {
-		
+
 		listener1.hasPrivileges.clear();
 		listener1.lacksPrivileges.clear();
-		
+
 		listener2.hasPrivileges.clear();
 		listener2.lacksPrivileges.clear();
-		
+
 		Concept concept = Context.getConceptService().getConcept(3);
-		
+
 		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder(PrivilegeConstants.GET_CONCEPTS));
 		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder(PrivilegeConstants.GET_CONCEPTS));
 		assertThat(listener1.lacksPrivileges, empty());
 		assertThat(listener2.lacksPrivileges, empty());
-		
+
 		listener1.hasPrivileges.clear();
 		listener2.hasPrivileges.clear();
-		
+
 		Context.getConceptService().saveConcept(concept);
-		
+
 		String[] privileges = { PrivilegeConstants.MANAGE_CONCEPTS, PrivilegeConstants.GET_OBS,
-		        PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES, PrivilegeConstants.GET_GLOBAL_PROPERTIES, 
-				PrivilegeConstants.GET_CONCEPTS };
+		        PrivilegeConstants.GET_CONCEPT_ATTRIBUTE_TYPES, PrivilegeConstants.GET_GLOBAL_PROPERTIES,
+		        PrivilegeConstants.GET_CONCEPTS };
 		assertThat("listener1", listener1.hasPrivileges, containsInAnyOrder(privileges));
 		assertThat("listener2", listener2.hasPrivileges, containsInAnyOrder(privileges));
 		assertThat(listener1.lacksPrivileges, empty());
 		assertThat(listener2.lacksPrivileges, empty());
 	}
-	
+
 	@Component("listener1")
 	public static class Listener1 implements PrivilegeListener {
-		
+
 		public Set<String> hasPrivileges = new LinkedHashSet<>();
-		
+
 		public Set<String> lacksPrivileges = new LinkedHashSet<>();
-		
+
 		@Override
 		public void privilegeChecked(User user, String privilege, boolean hasPrivilege) {
 			if (hasPrivilege) {
@@ -89,14 +90,45 @@ public class AuthorizationAdviceTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
-	
+
 	@Component("listener2")
 	public static class Listener2 extends Listener1 {}
-	
+
 	@Test
-	public void before_shouldThrowAPIAuthenticationException() {
+	public void before_shouldThrowAccessDeniedException() {
 		Context.getUserContext().logout();
-		assertThrows(APIAuthenticationException.class, () -> Context.getConceptService().getConcept(3));
+		assertThrows(AccessDeniedException.class, () -> Context.getConceptService().getConcept(3));
 	}
-	
+
+	// the three tests below cover each way the advice denies: code written against 2.x catches
+	// APIAuthenticationException, code written against 3.0 catches Spring Security's type, and both
+	// must recognize the same denial
+
+	@Test
+	public void before_shouldDenyAMissingPrivilegeWithAnAPIAuthenticationExceptionSpringSecurityRecognizes() {
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Context.getConceptService().getConcept(3));
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Privileges required: Get Concepts", denial.getMessage());
+	}
+
+	@Test
+	public void before_shouldDenyTheFirstMissingRequiredPrivilegeWithAnAPIAuthenticationExceptionSpringSecurityRecognizes() {
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Context.getPatientService().saveCauseOfDeathObs(null, null, null, null));
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Privileges required: Get Patients", denial.getMessage());
+	}
+
+	@Test
+	public void before_shouldDenyAnUnauthenticatedCallerWithAnAPIAuthenticationExceptionSpringSecurityRecognizes() {
+		Context.getUserContext().logout();
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Context.getUserService().changePassword("old", "new"));
+		assertInstanceOf(AuthorizationDeniedException.class, denial);
+		assertEquals("Basic authentication required", denial.getMessage());
+	}
+
 }

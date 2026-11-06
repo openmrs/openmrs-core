@@ -17,19 +17,19 @@ import org.openmrs.api.context.Context;
  * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Form
  */
 public class FormEditor extends OpenmrsPropertyEditor<Form> {
-	
+
 	public FormEditor() {
 	}
-	
+
 	@Override
 	protected Form getObjectById(Integer id) {
 		return Context.getFormService().getForm(id);
 	}
-	
+
 	@Override
 	protected Form getObjectByUuid(String uuid) {
 		return Context.getFormService().getFormByUuid(uuid);

@@ -9,12 +9,9 @@
  */
 package org.openmrs.web.filter.update;
 
-import javax.xml.crypto.Data;
-import java.util.Collections;
 import java.util.List;
 
 import org.openmrs.liquibase.LiquibaseProvider;
-import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.OpenmrsConstants;
@@ -30,29 +27,29 @@ import org.slf4j.LoggerFactory;
  * the {@link StartupFilter}.
  */
 public class UpdateFilterModel {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(UpdateFilterModel.class);
-	
+
 	// automatically given to the .vm files and used there
 	public static final String HEADER_TEMPLATE = "org/openmrs/web/filter/update/header.vm";
 
 	// automatically given to the .vm files and used there
 	public static final String FOOTER_TEMPLATE = "org/openmrs/web/filter/footer.vm";
-		
+
 	public List<OpenMRSChangeSet> changes = null;
-	
+
 	public String superuserrole = RoleConstants.SUPERUSER;
 
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
-	
+
 	public static final String OPENMRS_VERSION = OpenmrsConstants.OPENMRS_VERSION_SHORT;
-	
+
 	public Boolean updateRequired = false;
-	
+
 	private LiquibaseProvider liquibaseProvider;
-	
+
 	private DatabaseUpdaterWrapper databaseUpdaterWrapper;
-	
+
 	/**
 	 * Default constructor that sets up some of the properties
 	 */
@@ -60,30 +57,29 @@ public class UpdateFilterModel {
 		this(new DatabaseUpdaterLiquibaseProvider(), new DatabaseUpdaterWrapper());
 		log.debug("executing default constructor...");
 	}
-	
+
 	/**
 	 * Constructor that allows to inject a Liquibase provider.
-	 * 
+	 *
 	 * @param liquibaseProvider a Liquibase provider
 	 */
 	public UpdateFilterModel(LiquibaseProvider liquibaseProvider, DatabaseUpdaterWrapper databaseUpdaterWrapper) {
 		log.debug("executing non-default constructor...");
 		this.liquibaseProvider = liquibaseProvider;
 		this.databaseUpdaterWrapper = databaseUpdaterWrapper;
-		
+
 		try {
 			updateRequired = databaseUpdaterWrapper.updatesRequired();
-			
+
 			if (updateRequired) {
 				updateChanges();
 				updateRequired = changes != null;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// do nothing
 		}
 	}
-	
+
 	/**
 	 * Convenience method that reads from liquibase again to get the most recent list of changesets that
 	 * still need to be run.
@@ -99,8 +95,7 @@ public class UpdateFilterModel {
 					changes = databaseUpdaterWrapper.getUnrunDatabaseChanges(liquibaseProvider);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Unable to get the database changes", e);
 		}
 	}

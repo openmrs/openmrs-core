@@ -24,21 +24,21 @@ import org.openmrs.aop.RequiredDataAdvice;
  * <br>
  * Child collections on this {@link Retireable} that are themselves a {@link Retireable} are looped
  * over and also retired by the {@link RequiredDataAdvice} class.
- * 
+ *
  * @see BaseRetireHandler
  * @see RequiredDataAdvice
  * @since 1.5
  */
 public interface RetireHandler<R extends Retireable> extends RequiredDataHandler<R> {
-	
+
 	/**
 	 * Implementing methods should set "retired" to true, the retired reason, and the
 	 * retiredBy/dateRetired (if those are non-null).
-	 * 
+	 *
 	 * @see org.openmrs.api.handler.RequiredDataHandler#handle(org.openmrs.OpenmrsObject,
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 */
 	@Override
 	public void handle(R retireableObject, User retiringUser, Date retireDate, String retireReason);
-	
+
 }

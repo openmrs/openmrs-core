@@ -9,8 +9,6 @@
  */
 package org.openmrs.api.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -18,11 +16,13 @@ import org.openmrs.Location;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.User;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Tests for {@link OpenmrsMetadataSaveHandler}
  */
 public class OpenmrsMetadataSaveHandlerTest {
-	
+
 	/**
 	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */
@@ -35,7 +35,7 @@ public class OpenmrsMetadataSaveHandlerTest {
 		handler.handle(loc, null, null, null);
 		assertEquals(NAME, loc.getName());
 	}
-	
+
 	/**
 	 * @see OpenmrsMetadataSaveHandler#handle(OpenmrsMetadata,User,Date,String)
 	 */

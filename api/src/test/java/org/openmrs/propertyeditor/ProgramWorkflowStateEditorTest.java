@@ -16,15 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProgramWorkflowStateEditorTest extends BasePropertyEditorTest<ProgramWorkflowState, ProgramWorkflowStateEditor> {
 
 	private static final String EXISTING_UUID = "92584cdc-6a20-4c84-a659-e035e45d36b0";
-	
+
 	@Autowired
 	ProgramWorkflowService programWorkflowService;
-	
+
 	@Override
 	protected ProgramWorkflowStateEditor getNewEditor() {
 		return new ProgramWorkflowStateEditor();
 	}
-	
+
 	@Override
 	protected ProgramWorkflowState getExistingObject() {
 		return programWorkflowService.getStateByUuid(EXISTING_UUID);

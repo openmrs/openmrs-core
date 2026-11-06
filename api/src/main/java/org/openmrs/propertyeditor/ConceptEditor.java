@@ -17,19 +17,19 @@ import org.openmrs.api.context.Context;
  * object back and forth through an html form or other medium. <br>
  * <br>
  * In version 1.9, added ability for this to also retrieve objects by uuid
- * 
+ *
  * @see Concept
  */
 public class ConceptEditor extends OpenmrsPropertyEditor<Concept> {
-	
+
 	public ConceptEditor() {
 	}
-	
+
 	@Override
 	protected Concept getObjectById(Integer id) {
 		return Context.getConceptService().getConcept(id);
 	}
-	
+
 	@Override
 	protected Concept getObjectByUuid(String uuid) {
 		return Context.getConceptService().getConceptByUuid(uuid);

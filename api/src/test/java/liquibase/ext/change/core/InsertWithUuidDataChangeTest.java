@@ -9,45 +9,47 @@
  */
 package liquibase.ext.change.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
 
 import liquibase.change.ColumnConfig;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.structure.core.Column;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class InsertWithUuidDataChangeTest {
+
 	@Test
 	public void shouldNotModifyUuidValueIfColumnExists() {
 		InsertWithUuidDataChange dataChange = new InsertWithUuidDataChange();
 		String expected = "expected_value_for_UUID";
 
-		ColumnConfig uuid = new ColumnConfig( new Column("uuid") );
-		uuid.setValue( expected );
-		dataChange.addColumn( uuid );
+		ColumnConfig uuid = new ColumnConfig(new Column("uuid"));
+		uuid.setValue(expected);
+		dataChange.addColumn(uuid);
 
-		SqlStatement[] statements = dataChange.generateStatements( new MySQLDatabase() );
-		InsertStatement insertStatement = ( InsertStatement ) statements[0];
-		Object actual = insertStatement.getColumnValue( "uuid" );
+		SqlStatement[] statements = dataChange.generateStatements(new MySQLDatabase());
+		InsertStatement insertStatement = (InsertStatement) statements[0];
+		Object actual = insertStatement.getColumnValue("uuid");
 
-		assertEquals( expected, actual );
+		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void shouldAddUuid() {
 		InsertWithUuidDataChange dataChange = new InsertWithUuidDataChange();
 
-		SqlStatement[] statements = dataChange.generateStatements( new MySQLDatabase() );
-		InsertStatement insertStatement = ( InsertStatement ) statements[0];
-		Object actual = insertStatement.getColumnValue( "uuid" );
+		SqlStatement[] statements = dataChange.generateStatements(new MySQLDatabase());
+		InsertStatement insertStatement = (InsertStatement) statements[0];
+		Object actual = insertStatement.getColumnValue("uuid");
 
 		try {
-			UUID.fromString( (String) actual );
+			UUID.fromString((String) actual);
 		} catch (RuntimeException re) {
 			fail("generated uuid is not valid");
 		}
