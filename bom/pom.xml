@@ -355,6 +355,8 @@
 				<artifactId>jackson-datatype-hibernate7</artifactId>
 				<version>${jacksonVersion}</version>
 			</dependency>
+			<!-- Pulled in by groovy-yaml (from groovy-all) and needed by OpenmrsConfigurationFactory to 
+			read a log4j2.yaml; pinned to match the other Jackson modules -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.dataformat</groupId>
 				<artifactId>jackson-dataformat-yaml</artifactId>
