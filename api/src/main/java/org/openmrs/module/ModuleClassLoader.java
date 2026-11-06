@@ -24,7 +24,6 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -483,26 +482,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Get all urls for the given <code>module</code> that are not already in the
-	 * <code>existingUrls</code>
-	 *
-	 * @param module Module in which to get urls
-	 * @param existingUrls Array of URLs to skip
-	 * @return List&lt;URL&gt; of new unique urls
-	 * @see #getModuleUrls(Module)
-	 */
-	private static List<URL> getModuleUrls(final Module module, final URL[] existingUrls) {
-		List<URL> urls = Arrays.asList(existingUrls);
-		List<URL> result = new LinkedList<>();
-		for (URL url : getModuleUrls(module)) {
-			if (!urls.contains(url)) {
-				result.add(url);
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Get and cache the imports for this module. The imports should just be the modules that set as
 	 * "required" by this module
 	 */
@@ -538,29 +517,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		return publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
 
-	}
-
-	/**
-	 * @see org.openmrs.module.ModuleClassLoader#modulesSetChanged()
-	 */
-	protected void modulesSetChanged() {
-		List<URL> newUrls = getModuleUrls(getModule(), getURLs());
-		for (URL u : newUrls) {
-			addURL(u);
-		}
-
-		if (log.isDebugEnabled()) {
-			StringBuilder buf = new StringBuilder();
-			buf.append("New code URL's populated for module ").append(getModule()).append(":\r\n");
-			for (URL u : newUrls) {
-				buf.append("\t");
-				buf.append(u);
-				buf.append("\r\n");
-			}
-			log.debug(buf.toString());
-		}
-		requiredModules = collectRequiredModuleImports(getModule());
-		awareOfModules = collectAwareOfModuleImports(getModule());
 	}
 
 	/**
