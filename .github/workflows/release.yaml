@@ -1,8 +1,5 @@
 # Releases a maintenance version of openmrs-core from a maintenance branch (N.N.x).
 #
-# This duplicates the manual "Release" stage (and the "Release image variants" stage that
-# follows it automatically) of the Bamboo plan defined in bamboo-specs/bamboo.yml
-# (e.g. TRUNK-OC28 "OpenMRS Core 2.8.x").
 # For example, dispatching it on 2.8.x with releaseVersion=2.8.8 will:
 #   1. set the maven version to 2.8.8 and commit "[skip-ci] [skip actions] Releasing 2.8.8"
 #      as openmrs-bot ([skip-ci] is Bamboo's skip marker; [skip actions] is the one GitHub
