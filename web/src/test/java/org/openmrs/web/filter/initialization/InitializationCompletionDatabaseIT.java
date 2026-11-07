@@ -115,7 +115,8 @@ class InitializationCompletionDatabaseIT {
 		model.createUserPassword = adminPassword();
 		Properties runtimeProperties = new Properties();
 		InitializationFilter.InitializationCompletion install = filter.new InitializationCompletion(
-		                                                                                            model) {
+		                                                                                            model,
+		                                                                                            false) {
 
 			@Override
 			Properties addRuntimeProperties(Properties installRuntimeProperties) {

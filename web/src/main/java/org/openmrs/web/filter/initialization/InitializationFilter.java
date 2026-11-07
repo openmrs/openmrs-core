@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
@@ -188,6 +190,16 @@ public class InitializationFilter extends StartupFilter {
 	static final String WIZARD_MODEL_ATTRIBUTE = InitializationWizardModel.class.getName();
 
 	/**
+	 * The session attribute holding the object the requests of the session synchronize on
+	 */
+	static final String WIZARD_LOCK_ATTRIBUTE = WizardLock.class.getName();
+
+	/**
+	 * Guards creating the lock of a session
+	 */
+	private static final Object WIZARD_LOCK_CREATION = new Object();
+
+	/**
 	 * The names the wizard puts into SQL as database and user names: letters, digits and underscores,
 	 * with single hyphens or dots between them as in the OpenMRS SDK's openmrs-&lt;server id&gt;
 	 */
@@ -210,6 +222,12 @@ public class InitializationFilter extends StartupFilter {
 	private static final Object INSTALLATION_LOCK = new Object();
 
 	volatile InitializationCompletion initJob;
+
+	/**
+	 * Set once it is logged that no install starts until OpenMRS restarts, which every request for an
+	 * automatic install is told from then on
+	 */
+	private final AtomicBoolean restartRequiredLogged = new AtomicBoolean();
 
 	/**
 	 * Variable set to true as soon as the installation begins and set to false when the process ends
@@ -271,16 +289,52 @@ public class InitializationFilter extends StartupFilter {
 			return;
 		}
 
-		InitializationWizardModel wizardModel = getWizardModel(httpRequest.getSession());
+		// an automatic install runs with the configuration alone: a request for one gets a new model holding just the
+		// configuration, which then replaces the session's model, so values a client posted to the wizard pages before
+		// never reach the install
+		InitializationWizardModel configuredModel = new InitializationWizardModel();
+		initializeWizardFromResolvedPropertiesIfPresent(configuredModel);
+		boolean automatic = InitializationWizardModel.INSTALL_METHOD_AUTO.equals(configuredModel.installMethod);
 		// one request of a session at a time uses its model, and none once an install has started, so an install
 		// runs with the values it was checked with
-		synchronized (wizardModel) {
-			if (isInstallationStarted()) {
+		synchronized (getWizardLock(httpRequest.getSession())) {
+			// so is a request that got past this filter while an install ran, which has completed since: the progress
+			// page's first poll sends the browser on
+			if (isInstallationStarted() || isInitializationComplete()) {
 				renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
 				return;
 			}
-			handleGet(httpRequest, httpResponse, wizardModel, referenceMap, page);
+			if (automatic) {
+				handleAutomaticInstall(httpRequest, httpResponse, configuredModel, referenceMap);
+			} else {
+				handleGet(httpRequest, httpResponse, getWizardModel(httpRequest.getSession()), referenceMap, page);
+			}
 		}
+	}
+
+	/**
+	 * Handles a GET while OpenMRS is configured for an automatic install, which no other request of the
+	 * session runs meanwhile. The given model, which holds the configuration alone, becomes the
+	 * session's, and an automatic install starts with it unless the install is refused. The page shows
+	 * that install, and what the last install did and why it failed if that was an automatic install or
+	 * one this session started.
+	 *
+	 * @param wizardModel a new model holding the configuration alone
+	 */
+	private void handleAutomaticInstall(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+	        InitializationWizardModel wizardModel, Map<String, Object> referenceMap) throws IOException {
+		InitializationWizardModel sessionModel = getExistingWizardModel(httpRequest.getSession());
+		setWizardModel(httpRequest.getSession(), wizardModel);
+		// taken before an install this request starts replaces it
+		InitializationCompletion lastInstall = initJob;
+		boolean shown = lastInstall != null && lastInstall.hasErrors()
+		        && (lastInstall.automatic || lastInstall.wizardModel == sessionModel);
+		// the page of a refused install shows why and does not poll: nothing changes until the cause is fixed, and a
+		// poll that found an earlier install's errors would load this page again, over and over
+		referenceMap.put("isInstallationStarted", autoRunOpenMRS(httpRequest, wizardModel));
+		httpResponse.setContentType("text/html");
+		renderTemplate(PROGRESS_VM, referenceMap, httpResponse,
+		    getAutomaticInstallPage(wizardModel, shown ? lastInstall : null));
 	}
 
 	/**
@@ -292,12 +346,7 @@ public class InitializationFilter extends StartupFilter {
 		// the confirmation holds only for the values the confirmation page showed
 		wizardModel.wizardCompletePageShown = false;
 
-		if (InitializationWizardModel.INSTALL_METHOD_AUTO.equals(wizardModel.installMethod)) {
-			autoRunOpenMRS(httpRequest, wizardModel);
-			referenceMap.put("isInstallationStarted", true);
-			httpResponse.setContentType("text/html");
-			renderTemplate(PROGRESS_VM, referenceMap, httpResponse, wizardModel);
-		} else if (page == null) {
+		if (page == null) {
 			httpResponse.setContentType("text/html");// if any body has already started installation
 
 			//If someone came straight here without setting the hidden page input,
@@ -351,7 +400,9 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * Reports the progress of the running or the last install. Errors and server log lines go only to
-	 * the session that started the install.
+	 * the session that started the install; what a failed automatic install did and why it failed
+	 * reaches the other sessions on the setup page, see
+	 * {@link #getAutomaticInstallPage(InitializationWizardModel, InitializationCompletion)}.
 	 *
 	 * @param session the session polling for progress
 	 * @return the progress to send to the progress page
@@ -389,6 +440,33 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	/**
+	 * Returns the model to show the page of a request for an automatic install with: the request's
+	 * install and its errors, and the errors and completed steps of the given failed install. An
+	 * automatic install runs with the configuration alone, never with values a session entered on the
+	 * wizard pages, and OpenMRS starts it for whichever request reaches the setup page first, often one
+	 * no browser makes, such as the health check's, so every session is shown why it failed; what an
+	 * install from the wizard pages did is shown only to the session that started it. The page has a
+	 * model of its own, so the model an install runs with lists only that install's steps.
+	 *
+	 * @param wizardModel the model of the request, which an install the request starts runs with
+	 * @param failedInstall the failed install to show, or null
+	 * @return the model of the page
+	 */
+	private InitializationWizardModel getAutomaticInstallPage(InitializationWizardModel wizardModel,
+	        InitializationCompletion failedInstall) {
+		InitializationWizardModel page = new InitializationWizardModel();
+		page.installMethod = wizardModel.installMethod;
+		page.tasksToExecute = wizardModel.tasksToExecute;
+		page.localeToSave = wizardModel.localeToSave;
+		if (failedInstall != null) {
+			page.errors.putAll(failedInstall.getErrors());
+			page.workLog.addAll(failedInstall.wizardModel.workLog);
+		}
+		page.errors.putAll(wizardModel.errors);
+		return page;
+	}
+
+	/**
 	 * Renders the page shown while an install runs. The session that started the install sees it with
 	 * its own model, any other session with a model holding only the install's method and tasks.
 	 *
@@ -420,16 +498,54 @@ public class InitializationFilter extends StartupFilter {
 	 * @param session the session of the request
 	 * @return the session's wizard model
 	 */
-	// Sonar (java:S2441) wants session attributes to be Serializable. Deliberate: the javadoc of
-	// InitializationWizardModel says why it is not.
-	@SuppressWarnings("java:S2441")
 	InitializationWizardModel getWizardModel(HttpSession session) {
 		InitializationWizardModel wizardModel = getExistingWizardModel(session);
 		if (wizardModel == null) {
 			wizardModel = new InitializationWizardModel();
-			session.setAttribute(WIZARD_MODEL_ATTRIBUTE, wizardModel);
+			setWizardModel(session, wizardModel);
 		}
 		return wizardModel;
+	}
+
+	/**
+	 * Gives the session the given wizard model
+	 *
+	 * @param session the session of the request
+	 * @param wizardModel its new wizard model
+	 */
+	// Sonar (java:S2441) wants session attributes to be Serializable. Deliberate: the javadoc of
+	// InitializationWizardModel says why it is not.
+	@SuppressWarnings("java:S2441")
+	private void setWizardModel(HttpSession session, InitializationWizardModel wizardModel) {
+		session.setAttribute(WIZARD_MODEL_ATTRIBUTE, wizardModel);
+	}
+
+	/**
+	 * Returns what the requests of the given session synchronize on, creating it the first time the
+	 * session reaches the wizard. It stays the same while a request for an automatic install gives the
+	 * session a new model.
+	 *
+	 * @param session the session of the request
+	 * @return the session's lock
+	 */
+	Object getWizardLock(HttpSession session) {
+		// one at a time, so the first requests of a session, which can arrive together, get the same lock
+		synchronized (WIZARD_LOCK_CREATION) {
+			Object lock = session.getAttribute(WIZARD_LOCK_ATTRIBUTE);
+			if (lock == null) {
+				lock = new WizardLock();
+				session.setAttribute(WIZARD_LOCK_ATTRIBUTE, lock);
+			}
+			return lock;
+		}
+	}
+
+	/**
+	 * What the requests of one session synchronize on, serializable like a session attribute should be
+	 */
+	private static final class WizardLock implements Serializable {
+
+		private static final long serialVersionUID = 1L;
 	}
 
 	/**
@@ -588,15 +704,14 @@ public class InitializationFilter extends StartupFilter {
 			return;
 		}
 
-		InitializationWizardModel wizardModel = getWizardModel(httpRequest.getSession());
 		// one request of a session at a time uses its model, and none once an install has started, so an install
 		// runs with the values it was checked with
-		synchronized (wizardModel) {
+		synchronized (getWizardLock(httpRequest.getSession())) {
 			if (isInstallationStarted()) {
 				renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
 				return;
 			}
-			handlePost(httpRequest, httpResponse, wizardModel, referenceMap, page);
+			handlePost(httpRequest, httpResponse, getWizardModel(httpRequest.getSession()), referenceMap, page);
 		}
 	}
 
@@ -997,7 +1112,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 
-			startInstallation(wizardModel);
+			startInstallation(wizardModel, false);
 			renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
 		} else if (TESTING_REMOTE_DETAILS_SETUP.equals(page)) {
 			if (goBack(httpRequest)) {
@@ -1075,16 +1190,18 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Starts an install with the values of the given wizard model, unless an install is running
 	 *
-	 * @param wizardModel the wizard model of the session starting the install
+	 * @param wizardModel the wizard model of the session starting the install, or of an automatic
+	 *            install
+	 * @param automatic whether this is an automatic install, whose model holds the configuration alone
 	 */
-	protected void startInstallation(InitializationWizardModel wizardModel) {
+	protected void startInstallation(InitializationWizardModel wizardModel, boolean automatic) {
 		InitializationCompletion job;
 		synchronized (INSTALLATION_LOCK) {
 			// only one install runs at a time
 			if (isInstallationStarted()) {
 				return;
 			}
-			job = new InitializationCompletion(wizardModel);
+			job = new InitializationCompletion(wizardModel, automatic);
 			initJob = job;
 			setInstallationStarted(true);
 		}
@@ -1142,17 +1259,20 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 
-	private void autoRunOpenMRS(HttpServletRequest httpRequest, InitializationWizardModel wizardModel) {
-		File runtimeProperties = getRuntimePropertiesFile();
-		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
-
+	/**
+	 * Starts an automatic install with the given model, which holds the configuration alone, unless the
+	 * configuration or an earlier install rules one out, which the model's errors then say
+	 *
+	 * @return false if the install was refused, true otherwise
+	 */
+	private boolean autoRunOpenMRS(HttpServletRequest httpRequest, InitializationWizardModel wizardModel) {
 		checkLocaleAttributes(httpRequest, wizardModel);
 		try {
 			wizardModel.loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
 			    wizardModel.databaseDriver);
 		} catch (ClassNotFoundException e) {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_DRIVER_CLASS_REQ, null);
-			return;
+			return false;
 		}
 		if (databaseNameReachesSqlOrUrl(wizardModel) && !isValidDatabaseName(wizardModel.databaseName)) {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_NAME_INVALID, null);
@@ -1160,21 +1280,29 @@ public class InitializationFilter extends StartupFilter {
 			    "Not installing OpenMRS, because the configured database name does not consist of letters, digits "
 			            + "and underscores, with single hyphens or dots between them, or is longer than {} characters",
 			    DATABASE_NAME_MAX_LENGTH);
-			return;
+			return false;
 		}
 		if (isRootWebApplicationContextSet()) {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_RESTART_REQUIRED, null);
-			log.error("Not installing OpenMRS again, because an earlier install failed while starting it. "
-			        + "Restart OpenMRS to install again.");
-			return;
+			// once, because every request for an automatic install is refused until the restart, and in Docker the
+			// health check sends one every few seconds, which would bury the error the failed install logged
+			if (restartRequiredLogged.compareAndSet(false, true)) {
+				log.error("Not installing OpenMRS again, because an earlier install failed while starting it. "
+				        + "Restart OpenMRS to install again.");
+			}
+			return false;
 		}
 		try {
 			OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
 		} catch (PasswordException e) {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_WEAK, null);
 			log.error("Not installing OpenMRS, because the configured admin password does not meet the password policy");
-			return;
+			return false;
 		}
+		// looked up only for an install that starts: looking it up logs warnings while there is no runtime properties
+		// file, which a refused request would add to the log every time the health check sends one
+		File runtimeProperties = getRuntimePropertiesFile();
+		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
 		wizardModel.tasksToExecute = new ArrayList<>();
 		createDatabaseTask(wizardModel);
 		createTablesTask(wizardModel);
@@ -1183,7 +1311,8 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
 		}
 		wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
-		startInstallation(wizardModel);
+		startInstallation(wizardModel, true);
+		return true;
 	}
 
 	/**
@@ -1585,6 +1714,11 @@ public class InitializationFilter extends StartupFilter {
 		final InitializationWizardModel wizardModel;
 
 		/**
+		 * Whether this is an automatic install, which runs with the configuration alone
+		 */
+		final boolean automatic;
+
+		/**
 		 * The work of the install, which {@link #start()} submits
 		 */
 		private final Runnable installation;
@@ -1731,10 +1865,13 @@ public class InitializationFilter extends StartupFilter {
 		/**
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 *
-		 * @param wizardModel the wizard model of the session starting the install
+		 * @param wizardModel the wizard model of the session starting the install, or of an automatic
+		 *            install
+		 * @param automatic whether this is an automatic install
 		 */
-		InitializationCompletion(InitializationWizardModel wizardModel) {
+		InitializationCompletion(InitializationWizardModel wizardModel, boolean automatic) {
 			this.wizardModel = wizardModel;
+			this.automatic = automatic;
 			installIncompleteFile = getInstallIncompleteFile();
 			installation = new Runnable() {
 
@@ -1888,7 +2025,7 @@ public class InitializationFilter extends StartupFilter {
 						    finalDatabaseConnectionString)) {
 							setMessage("Verify that the database connection works");
 							// redirect to setup page if we got an error
-							reportError("Unable to connect to database", DEFAULT_PAGE);
+							reportError(ErrorMessageConstants.ERROR_DB_CONNECTION_FAIL, DEFAULT_PAGE);
 							return;
 						}
 

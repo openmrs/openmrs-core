@@ -103,7 +103,7 @@ class InitializationFilterE2ETest {
 		}
 
 		@Override
-		protected void startInstallation(InitializationWizardModel model) {
+		protected void startInstallation(InitializationWizardModel model, boolean automatic) {
 			installed = model;
 			setInstallationStarted(true);
 		}
@@ -791,7 +791,7 @@ class InitializationFilterE2ETest {
 		model.createDatabaseUser = false;
 
 		try {
-			otherFilter.startInstallation(model);
+			otherFilter.startInstallation(model, false);
 
 			assertNull(otherFilter.initJob);
 			assertTrue(InitializationFilter.isInstallationStarted());
@@ -820,13 +820,13 @@ class InitializationFilterE2ETest {
 				return super.isCurrentDatabase(wizardModel, database);
 			}
 		};
-		installingFilter.startInstallation(installEndingAtItsFirstConnection());
+		installingFilter.startInstallation(installEndingAtItsFirstConnection(), false);
 		InitializationFilter.InitializationCompletion job = installingFilter.initJob;
 		assertNotNull(job);
 		try {
 			assertTrue(installRunning.await(30, TimeUnit.SECONDS));
 			assertTrue(InitializationFilter.isInstallationStarted());
-			installingFilter.startInstallation(installEndingAtItsFirstConnection());
+			installingFilter.startInstallation(installEndingAtItsFirstConnection(), false);
 			assertSame(job, installingFilter.initJob);
 		} finally {
 			release.countDown();

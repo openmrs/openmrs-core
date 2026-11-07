@@ -30,10 +30,16 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import jakarta.servlet.ServletException;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +48,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.api.context.Context;
+import org.openmrs.logging.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
@@ -62,6 +69,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -132,15 +140,15 @@ class InitializationFilterSessionTest {
 		Runnable beforeStart;
 
 		@Override
-		protected void startInstallation(InitializationWizardModel model) {
+		protected void startInstallation(InitializationWizardModel model, boolean automatic) {
 			if (beforeStart != null) {
 				beforeStart.run();
 			}
 			installsStarted.add(model);
 			if (runInstalls) {
-				super.startInstallation(model);
+				super.startInstallation(model, automatic);
 			} else {
-				initJob = new InitializationCompletion(model);
+				initJob = new InitializationCompletion(model, automatic);
 				setInstallationStarted(true);
 			}
 		}
@@ -401,6 +409,269 @@ class InitializationFilterSessionTest {
 		assertThat(filter.installsStarted, empty());
 		assertThat(page, containsString("value=\"wizardcomplete.vm\""));
 		assertThat(page, containsString("Restart OpenMRS before you install again"));
+	}
+
+	@Test
+	void shouldShowEverySessionWhyTheLastAutomaticInstallFailed() throws Exception {
+		filter.runInstalls = true;
+		String database = configureAutomaticInstallThatCannotConnect();
+		// started by a request no browser makes, as the health check's
+		get(new MockHttpSession(), null);
+		filter.initJob.waitForCompletion();
+
+		String page = get(new MockHttpSession(), null);
+
+		assertThat(page, containsString("does not work"));
+		assertThat(page, containsString(database));
+		// each error is shown through a message, which the page marks with ??? when it has none
+		assertThat(page, not(containsString("???")));
+	}
+
+	@Test
+	void shouldGiveTheServerLogLinesOfAnAutomaticInstallOnlyToTheSessionThatStartedIt() throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		MockHttpSession starter = new MockHttpSession();
+		get(starter, null);
+
+		assertThat(poll(starter), hasKey("logLines"));
+		assertThat(poll(new MockHttpSession()), not(hasKey("logLines")));
+	}
+
+	@Test
+	void shouldShowEverySessionTheStepsTheLastAutomaticInstallCompletedBeforeItFailed() throws Exception {
+		filter.runInstalls = true;
+		configureAutomaticInstallThatCannotConnect();
+		// each install creates the database, which needs no statement on H2, before its connection fails
+		filter.installationScript.setProperty("has_current_openmrs_database", "false");
+		// two installs, as the health check starts one every few seconds
+		for (int i = 0; i < 2; i++) {
+			get(new MockHttpSession(), null);
+			filter.initJob.waitForCompletion();
+		}
+		// then refused, so no install of the page's own lists steps on it
+		filter.installationScript.setProperty("admin_user_password", "weak");
+
+		String page = get(new MockHttpSession(), null);
+
+		assertEquals(2, filter.installsStarted.size());
+		// each install lists only its own steps
+		assertEquals(List.of("Created database openmrs"), filter.installsStarted.get(1).workLog);
+		assertEquals(2, page.split("<li>Created database openmrs</li>", -1).length);
+	}
+
+	@Test
+	void shouldHaveAnotherRequestOfTheSessionWaitWhileItsAutomaticInstallStarts() throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		MockHttpSession session = new MockHttpSession();
+		Thread[] otherRequest = new Thread[1];
+		Thread.State[] otherRequestState = new Thread.State[1];
+		filter.beforeStart = () -> {
+			filter.beforeStart = null;
+			// as from a second tab of the same browser
+			otherRequest[0] = new Thread(() -> {
+				try {
+					get(session, null);
+				} catch (Exception e) {
+					throw new IllegalStateException(e);
+				}
+			});
+			otherRequest[0].start();
+			// the other request either waits for this one, or runs to its end meanwhile
+			long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+			while (otherRequest[0].isAlive() && otherRequest[0].getState() != Thread.State.BLOCKED
+			        && System.nanoTime() < deadline) {
+				Thread.onSpinWait();
+			}
+			otherRequestState[0] = otherRequest[0].getState();
+		};
+
+		get(session, null);
+		otherRequest[0].join(TimeUnit.SECONDS.toMillis(10));
+
+		assertEquals(Thread.State.BLOCKED, otherRequestState[0]);
+		assertEquals(1, filter.installsStarted.size());
+		assertSame(filter.initJob.wizardModel, filter.getWizardModel(session));
+		assertThat(poll(session), hasKey("logLines"));
+	}
+
+	@Test
+	void shouldGiveTheFirstRequestsOfASessionTheSameLockThoughTheyArriveTogether() throws Exception {
+		// a session in which the first request to find no lock waits a while for another request to look for it too
+		CountDownLatch secondLookup = new CountDownLatch(1);
+		AtomicInteger lookups = new AtomicInteger();
+		MockHttpSession session = new MockHttpSession() {
+
+			@Override
+			public Object getAttribute(String name) {
+				Object value = super.getAttribute(name);
+				if (InitializationFilter.WIZARD_LOCK_ATTRIBUTE.equals(name) && value == null) {
+					if (lookups.incrementAndGet() == 1) {
+						try {
+							secondLookup.await(2, TimeUnit.SECONDS);
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
+					} else {
+						secondLookup.countDown();
+					}
+				}
+				return value;
+			}
+		};
+		Object[] locks = new Object[2];
+		Thread first = new Thread(() -> locks[0] = filter.getWizardLock(session));
+		Thread second = new Thread(() -> locks[1] = filter.getWizardLock(session));
+
+		first.start();
+		second.start();
+		first.join(TimeUnit.SECONDS.toMillis(10));
+		second.join(TimeUnit.SECONDS.toMillis(10));
+
+		assertSame(locks[0], locks[1]);
+	}
+
+	@Test
+	void shouldSendARequestThatFindsTheInstallCompletedToTheProgressPage() throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		// what a successful install leaves for a request that got past the filter while it ran
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+		filter.setInitializationComplete(true);
+
+		String page = get(new MockHttpSession(), null);
+
+		// whose first poll sends the browser on
+		assertThat(page, containsString("showProgress();"));
+		assertThat(page, not(containsString("Restart OpenMRS before you install again")));
+	}
+
+	@Test
+	void shouldShowWhyAnAutomaticInstallFailedWhileStartingOpenmrsOnAPageThatStopsPolling() throws Exception {
+		filter.runInstalls = true;
+		String database = configureAutomaticInstallThatCannotConnect();
+		get(new MockHttpSession(), null);
+		filter.initJob.waitForCompletion();
+		// what an install that failed while starting OpenMRS leaves behind
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+
+		String page = get(new MockHttpSession(), null);
+
+		assertEquals(1, filter.installsStarted.size());
+		assertThat(page, containsString("Restart OpenMRS before you install again"));
+		assertThat(page, containsString(database));
+		// polling would find the failed install's errors and load the setup page again, over and over
+		assertThat(page, not(containsString("showProgress();")));
+	}
+
+	@Test
+	void shouldLogOnlyOnceThatNoInstallStartsUntilOpenmrsRestarts() throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+		// a name of its own, since memory appenders of the same name share their lines
+		MemoryAppender appender = MemoryAppender.newBuilder().setName("restartRequired-" + UUID.randomUUID())
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();
+		appender.start();
+		// the wizard's own lines, and those of looking up the runtime properties file, which there is none of
+		List<Logger> loggers = List.of((Logger) LogManager.getLogger(InitializationFilter.class),
+		    (Logger) LogManager.getLogger(OpenmrsUtil.class));
+		List<Level> levels = new ArrayList<>();
+		for (Logger logger : loggers) {
+			levels.add(logger.getLevel());
+			// the test logging configuration turns logging off
+			Configurator.setLevel(logger.getName(), Level.WARN);
+			logger.addAppender(appender);
+		}
+		try {
+			// as the health check sends one every few seconds
+			for (int i = 0; i < 3; i++) {
+				get(new MockHttpSession(), null);
+			}
+
+			assertThat(filter.installsStarted, empty());
+			assertEquals(1, appender.getLogLines().size(), String.valueOf(appender.getLogLines()));
+			assertThat(appender.getLogLines().get(0), startsWith("Not installing OpenMRS again"));
+		} finally {
+			for (int i = 0; i < loggers.size(); i++) {
+				loggers.get(i).removeAppender(appender);
+				Configurator.setLevel(loggers.get(i).getName(), levels.get(i));
+			}
+			appender.stop();
+		}
+	}
+
+	@Test
+	void shouldNotShowAnAutomaticInstallSessionWhyAnInstallFromTheWizardPagesFailed() throws Exception {
+		filter.runInstalls = true;
+		MockHttpSession first = startSession();
+		String firstDatabase = "first_session_" + UUID.randomUUID().toString().replace("-", "");
+		walkAdvancedWizardToConfirmation(first, "first_session_db", "jdbc:h2:mem:" + firstDatabase + ";IFEXISTS=TRUE");
+		post(first, "wizardcomplete.vm");
+		filter.initJob.waitForCompletion();
+		// then OpenMRS is configured for an automatic install that is refused, so none starts
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty("admin_user_password", "weak");
+
+		String page = get(new MockHttpSession(), null);
+
+		assertEquals(1, filter.installsStarted.size());
+		assertThat(page, not(containsString(firstDatabase)));
+	}
+
+	@Test
+	void shouldShowTheSessionThatStartedAnInstallFromTheWizardPagesWhyItFailedAfterAnAutomaticInstallIsConfigured()
+	        throws Exception {
+		filter.runInstalls = true;
+		MockHttpSession first = startSession();
+		String firstDatabase = "first_session_" + UUID.randomUUID().toString().replace("-", "");
+		walkAdvancedWizardToConfirmation(first, "first_session_db", "jdbc:h2:mem:" + firstDatabase + ";IFEXISTS=TRUE");
+		post(first, "wizardcomplete.vm");
+		filter.initJob.waitForCompletion();
+		// then OpenMRS is configured for an automatic install that is refused, so none starts
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty("admin_user_password", "weak");
+
+		String page = get(first, null);
+
+		assertEquals(1, filter.installsStarted.size());
+		assertThat(page, containsString(firstDatabase));
+	}
+
+	@Test
+	void shouldRunAnAutomaticInstallWithTheConfigurationAloneRatherThanValuesAClientPosted() throws Exception {
+		filter.runInstalls = true;
+		String database = configureAutomaticInstallThatCannotConnect();
+		// the configuration names no database user and no implementation id, so the client's session keeps the ones
+		// it posts
+		MockHttpSession client = new MockHttpSession();
+		post(client, TABLES_AND_USER_PAGE, "create_tables", "no", "current_database_user", "yes",
+		    "current_database_username", "<b>client_user</b>", "current_database_password", "ClientPassword1");
+		post(client, "implementationidsetup.vm", "implementation_name", "Client", "implementation_id", "client_id",
+		    "pass_phrase", "ClientPhrase1", "description", "");
+
+		get(client, null);
+		filter.initJob.waitForCompletion();
+		String otherPage = get(new MockHttpSession(), null);
+
+		InitializationWizardModel installed = filter.installsStarted.get(0);
+		assertThat(String.valueOf(installed.currentDatabaseUsername), not(containsString("client_user")));
+		assertThat(String.valueOf(installed.implementationId), not(containsString("client_id")));
+		assertThat(otherPage, containsString(database));
+		assertThat(otherPage, not(containsString("client_user")));
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "database_name, my--clinic", "admin_user_password, weak",
+	        "connection.driver_class, com.microsoft.jdbc.sqlserver.SQLServerDriver" })
+	void shouldShowWhyAnAutomaticInstallWasRefusedOnAPageThatDoesNotPoll(String property, String value) throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		// a url that takes the database name, which the name rule then applies to
+		filter.installationScript.setProperty("connection.url", "jdbc:h2:mem:@DBNAME@;IFEXISTS=TRUE");
+		filter.installationScript.setProperty(property, value);
+
+		String page = get(new MockHttpSession(), null);
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(page, containsString("class=\"openmrs_error\""));
+		assertThat(page, not(containsString("showProgress();")));
 	}
 
 	@Test
@@ -925,6 +1196,24 @@ class InitializationFilterSessionTest {
 			runtimeProperties.store(out, null);
 		}
 		Context.setRuntimeProperties(runtimeProperties);
+	}
+
+	/**
+	 * Configures an automatic install, as Docker and the OpenMRS SDK do, of an in-memory database that
+	 * does not exist, so each install fails at its first connection
+	 *
+	 * @return the name of that database, which the connection error names
+	 */
+	private String configureAutomaticInstallThatCannotConnect() {
+		String database = "automatic_" + UUID.randomUUID().toString().replace("-", "");
+		filter.installationScript.setProperty("install_method", "auto");
+		filter.installationScript.setProperty("connection.url", "jdbc:h2:mem:" + database + ";IFEXISTS=TRUE");
+		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
+		filter.installationScript.setProperty("database_name", "openmrs");
+		filter.installationScript.setProperty("has_current_openmrs_database", "true");
+		filter.installationScript.setProperty("create_database_user", "false");
+		filter.installationScript.setProperty("admin_user_password", "Admin123");
+		return database;
 	}
 
 	/**

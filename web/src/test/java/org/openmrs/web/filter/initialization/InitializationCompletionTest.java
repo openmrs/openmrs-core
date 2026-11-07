@@ -540,7 +540,8 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		model.adminUserPassword = adminUserPassword;
 		model.createTables = createTables;
 		return filter.new InitializationCompletion(
-		                                           model);
+		                                           model,
+		                                           false);
 	}
 
 	/**
