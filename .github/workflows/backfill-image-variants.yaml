@@ -1,8 +1,8 @@
 # Fills in missing per-JDK docker image variant tags for an already-released version.
 #
-# Bamboo's "Release image variants" stage has copy-paste bugs (see bamboo-specs/bamboo.yml
-# and the notes in release.yaml): releases it cuts never publish the amazoncorretto-8 pair
-# and lose the -dev variants for JDK 17 and 21. This workflow builds ONLY the variant tags
+# Bamboo's "Release image variants" stage had copy-paste bugs (see the notes in
+# release.yaml): releases it cut never published the amazoncorretto-8 pair
+# and lost the -dev variants for JDK 17 and 21. This workflow builds ONLY the variant tags
 # missing on Docker Hub for the given version, from that version's git tag; tags that
 # already exist are never rebuilt or overwritten, so re-running it is always safe.
 #
