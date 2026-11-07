@@ -1156,6 +1156,70 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A saved OrderAttribute keeps its value; changes go through
+	 * {@link org.openmrs.BaseCustomizableData#setAttribute}, which voids the saved attribute and adds a
+	 * new one. TRUNK-6866
+	 *
+	 * @see OrderService#saveOrder(org.openmrs.Order, OrderContext)
+	 */
+	@Test
+	public void saveOrderAttribute_shouldFailWhenTheValueOfASavedOrderAttributeIsChangedInPlace() {
+		Order order = orderService.getOrder(1);
+		OrderAttribute attribute = order.getAttributes().iterator().next();
+		assertNotNull(attribute);
+		assertNotNull(attribute.getId());
+
+		attribute.setValueReferenceInternal("changed in place");
+
+		assertThrows(UnchangeableObjectException.class, () -> Context.flushSession());
+	}
+
+	/**
+	 * Voiding an order cascades to its attributes, which must keep working with the immutable guard in
+	 * place. TRUNK-6866
+	 *
+	 * @see OrderService#voidOrder(Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldVoidSavedOrderAttributesWithoutFailingOnTheImmutabilityGuard() {
+		Order order = orderService.getOrder(1);
+		OrderAttribute attribute = order.getAttributes().iterator().next();
+		assertNotNull(attribute);
+		assertNotNull(attribute.getId());
+		assertFalse(attribute.getVoided());
+
+		orderService.voidOrder(order, "void order attribute test");
+
+		assertTrue(order.getAttributes().iterator().next().getVoided());
+		Context.flushSession();
+
+		attribute = Context.getOrderService().getOrder(1).getAttributes().iterator().next();
+		assertTrue(attribute.getVoided());
+	}
+
+	/**
+	 * Voiding must only change the attribute's void fields; a value edit riding along on the same
+	 * attribute is an in-place edit and must be rejected even though the row ends up voided. TRUNK-6866
+	 *
+	 * @see OrderService#voidOrder(Order, String)
+	 */
+	@Test
+	public void voidOrder_shouldFailWhenAnOrderAttributeValueIsChangedWhileVoiding() {
+		Order order = orderService.getOrder(1);
+		OrderAttribute attribute = order.getAttributes().iterator().next();
+		assertNotNull(attribute);
+		assertNotNull(attribute.getId());
+		assertFalse(attribute.getVoided());
+
+		attribute.setValueReferenceInternal("changed in place");
+
+		assertThrows(UnchangeableObjectException.class, () -> {
+			orderService.voidOrder(order, "void order attribute test");
+			Context.flushSession();
+		});
+	}
+
+	/**
 	 * @see OrderService#getCareSettingByUuid(String)
 	 */
 	@Test

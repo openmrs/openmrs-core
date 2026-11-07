@@ -2678,6 +2678,26 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A saved ObsReferenceRange keeps the values its obs was saved with; core only copies the range
+	 * onto a new row when the obs is edited. TRUNK-6866
+	 *
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObsReferenceRange_shouldFailWhenTheValuesOfASavedReferenceRangeAreChangedInPlace() {
+		Obs obs = buildObservation();
+		Context.getObsService().saveObs(obs, null);
+
+		ObsReferenceRange savedRange = obs.getReferenceRange();
+		assertNotNull(savedRange);
+		assertNotNull(savedRange.getId());
+
+		savedRange.setHiNormal(savedRange.getHiNormal() + 99);
+
+		assertThrows(UnchangeableObjectException.class, () -> Context.flushSession());
+	}
+
+	/**
 	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test
