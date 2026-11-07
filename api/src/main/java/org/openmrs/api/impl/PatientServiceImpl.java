@@ -27,6 +27,7 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -1228,20 +1229,25 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 					}
 
 					if (currCause != null) {
-						log.debug("Current cause is not null, setting to value_coded");
-						obsDeath.setValueCoded(currCause);
-						obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
+						// Do every lookup that can query the database BEFORE changing the saved obs.
+						// Otherwise Hibernate auto-flushes the changed obs and ImmutableObsInterceptor
+						// rejects it before saveObs can save it as a new version.
+						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
+						ConceptName currCauseName = currCause.getName(); // ABKTODO: presume current locale?
 
 						Date dateDeath = patient.getDeathDate();
 						if (dateDeath == null) {
 							dateDeath = new Date();
 						}
+
+						log.debug("Current cause is not null, setting to value_coded");
+						obsDeath.setValueCoded(currCause);
+						obsDeath.setValueCodedName(currCauseName);
 						obsDeath.setObsDatetime(dateDeath);
 
 						// check if this is an "other" concept - if so, then
 						// we need to add value_text
-						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
 						if (conceptOther != null) {
 							if (conceptOther.equals(currCause)) {
 								// seems like this is an other concept -
