@@ -3842,16 +3842,44 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @see PatientService#processDeath(Patient, Date, Concept, String)
 	 */
 	@Test
-	public void processDeath_shouldSucceedOnSecondCallWithSameDateAndCause() {
+	public void processDeath_shouldAllowChangingOnlyTheDateOnSecondCall() {
 		setDeathGlobalProperties();
 		Patient patient = patientService.getPatient(6);
-		Date date = new GregorianCalendar(2008, Calendar.JANUARY, 1).getTime();
 		Concept cause = Context.getConceptService().getConcept(22);
+		Date firstDate = new GregorianCalendar(2008, Calendar.JANUARY, 1).getTime();
+		Date secondDate = new GregorianCalendar(2008, Calendar.FEBRUARY, 1).getTime();
 
-		patientService.processDeath(patient, date, cause, null);
+		patientService.processDeath(patient, firstDate, cause, null);
+		Context.flushSession();
+		patientService.processDeath(patient, secondDate, cause, null);
 		Context.flushSession();
 
-		assertDoesNotThrow(() -> patientService.processDeath(patient, date, cause, null));
+		List<Obs> current = Context.getObsService().getObservationsByPersonAndConcept(patient,
+		    Context.getConceptService().getConcept(21));
+		assertEquals(1, current.size());
+		assertEquals(secondDate, current.get(0).getObsDatetime());
+		assertEquals(cause, current.get(0).getValueCoded());
+	}
+
+	/**
+	 * @see PatientService#processDeath(Patient, Date, Concept, String)
+	 */
+	@Test
+	public void processDeath_shouldSetValueTextOnNewVersionWhenCauseIsTheOtherNonCodedConcept() {
+		setDeathGlobalProperties();
+		adminService.saveGlobalProperty(new GlobalProperty("concept.otherNonCoded", "22"));
+		Patient patient = patientService.getPatient(7);
+		Concept cause = Context.getConceptService().getConcept(22);
+		Date newDate = new GregorianCalendar(2008, Calendar.SEPTEMBER, 2).getTime();
+
+		patientService.processDeath(patient, newDate, cause, "Other reason");
+		Context.flushSession();
+
+		assertTrue(Context.getObsService().getObs(15).getVoided());
+		List<Obs> current = Context.getObsService().getObservationsByPersonAndConcept(patient,
+		    Context.getConceptService().getConcept(21));
+		assertEquals(1, current.size());
+		assertEquals("Other reason", current.get(0).getValueText());
 	}
 
 }
