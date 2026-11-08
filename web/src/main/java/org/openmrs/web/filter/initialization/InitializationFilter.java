@@ -221,6 +221,11 @@ public class InitializationFilter extends StartupFilter {
 	private static final int MAX_SYMBOLIC_LINKS = 40;
 
 	/**
+	 * Picks the characters of the password of a database user an install creates
+	 */
+	private static final SecureRandom PASSWORD_CHARACTERS = new SecureRandom();
+
+	/**
 	 * The password the core data gives the admin user
 	 */
 	private static final String SEEDED_ADMIN_PASSWORD = "test";
@@ -1973,10 +1978,9 @@ public class InitializationFilter extends StartupFilter {
 							// generate random password from this subset of alphabet
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
 							String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
-							SecureRandom r = new SecureRandom();
 							StringBuilder randomStr = new StringBuilder("");
 							for (int x = 0; x < 12; x++) {
-								randomStr.append(chars.charAt(r.nextInt(chars.length())));
+								randomStr.append(chars.charAt(PASSWORD_CHARACTERS.nextInt(chars.length())));
 							}
 							connectionPassword.append(randomStr);
 
