@@ -129,7 +129,7 @@
 			<column name="description" type="varchar(255)"/>
 		</addColumn>
 	</changeSet>
-	
+
 	<changeSet id="TRUNK-5852-2026-02-23" author="Deborah Nakamatte">
 		<preConditions onFail="MARK_RAN" onError="WARN">
 			<not>
