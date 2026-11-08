@@ -73,6 +73,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -250,6 +251,130 @@ class InitializationFilterSessionTest {
 
 		assertThat(filter.installsStarted, empty());
 		assertFalse(InitializationFilter.isInstallationStarted());
+	}
+
+	@Test
+	void shouldStartTheWizardAgainAndSayWhyOnceInstallIsClickedAfterTheSessionExpired() throws Exception {
+		MockHttpSession expired = startSession();
+		walkAdvancedWizardToConfirmation(expired, "clinic_db", "jdbc:mysql://localhost:3306/@DBNAME@");
+		// the browser's session expired, so its next request starts a new one
+		MockHttpSession session = new MockHttpSession();
+
+		String page = post(session, "wizardcomplete.vm");
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(page, containsString("name=\"page\" value=\"chooselang.vm\""));
+		assertThat(page, containsString("This browser no longer has its setup session"));
+	}
+
+	@Test
+	void shouldStartTheWizardAgainAndSayWhyOnceAPageIsPostedAfterTheSessionExpired() throws Exception {
+		MockHttpSession session = new MockHttpSession();
+
+		String page = post(session, TABLES_AND_USER_PAGE, "create_tables", "yes", "current_database_user", "yes",
+		    "current_database_username", "posted_user", "current_database_password", "secret");
+
+		// rather than moving on to the next page with the default values of the pages before
+		assertThat(page, containsString("name=\"page\" value=\"chooselang.vm\""));
+		assertThat(page, containsString("This browser no longer has its setup session"));
+		// posted again, as after going back to it in the browser, or from another tab
+		String again = post(session, TABLES_AND_USER_PAGE, "create_tables", "yes", "current_database_user", "yes",
+		    "current_database_username", "posted_user", "current_database_password", "secret");
+		assertThat(again, containsString("name=\"page\" value=\"chooselang.vm\""));
+		assertThat(again, containsString("This browser no longer has its setup session"));
+		assertNotEquals("posted_user", filter.getWizardModel(session).currentDatabaseUsername);
+		String next = post(session, "chooselang.vm", "locale", "en");
+		assertThat(next, containsString("name=\"page\" value=\"installmethod.vm\""));
+		assertThat(next, not(containsString("This browser no longer has its setup session")));
+	}
+
+	@Test
+	void shouldNotTakeAPageTheWizardDidNotShowTheSessionWhileItWalksTheWizard() throws Exception {
+		// a new session, as a browser starts in another tab once its first session expired
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "advanced");
+
+		// a page of the expired session
+		String page = post(session, "adminusersetup.vm", "new_admin_password", "Posted123", "new_admin_password_confirm",
+		    "Posted123");
+
+		assertThat(page, containsString("name=\"page\" value=\"chooselang.vm\""));
+		assertThat(page, containsString("This browser no longer has its setup session"));
+		InitializationWizardModel model = filter.getWizardModel(session);
+		assertNotEquals("Posted123", model.adminUserPassword);
+		// the session's own walk goes on with what it entered
+		String next = post(session, "databasesetup.vm", "database_connection", "jdbc:mysql://localhost:3306/@DBNAME@",
+		    "database_driver", "", "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+		assertThat(next, containsString("name=\"page\" value=\"databasetablesanduser.vm\""));
+		assertEquals("advanced", model.installMethod);
+	}
+
+	@Test
+	void shouldStartTheWizardAgainAndSayWhyOnceABrowserThatSendsNoCookiePostsAPage() throws Exception {
+		MockHttpServletRequest request = request(new MockHttpSession(), "POST");
+		request.setRequestedSessionId(null);
+		request.setParameter("page", "installmethod.vm");
+		request.setParameter("install_method", "advanced");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		filter.doPost(request, response);
+
+		String page = response.getContentAsString();
+		assertThat(page, containsString("name=\"page\" value=\"chooselang.vm\""));
+		assertThat(page, containsString("This browser no longer has its setup session"));
+		assertThat(page, containsString("cookies for this site are cleared or blocked"));
+	}
+
+	@Test
+	void shouldSayOnlyWhyTheWizardStartsAgainRatherThanWhatAPageTheSessionWasShownReported() throws Exception {
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "simple");
+		String withError = post(session, "simplesetup.vm", "database_type", "mysql", "database_root_password", "");
+		assertThat(withError, containsString("Database root password is required"));
+
+		// a page of an expired session, posted from another tab
+		String page = post(session, "adminusersetup.vm", "new_admin_password", "Posted123", "new_admin_password_confirm",
+		    "Posted123");
+
+		assertThat(page, containsString("This browser no longer has its setup session"));
+		assertThat(page, not(containsString("Database root password is required")));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "chooselang.vm", "adminusersetup.vm" })
+	void shouldGiveASessionWhoseFirstRequestIsAPostTheConfiguration(String firstPage) throws Exception {
+		filter.installationScript.setProperty("property.clinic.setting", "configured");
+		MockHttpSession session = new MockHttpSession();
+
+		post(session, firstPage, "locale", "en");
+
+		assertEquals("configured",
+		    filter.getWizardModel(session).additionalPropertiesFromInstallationScript.get("clinic.setting"));
+	}
+
+	@Test
+	void shouldTakeTheFirstPageFromASessionThatHasNoValuesYet() throws Exception {
+		// nothing is entered before the first page, so a session that expired there loses nothing
+		MockHttpSession session = new MockHttpSession();
+
+		String page = post(session, "chooselang.vm", "locale", "en");
+
+		assertThat(page, containsString("name=\"page\" value=\"installmethod.vm\""));
+		assertThat(page, not(containsString("This browser no longer has its setup session")));
+	}
+
+	@Test
+	void shouldSayWhyAnInstallDidNotStartOnceTheSetupWasOpenedAgainAfterItsConfirmationPage() throws Exception {
+		MockHttpSession session = startSession();
+		walkAdvancedWizardToConfirmation(session, "clinic_db", "jdbc:mysql://localhost:3306/@DBNAME@");
+		// as from another tab of the same browser
+		get(session, null);
+
+		String page = post(session, "wizardcomplete.vm");
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(page, containsString("name=\"page\" value=\"chooselang.vm\""));
+		assertThat(page, containsString("The install did not start"));
 	}
 
 	@Test
@@ -1217,11 +1342,12 @@ class InitializationFilterSessionTest {
 	}
 
 	/**
-	 * A browser's first request to the wizard
+	 * A browser's first requests to the wizard: it opens the wizard and chooses a language
 	 */
 	private MockHttpSession startSession() throws Exception {
 		MockHttpSession session = new MockHttpSession();
 		get(session, null);
+		post(session, "chooselang.vm", "locale", "en");
 		return session;
 	}
 
@@ -1256,6 +1382,8 @@ class InitializationFilterSessionTest {
 		MockHttpServletRequest request = new MockHttpServletRequest(method, "/" + WebConstants.SETUP_PAGE_URL);
 		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 		request.setSession(session);
+		// as a browser sends the cookie of its session
+		request.setRequestedSessionId(session.getId());
 		return request;
 	}
 

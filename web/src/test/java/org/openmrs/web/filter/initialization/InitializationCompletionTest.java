@@ -15,13 +15,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +56,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
@@ -400,18 +411,147 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 	}
 
 	@Test
-	void finishInstallation_shouldRemoveTheRuntimePropertiesTheFailedInstallWrote() throws Exception {
+	void completeSetup_shouldKeepTheRuntimePropertiesFileThatWasThereWhenWritingTheNewOneFails() throws Exception {
+		writeExistingRuntimeProperties();
 		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
-		job.writeRuntimeProperties(runtimeProperties());
-		assertTrue(runtimePropertiesFile.exists());
-		job.reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, "chooselang.vm", "a later step failed");
-		InitializationFilter.setInstallationStarted(true);
+		useAnonymousUserContext();
 
+		assertFalse(job.completeSetup(failingPartWayThroughWriting(runtimeProperties())));
 		job.finishInstallation(false);
 
+		assertThat(job.getErrors(), hasKey(ErrorMessageConstants.ERROR_COMPLETE_STARTUP));
+		assertEquals("yes", readRuntimeProperties(runtimePropertiesFile).getProperty("existing"));
+		assertThat(filesTheInstallBeganToWrite(), empty());
+	}
+
+	@Test
+	void completeSetup_shouldLeaveNoRuntimePropertiesFileWhenWritingTheFirstOneFails() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(failingPartWayThroughWriting(runtimeProperties())));
+
+		// not even until the install ends
 		assertFalse(runtimePropertiesFile.exists());
-		assertTrue(InitializationFilter.initializationRequired());
-		assertFalse(InitializationFilter.isInstallationStarted());
+		assertThat(filesTheInstallBeganToWrite(), empty());
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldWriteTheFileALinkToTheRuntimePropertiesFileLeadsTo() throws Exception {
+		Path linkedFile = Files.createDirectory(applicationDataDirectory.resolve("elsewhere")).resolve("runtime.properties");
+		Files.write(linkedFile, "existing=yes\n".getBytes(StandardCharsets.UTF_8));
+		try {
+			Files.createSymbolicLink(runtimePropertiesFile.toPath(), linkedFile);
+		} catch (IOException | UnsupportedOperationException e) {
+			assumeTrue(false, "this file system or user cannot create symbolic links");
+		}
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		job.writeRuntimeProperties(runtimeProperties());
+
+		assertTrue(Files.isSymbolicLink(runtimePropertiesFile.toPath()));
+		Properties written = readRuntimeProperties(linkedFile.toFile());
+		assertEquals(testDatabase.getProperty("connection.url"), written.getProperty("connection.url"));
+		assertNull(written.getProperty("existing"));
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldWriteTheFileALinkLeadsToThoughThatFileDoesNotExistYet() throws Exception {
+		Files.createDirectory(applicationDataDirectory.resolve("elsewhere"));
+		// relative, as the link's directory resolves it
+		Path linkedFile = Path.of("elsewhere", "runtime.properties");
+		try {
+			Files.createSymbolicLink(runtimePropertiesFile.toPath(), linkedFile);
+		} catch (IOException | UnsupportedOperationException e) {
+			assumeTrue(false, "this file system or user cannot create symbolic links");
+		}
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		job.writeRuntimeProperties(runtimeProperties());
+
+		assertTrue(Files.isSymbolicLink(runtimePropertiesFile.toPath()));
+		Properties written = readRuntimeProperties(applicationDataDirectory.resolve(linkedFile).toFile());
+		assertEquals(testDatabase.getProperty("connection.url"), written.getProperty("connection.url"));
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldWriteAnExistingFileWhereItIsInADirectoryThatTakesNoNewFiles() throws Exception {
+		writeExistingRuntimeProperties();
+		File directory = applicationDataDirectory.toFile();
+		// root can create files in a directory whose write bit is cleared, so this runs only as another user
+		assumeTrue(directory.setWritable(false) && !directory.canWrite());
+		try {
+			InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+			job.writeRuntimeProperties(runtimeProperties());
+
+			Properties written = readRuntimeProperties(runtimePropertiesFile);
+			assertEquals(testDatabase.getProperty("connection.url"), written.getProperty("connection.url"));
+			assertNull(written.getProperty("existing"));
+		} finally {
+			directory.setWritable(true);
+		}
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldLeaveNoNewFileBehindWhenItCannotTakeThePlaceOfTheRuntimePropertiesFile()
+	        throws Exception {
+		// a directory where the runtime properties file belongs, which no file can take the place of
+		assertTrue(runtimePropertiesFile.mkdir());
+		Files.write(runtimePropertiesFile.toPath().resolve("content"), new byte[] { 1 });
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		assertThrows(IOException.class, () -> job.writeRuntimeProperties(runtimeProperties()));
+
+		assertTrue(Files.isDirectory(runtimePropertiesFile.toPath()));
+		assertThat(filesTheInstallBeganToWrite(), empty());
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldPutANewFileInThePlaceOfAnExistingOneTheInstallsUserOwns() throws Exception {
+		writeExistingRuntimeProperties();
+		Object existingFile = Files.readAttributes(runtimePropertiesFile.toPath(), BasicFileAttributes.class).fileKey();
+		// some file systems, such as Windows', do not tell which file a path names
+		assumeTrue(existingFile != null);
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		job.writeRuntimeProperties(runtimeProperties());
+
+		// so no start reads it written in part
+		assertNotEquals(existingFile,
+		    Files.readAttributes(runtimePropertiesFile.toPath(), BasicFileAttributes.class).fileKey());
+		assertNull(readRuntimeProperties(runtimePropertiesFile).getProperty("existing"));
+		assertThat(filesTheInstallBeganToWrite(), empty());
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldWriteAnExistingFileWithAnotherNameWhereItIs() throws Exception {
+		// the number of names a file has is known only where files have Unix attributes
+		assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("unix"));
+		writeExistingRuntimeProperties();
+		Path otherName = applicationDataDirectory.resolve("other-name.properties");
+		Files.createLink(otherName, runtimePropertiesFile.toPath());
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		job.writeRuntimeProperties(runtimeProperties());
+
+		// both names still name the one file, which holds the new properties
+		Properties written = readRuntimeProperties(otherName.toFile());
+		assertEquals(testDatabase.getProperty("connection.url"), written.getProperty("connection.url"));
+		assertNull(written.getProperty("existing"));
+		assertThat(filesTheInstallBeganToWrite(), empty());
+	}
+
+	@Test
+	void writeRuntimeProperties_shouldWriteAFileOnlyItsOwnerCanRead() throws Exception {
+		assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"));
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		job.writeRuntimeProperties(runtimeProperties());
+
+		assertEquals(EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE),
+		    Files.getPosixFilePermissions(runtimePropertiesFile.toPath()));
+		assertThat(filesTheInstallBeganToWrite(), empty());
 	}
 
 	@Test
@@ -573,6 +713,32 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		try (OutputStream out = new FileOutputStream(runtimePropertiesFile)) {
 			existing.store(out, null);
 		}
+	}
+
+	/**
+	 * The given properties, whose writing fails once part of them is written, as when the disk fills up
+	 */
+	private Properties failingPartWayThroughWriting(Properties properties) {
+		Properties failing = new Properties() {
+
+			@Override
+			public void store(Writer writer, String comments) throws IOException {
+				writer.write("connection.url=");
+				writer.flush();
+				throw new IOException("No space left on device");
+			}
+		};
+		failing.putAll(properties);
+		return failing;
+	}
+
+	/**
+	 * The files an install began to write into the application data directory in place of the runtime
+	 * properties file
+	 */
+	private List<String> filesTheInstallBeganToWrite() {
+		return Arrays.stream(applicationDataDirectory.toFile().list()).filter(name -> name.endsWith(".tmp"))
+		        .collect(Collectors.toList());
 	}
 
 	private Properties readRuntimeProperties(File file) throws IOException {

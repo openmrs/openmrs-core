@@ -14,14 +14,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.Writer;
+import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.FileOwnerAttributeView;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -38,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -209,6 +213,12 @@ public class InitializationFilter extends StartupFilter {
 	private static final Pattern DATABASE_NAME_PATTERN = Pattern.compile("[A-Za-z0-9_]+([-.][A-Za-z0-9_]+)*");
 
 	private static final int DATABASE_NAME_MAX_LENGTH = 64;
+
+	/**
+	 * How many symbolic links the install follows from the runtime properties file to the file it
+	 * writes, as many as Linux follows in a path
+	 */
+	private static final int MAX_SYMBOLIC_LINKS = 40;
 
 	/**
 	 * The password the core data gives the admin user
@@ -560,14 +570,15 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Renders the template with the given session model and its errors and messages. Rendering the page
 	 * that asks to confirm the install records that on the model, which an install from the wizard
-	 * requires. Pages show the connection URL as displayedDatabaseConnection, which is empty when the
-	 * URL may carry credentials.
+	 * requires, and every page rendered is recorded as one the session may post. Pages show the
+	 * connection URL as displayedDatabaseConnection, which is empty when the URL may carry credentials.
 	 */
 	private void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
 	        InitializationWizardModel wizardModel) throws IOException {
 		if (WIZARD_COMPLETE.equals(templateName)) {
 			wizardModel.wizardCompletePageShown = true;
 		}
+		wizardModel.pagesShown.add(templateName);
 		String databaseConnection = wizardModel.databaseConnection;
 		referenceMap.put("displayedDatabaseConnection",
 		    databaseConnection == null || mayCarryCredentials(databaseConnection) ? "" : databaseConnection);
@@ -711,8 +722,41 @@ public class InitializationFilter extends StartupFilter {
 				renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
 				return;
 			}
-			handlePost(httpRequest, httpResponse, getWizardModel(httpRequest.getSession()), referenceMap, page);
+			InitializationWizardModel wizardModel = getExistingWizardModel(httpRequest.getSession());
+			if (wizardModel == null) {
+				// as the GET that shows a new session the first page sets it up
+				wizardModel = getWizardModel(httpRequest.getSession());
+				initializeWizardFromResolvedPropertiesIfPresent(wizardModel);
+			}
+			if (!DEFAULT_PAGE.equals(page) && (page == null || !wizardModel.pagesShown.contains(page))) {
+				startAgain(httpRequest, httpResponse, wizardModel, referenceMap);
+				return;
+			}
+			handlePost(httpRequest, httpResponse, wizardModel, referenceMap, page);
 		}
+	}
+
+	/**
+	 * Answers a POST of a page the wizard never showed the session, other than its first page. The
+	 * browser walked the wizard up to that page in a session that has expired, or it does not send the
+	 * session's cookie, so what it entered on the pages before is gone from this session. Rather than
+	 * carry on with the default values, the wizard shows its first page, saying why, and the values
+	 * posted go nowhere, so the values the session entered on the pages it was shown stay as they are.
+	 *
+	 * @param wizardModel the session's model
+	 */
+	private void startAgain(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+	        InitializationWizardModel wizardModel, Map<String, Object> referenceMap) throws IOException {
+		HttpSession session = httpRequest.getSession();
+		if (session.getAttribute(FilterUtil.LOCALE_ATTRIBUTE) == null) {
+			checkLocaleAttributesForFirstTime(httpRequest);
+		}
+		referenceMap.put(FilterUtil.LOCALE_ATTRIBUTE, session.getAttribute(FilterUtil.LOCALE_ATTRIBUTE));
+		// only why, not the errors of the pages the session was shown, which another tab may still show; which of the
+		// ways to lose a session this was, a request does not tell
+		Map<String, Object[]> errors = new HashMap<>();
+		errors.put(ErrorMessageConstants.ERROR_SESSION_LOST, null);
+		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse, wizardModel, errors, new HashMap<>());
 	}
 
 	/**
@@ -1069,6 +1113,7 @@ public class InitializationFilter extends StartupFilter {
 
 			// only a session that was asked to confirm its own values can install with them
 			if (!wizardCompletePageShown) {
+				wizardModel.errors.put(ErrorMessageConstants.ERROR_NOT_CONFIRMED, null);
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse, wizardModel);
 				return;
 			}
@@ -1742,16 +1787,6 @@ public class InitializationFilter extends StartupFilter {
 		private List<WizardTask> executedTasks = new ArrayList<>();
 
 		/**
-		 * The runtime properties file, once the install has opened it to write it
-		 */
-		private File openedRuntimePropertiesFile;
-
-		/**
-		 * Set once every step before starting OpenMRS has succeeded, the runtime properties file included
-		 */
-		private boolean setupComplete = false;
-
-		/**
 		 * The runtime properties OpenMRS had before this install added its own, once it has added them
 		 */
 		private Properties runtimePropertiesBeforeInstall;
@@ -1938,7 +1973,7 @@ public class InitializationFilter extends StartupFilter {
 							// generate random password from this subset of alphabet
 							// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
 							String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
-							Random r = new Random();
+							SecureRandom r = new SecureRandom();
 							StringBuilder randomStr = new StringBuilder("");
 							for (int x = 0; x < 12; x++) {
 								randomStr.append(chars.charAt(r.nextInt(chars.length())));
@@ -2322,8 +2357,8 @@ public class InitializationFilter extends StartupFilter {
 		 * Runs the steps between starting the web application context and starting OpenMRS, in a session
 		 * the caller opened, unless an earlier step of the install has reported an error. The runtime
 		 * properties file, which marks OpenMRS as installed, is written last, so a step that fails before
-		 * it leaves the file as it was, and the file that marks the install incomplete, if the install
-		 * wrote one, is deleted only once the runtime properties file is written.
+		 * it, or writing it, leaves the file as it was, and the file that marks the install incomplete, if
+		 * the install wrote one, is deleted only once the runtime properties file is written.
 		 *
 		 * @param runtimeProperties the runtime properties of the install, holding its database connection
 		 * @return true if every step succeeded, false once a step has reported an error
@@ -2350,7 +2385,6 @@ public class InitializationFilter extends StartupFilter {
 				log.warn("Unable to write the runtime properties file", e);
 				return false;
 			}
-			setupComplete = true;
 			if (installIncompleteFile.exists() && !installIncompleteFile.delete()) {
 				log.error("Unable to delete {}. Delete it, or OpenMRS starts the setup wizard again when it next starts.",
 				    installIncompleteFile.getAbsolutePath());
@@ -2473,7 +2507,14 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		/**
-		 * Writes the runtime properties file, which marks OpenMRS as installed
+		 * Writes the runtime properties file, which marks OpenMRS as installed. The properties go into a
+		 * new file beside it, which only its owner can read from the start, and that file then takes its
+		 * place in one step, so a file that was there before keeps what it held if writing fails, as on a
+		 * full disk, and no start reads a file the install wrote in part. An existing file is written where
+		 * it is, as OpenMRS always wrote it, when another file taking its place would lose its owner,
+		 * access list or other names, or when no other file can take its place, as in a directory that
+		 * takes no new files or for a file mounted on its own; it gets back what it held if writing it
+		 * fails.
 		 *
 		 * @param runtimeProperties the properties to write
 		 * @throws IOException if the file could not be written
@@ -2482,12 +2523,24 @@ public class InitializationFilter extends StartupFilter {
 			File runtimePropertiesFile = getRuntimePropertiesFile();
 			// not OpenmrsUtil.storeProperties, which logs and swallows an IOException: a failed write has to
 			// fail the setup
-			try (Writer writer = new OutputStreamWriter(new FileOutputStream(runtimePropertiesFile),
-			        StandardCharsets.UTF_8)) {
-				// opening it has truncated any file that was there
-				openedRuntimePropertiesFile = runtimePropertiesFile;
-				runtimeProperties.store(writer, "Auto generated by OpenMRS initialization wizard");
+			StringWriter properties = new StringWriter();
+			runtimeProperties.store(properties, "Auto generated by OpenMRS initialization wizard");
+			byte[] content = properties.toString().getBytes(StandardCharsets.UTF_8);
+
+			Path file = runtimePropertiesFile.toPath().toAbsolutePath();
+			// a link stays a link: the properties go to the file it leads to, which need not exist yet
+			for (int links = 0; Files.isSymbolicLink(file); links++) {
+				if (links == MAX_SYMBOLIC_LINKS) {
+					throw new FileSystemException(file.toString(), null, "Too many levels of symbolic links");
+				}
+				file = file.resolveSibling(Files.readSymbolicLink(file));
 			}
+			boolean existed = Files.exists(file);
+			// writing the file needs this, while putting another file in its place would not
+			if (existed && !Files.isWritable(file)) {
+				throw new java.nio.file.AccessDeniedException(file.toString(), null, "not writable");
+			}
+			store(file, content, existed);
 			wizardModel.workLog.add("Saved runtime properties file " + runtimePropertiesFile);
 
 			/*
@@ -2505,17 +2558,112 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		/**
+		 * Puts a new file holding the given content in the place of the given file, in one step, or writes
+		 * the given file where it is, see {@link #writeRuntimeProperties(Properties)}
+		 *
+		 * @param file the file to write
+		 * @param content what the file is to hold
+		 * @param existed whether the file exists
+		 * @throws IOException if the file could not be written
+		 */
+		private void store(Path file, byte[] content, boolean existed) throws IOException {
+			if (existed && !Files.isWritable(file.getParent())) {
+				// the directory takes no new files, as one that is read only or that only its owner can change
+				writeWhereItIs(file, content, true, null);
+				return;
+			}
+			// only its owner can read it, where the file system has POSIX permissions; a name of its own, so installs
+			// that run at the same time each put a whole file in place
+			Path newFile = Files.createTempFile(file.getParent(), file.getFileName().toString(), ".tmp");
+			try {
+				if (existed && wouldLoseItsOwnerAccessListOrOtherNames(file, newFile)) {
+					writeWhereItIs(file, content, true, null);
+					return;
+				}
+				// on the disk before it takes the place of the file; if writing it fails, the file is left as it was
+				Files.write(newFile, content, StandardOpenOption.WRITE, StandardOpenOption.SYNC);
+				try {
+					Files.move(newFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					// no other file can take the place of this one, as of a file mounted on its own
+					writeWhereItIs(file, content, existed, e);
+				}
+			} finally {
+				try {
+					Files.deleteIfExists(newFile);
+				} catch (IOException e) {
+					log.warn("Unable to delete {}", newFile, e);
+				}
+			}
+		}
+
+		/**
+		 * Tells whether another file taking the place of the given one would lose its owner, and with it
+		 * what only its owner can change, such as its permissions, its access list, where the file system
+		 * has one, or its other names
+		 *
+		 * @param file an existing file
+		 * @param newFile a file this install created, whose owner is the user the install runs as, and
+		 *            whose access list is the one a new file gets
+		 */
+		private boolean wouldLoseItsOwnerAccessListOrOtherNames(Path file, Path newFile) throws IOException {
+			if (Files.getFileAttributeView(file, FileOwnerAttributeView.class) != null
+			        && !Files.getOwner(file).equals(Files.getOwner(newFile))) {
+				return true;
+			}
+			AclFileAttributeView accessList = Files.getFileAttributeView(file, AclFileAttributeView.class);
+			if (accessList != null && !accessList.getAcl()
+			        .equals(Files.getFileAttributeView(newFile, AclFileAttributeView.class).getAcl())) {
+				return true;
+			}
+			return file.getFileSystem().supportedFileAttributeViews().contains("unix")
+			        && ((Number) Files.getAttribute(file, "unix:nlink")).intValue() > 1;
+		}
+
+		/**
+		 * Writes the given content into the given file where it is, and puts back what the file held if
+		 * that fails
+		 *
+		 * @param file the file to write
+		 * @param content what the file is to hold
+		 * @param existed whether the file exists; if not, there is nothing to write where it is
+		 * @param reason why no other file takes its place, or null if it is to keep its owner or other
+		 *            names
+		 * @throws IOException if writing the file fails, or the reason if the file does not exist
+		 */
+		private void writeWhereItIs(Path file, byte[] content, boolean existed, IOException reason) throws IOException {
+			if (!existed) {
+				throw reason;
+			}
+			log.info("Writing {} where it is{}", file, reason == null ? "" : ", since " + reason);
+			byte[] before = Files.readAllBytes(file);
+			try {
+				Files.write(file, content);
+			} catch (IOException e) {
+				if (reason != null) {
+					e.addSuppressed(reason);
+				}
+				try {
+					Files.write(file, before);
+				} catch (IOException putBackFailure) {
+					e.addSuppressed(putBackFailure);
+					log.error("Unable to put back what {} held before the install began to write it", file);
+				}
+				throw e;
+			}
+		}
+
+		/**
 		 * Ends the install, in the finally of the install thread. Only an install that got through starting
 		 * OpenMRS without an error sets initialization complete, which lets requests past this filter. Any
 		 * other install puts back the runtime properties OpenMRS had before the install added its own, so
 		 * the wizard pages of the sessions that walk the wizard next do not read this install's values from
-		 * them. One that failed before its setup was complete removes the runtime properties file it opened
-		 * to write it, so the next start comes back to this wizard; opening a file empties it, so this
-		 * holds for a file that was there before the install too. A runtime properties file the install
-		 * never opened stays, since whoever wrote it owns it, and so does the file that marks the install
-		 * incomplete, which brings the next start back to this wizard. Once the setup is complete the
-		 * database no longer has the seeded admin password, so the file stays when only starting OpenMRS
-		 * failed.
+		 * them. It leaves the runtime properties file as it is: one that failed before its setup was
+		 * complete has not written it, see {@link #writeRuntimeProperties(Properties)}, so a file that was
+		 * there before the install stays, since whoever wrote it owns it, and so does the file that marks
+		 * the install incomplete, which brings the next start back to this wizard. Once the setup is
+		 * complete the database no longer has the seeded admin password, so the file stays when only
+		 * starting OpenMRS failed.
 		 *
 		 * @param succeeded whether the install got through starting OpenMRS
 		 */
@@ -2536,17 +2684,6 @@ public class InitializationFilter extends StartupFilter {
 				}
 				if (!hasErrors()) {
 					reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, "");
-				}
-				File runtimePropertiesFile = openedRuntimePropertiesFile;
-				if (setupComplete || runtimePropertiesFile == null || !runtimePropertiesFile.exists()) {
-					return;
-				}
-				if (runtimePropertiesFile.delete()) {
-					log.warn("Deleted {}, which the failed install had begun to write",
-					    runtimePropertiesFile.getAbsolutePath());
-				} else {
-					log.error("Unable to delete {} after the install failed. Delete it before starting OpenMRS again.",
-					    runtimePropertiesFile.getAbsolutePath());
 				}
 			} finally {
 				setInstallationStarted(false);

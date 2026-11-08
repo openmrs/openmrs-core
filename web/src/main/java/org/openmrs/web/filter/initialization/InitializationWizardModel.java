@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -280,4 +282,10 @@ public class InitializationWizardModel {
 	 * install from the wizard requires
 	 */
 	boolean wizardCompletePageShown = false;
+
+	/**
+	 * The wizard pages rendered for this model, the only ones past the first its session may post. A
+	 * set requests of the session can add to while an install runs, outside the session's lock.
+	 */
+	final Set<String> pagesShown = ConcurrentHashMap.newKeySet();
 }

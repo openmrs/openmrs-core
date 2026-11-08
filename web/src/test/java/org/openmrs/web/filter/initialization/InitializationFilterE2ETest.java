@@ -11,6 +11,7 @@ package org.openmrs.web.filter.initialization;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -124,6 +125,11 @@ class InitializationFilterE2ETest {
 		servletContext = new MockServletContext();
 		filter = new TestableInitializationFilter(servletContext);
 		request = new MockHttpServletRequest();
+		// a browser posts the pages the wizard showed it in its session, and these tests post each page as from such a
+		// browser
+		filter.getWizardModel(request.getSession()).pagesShown.addAll(Arrays.asList("chooselang.vm", "installmethod.vm",
+		    "simplesetup.vm", "databasesetup.vm", "remotedetails.vm", "databasetablesanduser.vm",
+		    "otherruntimeproperties.vm", "adminusersetup.vm", "implementationidsetup.vm", "wizardcomplete.vm"));
 		response = new MockHttpServletResponse();
 		// Save and clear runtime properties to avoid state leaking from other test classes.
 		// Subsequent context-loading tests in the same JVM rely on these being restored,

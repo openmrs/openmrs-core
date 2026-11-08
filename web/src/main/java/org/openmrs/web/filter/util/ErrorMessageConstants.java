@@ -82,6 +82,10 @@ public class ErrorMessageConstants {
 
 	public static final String ERROR_RESTART_REQUIRED = "install.error.restartRequired";
 
+	public static final String ERROR_SESSION_LOST = "install.error.sessionLost";
+
+	public static final String ERROR_NOT_CONFIRMED = "install.error.notConfirmed";
+
 	public static final String ERROR_UNABLE_COPY_DATA = "install.error.unableCopyData";
 
 	public static final String ERROR_UNABLE_CREATE_DB = "install.error.unableCreateDb";
