@@ -30,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * Utility class that provides database related methods
  *
@@ -48,8 +46,6 @@ public class DatabaseUtil {
 	private static final Pattern INTO_DUMPFILE = Pattern.compile("\\binto\\s+dumpfile\\b");
 
 	private static final Pattern LOAD_FILE = Pattern.compile("\\bload_file\\s*\\(");
-
-	private static final Pattern SELECT_WORD = Pattern.compile("\\bselect\\b");
 
 	private static final Pattern FIRST_TOKEN = Pattern.compile("\\A\\s*([a-z]+)");
 
@@ -86,18 +82,7 @@ public class DatabaseUtil {
 
 	/** Commands that only read data. The leading keyword must match one of these exactly. */
 	private static final Set<String> READ_ONLY_COMMANDS = Collections
-	        .unmodifiableSet(new HashSet<>(Arrays.asList("select", "values", "show", "describe", "desc", "table")));
-
-	/**
-	 * Keywords that start a command which writes data inside a WITH query. When they appear anywhere
-	 * outside a string literal or a function call, the whole statement is treated as writing.
-	 */
-	private static final Set<String> WRITING_COMMAND_KEYWORDS = Collections
-	        .unmodifiableSet(new HashSet<>(Arrays.asList("insert", "update", "delete", "merge", "replace", "truncate")));
-
-	/** The writing keywords as precompiled whole word patterns, built once from the set above. */
-	private static final List<Pattern> WRITING_COMMAND_PATTERNS = WRITING_COMMAND_KEYWORDS.stream()
-	        .map(keyword -> Pattern.compile("\\b" + keyword + "\\b")).collect(toList());
+	        .unmodifiableSet(new HashSet<>(Arrays.asList("select", "with", "values", "show", "describe", "desc", "table")));
 
 	/** The bare keyword forms of the non parenthesized explain option list. */
 	private static final Set<String> EXPLAIN_OPTION_KEYWORDS = Collections
@@ -449,20 +434,11 @@ public class DatabaseUtil {
 
 		String lower = normalized.toLowerCase(Locale.ROOT);
 
-		if (lower.startsWith("with")) {
-			return isReadOnlyCommonTableExpression(text);
-		}
-
 		if (lower.startsWith("explain")) {
 			// EXPLAIN ANALYZE runs the explained statement on some engines, so the explained command has
 			// to pass the same check as a standalone statement
 			String explained = stripExplainOptions(normalized);
 			String peeled = stripLeadingParentheses(explained);
-			if (peeled.toLowerCase(Locale.ROOT).startsWith("with")) {
-				// an explained common table expression gets the same check as a bare one, including the
-				// rejection of the writing forms
-				return isReadOnlyCommonTableExpression(text);
-			}
 			return isReadOnlyCommand(peeled);
 		}
 
@@ -538,43 +514,6 @@ public class DatabaseUtil {
 		return READ_ONLY_COMMANDS.contains(matcher.group(1));
 	}
 
-	private static boolean isReadOnlyCommonTableExpression(SqlText text) {
-		String withoutStrings = removeStringLiterals(text.withoutComments);
-		String lower = withoutStrings.toLowerCase(Locale.ROOT);
-
-		if (!SELECT_WORD.matcher(lower).find()) {
-			return false;
-		}
-
-		for (Pattern keyword : WRITING_COMMAND_PATTERNS) {
-			if (hasKeywordStartingCommand(withoutStrings, lower, keyword)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * A writing keyword still belongs to content when the engine sees a function call at that position,
-	 * like replace() inside a select list; any other occurrence starts a command. The whitespace
-	 * between the keyword and the parenthesis is optional in SQL, so it is skipped first.
-	 */
-	private static boolean hasKeywordStartingCommand(String sql, String sqlLower, Pattern keyword) {
-		Matcher matcher = keyword.matcher(sqlLower);
-		while (matcher.find()) {
-			int probe = matcher.end();
-			while (probe < sql.length() && Character.isWhitespace(sql.charAt(probe))) {
-				probe++;
-			}
-			if (probe < sql.length() && sql.charAt(probe) == '(') {
-				continue;
-			}
-			return true;
-		}
-		return false;
-	}
-
 	private static String stripLeadingParentheses(String sql) {
 		String result = sql;
 		while (StringUtils.hasText(result)) {
@@ -586,61 +525,6 @@ public class DatabaseUtil {
 			}
 		}
 		return result;
-	}
-
-	private static String removeStringLiterals(String sql) {
-		StringBuilder sb = new StringBuilder(sql.length());
-		boolean inSingle = false;
-		boolean inDouble = false;
-		boolean inIdentifier = false;
-		for (int i = 0; i < sql.length(); i++) {
-			char c = sql.charAt(i);
-			char next = i + 1 < sql.length() ? sql.charAt(i + 1) : '\0';
-			if (inSingle || inDouble) {
-				if (c == '\\') {
-					i++;
-					continue;
-				}
-				if (inSingle && c == '\'') {
-					if (next == '\'') {
-						i++;
-						continue;
-					}
-					inSingle = false;
-				} else if (inDouble && c == '"') {
-					if (next == '"') {
-						i++;
-						continue;
-					}
-					inDouble = false;
-				}
-				continue;
-			}
-			if (inIdentifier) {
-				if (c == '`') {
-					if (next == '`') {
-						i++;
-						continue;
-					}
-					inIdentifier = false;
-				}
-				continue;
-			}
-			if (c == '\'') {
-				inSingle = true;
-				continue;
-			}
-			if (c == '"') {
-				inDouble = true;
-				continue;
-			}
-			if (c == '`') {
-				inIdentifier = true;
-				continue;
-			}
-			sb.append(c);
-		}
-		return sb.toString();
 	}
 
 	/**

@@ -143,8 +143,8 @@ public class AdministrationServiceExecuteSQLReadOnlyIT extends BaseContextSensit
 		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
 			return Stream.of(Arguments.of("/*x*/DELETE FROM obs"),
 			    Arguments.of("REPLACE INTO global_property (property, property_value) VALUES ('a', 'b')"),
-			    Arguments.of("WITH t AS (SELECT 1) DELETE FROM obs"), Arguments.of("TRUNCATE TABLE obs"),
-			    Arguments.of("SELECT 1; DELETE FROM obs"), Arguments.of("SELECT * FROM obs INTO OUTFILE 'outside.csv'"),
+			    Arguments.of("TRUNCATE TABLE obs"), Arguments.of("SELECT 1; DELETE FROM obs"),
+			    Arguments.of("SELECT * FROM obs INTO OUTFILE 'outside.csv'"),
 			    Arguments.of("SELECT lo_import('/tmp/data.txt')"), Arguments.of("SELECT pg_read_file('PG_VERSION')"),
 			    Arguments.of("SELECT pg_advisory_lock(998877)"), Arguments.of("SELECT $$handled here$$ AS piece FROM obs"),
 			    Arguments.of("SELECT 'x\\'; DELETE FROM obs; -- tail'"),
@@ -178,6 +178,21 @@ public class AdministrationServiceExecuteSQLReadOnlyIT extends BaseContextSensit
 	void executeSQL_withSelectOnly_shouldRejectStatementsThatWrite() {
 		assertThrows(IllegalArgumentException.class, () -> Context.getAdministrationService().executeSQL(
 		    "INSERT INTO global_property (property, property_value, uuid) VALUES ('a', 'b', 'uuid-a')", true));
+	}
+
+	/**
+	 * A data-modifying WITH runs as an ordinary statement, so the engine refuses it inside the read
+	 * only transaction.
+	 */
+	@Test
+	void executeSQL_withSelectOnly_shouldLeaveDataModifyingWithFormsToTheEngine() {
+		AdministrationService adminService = Context.getAdministrationService();
+
+		List<List<Object>> before = adminService.executeSQL("SELECT COUNT(*) FROM obs", true);
+		assertThrows(RuntimeException.class, () -> adminService.executeSQL("WITH t AS (SELECT 1) DELETE FROM obs", true));
+
+		List<List<Object>> after = adminService.executeSQL("SELECT COUNT(*) FROM obs", true);
+		assertEquals(((Number) before.get(0).get(0)).intValue(), ((Number) after.get(0).get(0)).intValue());
 	}
 
 	@Test
