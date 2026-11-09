@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Represents the grouping of orders into a set, so as to give decision support for the doctors
@@ -98,7 +99,7 @@ public class OrderSet extends BaseCustomizableMetadata<OrderSetAttribute> {
 	 * @param orderSetMembers the orderSetMembers to set
 	 */
 	public void setOrderSetMembers(List<OrderSetMember> orderSetMembers) {
-		this.orderSetMembers = orderSetMembers;
+		this.orderSetMembers = CollectionUtil.setCollection(this.orderSetMembers, orderSetMembers);
 	}
 
 	/**
