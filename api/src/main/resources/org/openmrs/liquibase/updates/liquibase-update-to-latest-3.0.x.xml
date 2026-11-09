@@ -143,6 +143,14 @@
 	</changeSet>
 
 	<changeSet id="TRUNK-5819-2026-02-24" author="mohini-chaudhari2">
+		<preConditions onFail="MARK_RAN" onError="WARN">
+			<not>
+				<and>
+					<columnExists tableName="order_frequency" columnName="name"/>
+					<columnExists tableName="order_frequency" columnName="description"/>
+				</and>
+			</not>
+		</preConditions>
 		<comment>Add name and description columns required by OrderFrequency JPA mapping for TRUNK-5819</comment>
 		<addColumn tableName="order_frequency">
 			<column name="name" type="varchar(255)"/>
