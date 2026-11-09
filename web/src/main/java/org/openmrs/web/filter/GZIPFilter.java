@@ -59,6 +59,9 @@ public class GZIPFilter extends OncePerRequestFilter {
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");
 
+			// Tomcat reports an include only through an application request wrapper, and the response
+			// wrapper needs to see the include to leave alone what the container ignores from an
+			// included resource
 			HttpServletRequest wrappedRequest = request instanceof HttpServletRequestWrapper ? request
 			        : new HttpServletRequestWrapper(request);
 			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(wrappedRequest, response);

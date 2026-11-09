@@ -112,7 +112,8 @@ public class GZIPResponseStream extends ServletOutputStream {
 				output.write(bytes);
 			}
 			
-			output.flush();
+			// flush() would commit the response before the container can count the bytes, forcing a
+			// body with no length of its own to go out chunked; close() lets it set a Content-Length
 			output.close();
 			closed = true;
 		}
