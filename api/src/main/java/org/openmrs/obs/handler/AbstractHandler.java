@@ -149,6 +149,12 @@ public class AbstractHandler {
 		return names[0];
 	}
 
+	/**
+	 * @deprecated since 3.0.0, override
+	 *             {@link #injectMissingMetadata(String, ComplexData, ObjectMetadata)}, which the
+	 *             bundled handlers call instead of this method
+	 */
+	@Deprecated(since = "3.0.0")
 	protected void injectMissingMetadata(String key, ComplexData complexData) {
 		injectMissingMetadata(key, complexData, null);
 	}

@@ -9,11 +9,22 @@
  */
 package org.openmrs.api.storage;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
+
 import org.junit.jupiter.api.Test;
 
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.async.AsyncResponseTransformer;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class S3StorageServiceTest {
 
@@ -31,5 +42,18 @@ public class S3StorageServiceTest {
 		GetObjectResponse response = GetObjectResponse.builder().contentLength(8388608L).build();
 
 		assertEquals(Long.valueOf(8388608L), S3StorageService.getObjectLength(response));
+	}
+
+	@Test
+	public void getDataWithMetadata_shouldReportTheObjectLengthForAMultipartDownload() throws IOException {
+		GetObjectResponse response = GetObjectResponse.builder().contentLength(8388608L)
+		        .contentRange("bytes 0-8388607/20971520").build();
+		S3AsyncClient client = mock(S3AsyncClient.class);
+		doReturn(CompletableFuture.completedFuture(new ResponseInputStream<>(response, InputStream.nullInputStream())))
+		        .when(client).getObject(any(GetObjectRequest.class), any(AsyncResponseTransformer.class));
+
+		try (DataWithMetadata dwm = new S3StorageService(null, client, "bucket").getDataWithMetadata("key")) {
+			assertEquals(Long.valueOf(20971520L), dwm.metadata().getLength());
+		}
 	}
 }

@@ -174,6 +174,8 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 		try {
 			Files.createDirectories(legacyPath.getParent());
 			Files.writeString(legacyPath, "legacy content");
+			// Without this directory the read fails before it reaches the long name
+			Files.createDirectories(tempDir.resolve("obs"));
 
 			try (InputStream data = storageService.getData(key)) {
 				assertEquals("legacy content", IOUtils.toString(data, Charset.defaultCharset()));
