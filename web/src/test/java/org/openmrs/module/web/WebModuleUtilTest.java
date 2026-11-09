@@ -391,6 +391,56 @@ public class WebModuleUtilTest {
 		assertEquals(expectedPath, actualPath);
 	}
 
+	/**
+	 * @see WebModuleUtil#stopModule(Module, ServletContext, boolean)
+	 */
+	@Test
+	public void stopModule_shouldDeleteTheModuleWebFolder(@TempDir File realPath) throws Exception {
+		File moduleWebFolder = new File(realPath, "WEB-INF/view/module/basicmodule".replace("/", File.separator));
+		moduleWebFolder.mkdirs();
+		assertTrue(new File(moduleWebFolder, "page.jsp").createNewFile());
+		File sibling = new File(realPath, "WEB-INF/view/module/othermodule".replace("/", File.separator));
+		sibling.mkdirs();
+
+		WebModuleUtil.stopModule(newModule("basicmodule"), newServletContext(realPath), true);
+
+		assertFalse(moduleWebFolder.exists());
+		assertTrue(sibling.exists());
+	}
+
+	/**
+	 * @see WebModuleUtil#stopModule(Module, ServletContext, boolean)
+	 */
+	@Test
+	public void stopModule_shouldNotDeleteOutsideTheModuleWebFolder(@TempDir File realPath) throws Exception {
+		File moduleFolder = new File(realPath, "WEB-INF/view/module".replace("/", File.separator));
+		moduleFolder.mkdirs();
+		File marker = new File(realPath, "WEB-INF" + File.separator + "web.xml");
+		assertTrue(marker.createNewFile());
+		ServletContext servletContext = newServletContext(realPath);
+		Module module = newModule("../..");
+
+		assertThrows(ModuleException.class, () -> WebModuleUtil.stopModule(module, servletContext, true));
+
+		assertTrue(marker.exists());
+		assertTrue(moduleFolder.exists());
+	}
+
+	private static Module newModule(String moduleId) {
+		Module module = new Module("Basic Module", moduleId, "org.openmrs.module.basicmodule", "author", "description",
+		        "1.0", "1.0");
+		Document config = createDocumentBuilder().newDocument();
+		config.appendChild(config.createElement("module"));
+		module.setConfig(config);
+		return module;
+	}
+
+	private static ServletContext newServletContext(File realPath) {
+		ServletContext servletContext = mock(ServletContext.class);
+		when(servletContext.getRealPath("")).thenReturn(realPath.getAbsolutePath());
+		return servletContext;
+	}
+
 	private static void setupMocks(boolean includeTrailingSlash) {
 		ServletConfig servletConfig = mock(ServletConfig.class);
 

@@ -12,8 +12,6 @@ package org.openmrs.module;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1415,45 +1413,6 @@ public class ModuleFactory {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Update the module: 1) Download the new module 2) Unload the old module 3) Load/start the new
-	 * module
-	 *
-	 * @param mod
-	 */
-	public static Module updateModule(Module mod) throws ModuleException {
-		if (mod.getDownloadURL() == null) {
-			return mod;
-		}
-
-		URL url;
-		try {
-			url = new URL(mod.getDownloadURL());
-		} catch (MalformedURLException e) {
-			throw new ModuleException("Unable to download module update", e);
-		}
-
-		unloadModule(mod);
-
-		// copy content to a temporary file
-		InputStream inputStream = ModuleUtil.getURLStream(url);
-		log.warn("url pathname: " + url.getPath());
-		String filename = url.getPath().substring(url.getPath().lastIndexOf("/"));
-		File moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
-
-		try {
-			// load, and start the new module
-			Module newModule = loadModule(moduleFile);
-			startModule(newModule);
-			return newModule;
-		} catch (Exception e) {
-			log.warn("Error while unloading old module and loading in new module");
-			moduleFile.delete();
-			return mod;
-		}
-
 	}
 
 	/**

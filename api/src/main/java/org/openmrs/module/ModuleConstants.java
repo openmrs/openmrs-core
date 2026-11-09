@@ -18,11 +18,6 @@ public class ModuleConstants {
 	}
 
 	/**
-	 * Name of the file in the module repository to ping to question for updates to a module
-	 */
-	public static final String UPDATE_FILE_NAME = "update.rdf";
-
-	/**
 	 * Name of the global property that will tell the system where to look for modules to load. Can be
 	 * either relative or absolute
 	 */

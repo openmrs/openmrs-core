@@ -33,6 +33,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
@@ -512,6 +513,42 @@ public class ModuleClassLoaderTest extends BaseContextSensitiveTest {
 			libCacheFolders.remove("testmodule");
 			omodFile.delete();
 			FileUtils.deleteDirectory(tempLibCache);
+		}
+	}
+
+	@Test
+	public void getLibCacheFolderForModule_shouldRejectAModuleIdThatEscapesTheLibCacheFolder() throws Exception {
+		File root = Files.createTempDirectory("libcache-root").toFile();
+		File tempLibCache = new File(root, "nested" + File.separator + "lib-cache");
+		tempLibCache.mkdirs();
+		File marker = new File(root, "marker.txt");
+		FileUtils.writeStringToFile(marker, "keep", Charset.defaultCharset());
+
+		Field libCacheFolderField = OpenmrsClassLoader.class.getDeclaredField("libCacheFolder");
+		libCacheFolderField.setAccessible(true);
+		File savedLibCacheFolder = (File) libCacheFolderField.get(null);
+		libCacheFolderField.set(null, tempLibCache);
+
+		Field libCacheFoldersField = ModuleClassLoader.class.getDeclaredField("libCacheFolders");
+		libCacheFoldersField.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		Map<String, File> libCacheFolders = (Map<String, File>) libCacheFoldersField.get(null);
+
+		File omodFile = File.createTempFile("escapingmodule", ".omod");
+		try {
+			Module module = new Module("escapingmodule", "../..", "org.openmrs.module.escapingmodule", "author",
+			        "description", "1.0", "1.0");
+			module.setFile(omodFile);
+
+			assertThrows(ModuleException.class, () -> ModuleClassLoader.getLibCacheFolderForModule(module));
+
+			assertTrue(marker.exists(), "Nothing outside the lib cache folder should be deleted");
+			assertTrue(tempLibCache.exists(), "The lib cache folder itself should not be deleted");
+			assertFalse(libCacheFolders.containsKey("../.."));
+		} finally {
+			libCacheFolderField.set(null, savedLibCacheFolder);
+			omodFile.delete();
+			FileUtils.deleteDirectory(root);
 		}
 	}
 
