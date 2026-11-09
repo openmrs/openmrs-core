@@ -24,8 +24,6 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
@@ -57,7 +55,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	private Date dateCreated;
 
 	@Column(name = "voided", nullable = false)
-	private Boolean voided = false;
+	private boolean voided = false;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "voided_by")
@@ -169,32 +167,23 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	 * Returns whether the ConceptName has been voided.
 	 *
 	 * @return true if the ConceptName has been voided, false otherwise.
-	 * @deprecated as of 2.0, use {@link #getVoided()}
 	 */
 	@Override
-	@Deprecated
-	@JsonIgnore
-	public Boolean isVoided() {
-		return getVoided();
-	}
-
-	/**
-	 * Returns whether the ConceptName has been voided.
-	 *
-	 * @return true if the ConceptName has been voided, false otherwise.
-	 */
-	@Override
-	public Boolean getVoided() {
+	public boolean isVoided() {
 		return voided;
 	}
 
 	/**
-	 * Sets the voided status of the ConceptName.
-	 *
-	 * @param voided the voided status to set.
+	 * @deprecated as of 2.0, use {@link #isVoided()}
 	 */
 	@Override
-	public void setVoided(Boolean voided) {
+	@Deprecated
+	public boolean getVoided() {
+		return isVoided();
+	}
+
+	@Override
+	public void setVoided(boolean voided) {
 		this.voided = voided;
 	}
 

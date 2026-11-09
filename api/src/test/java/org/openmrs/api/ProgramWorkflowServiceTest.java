@@ -1256,4 +1256,24 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertTrue(byNameWithQuotes.isEmpty());
 	}
 
+	@Test
+	public void shouldPersistAndReloadConvertedBooleanFlagsOnProgramWorkflowState() {
+		Program program = Context.getProgramWorkflowService().getProgram(1);
+		ProgramWorkflow workflow = program.getAllWorkflows().iterator().next();
+		ProgramWorkflowState state = workflow.getStates().iterator().next();
+		String stateUuid = state.getUuid();
+
+		state.setInitial(true);
+		state.setTerminal(true);
+		state.setRetired(true);
+		state.setRetireReason("testing primitive boolean persistence");
+		Context.getProgramWorkflowService().saveProgram(program);
+		Context.flushSession();
+		Context.clearSession();
+
+		ProgramWorkflowState reloaded = Context.getProgramWorkflowService().getStateByUuid(stateUuid);
+		assertTrue(reloaded.isInitial());
+		assertTrue(reloaded.isTerminal());
+		assertTrue(reloaded.isRetired());
+	}
 }

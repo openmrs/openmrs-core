@@ -27,21 +27,21 @@ import java.util.Date;
 public interface Voidable extends OpenmrsObject {
 
 	/**
-	 * @return Boolean - whether of not this object is voided
-	 * @deprecated as of 2.0, use {@link #getVoided()}
+	 * @return boolean - whether of not this object is voided
 	 */
-	@Deprecated
-	public Boolean isVoided();
+	public boolean isVoided();
 
 	/**
 	 * @return true if this object is voided and otherwise false
+	 * @deprecated use {@link #isVoided()}
 	 */
-	public Boolean getVoided();
+	@Deprecated
+	public boolean getVoided();
 
 	/**
 	 * @param voided - whether of not this object is voided
 	 */
-	public void setVoided(Boolean voided);
+	public void setVoided(boolean voided);
 
 	/**
 	 * @return User - the user who voided the object

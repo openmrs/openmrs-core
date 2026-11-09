@@ -195,7 +195,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		assertTrue(field1.getFieldType().equals(fieldtype2));
 		assertTrue(field1.getTableName().equals(table2));
 		assertTrue(field1.getAttributeName().equals(attr2));
-		assertTrue(field1.getSelectMultiple().equals(multi2));
+		assertTrue(field1.getSelectMultiple() == multi2);
 
 		//testing deletion
 
@@ -1262,5 +1262,20 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 
 		form = Context.getFormService().getForm("form_name_3", "3.0");
 		assertNull(form);
+	}
+
+	@Test
+	public void shouldPersistAndReloadConvertedBooleanFlagsOnField() {
+		Field field = Context.getFormService().getField(1);
+		field.setSelectMultiple(true);
+		field.setRetired(true);
+		field.setRetireReason("testing primitive boolean persistence");
+		Context.getFormService().saveField(field);
+		Context.flushSession();
+		Context.clearSession();
+
+		Field reloaded = Context.getFormService().getField(1);
+		assertTrue(reloaded.isSelectMultiple());
+		assertTrue(reloaded.isRetired());
 	}
 }

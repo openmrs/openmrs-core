@@ -81,7 +81,7 @@ public class Person extends BaseChangeableOpenmrsData {
 	private Boolean deathdateEstimated = false;
 
 	@GenericField
-	private Boolean dead = false;
+	private boolean dead = false;
 
 	private Date deathDate;
 
@@ -97,7 +97,7 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	private Date personDateChanged;
 
-	private Boolean personVoided = false;
+	private boolean personVoided = false;
 
 	private User personVoidedBy;
 
@@ -198,10 +198,14 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.personId = personId;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isVoided()}
+	 */
 	@IndexingDependency(derivedFrom = @ObjectPath(@PropertyValue(propertyName = "personVoided")))
 	@Override
-	public Boolean getVoided() {
-		return super.getVoided();
+	@Deprecated(since = "2.0")
+	public boolean getVoided() {
+		return isVoided();
 	}
 
 	/**
@@ -234,16 +238,18 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return true if person's birthdate is estimated
-	 * @deprecated as of 2.0, use {@link #getBirthdateEstimated()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	public Boolean isBirthdateEstimated() {
-		return getBirthdateEstimated();
+		return birthdateEstimated;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isBirthdateEstimated()}
+	 */
+	@Deprecated(since = "2.0")
 	public Boolean getBirthdateEstimated() {
-		return birthdateEstimated;
+		return isBirthdateEstimated();
 	}
 
 	/**
@@ -297,25 +303,26 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return Returns the death status.
-	 * @deprecated as of 2.0, use {@link #getDead()}
 	 */
-	@Deprecated
+
 	@JsonIgnore
-	public Boolean isDead() {
-		return getDead();
+	public boolean isDead() {
+		return dead;
 	}
 
 	/**
 	 * @return Returns the death status.
+	 * @deprecated use {@link #isDead()}
 	 */
-	public Boolean getDead() {
-		return dead;
+	@Deprecated(since = "2.0")
+	public boolean getDead() {
+		return isDead();
 	}
 
 	/**
 	 * @param dead The dead to set.
 	 */
-	public void setDead(Boolean dead) {
+	public void setDead(boolean dead) {
 		this.dead = dead;
 	}
 
@@ -810,8 +817,10 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see PersonName#getPreferred()
 	 */
 	public PersonName getPersonName() {
-		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
-		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
+		// normally the DAO layer returns these in the correct order, i.e. preferred and
+		// non-voided first, but it's possible that someone
+		// has fetched a Person, changed their names around, and then calls this method,
+		// so we have to be careful.
 		if (getNames() != null && !getNames().isEmpty()) {
 			for (PersonName name : getNames()) {
 				if (name.getPreferred() && !name.getVoided()) {
@@ -894,8 +903,10 @@ public class Person extends BaseChangeableOpenmrsData {
 	 * @see PersonAddress#getPreferred()
 	 */
 	public PersonAddress getPersonAddress() {
-		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
-		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
+		// normally the DAO layer returns these in the correct order, i.e. preferred and
+		// non-voided first, but it's possible that someone
+		// has fetched a Person, changed their addresses around, and then calls this
+		// method, so we have to be careful.
 		if (getAddresses() != null && !getAddresses().isEmpty()) {
 			for (PersonAddress addr : getAddresses()) {
 				if (addr.getPreferred() && !addr.getVoided()) {
@@ -1148,22 +1159,22 @@ public class Person extends BaseChangeableOpenmrsData {
 		this.setDateVoided(dateVoided);
 	}
 
-	public void setPersonVoided(Boolean voided) {
+	public void setPersonVoided(boolean voided) {
 		this.personVoided = voided;
 		this.setVoided(voided);
 	}
 
-	public Boolean getPersonVoided() {
+	@JsonIgnore
+	public boolean isPersonVoided() {
 		return personVoided;
 	}
 
 	/**
-	 * @deprecated as of 2.0, use {@link #getPersonVoided()}
+	 * @deprecated as of 2.0, use {@link #isPersonVoided()}
 	 */
 	@Deprecated
-	@JsonIgnore
-	public Boolean isPersonVoided() {
-		return getPersonVoided();
+	public boolean getPersonVoided() {
+		return isPersonVoided();
 	}
 
 	public User getPersonVoidedBy() {
@@ -1186,18 +1197,20 @@ public class Person extends BaseChangeableOpenmrsData {
 
 	/**
 	 * @return true/false whether this person is a patient or not
-	 * @deprecated as of 2.0, use {@link #getIsPatient()}
 	 */
-	@Deprecated
 	@JsonIgnore
 	@NotAudited
 	public boolean isPatient() {
-		return getIsPatient();
+		return isPatient;
 	}
 
+	/**
+	 * @deprecated as of 2.0, use {@link #isPatient()}
+	 */
+	@Deprecated
 	@NotAudited
 	public boolean getIsPatient() {
-		return isPatient;
+		return isPatient();
 	}
 
 	/**

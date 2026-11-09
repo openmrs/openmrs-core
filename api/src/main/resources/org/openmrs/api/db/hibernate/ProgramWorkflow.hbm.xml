@@ -32,7 +32,7 @@
 		
 		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 		
-		<property name="retired" type="java.lang.Boolean" column="retired" length="1" not-null="true" />
+		<property name="retired" type="boolean" column="retired" length="1" not-null="true" />
 		
 		<many-to-one name="program" class="Program" column="program_id" not-null="true" />
 	
