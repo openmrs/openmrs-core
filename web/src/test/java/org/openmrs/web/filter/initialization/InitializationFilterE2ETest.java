@@ -1297,6 +1297,8 @@ class InitializationFilterE2ETest {
 	void autoInstall_shouldNotStartWithAnAdminPasswordThePasswordPolicyRejects() throws Exception {
 		filter.installationScript.setProperty("install_method", "auto");
 		filter.installationScript.setProperty("database_name", "openmrs");
+		// an install that creates the tables sets the admin password
+		filter.installationScript.setProperty("create_tables", "true");
 		filter.installationScript.setProperty("admin_user_password", "weak");
 
 		filter.doGet(request, response);

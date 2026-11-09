@@ -1342,12 +1342,17 @@ public class InitializationFilter extends StartupFilter {
 			}
 			return false;
 		}
-		try {
-			OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
-		} catch (PasswordException e) {
-			wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_WEAK, null);
-			log.error("Not installing OpenMRS, because the configured admin password does not meet the password policy");
-			return false;
+		// checked here only for an install that gives the admin user the seeded password, which it then replaces, so
+		// that it stops before it creates anything; any other install sets the admin password only if the database's
+		// admin user still has the seeded one, and setting it applies the password policy then
+		if (putsUsersIntoTheDatabase(wizardModel)) {
+			try {
+				OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
+			} catch (PasswordException e) {
+				wizardModel.errors.put(ErrorMessageConstants.ERROR_DB_ADM_PSDW_WEAK, null);
+				log.error("Not installing OpenMRS, because the configured admin password does not meet the password policy");
+				return false;
+			}
 		}
 		// looked up only for an install that starts: looking it up logs warnings while there is no runtime properties
 		// file, which a refused request would add to the log every time the health check sends one
@@ -1737,6 +1742,17 @@ public class InitializationFilter extends StartupFilter {
 	private static boolean databaseNameReachesSqlOrUrl(InitializationWizardModel wizardModel) {
 		return !wizardModel.hasCurrentOpenmrsDatabase || wizardModel.createDatabaseUser || wizardModel.importTestData
 		        || (wizardModel.databaseConnection != null && wizardModel.databaseConnection.contains("@DBNAME@"));
+	}
+
+	/**
+	 * Whether an install with this model puts users into the database, from the core data or from
+	 * imported test data, which can give the admin user the seeded password
+	 *
+	 * @param wizardModel the wizard model of the install
+	 * @return true if the install creates the tables or imports test data
+	 */
+	private static boolean putsUsersIntoTheDatabase(InitializationWizardModel wizardModel) {
+		return wizardModel.createTables || wizardModel.importTestData;
 	}
 
 	/**
@@ -2390,7 +2406,10 @@ public class InitializationFilter extends StartupFilter {
 				return false;
 			}
 			if (installIncompleteFile.exists() && !installIncompleteFile.delete()) {
-				log.error("Unable to delete {}. Delete it, or OpenMRS starts the setup wizard again when it next starts.",
+				// the admin user no longer has the seeded password, so the next start deletes the file rather than
+				// start this wizard, and does not start OpenMRS while it cannot
+				log.error("Unable to delete {}. Delete it: when OpenMRS next starts, it tries again, and does not start "
+				        + "if it cannot.",
 				    installIncompleteFile.getAbsolutePath());
 			}
 			return true;

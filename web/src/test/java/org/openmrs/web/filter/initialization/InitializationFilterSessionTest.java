@@ -574,7 +574,7 @@ class InitializationFilterSessionTest {
 			filter.initJob.waitForCompletion();
 		}
 		// then refused, so no install of the page's own lists steps on it
-		filter.installationScript.setProperty("admin_user_password", "weak");
+		refuseTheConfiguredAutomaticInstall();
 
 		String page = get(new MockHttpSession(), null);
 
@@ -733,7 +733,7 @@ class InitializationFilterSessionTest {
 		filter.initJob.waitForCompletion();
 		// then OpenMRS is configured for an automatic install that is refused, so none starts
 		configureAutomaticInstallThatCannotConnect();
-		filter.installationScript.setProperty("admin_user_password", "weak");
+		refuseTheConfiguredAutomaticInstall();
 
 		String page = get(new MockHttpSession(), null);
 
@@ -752,7 +752,7 @@ class InitializationFilterSessionTest {
 		filter.initJob.waitForCompletion();
 		// then OpenMRS is configured for an automatic install that is refused, so none starts
 		configureAutomaticInstallThatCannotConnect();
-		filter.installationScript.setProperty("admin_user_password", "weak");
+		refuseTheConfiguredAutomaticInstall();
 
 		String page = get(first, null);
 
@@ -790,6 +790,8 @@ class InitializationFilterSessionTest {
 		configureAutomaticInstallThatCannotConnect();
 		// a url that takes the database name, which the name rule then applies to
 		filter.installationScript.setProperty("connection.url", "jdbc:h2:mem:@DBNAME@;IFEXISTS=TRUE");
+		// an install that creates the tables, so it sets the admin password, which the password policy then applies to
+		filter.installationScript.setProperty("create_tables", "true");
 		filter.installationScript.setProperty(property, value);
 
 		String page = get(new MockHttpSession(), null);
@@ -797,6 +799,33 @@ class InitializationFilterSessionTest {
 		assertThat(filter.installsStarted, empty());
 		assertThat(page, containsString("class=\"openmrs_error\""));
 		assertThat(page, not(containsString("showProgress();")));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "create_tables", "import_test_data" })
+	void shouldNotStartAnAutomaticInstallThatPutsUsersIntoTheDatabaseWithAnAdminPasswordThePolicyRejects(String property)
+	        throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty(property, "true");
+		filter.installationScript.setProperty("admin_user_password", "weak");
+
+		String page = get(new MockHttpSession(), null);
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(page, containsString("The password is not long enough"));
+	}
+
+	@Test
+	void shouldStartAnAutomaticInstallIntoAnExistingDatabaseThoughThePasswordPolicyRejectsTheAdminPassword()
+	        throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		// the install neither creates the tables nor imports test data, so it sets the admin password only if the
+		// database's admin user still has the seeded one, and setting it applies the password policy then
+		filter.installationScript.setProperty("admin_user_password", "weak");
+
+		get(new MockHttpSession(), null);
+
+		assertEquals(1, filter.installsStarted.size());
 	}
 
 	@Test
@@ -1339,6 +1368,15 @@ class InitializationFilterSessionTest {
 		filter.installationScript.setProperty("create_database_user", "false");
 		filter.installationScript.setProperty("admin_user_password", "Admin123");
 		return database;
+	}
+
+	/**
+	 * Has the configured automatic install create the tables, so it would set the admin password, and
+	 * gives it one the password policy rejects, so it is refused before it starts
+	 */
+	private void refuseTheConfiguredAutomaticInstall() {
+		filter.installationScript.setProperty("create_tables", "true");
+		filter.installationScript.setProperty("admin_user_password", "weak");
 	}
 
 	/**
