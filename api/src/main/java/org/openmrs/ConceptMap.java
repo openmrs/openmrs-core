@@ -12,6 +12,7 @@ package org.openmrs;
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,13 +47,13 @@ public class ConceptMap extends BaseConceptMap {
 	@Column(name = "concept_map_id")
 	private Integer conceptMapId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
 	@IndexedEmbedded
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinColumn(name = "concept_reference_term_id", nullable = false)
 	private ConceptReferenceTerm conceptReferenceTerm;

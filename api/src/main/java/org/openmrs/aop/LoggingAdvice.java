@@ -10,13 +10,13 @@
 package org.openmrs.aop;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.openmrs.User;
 import org.openmrs.annotation.Logging;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -56,108 +56,121 @@ public class LoggingAdvice implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 
+		// This advice wraps every method of every service, so the overwhelmingly common case is that
+		// neither level is enabled and there is nothing to do. Bail out before touching the method
+		// name, the clock or a try/finally frame, none of which can affect the outcome here.
+		final boolean traceEnabled = log.isTraceEnabled();
+		final boolean debugEnabled = log.isDebugEnabled();
+		if (!traceEnabled && !debugEnabled) {
+			return invocation.proceed();
+		}
+
 		Method method = invocation.getMethod();
 		String name = method.getName();
 
 		// decide what type of logging we're doing with the current method and the loglevel
 		boolean isSetterTypeOfMethod = OpenmrsUtil.stringStartsWith(name, SETTER_METHOD_PREFIXES);
-		boolean logGetter = !isSetterTypeOfMethod && log.isTraceEnabled();
-		boolean logSetter = isSetterTypeOfMethod && log.isDebugEnabled();
+		boolean logGetter = !isSetterTypeOfMethod && traceEnabled;
+		boolean logSetter = isSetterTypeOfMethod && debugEnabled;
 
-		// used for the execution time calculations
-		long startTime = System.currentTimeMillis();
-
-		// check if this method has the logging annotation on it
-		Logging loggingAnnotation = null;
-		if (logGetter || logSetter) {
-			loggingAnnotation = AnnotationUtils.findAnnotation(method, Logging.class);
-			if (loggingAnnotation != null && loggingAnnotation.ignore()) {
-				logGetter = false;
-				logSetter = false;
-			}
+		// e.g. a getter when only DEBUG is enabled: the enabled level does not cover this method
+		if (!logGetter && !logSetter) {
+			return invocation.proceed();
 		}
 
-		if (logGetter || logSetter) {
-			StringBuilder output = new StringBuilder();
-			output.append("In method ").append(method.getDeclaringClass().getSimpleName()).append(".").append(name);
+		// check if this method has the logging annotation on it
+		Logging loggingAnnotation = AnnotationUtils.findAnnotation(method, Logging.class);
+		if (loggingAnnotation != null && loggingAnnotation.ignore()) {
+			return invocation.proceed();
+		}
 
-			// print the argument values unless we're ignoring all
-			if (loggingAnnotation == null || !loggingAnnotation.ignoreAllArgumentValues()) {
+		// used for the execution time calculations; nanoTime is monotonic, so unlike wall-clock time it
+		// cannot report a negative or inflated duration when the system clock is adjusted mid-call
+		long startTime = System.nanoTime();
 
-				int x;
-				Class<?>[] types = method.getParameterTypes();
-				Object[] values = invocation.getArguments();
+		StringBuilder output = new StringBuilder();
+		output.append("In method ").append(method.getDeclaringClass().getSimpleName()).append(".").append(name);
 
-				// change the annotation array of indexes to a list of indexes to ignore
-				List<Integer> argsToIgnore = new ArrayList<>();
-				if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
-					for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes()) {
-						argsToIgnore.add(argIndexToIgnore);
+		// print the argument values unless we're ignoring all
+		if (loggingAnnotation == null || !loggingAnnotation.ignoreAllArgumentValues()) {
+
+			Class<?>[] types = method.getParameterTypes();
+			Object[] values = invocation.getArguments();
+
+			// flag the indexes named by the annotation so the loop below can test them directly; indexes
+			// outside the parameter list are ignored rather than treated as an error
+			boolean[] argsToIgnore = null;
+			if (loggingAnnotation != null && loggingAnnotation.ignoredArgumentIndexes().length > 0) {
+				argsToIgnore = new boolean[types.length];
+				for (int argIndexToIgnore : loggingAnnotation.ignoredArgumentIndexes()) {
+					if (argIndexToIgnore >= 0 && argIndexToIgnore < types.length) {
+						argsToIgnore[argIndexToIgnore] = true;
 					}
 				}
+			}
 
-				// loop over and print out each argument value
-				output.append(". Arguments: ");
-				for (x = 0; x < types.length; x++) {
-					output.append(types[x].getSimpleName()).append("=");
+			// loop over and print out each argument value
+			output.append(". Arguments: ");
+			for (int x = 0; x < types.length; x++) {
+				output.append(types[x].getSimpleName()).append("=");
 
-					// if there is an annotation to skip this, print out a bogus string.
-					if (argsToIgnore.contains(x)) {
-						output.append("<Arg value ignored>");
-					} else {
-						output.append(values[x]);
-					}
-
-					output.append(", ");
+				// if there is an annotation to skip this, print out a bogus string.
+				if (argsToIgnore != null && argsToIgnore[x]) {
+					output.append("<Arg value ignored>");
+				} else {
+					output.append(values[x]);
 				}
 
+				output.append(", ");
 			}
 
-			// print the string as either trace or debug
-			if (logGetter) {
-				log.trace(output.toString());
-			} else if (logSetter) {
-				log.debug(output.toString());
-			}
+		}
+
+		// print the string as either trace or debug
+		if (logGetter) {
+			log.trace(output.toString());
+		} else {
+			log.debug(output.toString());
 		}
 
 		try {
 			// do the actual method we're wrapped around
 			return invocation.proceed();
 		} catch (Exception e) {
-			if (logGetter || logSetter) {
-				String username;
-				User user = Context.getAuthenticatedUser();
-				if (user == null) {
-					username = "Guest (Not logged in)";
-				} else {
-					username = user.getUsername();
-					if (username == null || username.length() == 0) {
-						username = user.getSystemId();
-					}
-				}
-				log.debug(
-				    String.format("An error occurred while executing this method.%nCurrent user: %s%nError message: %s",
-				        username, e.getMessage()),
-				    e);
+			String username;
+			User user = null;
+			try {
+				user = Context.getAuthenticatedUser();
+			} catch (APIException ignored) {
+				// no user context established
 			}
+
+			if (user == null) {
+				username = "Guest (Not logged in)";
+			} else {
+				username = user.getUsername();
+				if (username == null || username.length() == 0) {
+					username = user.getSystemId();
+				}
+			}
+			log.debug("An error occurred while executing this method.\nCurrent user: {}\nError message: {}", username,
+			    e.getMessage(), e);
 			throw e;
 		} finally {
-			if (logGetter || logSetter) {
-				StringBuilder output = new StringBuilder();
-				output.append("Exiting method ").append(name);
+			StringBuilder exitOutput = new StringBuilder();
+			exitOutput.append("Exiting method ").append(name);
 
-				// only append execution time info if we're in debug mode
-				if (log.isDebugEnabled()) {
-					output.append(". execution time: ").append(System.currentTimeMillis() - startTime).append(" ms");
-				}
+			// only append execution time info if we're in debug mode
+			if (debugEnabled) {
+				exitOutput.append(". execution time: ").append(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime))
+				        .append(" ms");
+			}
 
-				// print the string as either trace or debug
-				if (logGetter) {
-					log.trace(output.toString());
-				} else if (logSetter) {
-					log.debug(output.toString());
-				}
+			// output the string as either trace or debug
+			if (logGetter) {
+				log.trace(exitOutput.toString());
+			} else {
+				log.debug(exitOutput.toString());
 			}
 		}
 

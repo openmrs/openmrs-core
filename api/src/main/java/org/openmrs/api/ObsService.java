@@ -20,11 +20,14 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.Visit;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * The ObsService deals with saving and getting Obs to/from the database Usage: <pre>
@@ -56,8 +59,10 @@ public interface ObsService extends OpenmrsService {
 	 * @param obsId integer obsId of observation desired
 	 * @return matching Obs
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#obsId, 'Obs', '" + PrivilegeConstants.GET_OBS + "')")
 	public Obs getObs(Integer obsId) throws APIException;
 
 	/**
@@ -68,8 +73,10 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return obs or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#uuid, 'Obs', '" + PrivilegeConstants.GET_OBS + "')")
 	public Obs getObsByUuid(String uuid) throws APIException;
 
 	/**
@@ -80,9 +87,12 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param initialObs
 	 * @return obs or null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.1
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#initialObs, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public Obs getRevisionObs(Obs initialObs);
 
 	/**
@@ -127,8 +137,11 @@ public interface ObsService extends OpenmrsService {
 	 *            required
 	 * @return Obs that was saved to the database
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.ADD_OBS, PrivilegeConstants.EDIT_OBS })
+	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.ADD_OBS + "') or hasPermission(#obs, '"
+	        + PrivilegeConstants.EDIT_OBS + "')")
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
 
 	/**
@@ -140,8 +153,10 @@ public interface ObsService extends OpenmrsService {
 	 * @param obs Obs to void
 	 * @param reason String reason it's being voided
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_OBS)
+	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.EDIT_OBS + "')")
 	public Obs voidObs(Obs obs, String reason) throws APIException;
 
 	/**
@@ -152,8 +167,10 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param obs Obs to unvoid
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.EDIT_OBS)
+	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.EDIT_OBS + "')")
 	public Obs unvoidObs(Obs obs) throws APIException;
 
 	/**
@@ -166,9 +183,11 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param obs
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #purgeObs(Obs, boolean)
 	 */
-	@Authorized(PrivilegeConstants.DELETE_OBS)
+	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.DELETE_OBS + "')")
 	public void purgeObs(Obs obs) throws APIException;
 
 	/**
@@ -184,9 +203,11 @@ public interface ObsService extends OpenmrsService {
 	 * @param cascade true/false whether or not to cascade down to other things that link to this
 	 *            observation (like Orders and ObsGroups)
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #purgeObs(Obs, boolean)
 	 */
-	@Authorized(PrivilegeConstants.DELETE_OBS)
+	@PreAuthorize("hasPermission(#obs, '" + PrivilegeConstants.DELETE_OBS + "')")
 	public void purgeObs(Obs obs, boolean cascade) throws APIException;
 
 	/**
@@ -197,10 +218,13 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param who the user to match on
 	 * @return a List&lt;Obs&gt; object containing all non-voided observations for the specified person
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date,
 	 *      boolean)
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#who, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public List<Obs> getObservationsByPerson(Person who);
 
 	/**
@@ -232,8 +256,11 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
@@ -280,8 +307,11 @@ public interface ObsService extends OpenmrsService {
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @since 1.12
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs,
@@ -315,8 +345,11 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	//TODO: DAO auth filter
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs) throws APIException;
@@ -359,8 +392,11 @@ public interface ObsService extends OpenmrsService {
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @since 1.12
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	//TODO: DAO auth filter
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, Integer obsGroupId,
 	        Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber) throws APIException;
@@ -375,8 +411,11 @@ public interface ObsService extends OpenmrsService {
 	 * @param searchString The string to search on
 	 * @return observations matching the given string
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public List<Obs> getObservations(String searchString) throws APIException;
 
 	/**
@@ -390,10 +429,13 @@ public interface ObsService extends OpenmrsService {
 	 * @param question conceptId to match on
 	 * @return list of all nonvoided observations matching these criteria
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date,
 	 *      boolean)
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#who, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
 
 	/**
@@ -406,11 +448,13 @@ public interface ObsService extends OpenmrsService {
 	 *
 	 * @param obsId
 	 * @return Obs with a ComplexData
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 * @deprecated as of 2.1.0, use {@link #getObs(Integer)}
 	 */
 	@Deprecated
-	@Authorized({ PrivilegeConstants.GET_OBS })
+	@PreAuthorize("hasPermission(#obsId, 'Obs', '" + PrivilegeConstants.GET_OBS + "')")
 	public Obs getComplexObs(Integer obsId, String view) throws APIException;
 
 	/**
@@ -513,9 +557,11 @@ public interface ObsService extends OpenmrsService {
 	 * @param conceptNames the conceptNames to be searched against
 	 * @param includeVoided whether voided observation should be included
 	 * @return The number of observations using the specified conceptNames as valueCodedNames
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since Version 1.7
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#conceptNames, '" + PrivilegeConstants.GET_OBS + "')")
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
 
 	/**
@@ -525,13 +571,84 @@ public interface ObsService extends OpenmrsService {
 	 *      same; it only adds visits to the search criteria. It effectively surpasses the above method;
 	 *      the old one is however kept for backward compatibility reasons.
 	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_OBS + "')")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws APIException;
+
+	/**
+	 * Gets observations matching the given search criteria.
+	 * <p>
+	 * A paged query also sorts on the obs id as a final sort key, which gives it a total order so that
+	 * rows tied on the requested sort columns cannot shift between pages. That makes a walk through the
+	 * pages consistent with respect to one snapshot of the data; as with any offset-based paging, obs
+	 * saved or voided part way through a walk still shift the rows that follow. Walking to a deep start
+	 * index costs the database the rows it skips, so prefer narrowing the criteria over paging far in.
+	 * <p>
+	 * mostRecentN and the paging parameters express the same bound in two different ways, so a positive
+	 * mostRecentN takes precedence and the paging parameters are ignored.
+	 *
+	 * @param obsSearchCriteria the search criteria for the observations query, required
+	 * @return list of Observations that match the criteria given in the search criteria
+	 * @throws APIException if an exception occurs processing or generating the result
+	 * @throws IllegalArgumentException if obsSearchCriteria is null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.8.10
+	 * @see org.openmrs.parameter.ObsSearchCriteriaBuilder
+	 */
+	@PreAuthorize("hasPermission(#obsSearchCriteria?.whom, '" + PrivilegeConstants.GET_OBS + "')")
+	//TODO: DAO auth filter
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException;
+
+	/**
+	 * Gets observations matching the given criteria, bounded to the requested page of results. This
+	 * behaves exactly like
+	 * {@link #getObservations(List, List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean, String)}
+	 * when startIndex and maxResults are both null. Otherwise, the results will be paged. When paged
+	 * results append the obsId as a sort parameter to guarantee stable views between page loads, at
+	 * least assuming the underlying data doesn't change.
+	 * <p>
+	 * mostRecentN and the paging parameters express the same bound in two different ways, so a positive
+	 * mostRecentN takes precedence and the paging parameters are ignored.
+	 *
+	 * @param whom List&lt;Person&gt; to restrict obs to (optional)
+	 * @param encounters List&lt;Encounter&gt; to restrict obs to (optional)
+	 * @param questions List&lt;Concept&gt; to restrict the obs to (optional)
+	 * @param answers List&lt;Concept&gt; to restrict the valueCoded to (optional)
+	 * @param personTypes List&lt;PERSON_TYPE&gt; objects to restrict the obs to, applied in addition to
+	 *            any restriction <code>whom</code> imposes (optional)
+	 * @param locations The org.openmrs.Location objects to restrict to (optional)
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
+	 *            obsDatetime (optional)
+	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
+	 * @param mostRecentN restrict the number of obs returned to this size, ignoring the paging
+	 *            parameters (optional)
+	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
+	 * @param fromDate the earliest Obs date to get (optional)
+	 * @param toDate the latest Obs date to get (optional)
+	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
+	 * @param accessionNumber accession number (optional)
+	 * @param startIndex the 0-based index of the first row to return (optional)
+	 * @param maxResults the maximum number of rows to return (optional)
+	 * @return list of Observations that match all of the criteria given
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.8.10
+	 */
+	@SuppressWarnings("squid:S107")
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	//TODO: DAO auth filter
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws APIException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
@@ -540,11 +657,33 @@ public interface ObsService extends OpenmrsService {
 	 *      same; it only adds visits to the search criteria. It effectively surpasses the above method;
 	 *      the old one is however kept for backward compatibility reasons.
 	 * @param visits List&lt;Visit&gt; to restrict obs to (optional)
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.7.0
 	 */
-	@Authorized(PrivilegeConstants.GET_OBS)
+	@PreAuthorize("hasPermission(#whom, '" + PrivilegeConstants.GET_OBS + "')")
+	//TODO: DAO auth filter
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<Visit> visits,
 	        Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs, String accessionNumber)
 	        throws APIException;
+
+	/**
+	 * Counts the observations matching the given search criteria. Paging parameters and mostRecentN are
+	 * ignored for these purposes.
+	 *
+	 * @param obsSearchCriteria the search criteria for the observations query, required
+	 * @return the number of Observations that match criteria given, ignoring their sort and row bounds
+	 * @throws APIException
+	 * @throws IllegalArgumentException if obsSearchCriteria is null, or if the count exceeds
+	 *             {@link Integer#MAX_VALUE}
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.8.10
+	 * @see #getObservations(ObsSearchCriteria)
+	 * @see org.openmrs.parameter.ObsSearchCriteriaBuilder
+	 */
+	@PreAuthorize("hasPermission(#obsSearchCriteria?.whom, '" + PrivilegeConstants.GET_OBS + "')")
+	//TODO: DAO auth filter
+	public Integer getObservationCount(ObsSearchCriteria obsSearchCriteria) throws APIException;
 }

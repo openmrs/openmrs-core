@@ -35,6 +35,8 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
+import org.openmrs.parameter.ObsSearchCriteriaBuilder;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
@@ -351,13 +353,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
 	        throws APIException {
 
-		if (sort == null) {
-			sort = new ArrayList<>();
-		}
-		if (sort.isEmpty()) {
-			sort.add("obsDatetime");
-		}
-
 		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
 		    obsGroupId, fromDate, toDate, includeVoidedObs, null);
 	}
@@ -390,15 +385,54 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws APIException {
 
-		if (sort == null) {
-			sort = new ArrayList<>();
-		}
-		if (sort.isEmpty()) {
-			sort.add("obsDatetime");
-		}
-
 		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, visits, mostRecentN,
 		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException {
+		requireSearchCriteria(obsSearchCriteria);
+
+		return dao.getObservations(obsSearchCriteria);
+	}
+
+	/**
+	 * Every individual search parameter is optional, so passing null for the criteria object as a whole
+	 * is an easy mistake to make. Caught at the service boundary it names the problem, where the DAO
+	 * would only raise an NPE from inside a query.
+	 *
+	 * @param obsSearchCriteria the criteria to check
+	 * @throws IllegalArgumentException if obsSearchCriteria is null
+	 */
+	private static void requireSearchCriteria(ObsSearchCriteria obsSearchCriteria) {
+		if (obsSearchCriteria == null) {
+			throw new IllegalArgumentException("obsSearchCriteria cannot be null");
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, List, List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String,
+	 *      java.lang.Integer, java.lang.Integer)
+	 */
+	@Override
+	@SuppressWarnings("squid:S107")
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws APIException {
+
+		return this.getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setEncounters(encounters)
+		        .setQuestions(questions).setAnswers(answers).setPersonTypes(personTypes).setLocations(locations)
+		        .setSort(sort).setVisits(visits).setMostRecentN(mostRecentN).setObsGroupId(obsGroupId).setFromDate(fromDate)
+		        .setToDate(toDate).setIncludeVoidedObs(includeVoidedObs).setAccessionNumber(accessionNumber)
+		        .setStartIndex(startIndex).setMaxResults(maxResults).createObsSearchCriteria());
 	}
 
 	/**
@@ -442,6 +476,25 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService, Re
 	        throws APIException {
 		return OpenmrsUtil.convertToInteger(dao.getObservationCount(whom, encounters, questions, answers, personTypes,
 		    locations, obsGroupId, fromDate, toDate, null, visits, includeVoidedObs, accessionNumber));
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Integer getObservationCount(ObsSearchCriteria obsSearchCriteria) throws APIException {
+		requireSearchCriteria(obsSearchCriteria);
+
+		// the sort and the row bounds the criteria carry say which of the matching rows come back, not
+		// which rows match, so a count deliberately ignores them: a paging client counting the result set
+		// it is walking wants the whole of it. valueCodedNameAnswers is passed as null because the search
+		// criteria cannot express it, matching the other getObservationCount() overloads
+		return OpenmrsUtil.convertToInteger(dao.getObservationCount(obsSearchCriteria.getWhom(),
+		    obsSearchCriteria.getEncounters(), obsSearchCriteria.getQuestions(), obsSearchCriteria.getAnswers(),
+		    obsSearchCriteria.getPersonTypes(), obsSearchCriteria.getLocations(), obsSearchCriteria.getObsGroupId(),
+		    obsSearchCriteria.getFromDate(), obsSearchCriteria.getToDate(), null, obsSearchCriteria.getVisits(),
+		    obsSearchCriteria.isIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber()));
 	}
 
 	/**

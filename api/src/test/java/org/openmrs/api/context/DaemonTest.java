@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -37,7 +37,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 /**
  * Tests the methods on the {@link Daemon} class
@@ -104,27 +103,12 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		    new Object[] { u.getDisplayString() }, Locale.ENGLISH)));
 	}
 
-	/**
-	 * @see Daemon#runInNewDaemonThread(Runnable)
-	 */
-	@Test
-	public void runInNewDaemonThread_shouldThrowErrorIfCalledFromANonDaemonThread() {
-		try {
-			Daemon.runInNewDaemonThread(() -> {
-				// do nothing
-			});
-			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
-			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
-		}
-	}
-
 	@Test
 	public void runInNewDaemonThreadCallable_shouldThrowErrorIfCalledFromANonDaemonThread() {
 		try {
 			Daemon.runInNewDaemonThread(() -> null);
 			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
+		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
 	}
@@ -134,9 +118,24 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			Daemon.runNewDaemonTask(() -> {});
 			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
+		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
+	}
+
+	@Test
+	public void runInNewDaemonThreadCallable_shouldDenyANonDaemonThreadWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Daemon.runInNewDaemonThread(() -> null));
+		assertThat(denial.getMessage(), is("Only daemon threads can spawn new daemon threads"));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldDenyANonDaemonThreadWithAnAPIAuthenticationException() {
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Daemon.runNewDaemonTask(() -> {}));
+		assertThat(denial.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 	}
 
 	@Test
@@ -172,23 +171,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		@Override
 		public void execute() throws InterruptedException, ExecutionException {
 			this.wasRun = true;
-		}
-	}
-
-	/**
-	 * A task that starts another Daemon thread that marks *this* thread when it gets run.
-	 */
-	private static class TaskThatStartsAnotherThread extends PrivateTask {
-
-		@Override
-		public void execute() throws InterruptedException {
-			Thread another = Daemon.runInNewDaemonThread(() -> {
-				this.wasRun = true;
-			});
-
-			// another.join(10000); doesn't actually work as runInNewDaemonThread doesn't use the Thread object rather it
-			// only executes the run method. The only way to determine it completed is to wait for wasRun to return true.
-			await().atMost(10, TimeUnit.SECONDS).untilTrue(new AtomicBoolean(wasRun));
 		}
 	}
 

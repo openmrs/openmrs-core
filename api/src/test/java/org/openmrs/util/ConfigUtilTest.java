@@ -25,6 +25,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Behavior-driven unit tests for {@link ConfigUtil} class
@@ -82,6 +84,22 @@ public class ConfigUtilTest extends BaseContextSensitiveTest {
 		GlobalProperty p = administrationService.getGlobalPropertyObject("mail.user");
 		administrationService.purgeGlobalProperty(p);
 		assertThat(ConfigUtil.getGlobalProperty("mail.user"), nullValue());
+	}
+
+	@Test
+	public void shouldGetGlobalPropertyAddedAfterItWasFoundToBeUnset() {
+		assertThat(ConfigUtil.getGlobalProperty("a_valid_gp_key"), nullValue());
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		assertThat(ConfigUtil.getGlobalProperty("a_valid_gp_key"), is("correct-value"));
+	}
+
+	@Test
+	public void shouldReadAGlobalPropertyThroughTheService() {
+		AdministrationService service = mock(AdministrationService.class);
+		when(service.getGlobalProperty("some.property")).thenReturn("loaded");
+		contextMockHelper.setAdministrationService(service);
+
+		assertThat(ConfigUtil.getGlobalProperty("some.property"), is("loaded"));
 	}
 
 	@Test
