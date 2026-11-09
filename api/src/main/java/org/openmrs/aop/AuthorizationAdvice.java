@@ -28,7 +28,6 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
-import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.MethodBeforeAdvice;
@@ -113,32 +112,27 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 		// Iterate through required privileges and return only if the user has
 		// one of them
 		if (!privileges.isEmpty()) {
-			try {
-				Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
-				for (String privilege : privileges) {
-					// skip null privileges
-					if (privilege == null || privilege.isEmpty()) {
+			for (String privilege : privileges) {
+				// skip null privileges
+				if (privilege == null || privilege.isEmpty()) {
+					return;
+				}
+				boolean hasPrivilege = Context.hasPrivilege(privilege);
+				log.debug("User has privilege {}? {}", privilege, hasPrivilege);
+
+				if (hasPrivilege) {
+					if (!requireAll) {
+						// if not all required, the first one that they have
+						// causes them to "pass"
 						return;
 					}
-					boolean hasPrivilege = Context.hasPrivilege(privilege);
-					log.debug("User has privilege {}? {}", privilege, hasPrivilege);
-
-					if (hasPrivilege) {
-						if (!requireAll) {
-							// if not all required, the first one that they have
-							// causes them to "pass"
-							return;
-						}
-					} else {
-						if (requireAll) {
-							// if all are required, the first miss causes them
-							// to "fail"
-							throwUnauthorized(Context.getAuthenticatedUser(), method, privilege);
-						}
+				} else {
+					if (requireAll) {
+						// if all are required, the first miss causes them
+						// to "fail"
+						throwUnauthorized(Context.getAuthenticatedUser(), method, privilege);
 					}
 				}
-			} finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
 			}
 
 			if (!requireAll) {

@@ -98,8 +98,7 @@ jobs:
             uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
             with:
                 distribution: 'temurin'
-                # Deploy with the oldest supported JDK on this line (javaCompilerVersion is 1.8)
-                # so published artifacts match what the Java 8 matrix leg validated.
+                # oldest JDK in the build matrix (maven.compiler.release is 21)
                 java-version: 21
                 cache: 'maven'
                 server-id: openmrs-repo-snapshots
@@ -149,3 +148,99 @@ jobs:
             env:
                 MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
                 MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+
+  publish-images:
+      name: Publish images
+      needs: build
+      if: >-
+          ${{ github.repository == 'openmrs/openmrs-core'
+          && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+          && contains(fromJSON('["master"]'), github.ref_name) }}
+      runs-on: ubuntu-latest
+      timeout-minutes: 120
+      permissions:
+          contents: read
+      concurrency:
+          group: publish-images-${{ github.ref }}
+          cancel-in-progress: false
+      env:
+          DOCKER_IMAGE_NAME: openmrs/openmrs-core
+          DOCKER_IMAGE_PLATFORMS: linux/amd64,linux/arm64
+          # must be identical in both builds, so the production build reuses the dev build's layers
+          MVN_ARGS: clean install -DskipTests
+          DEV_JDK: eclipse-temurin-21
+          RUNTIME_JDK: jdk21-temurin
+      steps:
+          # the dev image contains the checkout, .git included
+          - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            with:
+                persist-credentials: false
+
+          - name: Check project version is a SNAPSHOT
+            id: snapshot
+            run: |
+                set -e
+                VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout --batch-mode)
+                if [[ "$VERSION" == *-SNAPSHOT ]]; then
+                  echo "is_snapshot=true" >> "$GITHUB_OUTPUT"
+                  # e.g. 3.0.0-SNAPSHOT -> 3.0.x
+                  echo "line_tag=$(echo "$VERSION" | cut -d. -f1,2).x" >> "$GITHUB_OUTPUT"
+                else
+                  echo "is_snapshot=false" >> "$GITHUB_OUTPUT"
+                  echo "::notice::Project version $VERSION is not a SNAPSHOT; skipping publish."
+                fi
+
+          - name: Check this commit is still the branch tip
+            id: freshness
+            if: ${{ steps.snapshot.outputs.is_snapshot == 'true' }}
+            run: |
+                set -e
+                git fetch --quiet --depth=1 origin "$GITHUB_REF_NAME"
+                if [ "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" ]; then
+                  echo "current=true" >> "$GITHUB_OUTPUT"
+                else
+                  echo "current=false" >> "$GITHUB_OUTPUT"
+                  echo "::notice::Skipping publish: $GITHUB_REF_NAME has moved past $(git rev-parse --short HEAD); the run for the newer commit publishes instead."
+                fi
+
+          - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+            if: ${{ steps.freshness.outputs.current == 'true' }}
+
+          - uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
+            if: ${{ steps.freshness.outputs.current == 'true' }}
+
+          - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+            if: ${{ steps.freshness.outputs.current == 'true' }}
+            with:
+                username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+          - name: Build and push the dev image
+            if: ${{ steps.freshness.outputs.current == 'true' }}
+            run: |
+                IMAGE_DEV="${DOCKER_IMAGE_NAME}:dev"
+                docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+                  --cache-to "type=registry,mode=max,ref=${IMAGE_DEV}-cache" \
+                  --cache-from "${IMAGE_DEV}-cache" \
+                  --target dev \
+                  --build-arg MVN_ARGS="${MVN_ARGS}" \
+                  --build-arg DEV_JDK="${DEV_JDK}" \
+                  --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+                  -t "${IMAGE_DEV}" -t "${IMAGE_DEV}-${DEV_JDK}" .
+
+          - name: Build and push the production image
+            if: ${{ steps.freshness.outputs.current == 'true' }}
+            env:
+                LINE_TAG: ${{ steps.snapshot.outputs.line_tag }}
+            run: |
+                IMAGE_NIGHTLY="${DOCKER_IMAGE_NAME}:nightly"
+                IMAGE_LINE="${DOCKER_IMAGE_NAME}:${LINE_TAG}"
+                docker buildx build --pull --push --platform "${DOCKER_IMAGE_PLATFORMS}" \
+                  --cache-to "type=registry,mode=max,ref=${IMAGE_NIGHTLY}-cache" \
+                  --cache-from "${DOCKER_IMAGE_NAME}:dev-cache" \
+                  --cache-from "${IMAGE_NIGHTLY}-cache" \
+                  --build-arg MVN_ARGS="${MVN_ARGS}" \
+                  --build-arg DEV_JDK="${DEV_JDK}" \
+                  --build-arg RUNTIME_JDK="${RUNTIME_JDK}" \
+                  -t "${IMAGE_NIGHTLY}" -t "${IMAGE_NIGHTLY}-${DEV_JDK}" \
+                  -t "${IMAGE_LINE}" -t "${IMAGE_LINE}-${DEV_JDK}" .

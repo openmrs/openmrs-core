@@ -175,7 +175,7 @@ public class OpenmrsAuthorizationManagerFactory<T> implements AuthorizationManag
 	}
 
 	private static boolean holdsPrivilege(String privilege) {
-		if (PrivilegeResolution.holdsPrivilege(privilege)) {
+		if (Context.hasPrivilege(privilege)) {
 			return true;
 		}
 
