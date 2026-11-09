@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
@@ -58,9 +57,9 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		List<Order> orders = Context.getOrderService().getAllOrdersByPatient(patient);
 
 		//we should have some unvoided encounters, obs and orders for the test to be concrete
-		assertTrue(CollectionUtils.isNotEmpty(encounters));
-		assertTrue(CollectionUtils.isNotEmpty(observations));
-		assertTrue(CollectionUtils.isNotEmpty(orders));
+		assertFalse(encounters.isEmpty());
+		assertFalse(observations.isEmpty());
+		assertFalse(orders.isEmpty());
 
 		//check that fields to be set by the handler are initially null
 		for (Encounter encounter : encounters) {
@@ -107,8 +106,8 @@ public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
 
-		assertTrue(CollectionUtils.isEmpty(encounters));
-		assertTrue(CollectionUtils.isEmpty(observations));
+		assertTrue(encounters.isEmpty());
+		assertTrue(observations.isEmpty());
 	}
 
 	@Test

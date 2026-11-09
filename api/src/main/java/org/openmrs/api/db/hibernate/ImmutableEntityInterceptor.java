@@ -12,7 +12,6 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
@@ -103,7 +102,7 @@ public abstract class ImmutableEntityInterceptor implements Interceptor {
 					changedProperties.add(property);
 				}
 			}
-			if (CollectionUtils.isNotEmpty(changedProperties)) {
+			if (changedProperties != null && !changedProperties.isEmpty()) {
 				log.debug("The following fields cannot be changed for {} : {}", getSupportedType(), changedProperties);
 
 				throw new UnchangeableObjectException("editing.fields.not.allowed",
