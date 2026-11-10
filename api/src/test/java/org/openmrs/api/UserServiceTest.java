@@ -443,6 +443,35 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#changePassword(User,String)
+	 */
+	@Test
+	public void changePassword_shouldClearTheUsersLockout() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis()));
+
+		userService.changePassword(user, "Tester12");
+
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
+	}
+
+	/**
+	 * @see UserService#changePassword(User,String)
+	 */
+	@Test
+	public void changePassword_shouldResetTheUsersLoginAttempts() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "8");
+
+		userService.changePassword(user, "Tester12");
+
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
 	 * Test changing a user's password multiple times in the same transaction
 	 *
 	 * @see UserService#changePassword(String,String)
@@ -1069,6 +1098,19 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		User user = userService.getUser(502);
 		userService.purgeUser(user);
 		assertNull(userService.getUser(2));
+	}
+
+	/**
+	 * @see UserService#purgeUser(User)
+	 */
+	@Test
+	public void purgeUser_shouldRemoveTheUsersSecurityState() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, "test.secret", "value");
+
+		userService.purgeUser(user);
+
+		assertNull(Context.getUserSecurityStateService().getValue(user, "test.secret"));
 	}
 
 	/**

@@ -89,6 +89,7 @@
 		<property name="personService" ref="personService"/>
 		<property name="conceptService" ref="conceptService"/>
 		<property name="userService" ref="userService"/>
+		<property name="userSecurityStateService" ref="userSecurityStateService"/>
 		<property name="obsService" ref="obsService"/>
 		<property name="encounterService" ref="encounterService"/>
 		<property name="locationService" ref="locationService"/>
