@@ -42,6 +42,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
@@ -69,9 +70,12 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	private final SessionFactory sessionFactory;
 
+	private final UserSecurityStateDAO userSecurityStateDao;
+
 	@Autowired
-	public HibernateUserDAO(SessionFactory sessionFactory) {
+	public HibernateUserDAO(SessionFactory sessionFactory, UserSecurityStateDAO userSecurityStateDao) {
 		this.sessionFactory = sessionFactory;
+		this.userSecurityStateDao = userSecurityStateDao;
 	}
 
 	/**
@@ -269,6 +273,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteUser(User user) {
+		userSecurityStateDao.deleteAll(user.getUserId());
 		sessionFactory.getCurrentSession().remove(user);
 	}
 
@@ -442,10 +447,8 @@ public class HibernateUserDAO implements UserDAO {
 		saveLoginCredential(credentials);
 
 		// reset lockout
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS,
-		    OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
-		saveUser(changeForUser, null);
+		userSecurityStateDao.delete(userIdToChange, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS);
+		userSecurityStateDao.delete(userIdToChange, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
 	}
 
 	/**

@@ -1086,14 +1086,41 @@ public final class OpenmrsConstants {
 	/**
 	 * Name of the user_property that stores the number of unsuccessful login attempts this user has
 	 * made
+	 *
+	 * @deprecated as of 3.0.0, login attempts are kept in the user security state under
+	 *             {@link #USER_SECURITY_STATE_LOGIN_ATTEMPTS}; setting this user property has no effect
 	 */
+	@Deprecated
 	public static final String USER_PROPERTY_LOGIN_ATTEMPTS = "loginAttempts";
 
 	/**
 	 * Name of the user_property that stores the time the user was locked out due to too many login
 	 * attempts
+	 *
+	 * @deprecated as of 3.0.0, the lockout timestamp is kept in the user security state under
+	 *             {@link #USER_SECURITY_STATE_LOCKOUT_TIMESTAMP}; setting this user property has no
+	 *             effect, use {@code UserSecurityStateService.delete} to unlock a user
 	 */
+	@Deprecated
 	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP = "lockoutTimestamp";
+
+	/**
+	 * Key of the {@link org.openmrs.api.UserSecurityStateService} entry that counts a user's
+	 * consecutive unsuccessful login attempts; cleared on a successful login, when a lockout expires
+	 * and when the password is changed
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String USER_SECURITY_STATE_LOGIN_ATTEMPTS = "core.loginAttempts";
+
+	/**
+	 * Key of the {@link org.openmrs.api.UserSecurityStateService} entry that stores the time, in
+	 * milliseconds since the epoch, from which a user's current lockout runs; every login attempt
+	 * during the lockout resets it to the present
+	 *
+	 * @since 3.0.0
+	 */
+	public static final String USER_SECURITY_STATE_LOCKOUT_TIMESTAMP = "core.lockoutTimestamp";
 
 	/**
 	 * A user property name. The value should be a comma-separated ordered list of fully qualified

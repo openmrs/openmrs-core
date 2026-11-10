@@ -268,7 +268,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		User user = dao.authenticate("admin", "test");
 
-		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 	}
 
 	/**
@@ -280,16 +281,55 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
 
+		assertEquals("1", Context.getUserSecurityStateService().getValue(Context.getUserService().getUser(1),
+		    OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldFailNormallyWhenTheLoginAttemptsEntryDoesNotHoldANumber() {
+		Context.getUserSecurityStateService().setValue(Context.getUserService().getUser(1),
+		    OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldResetTheLoginAttemptsEntryWhenItDoesNotHoldANumber() {
+		User admin = Context.getUserService().getUser(1);
+		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
 		assertEquals("1",
-		    Context.getUserService().getUser(1).getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+		    Context.getUserSecurityStateService().getValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldRemoveTheLockoutTimestampEntryWhenItDoesNotHoldANumber() {
+		User admin = Context.getUserService().getUser(1);
+		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    "junk");
+
+		dao.authenticate("admin", "test");
+
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 	}
 
 	private void lockOutAdminSixMinutesAgo() {
 		User admin = Context.getUserService().getUser(1);
-		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
-		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "7");
+		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
-		Context.flushSession();
 	}
 
 	/**

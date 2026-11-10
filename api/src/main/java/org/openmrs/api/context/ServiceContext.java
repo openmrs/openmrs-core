@@ -41,6 +41,7 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.ServiceNotFoundException;
+import org.openmrs.api.UserSecurityStateService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.cache.GlobalPropertyCache;
@@ -511,10 +512,26 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 
 	/**
+	 * @return the per-user security state service
+	 * @since 3.0.0
+	 */
+	public UserSecurityStateService getUserSecurityStateService() {
+		return getService(UserSecurityStateService.class);
+	}
+
+	/**
 	 * @param userService the userService to set
 	 */
 	public void setUserService(UserService userService) {
 		setService(UserService.class, userService);
+	}
+
+	/**
+	 * @param userSecurityStateService the UserSecurityStateService to set
+	 * @since 3.0.0
+	 */
+	public void setUserSecurityStateService(UserSecurityStateService userSecurityStateService) {
+		setService(UserSecurityStateService.class, userSecurityStateService);
 	}
 
 	/**

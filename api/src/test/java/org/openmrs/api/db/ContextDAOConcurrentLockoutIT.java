@@ -152,9 +152,10 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		            + outcomes);
 
 		User user = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
-		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS),
-		    user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
-		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS + 1),
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+		assertNotNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 
 		String stillLocked = authenticateInSeparateSession(LOCKED_USERNAME, LOCKED_USER_PASSWORD);
 		assertTrue(stillLocked.contains(LOCKOUT_MESSAGE),
@@ -220,8 +221,9 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 
 		User user = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
 		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS),
-		    user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
-		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 
 		assertEquals("authenticated", authenticateInSeparateSession(LOCKED_USERNAME, LOCKED_USER_PASSWORD));
 	}

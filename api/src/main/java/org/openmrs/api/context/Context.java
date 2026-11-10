@@ -54,6 +54,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.SerializationService;
+import org.openmrs.api.UserSecurityStateService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
@@ -509,6 +510,14 @@ public class Context {
 	 */
 	public static UserService getUserService() {
 		return getServiceContext().getUserService();
+	}
+
+	/**
+	 * @return the per-user security state service
+	 * @since 3.0.0
+	 */
+	public static UserSecurityStateService getUserSecurityStateService() {
+		return getServiceContext().getUserSecurityStateService();
 	}
 
 	/**
