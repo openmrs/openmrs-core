@@ -909,6 +909,21 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ModuleUtil#insertModuleFile(InputStream, String)
+	 */
+	@Test
+	public void insertModuleFile_shouldFailIfTheFilenameResolvesOutsideTheModuleRepository(@TempDir File parent) {
+		File repository = new File(parent, "modules");
+		repository.mkdir();
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, repository.getAbsolutePath()));
+
+		assertThrows(ModuleException.class,
+		    () -> ModuleUtil.insertModuleFile(new ByteArrayInputStream(new byte[0]), "../outside.omod"));
+		assertFalse(new File(parent, "outside.omod").exists());
+	}
+
+	/**
 	 * @see ModuleUtil#openConnectionCheckRedirects(java.net.URLConnection)
 	 */
 	@Test
