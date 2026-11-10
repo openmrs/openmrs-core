@@ -1262,7 +1262,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptReferenceRange range1 = new ConceptReferenceRange();
 		range1.setConceptNumeric(conceptNumeric);
 		range1.setCriteria(TEST_CRITERIA);
-		range1.setHiNormal(150.0);
+		range1.setHiNormal(140.0);
 		range1.setLowNormal(70.0);
 		range1.setPriority(2);
 		conceptService.saveConceptReferenceRange(range1);
@@ -1270,7 +1270,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptReferenceRange range2 = new ConceptReferenceRange();
 		range2.setConceptNumeric(conceptNumeric);
 		range2.setCriteria(TEST_CRITERIA);
-		range2.setHiNormal(140.0);
+		range2.setHiNormal(150.0);
 		range2.setLowNormal(80.0);
 		range2.setPriority(2);
 		conceptService.saveConceptReferenceRange(range2);
