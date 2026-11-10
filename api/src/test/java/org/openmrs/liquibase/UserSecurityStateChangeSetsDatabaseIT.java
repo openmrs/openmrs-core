@@ -54,9 +54,8 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_3_0_X);
 
-		assertEquals(
-		    List.of("user_security_state_id", "user_id", "property", "property_value", "date_created", "date_changed"),
-		    columnsOfUserSecurityState());
+		assertEquals(List.of("user_security_state_id", "uuid", "user_id", "property", "property_value", "creator",
+		    "date_created", "changed_by", "date_changed"), columnsOfUserSecurityState());
 	}
 
 	/**
