@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -44,9 +45,13 @@ class InitializationFilterE2ETest {
 
 	private MockHttpServletResponse response;
 
+	private Properties originalRuntimeProperties;
+
 	/**
 	 * Testable subclass that overrides renderTemplate to capture which template was rendered instead of
-	 * actually invoking Velocity.
+	 * actually invoking Velocity, and stubs startInstallation so the real InitializationCompletion
+	 * background thread (which performs the real setup and overwrites Context.runtimeProperties with
+	 * wizard-defaulted values) doesn't race with subsequent tests in the same JVM.
 	 */
 	static class TestableInitializationFilter extends InitializationFilter {
 
@@ -57,6 +62,11 @@ class InitializationFilterE2ETest {
 		        HttpServletResponse httpResponse) throws IOException {
 			this.lastRenderedTemplate = templateName;
 		}
+
+		@Override
+		protected void startInstallation() {
+			setInstallationStarted(true);
+		}
 	}
 
 	@BeforeEach
@@ -65,13 +75,20 @@ class InitializationFilterE2ETest {
 		filter.wizardModel = new InitializationWizardModel();
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
-		// Clear runtime properties to avoid state leaking from other test classes
+		// Save and clear runtime properties to avoid state leaking from other test classes.
+		// Subsequent context-loading tests in the same JVM rely on these being restored,
+		// since SchedulerConfig.dataSource() reads them at bean-creation time.
+		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
+		filter.setInitializationComplete(false);
+		InitializationFilter.setInstallationStarted(false);
 	}
 
 	@AfterEach
 	void cleanup() {
 		InitializationFilter.setInstallationStarted(false);
+		filter.setInitializationComplete(false);
+		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
 	// ========== Language Selection (chooselang.vm) ==========
@@ -818,6 +835,20 @@ class InitializationFilterE2ETest {
 		assertTrue(filter.wizardModel.hasCurrentOpenmrsDatabase);
 	}
 
+	@Test
+	void isCurrentDatabase_shouldReturnTrueForMariaDBUrl() {
+		filter.wizardModel.databaseConnection = "jdbc:mariadb://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase("mariadb"));
+		assertFalse(filter.isCurrentDatabase("mysql"));
+	}
+
+	@Test
+	void isCurrentDatabase_shouldReturnTrueForMySQLUrl() {
+		filter.wizardModel.databaseConnection = "jdbc:mysql://localhost:3306/openmrs";
+		assertTrue(filter.isCurrentDatabase("mysql"));
+		assertFalse(filter.isCurrentDatabase("mariadb"));
+	}
+
 	// ========== goBack via image click (back.x / back.y) ==========
 
 	@Test
@@ -903,6 +934,75 @@ class InitializationFilterE2ETest {
 
 		assertTrue(getErrors().containsKey("install.error.dbUserPswd"));
 	}
+
+	// ========== skipFilter ==========
+
+	@Test
+	void skipFilter_shouldReturnFalseWhenInitializationRequired() {
+		filter.setInitializationComplete(false);
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueWhenInitializationComplete() {
+		filter.setInitializationComplete(true);
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
+		filter.setInitializationComplete(true);
+		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertFalse(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
+		filter.setInitializationComplete(true);
+		request.setServletPath("/openmrs");
+		request.setParameter("page", "progress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
+		filter.setInitializationComplete(true);
+		request.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+
+		boolean result = filter.skipFilter(request);
+
+		assertTrue(result);
+	}
+
+	@Test
+	void skipFilter_shouldNotReadRequestParametersOnceInitializationIsComplete() {
+		filter.setInitializationComplete(true);
+		MockHttpServletRequest req = new MockHttpServletRequest() {
+
+			@Override
+			public String getParameter(String name) {
+				throw new AssertionError("skipFilter parsed request parameters after initialization completed");
+			}
+		};
+		req.setServletPath("/index.htm");
+
+		assertTrue(filter.skipFilter(req));
+	}
+
+	// ========== Helper Methods ==========
 
 	/**
 	 * Access the errors map from the filter via reflection since it is protected in StartupFilter.

@@ -28,6 +28,7 @@ import jakarta.persistence.Table;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * A 'visit' is a contiguous time period where encounters occur between patients and healthcare
@@ -237,7 +238,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @param encounters the encounters to set
 	 */
 	public void setEncounters(Set<Encounter> encounters) {
-		this.encounters = encounters;
+		this.encounters = CollectionUtil.setCollection(this.encounters, encounters);
 	}
 
 	/**

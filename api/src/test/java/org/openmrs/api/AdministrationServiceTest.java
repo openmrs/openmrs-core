@@ -14,7 +14,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -22,10 +27,13 @@ import org.mockito.Mockito;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.Privilege;
-import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.cache.GlobalPropertyCache;
+import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
+import org.openmrs.api.cache.RolePrivilegeCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
@@ -41,6 +49,9 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.validation.BindException;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -551,6 +562,167 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getGlobalProperty_shouldReturnCachedValues() {
+		GlobalPropertyCacheTestUtil.seed(new GlobalProperty("another-global-property", "cached"));
+
+		assertEquals("cached", adminService.getGlobalProperty("another-global-property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldNotServeAValueCachedForAnotherSpelling() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
+		GlobalPropertyCacheTestUtil.seed(new GlobalProperty("another-global-property", "cached"));
+
+		assertEquals("anothervalue", adminService.getGlobalProperty("ANOTHER-global-property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldFillTheCacheInTheBackgroundOnAMiss() {
+		assertEquals("same-as", fill("concept.defaultConceptMapType"));
+
+		// changed behind the API, so only a cache hit still returns the old value
+		adminService.executeSQL(
+		    "update global_property set property_value = 'changed' where property = 'concept.defaultConceptMapType'", false);
+
+		assertEquals("same-as", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldCacheUnsetProperties() {
+		assertNull(fill("unset.property"));
+
+		adminService.executeSQL("insert into global_property (property, property_value, uuid) "
+		        + "values ('unset.property', 'value', '3b5c8f3e-4f5a-4a55-9a4e-0b6f0b7c1d2e')",
+		    false);
+
+		assertNull(adminService.getGlobalProperty("unset.property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldReadTheCurrentTransactionsOwnWrites() {
+		fill("concept.defaultConceptMapType");
+
+		adminService.setGlobalProperty("concept.defaultConceptMapType", "changed");
+
+		assertEquals("changed", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+		GlobalPropertyCacheTestUtil.awaitFills();
+		assertEquals("changed", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldNotCacheValuesWrittenByTheCurrentTransaction() {
+		adminService.setGlobalProperty("new.property", "value");
+
+		assertEquals("value", fill("new.property"));
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("new.property"));
+	}
+
+	@Test
+	public void getGlobalProperty_shouldCheckTheViewPrivilegeOfCachedValues() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
+		GlobalProperty property = new GlobalProperty("another-global-property", "cached");
+		property.setViewPrivilege(new Privilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES));
+		GlobalPropertyCacheTestUtil.seed(property);
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// the proxy privilege passes the @Authorized gate but not the view check
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			// an APIException, not the gate's AccessDeniedException, means the proxy passed the gate but
+			// the impl's view check denied it
+			assertThrows(APIException.class, () -> adminService.getGlobalProperty("another-global-property"));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldEvictTheCachedValueWhenTheTransactionCompletes() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		GlobalProperty property = adminService.getGlobalPropertyObject("concept.defaultConceptMapType");
+		property.setPropertyValue("saved");
+		adminService.saveGlobalProperty(property);
+
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+		TestTransaction.end();
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void saveGlobalProperty_shouldEvictACachedUnsetPropertyWhenTheTransactionCompletes() {
+		fill("unset.property");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("unset.property"));
+
+		adminService.saveGlobalProperty(new GlobalProperty("unset.property", "value"));
+
+		assertEquals("value", adminService.getGlobalProperty("unset.property"));
+		TestTransaction.end();
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("unset.property"));
+	}
+
+	@Test
+	public void setGlobalProperty_shouldEvictTheCachedValueWhenTheTransactionCompletes() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		adminService.setGlobalProperty("CONCEPT.defaultConceptMapType", "set");
+
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+		TestTransaction.end();
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void updateGlobalProperty_shouldEvictTheCachedValueWhenTheTransactionCompletes() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		adminService.updateGlobalProperty("concept.defaultConceptMapType", "updated");
+
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+		TestTransaction.end();
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void purgeGlobalProperty_shouldEvictTheCachedValueWhenTheTransactionCompletes() {
+		fill("concept.defaultConceptMapType");
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+
+		adminService.purgeGlobalProperty(adminService.getGlobalPropertyObject("concept.defaultConceptMapType"));
+
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+		TestTransaction.end();
+		assertFalse(GlobalPropertyCacheTestUtil.isCached("concept.defaultConceptMapType"));
+	}
+
+	@Test
+	public void globalPropertyCache_shouldBeConfiguredWithALifespan() {
+		org.infinispan.Cache<?, ?> nativeCache = (org.infinispan.Cache<?, ?>) getGlobalPropertyCache().getNativeCache();
+
+		assertEquals(3_600_000L, nativeCache.getCacheConfiguration().expiration().lifespan());
+	}
+
+	@Test
+	public void getGlobalProperty_shouldRequireTheGetGlobalPropertiesPrivilegeForACachedValue() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalPropertyCacheTestUtil.forgetWritesInCurrentTransaction();
+		fill("concept.defaultConceptMapType");
+		assertNotNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		assertThrows(AccessDeniedException.class, () -> adminService.getGlobalProperty("concept.defaultConceptMapType"));
+	}
+
+	@Test
 	public void filterGlobalPropertiesByViewPrivilege_shouldFilterGlobalPropertiesIfUserIsNotAllowedToViewSomeGlobalProperties() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 
@@ -593,7 +765,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> adminService.getGlobalProperty(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getViewPrivilege()));
 	}
@@ -609,11 +781,99 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getViewPrivilege());
-		Context.getAuthenticatedUser().addRole(role);
-		assertNotNull(adminService.getGlobalProperty(property.getProperty()));
+		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
+		// not from the in-memory role object, so no proxy privilege is involved.
+		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
+		try {
+			assertNotNull(adminService.getGlobalProperty(property.getProperty()));
+		} finally {
+			RolePrivilegeCacheTestUtil.clear();
+		}
+	}
+
+	/**
+	 * A proxy privilege may satisfy the method's {@code @Authorized} gate but must not satisfy the
+	 * impl-level, proxy-excluding view check, so a caller holding the view privilege only as a proxy is
+	 * still denied the value.
+	 *
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
+	 */
+	@Test
+	public void getGlobalProperty_shouldFailIfUserHasViewPrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithViewPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// The property's view privilege is also the privilege the @Authorized gate requires, so this proxy
+		// lets the call past the gate; the impl's proxy-excluding canViewGlobalProperty must still deny it.
+		Context.addProxyPrivilege(property.getViewPrivilege().getPrivilege());
+		try {
+			// an APIException, not the gate's AccessDeniedException, means the proxy passed the gate but
+			// the resource-level check denied it
+			assertThrows(APIException.class, () -> adminService.getGlobalProperty(property.getProperty()));
+		} finally {
+			Context.removeProxyPrivilege(property.getViewPrivilege().getPrivilege());
+		}
+	}
+
+	/**
+	 * As with the view check, a proxy privilege may pass the method's {@code @Authorized} gate but must
+	 * not satisfy the impl-level, proxy-excluding edit check.
+	 *
+	 * @see org.openmrs.api.AdministrationService#updateGlobalProperty(String, String)
+	 */
+	@Test
+	public void updateGlobalProperty_shouldFailIfUserHasEditPrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// Get + Manage Global Properties as proxies get the call past the getGlobalPropertyObject and
+		// updateGlobalProperty gates; the impl's proxy-excluding canEditGlobalProperty must still deny it.
+		Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(property.getEditPrivilege().getPrivilege());
+		try {
+			// an APIException, not the gate's AccessDeniedException, means the impl's edit check denied it
+			assertThrows(APIException.class, () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
+		} finally {
+			Context.removeProxyPrivilege(property.getEditPrivilege().getPrivilege());
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	/**
+	 * As with the view check, a proxy privilege may pass the method's {@code @Authorized} gate but must
+	 * not satisfy the impl-level, proxy-excluding delete check.
+	 *
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(GlobalProperty)
+	 */
+	@Test
+	public void purgeGlobalProperty_shouldFailIfUserHasDeletePrivilegeOnlyAsAProxyPrivilege() {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		GlobalProperty property = getGlobalPropertyWithDeletePrivilege();
+
+		// authenticate new user without privileges
+		Context.logout();
+		Context.authenticate(getTestUserCredentials());
+
+		// Purge Global Properties as a proxy gets the call past the purgeGlobalProperty gate; the impl's
+		// proxy-excluding canDeleteGlobalProperty must still deny it even with the delete privilege proxied.
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		Context.addProxyPrivilege(property.getDeletePrivilege().getPrivilege());
+		try {
+			// an APIException, not the gate's AccessDeniedException, means the impl's delete check denied it
+			assertThrows(APIException.class, () -> adminService.purgeGlobalProperty(property));
+		} finally {
+			Context.removeProxyPrivilege(property.getDeletePrivilege().getPrivilege());
+			Context.removeProxyPrivilege(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES);
+		}
 	}
 
 	/**
@@ -628,7 +888,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		APIException exception = assertThrows(APIException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> adminService.getGlobalPropertyObject(property.getProperty()));
 		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getViewPrivilege()));
 	}
@@ -644,12 +904,15 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getViewPrivilege());
-		Context.getAuthenticatedUser().addRole(role);
-
-		assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
+		// Grant the view privilege via the authoritative cache; role privileges resolve by role name,
+		// not from the in-memory role object, so no proxy privilege is involved.
+		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		RolePrivilegeCacheTestUtil.seed("Provider", property.getViewPrivilege().getPrivilege());
+		try {
+			assertNotNull(adminService.getGlobalPropertyObject(property.getProperty()));
+		} finally {
+			RolePrivilegeCacheTestUtil.clear();
+		}
 	}
 
 	/**
@@ -666,7 +929,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
 
-		APIException exception = assertThrows(APIException.class,
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class,
 		    () -> adminService.updateGlobalProperty(property.getProperty(), "new-value"));
 		assertEquals(exception.getMessage(), String.format("Privileges required: %s", property.getEditPrivilege()));
 	}
@@ -679,23 +942,25 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	public void updateGlobalProperty_shouldUpdateIfUserIsAllowedToEditGlobalProperty() {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		GlobalProperty property = getGlobalPropertyWithEditPrivilege();
-		GlobalProperty globalPropertyWithViewPrivilege = getGlobalPropertyWithViewPrivilege();
+		// also give the property a view privilege so the read-back below is privilege-gated too
+		getGlobalPropertyWithViewPrivilege();
 		assertEquals("anothervalue", property.getPropertyValue());
 
 		// authenticate new user without privileges
 		Context.logout();
 		Context.authenticate(getTestUserCredentials());
-		// add required privilege to user
-		Role role = Context.getUserService().getRole("Provider");
-		role.addPrivilege(property.getEditPrivilege());
-
-		role.addPrivilege(globalPropertyWithViewPrivilege.getViewPrivilege());
-
-		Context.getAuthenticatedUser().addRole(role);
-
-		adminService.updateGlobalProperty(property.getProperty(), "new-value");
-		String newValue = adminService.getGlobalProperty(property.getProperty());
-		assertEquals("new-value", newValue);
+		// Grant the edit + view privileges via the authoritative cache; role privileges resolve by role
+		// name, not from the in-memory role object, so no proxy privilege is involved.
+		Context.getAuthenticatedUser().addRole(Context.getUserService().getRole("Provider"));
+		RolePrivilegeCacheTestUtil.seed("Provider", PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES,
+		    PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		try {
+			adminService.updateGlobalProperty(property.getProperty(), "new-value");
+			String newValue = adminService.getGlobalProperty(property.getProperty());
+			assertEquals("new-value", newValue);
+		} finally {
+			RolePrivilegeCacheTestUtil.clear();
+		}
 	}
 
 	/**
@@ -1099,6 +1364,61 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		adminService.saveGlobalProperty(new GlobalProperty("test", "TEST"));
 
 		assertThat(getCacheForCurrentUser(), nullValue());
+	}
+
+	@Test
+	public void getGlobalProperty_shouldNotStartATransactionForACachedValue() {
+		fill("concept.defaultConceptMapType");
+		TestTransaction.end();
+		Statistics statistics = Context.getRegisteredComponent("sessionFactory", SessionFactory.class).getStatistics();
+		long transactions = statistics.getTransactionCount();
+
+		assertEquals("same-as", adminService.getGlobalProperty("concept.defaultConceptMapType"));
+		assertEquals("same-as", adminService.getGlobalProperty("concept.defaultConceptMapType", "default"));
+		assertEquals("same-as", adminService.getGlobalPropertyValue("concept.defaultConceptMapType", "default"));
+		assertEquals(transactions, statistics.getTransactionCount());
+
+		// a read that does start one is counted
+		adminService.getGlobalPropertyObject("concept.defaultConceptMapType");
+		assertEquals(transactions + 1, statistics.getTransactionCount());
+	}
+
+	@Test
+	public void getGlobalProperty_shouldReadAMissWithoutATransactionOrSession() throws Exception {
+		TestTransaction.end();
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("concept.defaultConceptMapType"));
+		SessionFactory sessionFactory = Context.getRegisteredComponent("sessionFactory", SessionFactory.class);
+		UserContext userContext = Context.getUserContext();
+
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		try {
+			Future<String> value = executor.submit(() -> {
+				Context.setUserContext(userContext);
+				try {
+					assertFalse(TransactionSynchronizationManager.hasResource(sessionFactory));
+					return adminService.getGlobalProperty("concept.defaultConceptMapType");
+				} finally {
+					Context.clearUserContext();
+				}
+			});
+			assertEquals("same-as", value.get());
+		} finally {
+			executor.shutdownNow();
+		}
+	}
+
+	/**
+	 * Reads the property, missing the cache, and waits for the fill that the miss starts. Fills read
+	 * committed data, so this only caches properties the test has not changed.
+	 */
+	private String fill(String propertyName) {
+		String value = adminService.getGlobalProperty(propertyName);
+		GlobalPropertyCacheTestUtil.awaitFills();
+		return value;
+	}
+
+	private Cache getGlobalPropertyCache() {
+		return cacheManager.getCache(GlobalPropertyCache.CACHE_NAME);
 	}
 
 	private Cache.ValueWrapper getCacheForCurrentUser() {

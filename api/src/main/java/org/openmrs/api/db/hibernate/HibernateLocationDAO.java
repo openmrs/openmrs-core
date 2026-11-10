@@ -32,6 +32,7 @@ import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.parameter.LocationSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -428,5 +429,101 @@ public class HibernateLocationDAO implements LocationDAO {
 			locationTagIds.add(tag.getLocationTagId());
 		}
 		return locationTagIds;
+	}
+
+	/**
+	 * @see LocationDAO#getLocations(LocationSearchCriteria)
+	 */
+	@Override
+	public List<Location> getLocations(LocationSearchCriteria criteria) {
+		Session session = sessionFactory.getCurrentSession();
+
+		List<Integer> descendantIds = getDescendantIds(session, criteria);
+		if (criteria.getDescendantOfLocation() != null && descendantIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Location> cq = cb.createQuery(Location.class);
+		Root<Location> root = cq.from(Location.class);
+
+		List<Predicate> predicates = buildPredicates(cb, cq, root, criteria, descendantIds);
+
+		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+		cq.orderBy(cb.asc(root.get("name")));
+
+		var query = session.createQuery(cq);
+		applyPagination(query, criteria);
+
+		return query.getResultList();
+	}
+
+	private List<Integer> getDescendantIds(Session session, LocationSearchCriteria criteria) {
+		if (criteria.getDescendantOfLocation() == null) {
+			return null;
+		}
+
+		String retiredFilter = criteria.getIncludeRetired() ? "" : " AND retired = false";
+		String cteSql = "WITH RECURSIVE descendants (location_id) AS ("
+		        + " SELECT location_id FROM location WHERE parent_location = :locationId" + retiredFilter
+		        + " UNION ALL SELECT l.location_id FROM location l"
+		        + " INNER JOIN descendants d ON l.parent_location = d.location_id" + retiredFilter
+		        + ") SELECT location_id FROM descendants";
+		return session.createNativeQuery(cteSql, Integer.class)
+		        .setParameter("locationId", criteria.getDescendantOfLocation().getLocationId()).list();
+	}
+
+	private List<Predicate> buildPredicates(CriteriaBuilder cb, CriteriaQuery<Location> cq, Root<Location> root,
+	        LocationSearchCriteria criteria, List<Integer> descendantIds) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (!criteria.getIncludeRetired()) {
+			predicates.add(cb.isFalse(root.get("retired")));
+		}
+
+		if (descendantIds != null) {
+			predicates.add(root.get("locationId").in(descendantIds));
+		}
+
+		addNameFragmentPredicate(cb, root, criteria, predicates);
+		addTagPredicates(cb, cq, root, criteria, predicates);
+
+		return predicates;
+	}
+
+	private void addNameFragmentPredicate(CriteriaBuilder cb, Root<Location> root, LocationSearchCriteria criteria,
+	        List<Predicate> predicates) {
+		if (StringUtils.isNotBlank(criteria.getNameFragment())) {
+			predicates.add(
+			    cb.like(cb.lower(root.get("name")), MatchMode.START.toLowerCasePattern(criteria.getNameFragment())));
+		}
+	}
+
+	private void addTagPredicates(CriteriaBuilder cb, CriteriaQuery<Location> cq, Root<Location> root,
+	        LocationSearchCriteria criteria, List<Predicate> predicates) {
+		if (criteria.getLocationTags() == null || criteria.getLocationTags().isEmpty()) {
+			return;
+		}
+
+		List<Integer> tagIds = getLocationTagIds(new ArrayList<>(criteria.getLocationTags()));
+		if (tagIds.isEmpty()) {
+			return;
+		}
+
+		Join<Location, LocationTag> tagsJoin = root.join("tags");
+		predicates.add(tagsJoin.get("locationTagId").in(tagIds));
+		cq.groupBy(root);
+		if (criteria.getTagMatchMode() == LocationSearchCriteria.TagMatchMode.ALL) {
+			cq.having(cb.equal(cb.count(tagsJoin), (long) tagIds.size()));
+		}
+	}
+
+	private void applyPagination(org.hibernate.query.Query<Location> query, LocationSearchCriteria criteria) {
+		if (criteria.getStartIndex() != null) {
+			query.setFirstResult(criteria.getStartIndex());
+		}
+		if (criteria.getMaxResults() != null) {
+			query.setMaxResults(criteria.getMaxResults());
+		}
 	}
 }

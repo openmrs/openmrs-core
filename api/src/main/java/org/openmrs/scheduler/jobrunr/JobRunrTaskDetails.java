@@ -20,7 +20,7 @@ import org.openmrs.scheduler.TaskDetails;
 import org.openmrs.scheduler.TaskState;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class JobRunrTaskDetails implements TaskDetails {
 

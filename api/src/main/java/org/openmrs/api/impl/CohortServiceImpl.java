@@ -242,8 +242,15 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Override
 	public void notifyPatientVoided(Patient patient) throws APIException {
-		List<CohortMembership> memberships = Context.getCohortService().getCohortMemberships(patient.getPatientId(), null,
-		    false);
+		// this membership read is internal bookkeeping done while a patient is being voided; acquire
+		// the read privilege on the voiding user's behalf rather than requiring them to hold it
+		List<CohortMembership> memberships;
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_PATIENT_COHORTS);
+			memberships = Context.getCohortService().getCohortMemberships(patient.getPatientId(), null, false);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_PATIENT_COHORTS);
+		}
 		memberships.forEach(m -> {
 			m.setVoided(patient.getVoided());
 			m.setDateVoided(patient.getDateVoided());

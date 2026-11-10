@@ -17,9 +17,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.OpenmrsService;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Defines methods required to schedule a task.
@@ -48,20 +50,24 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param id
 	 * @return the <code>String</code> status of the task with the given identifier
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
 	String getStatus(Integer id);
 
 	/**
 	 * Cancel a scheduled task.
 	 *
 	 * @param task the <code>TaskDefinition</code> for the task to cancel
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #deleteTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	void shutdownTask(TaskDefinition task) throws SchedulerException;
 
 	/**
@@ -70,40 +76,49 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param task TaskDefinition to start
 	 * @return the started <code>Task</code>, or null if there was a problem instantiating or scheduling
 	 *         the task
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #schedule(TaskData)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	Task scheduleTask(TaskDefinition task) throws SchedulerException;
 
 	/**
 	 * Stop and start a scheduled task.
 	 *
 	 * @param task the <code>TaskDefinition</code> to reschedule
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #deleteTask(String)} and {@link #schedule(TaskData)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	Task rescheduleTask(TaskDefinition task) throws SchedulerException;
 
 	/**
 	 * Loop over all currently started tasks and cycle them. This should be done after the classloader
 	 * has been changed (e.g. during module start/stop)
 	 *
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x this method is not needed anymore
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
 	void rescheduleAllTasks() throws SchedulerException;
 
 	/**
 	 * Get scheduled tasks.
 	 *
 	 * @return all scheduled tasks
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #getTasks(TaskState, Instant)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
+	@PostFilter("hasPermission(filterObject, 'Manage Scheduler')")
 	Collection<TaskDefinition> getScheduledTasks();
 
 	/**
@@ -111,49 +126,61 @@ public interface SchedulerService extends OpenmrsService {
 	 * database.
 	 *
 	 * @return all available tasks
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #getTasks(TaskState, Instant)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
+	@PostFilter("hasPermission(filterObject, 'Manage Scheduler')")
 	Collection<TaskDefinition> getRegisteredTasks();
 
 	/**
 	 * Get the task with the given identifier.
 	 *
 	 * @param id the identifier of the task
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#id, 'org.openmrs.scheduler.TaskDefinition', 'Manage Scheduler')")
 	TaskDefinition getTask(Integer id);
 
 	/**
 	 * @since 2.4.0 Get the task with the given uuid
 	 * @param uuid the unique identifier of the task
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#uuid, 'org.openmrs.scheduler.TaskDefinition', 'Manage Scheduler')")
 	TaskDefinition getTaskByUuid(String uuid);
 
 	/**
 	 * Get the task with the given name.
 	 *
 	 * @param name name of the task
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #getTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
+	@PostAuthorize("hasPermission(returnObject, 'Manage Scheduler')")
 	TaskDefinition getTaskByName(String name);
 
 	/**
 	 * Delete the task with the given identifier.
 	 *
 	 * @param id the identifier of the task
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #deleteTask(String)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasAuthority('Manage Scheduler')")
 	void deleteTask(Integer id);
 
 	/**
@@ -161,10 +188,12 @@ public interface SchedulerService extends OpenmrsService {
 	 * <p>
 	 * <strong>Should</strong> save task to the database
 	 *
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @deprecated since 2.9.x use {@link #schedule(TaskData)}
 	 */
 	@Deprecated
-	@Authorized({ "Manage Scheduler" })
+	@PreAuthorize("hasPermission(#task, 'Manage Scheduler')")
 	@Logging(ignore = true)
 	void saveTaskDefinition(TaskDefinition task);
 
@@ -185,9 +214,11 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Optional<TaskDetails> getTask(String uuid);
 
 	/**
@@ -197,9 +228,11 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return RecurringTaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Optional<RecurringTaskDetails> getRecurringTask(String uuid);
 
 	/**
@@ -211,23 +244,27 @@ public interface SchedulerService extends OpenmrsService {
 	 * User can only delete its own tasks unless has Manage Scheduler privilege.
 	 *
 	 * @param uuid
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	void deleteTask(String uuid);
 
 	/**
 	 * Delete recurring task with the given uuid.
 	 * <p>
-	 * Please note that if a task runs, it won't be stopped. The deletion will prevent the task from
-	 * running in the future.
+	 * Please note that if a task runs, it won't be stopped, unless it implements the stop logic. The
+	 * deletion will prevent the task from running in the future.
 	 * <p>
 	 * User can only delete its own tasks unless has Manage Scheduler privilege.
 	 *
 	 * @param uuid
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	void deleteRecurringTask(String uuid);
 
 	/**
@@ -240,9 +277,11 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param state the state of the tasks
 	 * @param updatedBefore the moment in time (for stable iteration)
 	 * @return Stream<TaskDetails>
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Stream<TaskDetails> getTasks(TaskState state, Instant updatedBefore);
 
 	/**
@@ -251,10 +290,26 @@ public interface SchedulerService extends OpenmrsService {
 	 * User can only get its own tasks unless has Manage Scheduler privilege.
 	 *
 	 * @return Stream<RecurringTaskDetails>
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	Stream<RecurringTaskDetails> getRecurringTasks();
+
+	/**
+	 * Returns recurring tasks ordered from the most recently updated filtered by name.
+	 * <p>
+	 * Users can only get its own tasks unless they have Manage Scheduler privilege.
+	 *
+	 * @param name the name of the task
+	 * @return Stream<RecurringTaskDetails>
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	Stream<RecurringTaskDetails> getRecurringTasksByName(String name);
 
 	/**
 	 * It schedules a one-off task, that will be put in queue and executed in background.
@@ -271,9 +326,11 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param taskData
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData);
 
 	/**
@@ -282,13 +339,52 @@ public interface SchedulerService extends OpenmrsService {
 	 * <p>
 	 * See {@link #schedule(TaskData)} for more details.
 	 *
+	 * @param taskData
 	 * @param name
+	 * @return TaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(TaskData taskData, String name);
+
+	/**
+	 * It schedules a one-off task with a predefined uuid, that will be put in queue and executed in
+	 * background.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
 	 * @param taskData
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
-	TaskDetails schedule(String name, TaskData taskData);
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(String uuid, TaskData taskData);
+
+	/**
+	 * It schedules a one-off task with a user-friendly name and a predefined uuid, that will be put in
+	 * queue and executed in background.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param name
+	 * @return TaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(String uuid, TaskData taskData, String name);
 
 	/**
 	 * It schedules a task to run once at the given time.
@@ -298,9 +394,11 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param runAt
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, Instant runAt);
 
 	/**
@@ -310,11 +408,51 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param taskData
 	 * @param runAt
+	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
-	TaskDetails schedule(String name, TaskData taskData, Instant runAt);
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(TaskData taskData, Instant runAt, String name);
+
+	/**
+	 * It schedules a task with a predefined uuid to run once at the given time.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param runAt
+	 * @return TaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(String uuid, TaskData taskData, Instant runAt);
+
+	/**
+	 * It schedules a task with a user-friendly name and predefined uuid to run once at the given time.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param runAt
+	 * @param name
+	 * @return TaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(String uuid, TaskData taskData, Instant runAt, String name);
 
 	/**
 	 * It schedules a task to run once at the given time respecting time zone.
@@ -324,9 +462,11 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param runAt
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	TaskDetails schedule(TaskData taskData, ZonedDateTime runAt);
 
 	/**
@@ -336,11 +476,52 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param taskData
 	 * @param runAt
+	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
-	TaskDetails schedule(String name, TaskData taskData, ZonedDateTime runAt);
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(TaskData taskData, ZonedDateTime runAt, String name);
+
+	/**
+	 * It schedules a task with a predefined uuid to run once at the given time respecting time zone.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param runAt
+	 * @return TaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt);
+
+	/**
+	 * It schedules a task with a user-friendly name and predefined uuid to run once at the given time
+	 * respecting time zone.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param runAt
+	 * @param name
+	 * @return TaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	TaskDetails schedule(String uuid, TaskData taskData, ZonedDateTime runAt, String name);
 
 	/**
 	 * It schedules a task to run recurrently at the given cron schedule.
@@ -350,9 +531,11 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param cron
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron);
 
 	/**
@@ -362,11 +545,52 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param taskData
 	 * @param cron
+	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
-	RecurringTaskDetails scheduleRecurrently(String name, TaskData taskData, String cron);
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, String name);
+
+	/**
+	 * It schedules a task with a predefined uuid to run recurrently at the given cron schedule.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param cron
+	 * @return RecurringTaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron);
+
+	/**
+	 * It schedules a task with a user-friendly name and predefined uuid to run recurrently at the given
+	 * cron schedule.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param cron
+	 * @param name
+	 * @return RecurringTaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, String name);
 
 	/**
 	 * It schedules a task to run recurrently at the given cron schedule respecting the given time zone.
@@ -377,9 +601,11 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param cron
 	 * @param zoneId
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId);
 
 	/**
@@ -391,11 +617,55 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param cron
 	 * @param zoneId
+	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
-	RecurringTaskDetails scheduleRecurrently(String name, TaskData taskData, String cron, ZoneId zoneId);
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId, String name);
+
+	/**
+	 * It schedules a task with a predefined uuid to run recurrently at the given cron schedule
+	 * respecting the given time zone.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param cron
+	 * @param zoneId
+	 * @return RecurringTaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId);
+
+	/**
+	 * It schedules a task with a user-friendly name and predefined uuid to run recurrently at the given
+	 * cron schedule respecting the given time zone.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param cron
+	 * @param zoneId
+	 * @param name
+	 * @return RecurringTaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, String cron, ZoneId zoneId, String name);
 
 	/**
 	 * It schedules a task to run recurrently at the given interval.
@@ -405,9 +675,11 @@ public interface SchedulerService extends OpenmrsService {
 	 * @param taskData
 	 * @param interval
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval);
 
 	/**
@@ -417,10 +689,50 @@ public interface SchedulerService extends OpenmrsService {
 	 *
 	 * @param taskData
 	 * @param interval
+	 * @param name
 	 * @return TaskDetails
-	 * @since 2.9.x
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
 	 */
-	@Authorized
-	RecurringTaskDetails scheduleRecurrently(String name, TaskData taskData, Duration interval);
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval, String name);
 
+	/**
+	 * It schedules a task with a predefined uuid to run recurrently at the given interval.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param interval
+	 * @return RecurringTaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval);
+
+	/**
+	 * It schedules a task with a user-friendly name and predefined uuid to run recurrently at the given
+	 * interval.
+	 * <p>
+	 * If a task with the given uuid already exists, it will be silently skipped.
+	 * <p>
+	 * See {@link #schedule(TaskData)} for more details.
+	 *
+	 * @param uuid
+	 * @param taskData
+	 * @param interval
+	 * @param name
+	 * @return RecurringTaskDetails
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 2.9.0
+	 */
+	@PreAuthorize("isAuthenticated()")
+	RecurringTaskDetails scheduleRecurrently(String uuid, TaskData taskData, Duration interval, String name);
 }

@@ -77,6 +77,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
+import org.openmrs.api.cache.ApiCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -193,7 +194,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 		if (!useInMemoryDatabase()) {
-			Containers.ensureDatabaseRunning();
+			ensureDatabaseRunning();
 		}
 
 		Properties props = getRuntimeProperties();
@@ -204,6 +205,15 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		Context.setRuntimeProperties(props);
 
 		loadCount++;
+	}
+
+	/**
+	 * Note it is called from the constructor, before subclass instance fields are initialized.
+	 *
+	 * @since 2.9.0
+	 */
+	protected void ensureDatabaseRunning() {
+		Containers.ensureDatabaseRunning();
 	}
 
 	/**
@@ -223,7 +233,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 	@BeforeEach
 	public void checkNotModule() throws Exception {
 		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
-		        && !(this instanceof BaseContextSensitiveTest)) {
+		        && !(this instanceof BaseModuleContextSensitiveNonTransactionalTest)) {
 			throw new RuntimeException(
 			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
 		}
@@ -346,6 +356,8 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			//after that, just update, if there are any changes. This is for performance reasons.
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
+
+		runtimeProperties.setProperty("hibernate.search.backend.directory.type", "local-heap");
 
 		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
 		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
@@ -582,12 +594,6 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		if (!useInMemoryDatabase())
 			throw new RuntimeException(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
-
-		//Create shedlock table for tests
-		getConnection().prepareStatement(
-		    "CREATE TABLE IF NOT EXISTS shedlock(" + "name VARCHAR(64) NOT NULL, " + "lock_until TIMESTAMP NOT NULL, "
-		            + "locked_at TIMESTAMP NOT NULL, " + "locked_by VARCHAR(255) NOT NULL, " + "PRIMARY KEY (name))")
-		        .execute();
 
 		//Because creator property in the superclass is mapped with optional set to false, the autoddl tool marks the
 		//column as not nullable but for person it is actually nullable, we need to first drop the constraint from
@@ -827,6 +833,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			//insert new rows, update existing rows, and leave others alone
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
 
+			// the dataset may have written global properties, roles or privileges behind the API
+			ApiCacheTestUtil.clearNow();
+
 			if (isPostgreSQL()) {
 				Context.getAdministrationService().updatePostgresSequence();
 			}
@@ -879,6 +888,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
 				String tableName = resultSet.getString(3);
+				if ("jobrunr_migrations".equalsIgnoreCase(tableName)) {
+					continue;
+				}
 				dataset.addTable(new DefaultTable(tableName));
 			}
 
@@ -901,7 +913,7 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 		if (useInMemoryDatabase()) {
 			return "PUBLIC";
 		} else {
-			return "public";
+			return isPostgreSQL() ? "public" : null;
 		}
 	}
 
@@ -954,6 +966,8 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
+				// the data is committed, so this transaction need not keep bypassing the API caches
+				ApiCacheTestUtil.forgetWritesInCurrentTransaction();
 
 				updateSearchIndex();
 
@@ -988,6 +1002,9 @@ public abstract class BaseContextSensitiveNonTransactionalTest {
 
 	@AfterEach
 	public void clearSessionAfterEachTest() {
+		// a load still running from this test would otherwise land in the next one
+		ApiCacheTestUtil.awaitLoads();
+
 		// clear the session to make sure nothing is cached, etc
 		Context.clearSession();
 		Context.clearEntireCache();

@@ -13,7 +13,7 @@ import org.jobrunr.jobs.context.JobDashboardProgressBar;
 import org.openmrs.scheduler.TaskProgress;
 
 /**
- * @since 2.9.x
+ * @since 2.9.0
  */
 public class JobRunrTaskProgress implements TaskProgress {
 

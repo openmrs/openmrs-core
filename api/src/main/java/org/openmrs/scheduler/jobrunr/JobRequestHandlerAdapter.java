@@ -25,12 +25,18 @@ import org.springframework.stereotype.Component;
 /**
  * A generic handler that delegates execution to the appropriate {@link TaskHandler}.
  *
- * @since 2.9.x
+ * @since 2.9.0
  */
 @Component
 public class JobRequestHandlerAdapter implements org.jobrunr.jobs.lambdas.JobRequestHandler<JobRequestAdapter>, ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
+
+	/**
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
+	 */
+	private static volatile Daemon.CallerKey daemonCallerKey;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -57,10 +63,31 @@ public class JobRequestHandlerAdapter implements org.jobrunr.jobs.lambdas.JobReq
 							throw e;
 						}
 					}
-				});
+				}, daemonCallerKey());
 				return;
 			}
 		}
 		throw new IllegalStateException("No handler found for " + request.getClass().getName());
+	}
+
+	/**
+	 * Receives the {@link Daemon} caller key. Called only by {@link Daemon} during its initialization.
+	 *
+	 * @param callerKey the caller key issued by {@link Daemon}
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void setDaemonCallerKey(Daemon.CallerKey callerKey) {
+		if (callerKey != null && daemonCallerKey == null) {
+			daemonCallerKey = callerKey;
+		}
+	}
+
+	private static Daemon.CallerKey daemonCallerKey() {
+		if (daemonCallerKey == null) {
+			// Guarantee Daemon has initialized and therefore handed us the key, regardless of the order in
+			// which the two classes were first loaded.
+			Daemon.ensureInitialized();
+		}
+		return daemonCallerKey;
 	}
 }

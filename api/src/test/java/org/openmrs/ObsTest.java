@@ -366,6 +366,153 @@ public class ObsTest {
 	}
 
 	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeWithoutTimezone() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15T10:30:00");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(obs.getValueDatetime());
+		assertEquals(2023, cal.get(Calendar.YEAR));
+		assertEquals(Calendar.JUNE, cal.get(Calendar.MONTH));
+		assertEquals(15, cal.get(Calendar.DAY_OF_MONTH));
+		assertEquals(10, cal.get(Calendar.HOUR_OF_DAY));
+		assertEquals(30, cal.get(Calendar.MINUTE));
+		assertEquals(0, cal.get(Calendar.SECOND));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeWithUtcTimezone() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15T10:30:00Z");
+
+		// Z means UTC: assert the stored instant equals 2023-06-15T10:30:00 UTC
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		assertEquals("2023-06-15T10:30:00", utcFormat.format(obs.getValueDatetime()));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeWithPositiveOffset() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15T10:30:00+05:00");
+
+		// +05:00 means 5 hours ahead of UTC, so UTC instant is 05:30:00
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		assertEquals("2023-06-15T05:30:00", utcFormat.format(obs.getValueDatetime()));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeWithNegativeOffset() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15T10:30:00-05:00");
+
+		// -05:00 means 5 hours behind UTC, so UTC instant is 15:30:00
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		assertEquals("2023-06-15T15:30:00", utcFormat.format(obs.getValueDatetime()));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeWithOffsetWithoutColon() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2022-02-19T08:26:00.000-0500");
+
+		// -0500 (no colon) means 5 hours behind UTC, so UTC instant is 13:26:00
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		assertEquals("2022-02-19T13:26:00", utcFormat.format(obs.getValueDatetime()));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseIsoDatetimeWithMilliseconds() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15T10:30:00.123Z");
+
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+		assertEquals("2023-06-15T10:30:00", utcFormat.format(obs.getValueDatetime()));
+	}
+
+	/**
+	 * @see Obs#setValueAsString(String)
+	 */
+	@Test
+	public void setValueAsString_shouldParseLegacyDatetimeFormat() throws Exception {
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("TS");
+		Concept c = new Concept();
+		c.setDatatype(cdt);
+
+		Obs obs = new Obs();
+		obs.setConcept(c);
+		obs.setValueAsString("2023-06-15 10:30");
+
+		assertNotNull(obs.getValueDatetime());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(obs.getValueDatetime());
+		assertEquals(2023, cal.get(Calendar.YEAR));
+		assertEquals(Calendar.JUNE, cal.get(Calendar.MONTH));
+		assertEquals(15, cal.get(Calendar.DAY_OF_MONTH));
+		assertEquals(10, cal.get(Calendar.HOUR_OF_DAY));
+		assertEquals(30, cal.get(Calendar.MINUTE));
+	}
+
+	/**
 	 * @see Obs#getValueAsBoolean()
 	 */
 	@Test

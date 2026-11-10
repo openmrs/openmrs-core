@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.dbunit.dataset.IDataSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -58,6 +57,8 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.customdatatype.datatype.FreeTextDatatype;
+import org.openmrs.parameter.ConceptSearchCriteria;
+import org.openmrs.parameter.ConceptSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.ConceptMapTypeComparator;
 import org.openmrs.util.DateUtil;
@@ -140,26 +141,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Updates the search index to clean up after each test.
+	 * Limits search-index rebuilds in this class to the only entity types its tests actually search:
+	 * {@link ConceptName} (concept name and phrase searches) and {@link Drug} (drug searches, which
+	 * also query through concept names). The base class would otherwise rebuild five indexes on every
+	 * call, most of which are irrelevant here.
+	 * <p>
+	 * The index is not rebuilt automatically before each test: a test that performs a search must call
+	 * {@link #updateSearchIndex()} itself after loading or modifying the data it searches.
 	 *
-	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#updateSearchIndex()
-	 */
-	@BeforeEach
-	@Override
-	public void updateSearchIndex() {
-		super.updateSearchIndex();
-	}
-
-	/**
-	 * Updates the search index after executing each dataset.
-	 *
-	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#executeDataSet(org.dbunit.dataset.IDataSet)
+	 * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#getIndexedTypes()
 	 */
 	@Override
-	public void executeDataSet(IDataSet dataset) {
-		super.executeDataSet(dataset);
-
-		updateSearchIndex();
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { ConceptName.class, Drug.class };
 	}
 
 	/**
@@ -182,6 +176,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConceptByName_shouldGetConceptByPartialName() {
 		executeDataSet(INITIAL_CONCEPTS_XML);
+		updateSearchIndex();
 
 		// substring of the name
 		String partialNameToFetch = "Some";
@@ -737,6 +732,27 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ConceptName#setTags(Collection)
+	 */
+	@Test
+	public void setTags_shouldAcceptACopyOfTheCurrentTagsOfASavedName() {
+		ConceptService cs = Context.getConceptService();
+		ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
+		cn.addTag(cs.getConceptNameTagByName("short"));
+		Concept concept = new Concept();
+		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
+		cs.saveConcept(concept);
+
+		cn.setTags(new HashSet<>(cn.getTags()));
+		Context.flushSession();
+
+		assertEquals(1, cn.getTags().size());
+	}
+
+	/**
 	 * @see ConceptService#saveConceptSource(ConceptSource)
 	 */
 	@Test
@@ -1265,6 +1281,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void getDrugs_shouldReturnDrugsThatAreNotRetired() {
+		updateSearchIndex();
+
 		List<Drug> drugs = Context.getConceptService().getDrugs("ASPIRIN" /* is not retired */);
 		assertFalse(drugs.get(0).getRetired());
 	}
@@ -1274,6 +1292,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldNotReturnDrugsThatAreRetired() {
+		updateSearchIndex();
+
 		List<Drug> drugs = Context.getConceptService().getDrugs("TEST_DRUG_NAME_RETIRED" /* is retired */);
 		assertEquals(0, drugs.size());
 	}
@@ -1283,6 +1303,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldReturnDrugsByDrugId() {
+		updateSearchIndex();
+
 		Integer drugId = 2;
 		Drug drug = Context.getConceptService().getDrug(drugId);
 		List<Drug> drugs = Context.getConceptService().getDrugs(String.valueOf(drugId));
@@ -1294,6 +1316,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldNotFailIfThereisNoDrugByGivenDrugId() {
+		updateSearchIndex();
+
 		List<Drug> drugs = Context.getConceptService().getDrugs("123456");
 		assertNotNull(drugs);
 	}
@@ -1303,6 +1327,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldReturnDrugsByDrugConceptId() {
+		updateSearchIndex();
+
 		Integer conceptId = 792;
 		Drug drug = Context.getConceptService().getDrug(2);
 
@@ -2119,6 +2145,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConcepts() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust",
 		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		//trust is included in 2 names for conceptid=3000 and in one name for conceptid=4000.
@@ -2133,6 +2160,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnConceptSearchResultsThatMatchUniqueConceptsEvenIfDifferentMatchingWords() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("now",
 		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		// "now matches both concept names "TRUST NOW" and "TRUST NOWHERE", but these are for the same concept (4000), so there should only be one item in the result set
@@ -2147,6 +2175,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnConceptSearchResultsThatContainAllSearchWordsAsFirst() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("trust now",
 		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		//"trust now" must be first hit
@@ -2539,6 +2568,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getCountOfConcepts_shouldReturnACountOfUniqueConcepts() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		assertEquals(2, conceptService
 		        .getCountOfConcepts("trust", Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null)
 		        .intValue());
@@ -2958,6 +2988,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnASearchResultWhoseConceptNameContainsAllWordTokensAsFirst() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL INHALER",
 		    Collections.singletonList(new Locale("en", "US")), false, null, null, null, null, null, null, null);
@@ -2972,6 +3003,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnASearchResultForPhraseWithStopWords() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		conceptService.saveConceptStopWord(new ConceptStopWord("OF", Locale.US));
 
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("tuberculosis of knee",
@@ -2988,6 +3020,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnConceptsWithSpecifiedClasses() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptClass> classes = new ArrayList<>();
 		classes.add(Context.getConceptService().getConceptClassByName("Finding"));
 		classes.add(Context.getConceptService().getConceptClassByName("LabSet"));
@@ -3003,6 +3036,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldReturnEmptyListIfNoConceptWithinSpecifiedClassesWasFound() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptClass> classes = new ArrayList<>();
 		classes.add(Context.getConceptService().getConceptClassByName("Finding"));
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("SALBUTAMOL", null, false, classes, null, null,
@@ -3017,6 +3051,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldIncludeRetiredConceptsInTheSearchResults() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptClass> classes = new ArrayList<>();
 		classes.add(Context.getConceptService().getConceptClassByName("Finding"));
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts(null, null, true, classes, null, null, null,
@@ -3031,6 +3066,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldExcludeSpecifiedClassesFromTheSearchResults() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 		List<ConceptClass> classes = new ArrayList<>();
 		classes.add(Context.getConceptService().getConceptClassByName("Finding"));
 		classes.add(Context.getConceptService().getConceptClassByName("LabSet"));
@@ -3047,6 +3083,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldNotReturnConceptsWithMatchingNamesThatAreVoided() {
+		updateSearchIndex();
+
 		Concept concept = conceptService.getConcept(7);
 
 		List<ConceptSearchResult> results = conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH),
@@ -3065,6 +3103,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldNotFailWithNullClassesAndDatatypes() {
+		updateSearchIndex();
+
 		ConceptService conceptService = Context.getConceptService();
 		assertNotNull(conceptService.getConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null, null,
 		    null, null, null, null, null));
@@ -3078,6 +3118,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getCountOfConcepts_shouldNotFailWithNullClassesAndDatatypes() {
+		updateSearchIndex();
+
 		ConceptService conceptService = Context.getConceptService();
 		assertNotNull(conceptService.getCountOfConcepts("VOIDED", Collections.singletonList(Locale.ENGLISH), false, null,
 		    null, null, null, null));
@@ -3289,6 +3331,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldGetDrugsWithNamesMatchingTheSearchPhrase() {
+		updateSearchIndex();
+
 		//Should be case insensitive
 		List<Drug> drugs = conceptService.getDrugs("tri", null, false, false);
 		assertThat(drugs, contains(conceptService.getDrug(2)));
@@ -3299,6 +3343,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldIncludeRetiredDrugsIfIncludeRetiredIsSetToTrue() {
+		updateSearchIndex();
+
 		//Should be case insensitive
 		final String searchPhrase = "Nyq";
 		List<Drug> drugs = conceptService.getDrugs(searchPhrase, null, false, false);
@@ -3314,6 +3360,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhrase() {
+		updateSearchIndex();
+
 		final Integer expectedDrugId = 2;
 		List<Drug> drugs = conceptService.getDrugs("stav", null, false, false);
 		assertEquals(1, drugs.size());
@@ -3331,6 +3379,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndLocale() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		updateSearchIndex();
 		final String searchPhrase = "some";
 		List<Drug> drugs = conceptService.getDrugs(searchPhrase, Locale.FRENCH, true, false);
 		assertEquals(0, drugs.size());
@@ -3346,6 +3395,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldGetDrugsLinkedToConceptsWithNamesThatMatchThePhraseAndRelatedLocales() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		updateSearchIndex();
 
 		final String searchPhrase = "another";
 		//Should look only in the exact locale if exactLocale is set to true
@@ -3363,6 +3413,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldGetDrugsThatHaveMappingsWithReferenceTermCodesThatMatchThePhrase() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		updateSearchIndex();
 		List<Drug> drugs = conceptService.getDrugs("XXX", null, true, true);
 		assertThat(drugs, contains(hasId(11), hasId(444)));
 	}
@@ -3375,6 +3426,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getDrugs_shouldReturnUniqueDrugs() {
+		updateSearchIndex();
+
 		//sanity check that drug.name and drug.concept.name will both match the search phrase
 		Drug drug = conceptService.getDrug("ASPIRIN");
 		assertEquals(drug.getName().toLowerCase(), drug.getConcept().getName().getName().toLowerCase());
@@ -3390,6 +3443,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getDrugs_shouldReturnAllDrugsWithAMatchingTermCodeOrDrugNameOrConceptName() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
+		updateSearchIndex();
 		List<Drug> drugs = conceptService.getDrugs("XXX", null, false, true);
 		assertThat(drugs,
 		    containsInAnyOrder(conceptService.getDrug(3), conceptService.getDrug(11), conceptService.getDrug(444)));
@@ -3668,6 +3722,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getConcepts_shouldFindConceptByFullCode() {
+		updateSearchIndex();
+
 		//given
 		String code1 = "CD41003";
 		String code2 = "7345693";
@@ -3868,6 +3924,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getConcepts_shouldPassWithAndOrNotWords() {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-names.xml");
+		updateSearchIndex();
 
 		//search phrase with AND
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("AND SALBUTAMOL INHALER",
@@ -3965,7 +4022,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 		assertFalse(conceptReferenceRanges.isEmpty());
 
-		assertEquals(3, conceptReferenceRanges.get(0).getId());
+		// Both this test's dataset and standardTestDataset define a reference range for concept 5089,
+		// and the DAO query is unordered, so which row lands at index 0 is engine-dependent. Assert on
+		// membership rather than position.
+		assertTrue(conceptReferenceRanges.stream().anyMatch(range -> range.getId().equals(3)));
 	}
 
 	/**
@@ -4025,6 +4085,94 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertNull(conceptReferenceRange);
 	}
 
+	/**
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Test
+	public void saveConceptReferenceRange_shouldFailIfCriteriaDoesNotParse() {
+		ConceptNumeric conceptNumeric = conceptService.getConceptNumeric(4090);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.getAge( >");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(50.0);
+		conceptReferenceRange.setLowAbsolute(20.0);
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> conceptService.saveConceptReferenceRange(conceptReferenceRange));
+		assertTrue(exception.getErrors().hasFieldErrors("criteria"));
+	}
+
+	/**
+	 * @see ConceptService#saveConceptReferenceRange(ConceptReferenceRange)
+	 */
+	@Test
+	public void saveConceptReferenceRange_shouldFailIfCriteriaCallsADisallowedMethod() {
+		ConceptNumeric conceptNumeric = conceptService.getConceptNumeric(4090);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.setDead(true) || true");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(50.0);
+		conceptReferenceRange.setLowAbsolute(20.0);
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> conceptService.saveConceptReferenceRange(conceptReferenceRange));
+		assertTrue(exception.getErrors().hasFieldErrors("criteria"));
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldFailIfAReferenceRangeCriteriaDoesNotParse() {
+		Context.setLocale(Locale.US);
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+		conceptNumeric.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		conceptNumeric.addDescription(new ConceptDescription("some description", null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setLowAbsolute(20.0);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$patient.getAge( >");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> conceptService.saveConcept(conceptNumeric));
+		assertTrue(exception.getErrors().hasFieldErrors("referenceRanges[0].criteria"));
+	}
+
+	/**
+	 * @see ConceptService#saveConcept(Concept)
+	 */
+	@Test
+	public void saveConcept_shouldFailIfAReferenceRangeCriteriaCallsADisallowedMethod() {
+		Context.setLocale(Locale.US);
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.setDatatype(new ConceptDatatype(1));
+		conceptNumeric.setConceptClass(new ConceptClass(1));
+		conceptNumeric.addName(new ConceptName("a new conceptnumeric", Locale.US));
+		conceptNumeric.addDescription(new ConceptDescription("some description", null));
+		conceptNumeric.setHiAbsolute(50.0);
+		conceptNumeric.setLowAbsolute(20.0);
+
+		ConceptReferenceRange conceptReferenceRange = new ConceptReferenceRange();
+		conceptReferenceRange.setCriteria("$encounter.creator.getRoles().clear() == null");
+		conceptReferenceRange.setConceptNumeric(conceptNumeric);
+		conceptReferenceRange.setHiAbsolute(conceptNumeric.getHiAbsolute());
+		conceptReferenceRange.setLowAbsolute(conceptNumeric.getLowAbsolute());
+		conceptNumeric.setReferenceRanges(Collections.singleton(conceptReferenceRange));
+
+		ValidationException exception = assertThrows(ValidationException.class,
+		    () -> conceptService.saveConcept(conceptNumeric));
+		assertTrue(exception.getErrors().hasFieldErrors("referenceRanges[0].criteria"));
+	}
+
 	@Test
 	public void saveDrug_shouldSaveDrugIngredients() {
 		// First save a new drug with an ingredient
@@ -4060,5 +4208,133 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertThat(ingredient.getStrength(), equalTo(500.0));
 		assertThat(ingredient.getUnits(), notNullValue());
 		assertThat(ingredient.getUnits(), equalTo(mg));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsMatchingUuids() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "0f97e14e-cdc2-49ac-9255-b5126f8a5147")
+		        .includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldIgnoreUnknownUuids() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab", "does-not-exist").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(1, concepts.size());
+		assertEquals(3, (int) concepts.get(0).getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsMatchingIds() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(3, 23).includeRetired(true)
+		        .build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldIgnoreUnknownIds() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptIds(3, 999999).includeRetired(true)
+		        .build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(1, concepts.size());
+		assertEquals(3, (int) concepts.get(0).getConceptId());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnConceptsMatchingMapping() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addMapping("Some Standardized Terminology:WGT234").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertFalse(concepts.isEmpty());
+		assertTrue(concepts.stream().anyMatch(c -> c.getConceptId() == 5089));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldNotReturnRetiredConceptWhenIncludeRetiredIsFalse() {
+		// concept 24 is retired and mapped to "454545" in SSTRM (per existing mapping tests)
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addMapping("SSTRM:454545").includeRetired(false)
+		        .build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertTrue(concepts.stream().noneMatch(c -> c.getConceptId() == 24));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnUnionWhenBothUuidsAndIdsAreSet() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addUuids("0cbe2ed3-cd5f-4f46-9459-26127c9265ab")
+		        .addConceptIds(23).includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertEquals(2, concepts.size());
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertThat(ids, org.hamcrest.Matchers.containsInAnyOrder(3, 23));
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnEmptyListWhenNoCriteriaSet() {
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		assertNotNull(concepts);
+		assertTrue(concepts.isEmpty());
+	}
+
+	/**
+	 * @see ConceptService#getConcepts(ConceptSearchCriteria)
+	 */
+	@Test
+	public void getConcepts_shouldReturnUnionWhenMultipleMappingsAreSet() {
+		// concept 5089 maps to "Some Standardized Terminology:WGT234"
+		// concept 24 maps to "SSTRM:454545" (retired)
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder()
+		        .addMapping("Some Standardized Terminology:WGT234").addMapping("SSTRM:454545").includeRetired(true).build();
+		List<Concept> concepts = conceptService.getConcepts(criteria);
+		List<Integer> ids = concepts.stream().map(Concept::getConceptId).toList();
+		assertTrue(ids.contains(5089));
+		assertTrue(ids.contains(24));
+	}
+
+	/**
+	 * @see ConceptSearchCriteriaBuilder#addConceptReference(String)
+	 */
+	@Test
+	public void addConceptReference_shouldResolveStaticConstantAndClassify() {
+		// OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_WEEK_START_DAY_DEFAULT_VALUE == "0"
+		// "0" is a valid non-negative integer, so it should be classified as a concept ID
+		ConceptSearchCriteria criteria = new ConceptSearchCriteriaBuilder().addConceptReference(
+		    "org.openmrs.util.OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_WEEK_START_DAY_DEFAULT_VALUE").build();
+		assertTrue(criteria.getConceptIds().contains(0));
+		assertTrue(criteria.getUuids().isEmpty());
+		assertTrue(criteria.getMappings().isEmpty());
 	}
 }

@@ -18,6 +18,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
@@ -35,6 +36,8 @@ class CookieClearingFilterTest {
 
 	Properties runtimeProperties;
 
+	Properties originalRuntimeProperties;
+
 	CookieClearingFilter filter;
 
 	MockHttpServletRequest request;
@@ -47,8 +50,14 @@ class CookieClearingFilterTest {
 
 	@BeforeEach
 	void setupRuntimeProperties() {
+		originalRuntimeProperties = Context.getRuntimeProperties();
 		runtimeProperties = TestUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
 		Context.setRuntimeProperties(runtimeProperties);
+	}
+
+	@AfterEach
+	void restoreRuntimeProperties() {
+		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 
 	@BeforeEach

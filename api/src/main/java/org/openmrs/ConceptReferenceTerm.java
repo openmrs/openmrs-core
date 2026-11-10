@@ -26,9 +26,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
@@ -38,6 +40,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
  * @since 1.9
  */
 @Audited
+@BatchSize(size = 25)
 @Entity
 @Table(name = "concept_reference_term")
 @AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })
@@ -51,7 +54,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "concept_reference_term_id")
 	private Integer conceptReferenceTermId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_source_id", nullable = false)
 	private ConceptSource conceptSource;
 
@@ -159,7 +162,8 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	 * @param conceptReferenceTermMaps the conceptReferenceTermMaps to set
 	 */
 	public void setConceptReferenceTermMaps(Set<ConceptReferenceTermMap> conceptReferenceTermMaps) {
-		this.conceptReferenceTermMaps = conceptReferenceTermMaps;
+		this.conceptReferenceTermMaps = CollectionUtil.setCollection(this.conceptReferenceTermMaps,
+		    conceptReferenceTermMaps);
 	}
 
 	/**

@@ -20,9 +20,6 @@ import java.util.Set;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-import org.checkerframework.checker.initialization.qual.Initialized;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.UnknownKeyFor;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -119,9 +116,8 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 		Integrator enversIntegrator = new Integrator() {
 
 			@Override
-			public void integrate(@UnknownKeyFor @NonNull @Initialized Metadata metadata,
-			        @UnknownKeyFor @NonNull @Initialized BootstrapContext bootstrapContext,
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactory) {
+			public void integrate(Metadata metadata, BootstrapContext bootstrapContext,
+			        SessionFactoryImplementor sessionFactory) {
 				if (enversEnabled) {
 					try {
 						Properties properties = new java.util.Properties();
@@ -139,9 +135,8 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 			}
 
 			@Override
-			public void disintegrate(
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryImplementor sessionFactoryImplementor,
-			        @UnknownKeyFor @NonNull @Initialized SessionFactoryServiceRegistry sessionFactoryServiceRegistry) {
+			public void disintegrate(SessionFactoryImplementor sessionFactoryImplementor,
+			        SessionFactoryServiceRegistry sessionFactoryServiceRegistry) {
 				// No cleanup needed: the audit table initialization performed in integrate() is a one-time
 				// schema operation with no resources to release when the SessionFactory is closed.
 			}
@@ -214,17 +209,11 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 	}
 
 	/**
-	 * Checks if a class or any of its superclasses is annotated with @Audited.
+	 * Checks if a class itself is annotated with @Audited. Envers does not audit an entity just because
+	 * its mapped superclass is annotated, as with OutboxEvent and BaseOpenmrsObject.
 	 */
 	private boolean isAudited(Class<?> clazz) {
-		Class<?> current = clazz;
-		while (current != null && current != Object.class) {
-			if (current.isAnnotationPresent(Audited.class)) {
-				return true;
-			}
-			current = current.getSuperclass();
-		}
-		return false;
+		return clazz.isAnnotationPresent(Audited.class);
 	}
 
 	/**

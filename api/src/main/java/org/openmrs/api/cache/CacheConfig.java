@@ -64,6 +64,14 @@ public class CacheConfig {
 
 	private final static Logger log = LoggerFactory.getLogger(CacheConfig.class);
 
+	/**
+	 * The caches that are only filled on a miss, by {@code @Cacheable} or by their owning component,
+	 * and never overwritten, so that a fill on one node can leave other nodes' entries in place. See
+	 * {@link ExternalReadSpringCacheManager}.
+	 */
+	static final Set<String> EXTERNAL_READ_CACHES = Set.of("userSearchLocales", "conceptIdsByMapping",
+	    "serializerWhiteListTypes", RolePrivilegeCache.CACHE_NAME, GlobalPropertyCache.CACHE_NAME);
+
 	@Value("${cache.type:local}")
 	private String cacheType;
 
@@ -129,10 +137,10 @@ public class CacheConfig {
 		}
 
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
-		return new SpringEmbeddedCacheManager(cacheManager);
+		return new ExternalReadSpringCacheManager(cacheManager, EXTERNAL_READ_CACHES);
 	}
 
-	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> skipCaches, String cacheType)
+	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> templateNames, String cacheType)
 	        throws IOException {
 		Map<String, Object> loadedConfig = yaml.load(configFile.openStream());
 
@@ -146,18 +154,20 @@ public class CacheConfig {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> loadedCaches = (Map<String, Object>) loadedConfig.get("caches");
 		for (Map.Entry<String, Object> entry : loadedCaches.entrySet()) {
+			if (templateNames.contains(entry.getKey())) {
+				// already defined by the base configuration; don't redefine it
+				continue;
+			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> value = (Map<String, Object>) entry.getValue();
-			if ("entity".equals(value.get("configuration"))) {
+			if (templateNames.contains(value.get("configuration"))) {
+				// A cache referencing a base template must be wrapped in the mode's cache type
+				// (local-cache/invalidation-cache) so it inherits that template's settings.
 				Map<Object, Object> cache = new LinkedHashMap<>();
 				cache.put(cacheType, value);
-				if (!skipCaches.contains(entry.getKey())) {
-					cacheList.put(entry.getKey(), cache);
-				}
+				cacheList.put(entry.getKey(), cache);
 			} else {
-				if (!skipCaches.contains(entry.getKey())) {
-					cacheList.put(entry.getKey(), value);
-				}
+				cacheList.put(entry.getKey(), value);
 			}
 		}
 		if (!cacheList.isEmpty()) {

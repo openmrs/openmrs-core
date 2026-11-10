@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,8 +27,10 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Concept;
+import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
+import org.openmrs.MedicationDispense;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
@@ -45,8 +46,10 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
+import org.openmrs.api.ConditionService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.MedicationDispenseService;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientIdentifierException;
@@ -62,6 +65,8 @@ import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
+import org.openmrs.parameter.MedicationDispenseCriteria;
+import org.openmrs.parameter.MedicationDispenseCriteriaBuilder;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.person.PersonMergeLog;
@@ -70,6 +75,7 @@ import org.openmrs.serialization.SerializationException;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.UuidUtil;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -569,6 +575,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		mergeProgramEnrolments(preferred, notPreferred, mergedData);
 		mergeRelationships(preferred, notPreferred, mergedData);
 		mergeObservationsNotContainedInEncounters(preferred, notPreferred, mergedData);
+		mergeConditions(preferred, notPreferred, mergedData);
+		mergeAllergies(preferred, notPreferred, mergedData);
+		mergeMedicationDispenses(preferred, notPreferred, mergedData);
 		mergeIdentifiers(preferred, notPreferred, mergedData);
 
 		mergeNames(preferred, notPreferred, mergedData);
@@ -719,6 +728,64 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 	}
 
+	private void mergeConditions(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all non-voided conditions (both patient-level and encounter-linked, since moving an
+		// encounter does not reassign the patient on its conditions)
+		// TODO: this should be a copy, not a move
+		ConditionService conditionService = Context.getConditionService();
+		for (Condition condition : conditionService.getAllConditions(notPreferred)) {
+			condition.setPatient(preferred);
+			log.debug("Merging condition {} to {}", condition.getConditionId(), preferred.getPatientId());
+			Condition persisted = conditionService.saveCondition(condition);
+			mergedData.addMovedCondition(persisted.getUuid());
+		}
+	}
+
+	private void mergeAllergies(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all non-voided allergies, skipping any whose allergen the preferred patient already
+		// records: a patient cannot hold two allergies for the same allergen (Allergies enforces this),
+		// so moving a duplicate would make the survivor's allergy list fail to load afterwards
+		// TODO: this should be a copy, not a move
+		PatientService patientService = Context.getPatientService();
+		// these are internal reads made on behalf of the merge; mergePatients is authorized with
+		// Edit Patients, so acquire Get Allergies here rather than forcing the merging user to hold it
+		Allergies preferredAllergies;
+		Allergies notPreferredAllergies;
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
+			preferredAllergies = patientService.getAllergies(preferred);
+			notPreferredAllergies = patientService.getAllergies(notPreferred);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ALLERGIES);
+		}
+		for (Allergy allergy : notPreferredAllergies) {
+			if (preferredAllergies.containsAllergen(allergy)) {
+				log.debug("Skipping allergy {}; preferred patient {} already has the same allergen", allergy.getAllergyId(),
+				    preferred.getPatientId());
+				continue;
+			}
+			allergy.setPatient(preferred);
+			log.debug("Merging allergy {} to {}", allergy.getAllergyId(), preferred.getPatientId());
+			patientService.saveAllergy(allergy);
+			mergedData.addMovedAllergy(allergy.getUuid());
+		}
+	}
+
+	private void mergeMedicationDispenses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		// move all non-voided medication dispenses (encounter-linked ones are not reassigned when their
+		// encounter is moved, so they must be handled here)
+		// TODO: this should be a copy, not a move
+		MedicationDispenseService medicationDispenseService = Context.getMedicationDispenseService();
+		MedicationDispenseCriteria criteria = new MedicationDispenseCriteriaBuilder().setPatient(notPreferred).build();
+		for (MedicationDispense medicationDispense : medicationDispenseService.getMedicationDispenseByCriteria(criteria)) {
+			medicationDispense.setPatient(preferred);
+			log.debug("Merging medication dispense {} to {}", medicationDispense.getMedicationDispenseId(),
+			    preferred.getPatientId());
+			MedicationDispense persisted = medicationDispenseService.saveMedicationDispense(medicationDispense);
+			mergedData.addMovedMedicationDispense(persisted.getUuid());
+		}
+	}
+
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
@@ -744,7 +811,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpIdentifier.setVoided(false);
 				tmpIdentifier.setVoidedBy(null);
 				tmpIdentifier.setVoidReason(null);
-				tmpIdentifier.setUuid(UUID.randomUUID().toString());
+				tmpIdentifier.setUuid(UuidUtil.newUuidString());
 				// we don't want to change the preferred identifier of the preferred patient
 				tmpIdentifier.setPreferred(false);
 				preferred.addIdentifier(tmpIdentifier);
@@ -784,7 +851,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (!attr.getVoided()) {
 				PersonAttribute tmpAttr = attr.copy();
 				tmpAttr.setPerson(null);
-				tmpAttr.setUuid(UUID.randomUUID().toString());
+				tmpAttr.setUuid(UuidUtil.newUuidString());
 				preferred.addAttribute(tmpAttr);
 				mergedData.addCreatedAttribute(tmpAttr.getUuid());
 			}
@@ -827,7 +894,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		tmpName.setVoidReason(null);
 		// we don't want to change the preferred name of the preferred patient
 		tmpName.setPreferred(false);
-		tmpName.setUuid(UUID.randomUUID().toString());
+		tmpName.setUuid(UuidUtil.newUuidString());
 		return tmpName;
 	}
 
@@ -850,7 +917,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
 				tmpAddress.setPreferred(false); // addresses from non-preferred patient shouldn't be marked as preferred
-				tmpAddress.setUuid(UUID.randomUUID().toString());
+				tmpAddress.setUuid(UuidUtil.newUuidString());
 				preferred.addAddress(tmpAddress);
 				mergedData.addCreatedAddress(tmpAddress.getUuid());
 				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
@@ -862,7 +929,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (!attr.getVoided()) {
 				PersonAttribute tmpAttr = attr.copy();
 				tmpAttr.setPerson(null);
-				tmpAttr.setUuid(UUID.randomUUID().toString());
+				tmpAttr.setUuid(UuidUtil.newUuidString());
 				preferred.addAttribute(tmpAttr);
 				mergedData.addCreatedAttribute(tmpAttr.getUuid());
 			}

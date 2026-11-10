@@ -49,18 +49,18 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	@Column(name = "drug_reference_map_id")
 	private Integer drugReferenceMapId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "drug_id", nullable = false)
 	private Drug drug;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_id", nullable = false)
 	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private ConceptReferenceTerm conceptReferenceTerm;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_map_type", nullable = false)
 	private ConceptMapType conceptMapType;
 

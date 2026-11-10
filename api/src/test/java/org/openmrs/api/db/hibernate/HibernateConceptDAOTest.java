@@ -9,9 +9,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
@@ -23,6 +25,7 @@ import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSource;
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
@@ -42,8 +45,28 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 	protected static final String CONCEPT_ATTRIBUTE_TYPE_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
 
+	private static final String CONCEPT_FIXTURE_TOKEN = "Boundedconcept";
+
+	private static final int CONCEPT_FIXTURE_SIZE = 50;
+
+	private static final int SMALL_PAGE = 5;
+
+	private static final int LARGE_PAGE = 40;
+
+	/** Headroom for effects that scale with the page without being per-hit loading. */
+	private static final int PAGE_GROWTH_ALLOWANCE = 8;
+
 	@Autowired
 	private HibernateConceptDAO dao;
+
+	/**
+	 * Restricts search-index rebuilds to the entity types concept searches actually query, instead of
+	 * rebuilding every indexed type on each test.
+	 */
+	@Override
+	public Class<?>[] getIndexedTypes() {
+		return new Class<?>[] { ConceptName.class, Drug.class };
+	}
 
 	@BeforeEach
 	public void setUp() {
@@ -120,6 +143,39 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		List<Drug> drugList = dao.getDrugs("VOIDED", concept4, true, true, false, 0, 10);
 		assertEquals(1, drugList.size());
 
+	}
+
+	/**
+	 * When a concept is supplied, the concept-name full-text lookup is skipped (TRUNK-6683), so drugs
+	 * belonging to other concepts whose names match the phrase are not returned - only the supplied
+	 * concept's drugs and drugs whose own name matches.
+	 *
+	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
+	 */
+	@Test
+	public void getDrugs_shouldNotSearchConceptNamesWhenConceptIsSupplied() {
+		// concept 3 is "COUGH SYRUP"; "ZEBRACONCEPT" only matches the name of concept 20 (drug "Placebo-X"),
+		// never a drug name. With a concept supplied the concept-name lookup must not run, so Placebo-X is absent.
+		Concept concept = dao.getConcept(3);
+
+		List<Drug> drugList = dao.getDrugs("ZEBRACONCEPT", concept, true, true, false, 0, 10);
+
+		assertEquals(1, drugList.size());
+		assertTrue(drugList.stream().noneMatch(drug -> "Placebo-X".equals(drug.getName())));
+	}
+
+	/**
+	 * The concept-name full-text lookup still runs when no concept is supplied, so a phrase that only
+	 * matches a concept name (not any drug name) still returns that concept's drugs.
+	 *
+	 * @see HibernateConceptDAO#getDrugs(String,Concept,boolean,boolean,boolean,Integer,Integer)
+	 */
+	@Test
+	public void getDrugs_shouldSearchConceptNamesWhenNoConceptIsSupplied() {
+		List<Drug> drugList = dao.getDrugs("ZEBRACONCEPT", null, true, true, false, 0, 10);
+
+		assertEquals(1, drugList.size());
+		assertEquals("Placebo-X", drugList.get(0).getName());
 	}
 
 	/**
@@ -263,5 +319,68 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 
 		// Then
 		assertTrue(savedConceptReferenceRange.isEmpty());
+	}
+
+	/**
+	 * Mirrors the identifier guard in {@link HibernatePatientDAOTest}, asserting the shape of the cost
+	 * rather than an absolute number.
+	 */
+	@Test
+	public void getConcepts_shouldNotIssueMoreDatabaseTripsAsTheSearchPageGrows() {
+		createConceptSearchFixture();
+		List<Locale> locales = Collections.singletonList(Locale.ENGLISH);
+
+		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		searchConcepts(locales, SMALL_PAGE);
+
+		int smallPageTrips = countDatabaseTrips(locales, SMALL_PAGE);
+		int largePageTrips = countDatabaseTrips(locales, LARGE_PAGE);
+
+		assertTrue(largePageTrips <= smallPageTrips + PAGE_GROWTH_ALLOWANCE,
+		    String.format(
+		        "concept search should cost a bounded number of database trips regardless of page size, "
+		                + "but a page of %d cost %d trips against %d for a page of %d",
+		        LARGE_PAGE, largePageTrips, smallPageTrips, SMALL_PAGE));
+	}
+
+	private int countDatabaseTrips(List<Locale> locales, int pageSize) {
+		Context.flushSession();
+		Context.clearSession();
+
+		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
+		// Concept is second-level cached, which would hide per-hit loading behind cache hits and let
+		// this test pass whether or not the batching works.
+		sessionFactory.getCache().evictAllRegions();
+		sessionFactory.getStatistics().clear();
+
+		List<ConceptSearchResult> results = searchConcepts(locales, pageSize);
+
+		assertEquals(pageSize, results.size(), "fixture should be large enough to fill the requested page");
+
+		return (int) sessionFactory.getStatistics().getPrepareStatementCount();
+	}
+
+	private List<ConceptSearchResult> searchConcepts(List<Locale> locales, int pageSize) {
+		return dao.getConcepts(CONCEPT_FIXTURE_TOKEN, locales, false, Collections.emptyList(), Collections.emptyList(),
+		    Collections.emptyList(), Collections.emptyList(), null, 0, pageSize);
+	}
+
+	private void createConceptSearchFixture() {
+		ConceptClass conceptClass = dao.getConceptClass(1);
+		ConceptDatatype datatype = dao.getConceptDatatypeByName("N/A");
+
+		for (int i = 0; i < CONCEPT_FIXTURE_SIZE; i++) {
+			Concept concept = new Concept();
+			concept.setConceptClass(conceptClass);
+			concept.setDatatype(datatype);
+			// Two names each, so a page has more name rows than concepts to hydrate.
+			concept.addName(new ConceptName(CONCEPT_FIXTURE_TOKEN + " " + i, Locale.ENGLISH));
+			concept.addName(new ConceptName(CONCEPT_FIXTURE_TOKEN + " synonym " + i, Locale.UK));
+			dao.saveConcept(concept);
+		}
+
+		Context.flushSession();
+		Context.clearSession();
+		updateSearchIndex();
 	}
 }

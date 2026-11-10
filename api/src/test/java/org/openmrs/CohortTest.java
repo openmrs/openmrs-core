@@ -177,7 +177,7 @@ public class CohortTest {
 
 		Cohort cohort = new Cohort("name", "description", ids);
 
-		// create date in past to verify also non active patains are counted
+		// create date in past to verify also non active patients are counted
 		CohortMembership cohortMembershipOne = new CohortMembership(12, new Date());
 		Date dateInPast = new GregorianCalendar(1992, Calendar.SEPTEMBER, 30).getTime();
 		cohortMembershipOne.setEndDate(dateInPast);
@@ -194,7 +194,7 @@ public class CohortTest {
 
 		Cohort cohort = new Cohort("name", "description", ids);
 
-		// create date in past to verify also non active patains are counted
+		// create date in past to verify also non active patients are counted
 		CohortMembership cohortMembershipOne = new CohortMembership(12, new Date());
 		cohortMembershipOne.setVoided(true);
 		cohort.addMembership(cohortMembershipOne);
