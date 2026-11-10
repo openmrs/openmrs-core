@@ -1285,6 +1285,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		// priority=2 beats the existing null-priority ranges; strictest among the two priority=2 ranges
 		assertEquals(140.0, range.getHiNormal());
 		assertEquals(80.0, range.getLowNormal());
+		// the merged result keeps the priority that governed the selection
+		assertEquals(2, range.getPriority());
 	}
 
 	private ConceptNumeric createConceptNumeric() {

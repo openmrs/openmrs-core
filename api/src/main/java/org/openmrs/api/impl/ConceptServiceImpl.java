@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -2122,7 +2123,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	private static ConceptReferenceRange selectReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
 		List<ConceptReferenceRange> prioritizedRanges = conceptReferenceRanges.stream().filter(r -> r.getPriority() != null)
-		        .toList();
+		        .collect(Collectors.toList());
 
 		if (prioritizedRanges.isEmpty()) {
 			// All priorities are null — use legacy strictest-bounds logic
@@ -2132,9 +2133,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		int maxPriority = prioritizedRanges.stream().mapToInt(ConceptReferenceRange::getPriority).max().getAsInt();
 
 		List<ConceptReferenceRange> highestPriorityRanges = prioritizedRanges.stream()
-		        .filter(r -> r.getPriority().equals(maxPriority)).toList();
+		        .filter(r -> r.getPriority().equals(maxPriority)).collect(Collectors.toList());
 
-		return findStrictestReferenceRange(highestPriorityRanges);
+		ConceptReferenceRange selectedRange = findStrictestReferenceRange(highestPriorityRanges);
+		// A merged result of tied ranges is a new instance with a null priority; keep the priority that
+		// governed the selection so callers can tell an explicit priority was applied.
+		selectedRange.setPriority(maxPriority);
+		return selectedRange;
 	}
 
 	/**

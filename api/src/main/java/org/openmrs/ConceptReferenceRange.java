@@ -56,7 +56,7 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	 * all matching ranges are merged the legacy way. The winning range is used as is: a bound it leaves
 	 * empty, such as hiCritical or hiAbsolute, is not taken from a lower-priority range.
 	 *
-	 * @since 3.0.0, 2.9.0
+	 * @since 3.0.0
 	 */
 	@Column(name = "priority")
 	private Integer priority;
