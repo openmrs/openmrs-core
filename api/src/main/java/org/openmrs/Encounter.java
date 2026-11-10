@@ -40,6 +40,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
@@ -84,6 +85,8 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	private EncounterType encounterType;
 	
 	@OneToMany(mappedBy = "encounter")
+	// getOrderGroups() derives order group positions from iteration order
+	@OrderBy("orderId")
 	private Set<Order> orders;
 	
 	@OneToMany(mappedBy = "encounter")
@@ -333,7 +336,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param obs The obs to set.
 	 */
 	public void setObs(Set<Obs> obs) {
-		this.obs = obs;
+		this.obs = CollectionUtil.setCollection(this.obs, obs);
 	}
 	
 	/**
@@ -424,7 +427,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @param orders The orders to set.
 	 */
 	public void setOrders(Set<Order> orders) {
-		this.orders = orders;
+		this.orders = CollectionUtil.setCollection(this.orders, orders);
 	}
 	
 	/**
@@ -492,7 +495,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.2
 	 */
 	public void setDiagnoses(Set<Diagnosis> diagnoses) {
-		this.diagnoses = diagnoses;
+		this.diagnoses = CollectionUtil.setCollection(this.diagnoses, diagnoses);
 	}
 	
 	/**
@@ -524,7 +527,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.4.0, 2.3.1
 	 */
 	public void setConditions(Set<Condition> conditions) {
-		this.conditions = conditions;
+		this.conditions = CollectionUtil.setCollection(this.conditions, conditions);
 	}
 
 	/**
@@ -585,7 +588,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 1.9.1
 	 */
 	public void setEncounterProviders(Set<EncounterProvider> encounterProviders) {
-		this.encounterProviders = encounterProviders;
+		this.encounterProviders = CollectionUtil.setCollection(this.encounterProviders, encounterProviders);
 	}
 	
 	/**
@@ -935,7 +938,7 @@ public class Encounter extends BaseChangeableOpenmrsData {
 	 * @since 2.5.0
 	 */
 	public void setAllergies(Set<Allergy> allergies) {
-		this.allergies = allergies;
+		this.allergies = CollectionUtil.setCollection(this.allergies, allergies);
 	}
 
 	/**

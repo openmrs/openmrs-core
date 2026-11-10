@@ -52,7 +52,7 @@
 		
 		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
 		
-		<set name="conceptReferenceTermMaps" inverse="true" cascade="all-delete-orphan, delete">
+		<set name="conceptReferenceTermMaps" access="field" inverse="true" cascade="all-delete-orphan, delete">
 			<key column="term_a_id" not-null="true" />
 			<one-to-many class="ConceptReferenceTermMap" />
 		</set>
