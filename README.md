@@ -1,8 +1,8 @@
 <img src="https://talk.openmrs.org/uploads/default/original/2X/f/f1ec579b0398cb04c80a54c56da219b2440fe249.jpg" alt="OpenMRS"/>
 
-[![Build Status](https://github.com/openmrs/openmrs-core/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/openmrs/openmrs-core/actions/workflows/build.yaml) [![Coverage Status](https://codecov.io/gh/openmrs/openmrs-core/branch/master/graph/badge.svg)](https://app.codecov.io/gh/openmrs/openmrs-core) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openmrs_openmrs-core&amp;metric=alert_status)](https://sonarcloud.io/summary/new_code?id=openmrs_openmrs-core)
+[![Build Status](https://github.com/openmrs/openmrs-core/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/openmrs/openmrs-core/actions/workflows/build.yaml) [![Coverage Status](https://codecov.io/gh/openmrs/openmrs-core/branch/master/graph/badge.svg)](https://app.codecov.io/gh/openmrs/openmrs-core) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openmrs_openmrs-core&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=openmrs_openmrs-core)
 
-api: [![API](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=api%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=api%2Fpom.xml)
+API: [![API](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=api%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=api%2Fpom.xml)
 test: [![test](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=test%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=test%2Fpom.xml)
 tools: [![tools](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=tools%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=tools%2Fpom.xml)
 web: [![web](https://snyk.io/test/github/openmrs/openmrs-core/badge.svg?targetFile=web%2Fpom.xml)](https://snyk.io/test/github/openmrs/openmrs-core?targetFile=web%2Fpom.xml)
@@ -219,24 +219,24 @@ The project tree is set up as follows:
 
 <table>
  <tr>
-  <td>api/</td>
-  <td>Java and resource files for building the java api jar file.</td>
+  <td>API/</td>
+  <td>Java and resource files for building the java API JAR file.</td>
  </tr>
  <tr>
-  <td>tools/</td>
+  <td>Tools/</td>
   <td>Meta code used during compiling and testing. Does not go into any released binary (like doclets).</td>
  </tr>
  <tr>
-  <td>web/</td>
+  <td>Web/</td>
   <td>Java and resource files that are used in the webapp/war file.</td>
  </tr>
  <tr>
-  <td>webapp/</td>
-  <td>files used in building the war file (contains JSP files on older versions).</td>
+  <td>Webapp/</td>
+  <td>Files used in building the war file (contains JSP files on older versions).</td>
  </tr>
  <tr>
   <td>pom.xml</td>
-  <td>The main maven file used to build and package OpenMRS.</td>
+  <td>The main Maven file used to build and package OpenMRS.</td>
  </tr>
 </table>
 
@@ -259,9 +259,9 @@ If you haven't found what you were looking for, refer to the [Module - wiki](htt
 
 If you want to contribute please refer to these resources
 
-* [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/spaces/docs/pages/25477022/Getting+Started+as+a+Developer)
-* [How To Configure Your IDE](https://openmrs.atlassian.net/wiki/spaces/Archives/pages/25506949/How-To+Setup+And+Use+Your+IDE)
-* [How To Make a Pull Request](https://wiki.openmrs.org/display/docs/Pull+Request+Tips)
+- [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/spaces/docs/pages/25477022/Getting+Started+as+a+Developer)
+- [How To Configure Your IDE](https://openmrs.atlassian.net/wiki/spaces/Archives/pages/25506949/How-To+Setup+And+Use+Your+IDE)
+- [How To Make a Pull Request](https://wiki.openmrs.org/display/docs/Pull+Request+Tips)
 
 ### Wiki
 
