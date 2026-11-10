@@ -9,6 +9,10 @@
  */
 package org.openmrs.api;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +54,9 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private UserSecurityStateService service;
+
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	@BeforeEach
 	public void loadTestUser() {
@@ -202,6 +209,35 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	 * @see UserSecurityStateService#setValue(User, String, String)
 	 */
 	@Test
+	public void setValue_shouldRecordTheCallerAsTheCreatorOfANewEntry() {
+		User admin = admin();
+		User caller = authenticateAsTestUser();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+
+		service.setValue(admin, PROPERTY, "value");
+
+		assertEquals(Arrays.asList(caller.getUserId(), null), auditOf(PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateService#setValue(User, String, String)
+	 */
+	@Test
+	public void setValue_shouldRecordTheCallerAsTheUserWhoChangedAnExistingEntry() {
+		User admin = admin();
+		service.setValue(admin, PROPERTY, "value");
+		User caller = authenticateAsTestUser();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+
+		service.setValue(admin, PROPERTY, "other");
+
+		assertEquals(List.of(ADMIN_USER_ID, caller.getUserId()), auditOf(PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateService#setValue(User, String, String)
+	 */
+	@Test
 	public void setValue_shouldNotStoreTheEntryAsAUserProperty() {
 		service.setValue(admin(), PROPERTY, "value");
 		Context.flushSession();
@@ -215,15 +251,19 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setValue_shouldFailForABlankValue() {
-		assertThrows(IllegalArgumentException.class, () -> service.setValue(admin(), PROPERTY, " "));
+		assertThrows(ValidationException.class, () -> service.setValue(admin(), PROPERTY, " "));
 	}
 
 	/**
 	 * @see UserSecurityStateService#setValue(User, String, String)
 	 */
 	@Test
-	public void setValue_shouldFailForAValueLongerThan4000Characters() {
-		assertThrows(IllegalArgumentException.class, () -> service.setValue(admin(), PROPERTY, "x".repeat(4001)));
+	public void setValue_shouldStoreAValueLongerThan4000Characters() {
+		String value = "x".repeat(5000);
+
+		service.setValue(admin(), PROPERTY, value);
+
+		assertEquals(value, service.getValue(admin(), PROPERTY));
 	}
 
 	/**
@@ -231,7 +271,7 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setValue_shouldFailForABlankProperty() {
-		assertThrows(IllegalArgumentException.class, () -> service.setValue(admin(), " ", "value"));
+		assertThrows(ValidationException.class, () -> service.setValue(admin(), " ", "value"));
 	}
 
 	/**
@@ -239,7 +279,7 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setValue_shouldFailForAnUnsavedUser() {
-		assertThrows(IllegalArgumentException.class, () -> service.setValue(new User(), PROPERTY, "value"));
+		assertThrows(ValidationException.class, () -> service.setValue(new User(), PROPERTY, "value"));
 	}
 
 	/**
@@ -309,7 +349,7 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void deleteIfValueMatches_shouldFailForABlankExpectedValue() {
-		assertThrows(IllegalArgumentException.class, () -> service.deleteIfValueMatches(admin(), PROPERTY, ""));
+		assertThrows(ValidationException.class, () -> service.deleteIfValueMatches(admin(), PROPERTY, ""));
 	}
 
 	/**
@@ -362,6 +402,15 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 
 	private User admin() {
 		return Context.getUserService().getUser(ADMIN_USER_ID);
+	}
+
+	private List<Integer> auditOf(String property) {
+		Object[] row = sessionFactory.getCurrentSession()
+		        .createNativeQuery(
+		            "select creator, changed_by from user_security_state where user_id = ?1 and property = ?2",
+		            Object[].class)
+		        .setParameter(1, ADMIN_USER_ID).setParameter(2, property).getSingleResult();
+		return Arrays.asList((Integer) row[0], (Integer) row[1]);
 	}
 
 	private User authenticateAsTestUser() {

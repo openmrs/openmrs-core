@@ -225,6 +225,7 @@
 	<bean id="conceptReferenceTermValidator" class="org.openmrs.validator.ConceptReferenceTermValidator"/>
 	<bean id="conceptMapTypeValidator" class="org.openmrs.validator.ConceptMapTypeValidator"/>
 	<bean id="conceptAttributeTypeValidator" class="org.openmrs.validator.ConceptAttributeTypeValidator"/>
+	<bean id="userSecurityStateValidator" class="org.openmrs.validator.UserSecurityStateValidator"/>
 	<bean id="implementationIdHttpClient" class="org.openmrs.util.HttpClient">
 		<constructor-arg name="url" value="https://implementation.openmrs.org"/>
 	</bean>

@@ -9,10 +9,11 @@
  */
 package org.openmrs.api.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
+import org.openmrs.UserSecurityState;
 import org.openmrs.api.UserSecurityStateService;
 import org.openmrs.api.db.UserSecurityStateDAO;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -27,10 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(isolation = Isolation.READ_COMMITTED)
 public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements UserSecurityStateService {
 
-	private static final int MAX_PROPERTY_LENGTH = 255;
-
-	private static final int MAX_VALUE_LENGTH = 4000;
-
 	private final UserSecurityStateDAO dao;
 
 	@Autowired
@@ -44,7 +41,7 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	@Override
 	@Transactional(readOnly = true)
 	public String getValue(User user, String property) {
-		return dao.getValue(userId(user), property(property));
+		return dao.getValue(user.getUserId(), property);
 	}
 
 	/**
@@ -52,7 +49,8 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	 */
 	@Override
 	public void setValue(User user, String property, String value) {
-		dao.setValue(userId(user), property(property), value(value, "value"));
+		UserSecurityState entry = validated(user, property, value);
+		dao.setValue(entry.getUserId(), entry.getProperty(), entry.getValue());
 	}
 
 	/**
@@ -60,7 +58,8 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	 */
 	@Override
 	public boolean compareAndSet(User user, String property, String expectedValue, String newValue) {
-		return dao.compareAndSet(userId(user), property(property), expectedValue, value(newValue, "newValue"));
+		UserSecurityState entry = validated(user, property, newValue);
+		return dao.compareAndSet(entry.getUserId(), entry.getProperty(), expectedValue, entry.getValue());
 	}
 
 	/**
@@ -68,7 +67,8 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	 */
 	@Override
 	public boolean deleteIfValueMatches(User user, String property, String expectedValue) {
-		return dao.deleteIfValueMatches(userId(user), property(property), value(expectedValue, "expectedValue"));
+		UserSecurityState entry = validated(user, property, expectedValue);
+		return dao.deleteIfValueMatches(entry.getUserId(), entry.getProperty(), entry.getValue());
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	 */
 	@Override
 	public boolean delete(User user, String property) {
-		return dao.delete(userId(user), property(property));
+		return dao.delete(user.getUserId(), property);
 	}
 
 	/**
@@ -84,33 +84,16 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	 */
 	@Override
 	public long increment(User user, String property) {
-		return dao.increment(userId(user), property(property));
+		UserSecurityState entry = validated(user, property, "1");
+		return dao.increment(entry.getUserId(), entry.getProperty());
 	}
 
-	private static Integer userId(User user) {
-		if (user == null || user.getUserId() == null) {
-			throw new IllegalArgumentException("user must be a saved user");
-		}
-		return user.getUserId();
-	}
-
-	private static String property(String property) {
-		if (StringUtils.isBlank(property)) {
-			throw new IllegalArgumentException("property must not be blank");
-		}
-		if (property.length() > MAX_PROPERTY_LENGTH) {
-			throw new IllegalArgumentException("property must not be longer than " + MAX_PROPERTY_LENGTH + " characters");
-		}
-		return property;
-	}
-
-	private static String value(String value, String name) {
-		if (StringUtils.isBlank(value)) {
-			throw new IllegalArgumentException(name + " must not be blank");
-		}
-		if (value.length() > MAX_VALUE_LENGTH) {
-			throw new IllegalArgumentException(name + " must not be longer than " + MAX_VALUE_LENGTH + " characters");
-		}
-		return value;
+	private static UserSecurityState validated(User user, String property, String value) {
+		UserSecurityState entry = new UserSecurityState();
+		entry.setUserId(user == null ? null : user.getUserId());
+		entry.setProperty(property);
+		entry.setValue(value);
+		ValidateUtil.validate(entry);
+		return entry;
 	}
 }

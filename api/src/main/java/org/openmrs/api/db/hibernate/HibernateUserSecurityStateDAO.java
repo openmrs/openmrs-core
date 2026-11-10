@@ -15,9 +15,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 import org.openmrs.User;
+import org.openmrs.UserSecurityState;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.UserSecurityState;
 import org.openmrs.api.db.UserSecurityStateDAO;
+import org.openmrs.util.UuidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -164,16 +166,21 @@ public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
 	}
 
 	private void insert(Integer userId, String property, String value) {
-		mutation("insert into user_security_state (user_id, property, property_value, date_created) values (?1, ?2, ?3, ?4)")
-		        .setParameter(1, userId).setParameter(2, property).setParameter(3, value).setParameter(4, now())
+		mutation("insert into user_security_state (uuid, user_id, property, property_value, creator, date_created) "
+		        + "values (?1, ?2, ?3, ?4, ?5, ?6)").setParameter(1, UuidUtil.newUuidString()).setParameter(2, userId)
+		        .setParameter(3, property).setParameter(4, value).setParameter(5, actorUserId()).setParameter(6, now())
 		        .executeUpdate();
 	}
 
 	private void update(Integer userId, String property, String value) {
-		mutation(
-		    "update user_security_state set property_value = ?1, date_changed = ?2 where user_id = ?3 and property = ?4")
-		        .setParameter(1, value).setParameter(2, now()).setParameter(3, userId).setParameter(4, property)
-		        .executeUpdate();
+		mutation("update user_security_state set property_value = ?1, changed_by = ?2, date_changed = ?3 "
+		        + "where user_id = ?4 and property = ?5").setParameter(1, value).setParameter(2, actorUserId())
+		        .setParameter(3, now()).setParameter(4, userId).setParameter(5, property).executeUpdate();
+	}
+
+	private Integer actorUserId() {
+		User actor = Context.getAuthenticatedUser();
+		return actor == null ? null : actor.getUserId();
 	}
 
 	private Timestamp now() {

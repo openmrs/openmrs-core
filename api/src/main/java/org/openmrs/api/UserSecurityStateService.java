@@ -23,10 +23,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * entries; modules call it under a proxy privilege or from a daemon thread.
  * <p>
  * Keys are namespaced by their owner, e.g. {@code core.loginAttempts} or
- * {@code authentication.totpSecret}, and are at most 255 characters long. Values are at most 4000
- * characters long and never blank: the absence of an entry is the only representation of "no
- * state". Every method throws {@link IllegalArgumentException} for a user without an id, a blank or
- * over-long key, or a blank or over-long value.
+ * {@code authentication.totpSecret}, and are at most 255 characters long. Values are of any length
+ * but never blank: the absence of an entry is the only representation of "no state". The methods
+ * that may store an entry throw {@link ValidationException} for a user without an id, a blank or
+ * over-long key, or a blank value; {@link #getValue} and {@link #delete} find no entry for such
+ * arguments.
  *
  * @since 3.0.0
  */
@@ -50,8 +51,10 @@ public interface UserSecurityStateService extends OpenmrsService {
 	 * @param property the namespaced key of the entry
 	 * @param value the value to store <strong>Should</strong> create the entry when it does not exist
 	 *            <strong>Should</strong> replace the value of an existing entry <strong>Should</strong>
-	 *            not store the entry as a user property <strong>Should</strong> fail for a blank value
-	 *            <strong>Should</strong> fail for a value longer than 4000 characters
+	 *            record the caller as the creator of a new entry <strong>Should</strong> record the
+	 *            caller as the user who changed an existing entry <strong>Should</strong> not store the
+	 *            entry as a user property <strong>Should</strong> fail for a blank value
+	 *            <strong>Should</strong> store a value longer than 4000 characters
 	 *            <strong>Should</strong> fail for a blank property <strong>Should</strong> fail for an
 	 *            unsaved user <strong>Should</strong> fail without the manage user security state
 	 *            privilege

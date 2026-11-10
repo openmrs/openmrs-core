@@ -159,9 +159,8 @@ public class UserSecurityStateServiceConcurrencyIT extends BaseContextSensitiveN
 			}
 		}
 
-		assertEquals(
-		    List.of("user_security_state_id", "user_id", "property", "property_value", "date_created", "date_changed"),
-		    columns);
+		assertEquals(List.of("user_security_state_id", "uuid", "user_id", "property", "property_value", "creator",
+		    "date_created", "changed_by", "date_changed"), columns);
 	}
 
 	private User user() {

@@ -289,6 +289,21 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
+	public void authenticate_shouldRecordNoCreatorForTheLoginAttemptsEntry() {
+		Context.logout();
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		assertNull(
+		    sessionFactory.getCurrentSession()
+		            .createNativeQuery("select creator from user_security_state where user_id = 1 and property = ?1",
+		                Integer.class)
+		            .setParameter(1, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS).getSingleResult());
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
 	public void authenticate_shouldFailNormallyWhenTheLoginAttemptsEntryDoesNotHoldANumber() {
 		Context.getUserSecurityStateService().setValue(Context.getUserService().getUser(1),
 		    OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
