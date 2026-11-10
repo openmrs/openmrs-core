@@ -154,7 +154,7 @@ jobs:
         run: echo "::warning::Only one of OMRS_RELEASE_BOT_APP_ID/OMRS_RELEASE_BOT_PRIVATE_KEY is configured; falling back to OMRS_BOT_GH_TOKEN"
 
       - name: Setup JDK
-        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: 'temurin'
           java-version: 21
@@ -248,7 +248,7 @@ jobs:
 
       - uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
 
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
