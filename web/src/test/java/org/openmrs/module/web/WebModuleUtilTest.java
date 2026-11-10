@@ -30,11 +30,14 @@ import jakarta.servlet.http.HttpServlet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.web.DispatcherServlet;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -50,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
@@ -402,7 +406,11 @@ public class WebModuleUtilTest {
 		File sibling = new File(realPath, "WEB-INF/view/module/othermodule".replace("/", File.separator));
 		sibling.mkdirs();
 
-		WebModuleUtil.stopModule(newModule("basicmodule"), newServletContext(realPath), true);
+		try (MockedStatic<Context> context = mockStatic(Context.class)) {
+			context.when(Context::getSchedulerService).thenReturn(mock(SchedulerService.class));
+
+			WebModuleUtil.stopModule(newModule("basicmodule"), newServletContext(realPath), true);
+		}
 
 		assertFalse(moduleWebFolder.exists());
 		assertTrue(sibling.exists());
@@ -420,7 +428,11 @@ public class WebModuleUtilTest {
 		ServletContext servletContext = newServletContext(realPath);
 		Module module = newModule("../..");
 
-		assertThrows(ModuleException.class, () -> WebModuleUtil.stopModule(module, servletContext, true));
+		try (MockedStatic<Context> context = mockStatic(Context.class)) {
+			context.when(Context::getSchedulerService).thenReturn(mock(SchedulerService.class));
+
+			assertThrows(ModuleException.class, () -> WebModuleUtil.stopModule(module, servletContext, true));
+		}
 
 		assertTrue(marker.exists());
 		assertTrue(moduleFolder.exists());
