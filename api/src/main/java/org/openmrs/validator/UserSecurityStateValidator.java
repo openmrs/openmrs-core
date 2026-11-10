@@ -19,7 +19,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates a {@link UserSecurityState} entry before it is stored.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 @Handler(supports = { UserSecurityState.class }, order = 50)
 public class UserSecurityStateValidator implements Validator {

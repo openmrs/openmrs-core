@@ -15,7 +15,7 @@ package org.openmrs.api.db;
  * {@link org.openmrs.User}.
  *
  * @see org.openmrs.api.UserSecurityStateService
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 public interface UserSecurityStateDAO {
 

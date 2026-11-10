@@ -29,7 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * over-long key, or a blank value; {@link #getValue} and {@link #delete} find no entry for such
  * arguments.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 public interface UserSecurityStateService extends OpenmrsService {
 

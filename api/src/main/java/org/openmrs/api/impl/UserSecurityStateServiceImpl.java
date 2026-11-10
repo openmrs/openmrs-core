@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Default implementation of {@link UserSecurityStateService}.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 @Service("userSecurityStateService")
 @Transactional(isolation = Isolation.READ_COMMITTED)

@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
  * writes for one user (including the login attempt counting in
  * {@link HibernateContextDAO#authenticate(String, String)}) without blocking other users.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 @Repository("userSecurityStateDAO")
 public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
