@@ -30,7 +30,7 @@ import jakarta.persistence.UniqueConstraint;
  * cache; it fills the audit columns itself, with the authenticated user of the calling thread,
  * which is nobody while a login attempt is being counted.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0
  */
 @Entity
 @Table(name = "user_security_state", uniqueConstraints = @UniqueConstraint(name = "user_security_state_user_property_unique", columnNames = {

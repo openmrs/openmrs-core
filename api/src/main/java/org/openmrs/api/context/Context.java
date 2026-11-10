@@ -514,7 +514,7 @@ public class Context {
 
 	/**
 	 * @return the per-user security state service
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0
 	 */
 	public static UserSecurityStateService getUserSecurityStateService() {
 		return getServiceContext().getUserSecurityStateService();

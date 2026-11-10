@@ -513,7 +513,7 @@ public class ServiceContext implements ApplicationContextAware {
 
 	/**
 	 * @return the per-user security state service
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0
 	 */
 	public UserSecurityStateService getUserSecurityStateService() {
 		return getService(UserSecurityStateService.class);
@@ -528,7 +528,7 @@ public class ServiceContext implements ApplicationContextAware {
 
 	/**
 	 * @param userSecurityStateService the UserSecurityStateService to set
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0
 	 */
 	public void setUserSecurityStateService(UserSecurityStateService userSecurityStateService) {
 		setService(UserSecurityStateService.class, userSecurityStateService);
