@@ -57,7 +57,7 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "build")
 	private Integer build;
 
-	@Column(name = "published", length = 1, nullable = true)
+	@Column(name = "published", nullable = true)
 	private Boolean published = false;
 
 	@ManyToOne(fetch = FetchType.LAZY)
