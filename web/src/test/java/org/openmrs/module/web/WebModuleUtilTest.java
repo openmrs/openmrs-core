@@ -11,6 +11,7 @@ package org.openmrs.module.web;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -393,6 +396,25 @@ public class WebModuleUtilTest {
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
 
 		assertEquals(expectedPath, actualPath);
+	}
+
+	/**
+	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
+	 */
+	@Test
+	public void startModule_shouldFailIfAWebFileResolvesOutsideTheModuleWebFolder(@TempDir File realPath) throws Exception {
+		File omod = new File(realPath, "basicmodule.omod");
+		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(omod))) {
+			jar.putNextEntry(new JarEntry("web/module/"));
+			jar.putNextEntry(new JarEntry("web/module/../othermodule/page.jsp"));
+			jar.closeEntry();
+		}
+		Module module = newModule("basicmodule");
+		module.setFile(omod);
+		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
+
+		assertThrows(ModuleException.class, () -> WebModuleUtil.startModule(module, newServletContext(realPath), true));
+		assertFalse(new File(realPath, "WEB-INF/view/module/othermodule/page.jsp".replace("/", File.separator)).exists());
 	}
 
 	/**
