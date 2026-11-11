@@ -384,7 +384,7 @@ public class HibernateContextDAO implements ContextDAO {
 	private void scheduleUpgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
 		// read here, as the entity must not be shared with the upgrade's thread
 		Integer userId = user.getUserId();
-		String username = user.getUsername();
+		String username = user.toString();
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 				@Override

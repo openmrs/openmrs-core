@@ -517,6 +517,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			assertNotNull(dao.authenticate("admin", "test"));
 			// also proves that the failed upgrade gave its permit back
 			awaitPasswordUpgrades();
+			assertEquals(1, standInEncodes.get(), "the upgrade must have been attempted");
 			assertEquals(hashBefore, readStoredPassword());
 		});
 	}
