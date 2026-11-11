@@ -1018,6 +1018,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertThrows(APIException.class, () -> userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS)));
 	}
 
+	@Test
+	public void purgePrivilege_shouldThrowErrorWhenPrivilegeNameDiffersOnlyByCase() {
+		String privilegeName = PrivilegeConstants.ADD_COHORTS.toLowerCase(Locale.ROOT);
+		Privilege privilege = new Privilege(privilegeName);
+
+		assertThrows(APIException.class, () -> userService.purgePrivilege(privilege));
+	}
+
 	/**
 	 * @see UserService#purgeRole(Role)
 	 */
@@ -1027,6 +1035,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = userService.getRole("Some Role To Delete");
 		userService.purgeRole(role);
 		assertNull(userService.getRole("Some Role To Delete"));
+	}
+
+	@Test
+	public void purgeRole_shouldThrowErrorWhenRoleNameDiffersOnlyByCase() {
+		String roleName = RoleConstants.ANONYMOUS.toLowerCase(Locale.ROOT);
+		Role role = new Role(roleName);
+
+		assertThrows(APIException.class, () -> userService.purgeRole(role));
 	}
 
 	/**
