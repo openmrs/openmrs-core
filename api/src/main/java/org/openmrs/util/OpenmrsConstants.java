@@ -1088,7 +1088,8 @@ public final class OpenmrsConstants {
 	 * made
 	 *
 	 * @deprecated as of 3.0.0 and 2.9.0, login attempts are kept in the user security state under
-	 *             {@link #USER_SECURITY_STATE_LOGIN_ATTEMPTS}; setting this user property has no effect
+	 *             {@link #USER_SECURITY_STATE_LOGIN_ATTEMPTS}; setting this user property has no
+	 *             effect, use {@link org.openmrs.api.UserService#unlockUser} to reset the count
 	 */
 	@Deprecated
 	public static final String USER_PROPERTY_LOGIN_ATTEMPTS = "loginAttempts";
@@ -1099,7 +1100,7 @@ public final class OpenmrsConstants {
 	 *
 	 * @deprecated as of 3.0.0 and 2.9.0, the lockout timestamp is kept in the user security state under
 	 *             {@link #USER_SECURITY_STATE_LOCKOUT_TIMESTAMP}; setting this user property has no
-	 *             effect, use {@code UserSecurityStateService.delete} to unlock a user
+	 *             effect, use {@link org.openmrs.api.UserService#unlockUser} to unlock a user
 	 */
 	@Deprecated
 	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP = "lockoutTimestamp";
@@ -1273,7 +1274,13 @@ public final class OpenmrsConstants {
 	// Liquibase Constants
 	public static final String LIQUIBASE_DUPLICATE_FILE_MODE_DEFAULT = GlobalConfiguration.DuplicateFileMode.SILENT.name();
 
-	/** Value for zero login attempts */
+	/**
+	 * Value for zero login attempts
+	 *
+	 * @deprecated as of 3.0.0 and 2.9.0, login attempts are no longer kept in a user property, see
+	 *             {@link #USER_SECURITY_STATE_LOGIN_ATTEMPTS}
+	 */
+	@Deprecated
 	public static final String ZERO_LOGIN_ATTEMPTS_VALUE = "0";
 
 	private OpenmrsConstants() {
