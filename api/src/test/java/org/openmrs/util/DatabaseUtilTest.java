@@ -153,7 +153,7 @@ public class DatabaseUtilTest {
 	@ParameterizedTest(name = "{0} cannot be resolved across engines")
 	@ArgumentsSource(AmbiguousEscapeQueries.class)
 	void validateReadOnlyQuery_shouldRejectWhenABackslashMaySwallowAQuote(String sql) {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
 	}
 
 	/** Dash comment forms that differ across engines are rejected. */
@@ -169,7 +169,7 @@ public class DatabaseUtilTest {
 	@ParameterizedTest(name = "{0} cannot be resolved across engines")
 	@ArgumentsSource(AmbiguousCommentQueries.class)
 	void validateReadOnlyQuery_shouldRejectUnresolvedDashCommentForms(String sql) {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
 	}
 
 	@Test
@@ -181,8 +181,7 @@ public class DatabaseUtilTest {
 	void validateReadOnlyQuery_shouldKeepIdentifiersThatContinueThroughTheDollarSign() {
 		assertDoesNotThrow(() -> DatabaseUtil.validateReadOnlyQuery("SELECT gross$total$ FROM t"));
 		assertDoesNotThrow(() -> DatabaseUtil.validateReadOnlyQuery("SELECT value_key FROM t WHERE money$unit$ = 1"));
-		assertThrows(IllegalArgumentException.class,
-		    () -> DatabaseUtil.validateReadOnlyQuery("SELECT $$handled$$ AS piece FROM t"));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery("SELECT $$handled$$ AS piece FROM t"));
 	}
 
 	@ParameterizedTest(name = "{0} is read-only")
@@ -194,26 +193,26 @@ public class DatabaseUtilTest {
 	@ParameterizedTest(name = "{0} is not read-only")
 	@ArgumentsSource(RejectedQueries.class)
 	void validateReadOnlyQuery_shouldRejectEveryOtherStatement(String sql) {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "# MySQL style comment\nSELECT 1", "SELECT 1 # MySQL style comment",
 	        "SELECT bit '01' # bit '11'" })
 	void validateReadOnlyQuery_shouldRejectHashForms(String sql) {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "/*! SELECT 1 */", "/*M!50000 SELECT 1 */", "SELECT 1/*!; DELETE FROM t */",
 	        "SELECT 1 /*M!100005 DELETE FROM t */", "SELECT 1; /*! DELETE FROM t */" })
 	void validateReadOnlyQuery_shouldRejectExecutableCommentForms(String sql) {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery(sql));
 	}
 
 	@Test
 	void validateReadOnlyQuery_shouldRejectNull() {
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery(null));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery(null));
 	}
 
 	@Test
@@ -225,7 +224,7 @@ public class DatabaseUtilTest {
 	@Test
 	void validateReadOnlyQuery_shouldQuoteIdentifiersWithoutLosingStructure() {
 		assertDoesNotThrow(() -> DatabaseUtil.validateReadOnlyQuery("SELECT `update` FROM t"));
-		assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.validateReadOnlyQuery("SELECT `update FROM t"));
+		assertThrows(DAOException.class, () -> DatabaseUtil.validateReadOnlyQuery("SELECT `update FROM t"));
 	}
 
 	/**
@@ -266,9 +265,9 @@ public class DatabaseUtilTest {
 	}
 
 	/**
-	 * The validator runs when selectOnly is on only. Its absence on the other path is the behavior that
-	 * decides the run against a leading comment being hidden from the legacy prefix check; that
-	 * statement reaches the database and the database answers, outside of the validator.
+	 * The validator runs when selectOnly is on only. On the other path the engine's own answer decides
+	 * the result shape, so a write whose leading keyword the legacy prefix check hid behind a comment
+	 * now runs and returns its update count instead of failing as a query.
 	 */
 	@Test
 	void executeSQL_withSelectOnlyFalse_shouldKeepSkippingValidation() throws Exception {
@@ -284,8 +283,9 @@ public class DatabaseUtilTest {
 		}
 
 		try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:audit3;DB_CLOSE_DELAY=-1", "sa", "")) {
-			assertThrows(DAOException.class,
-			    () -> DatabaseUtil.executeSQL(conn, "/* comment */UPDATE t SET id = 3 WHERE id = 2", false));
+			List<List<Object>> updateCounts = DatabaseUtil.executeSQL(conn, "/* comment */UPDATE t SET id = 3 WHERE id = 2",
+			    false);
+			assertEquals(1, ((Number) updateCounts.get(0).get(0)).intValue());
 		}
 	}
 
@@ -301,7 +301,7 @@ public class DatabaseUtilTest {
 		}
 
 		try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:audit4;DB_CLOSE_DELAY=-1", "sa", "")) {
-			assertThrows(IllegalArgumentException.class, () -> DatabaseUtil.executeSQL(conn, "TRUNCATE TABLE t", true));
+			assertThrows(DAOException.class, () -> DatabaseUtil.executeSQL(conn, "TRUNCATE TABLE t", true));
 		}
 
 		try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:audit4;DB_CLOSE_DELAY=-1", "sa", "")) {

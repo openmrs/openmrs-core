@@ -114,6 +114,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Qualifier("implementationIdHttpClient")
 	private HttpClient implementationIdHttpClient;
 
+	@Autowired(required = false)
+	@Qualifier("transactionManager")
 	private PlatformTransactionManager transactionManager;
 
 	/**
@@ -128,13 +130,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public void setAdministrationDAO(AdministrationDAO dao) {
 		this.dao = dao;
-	}
-
-	/** Setter injection keeps the no-arg constructor used by tests. */
-	@Autowired(required = false)
-	@Qualifier("transactionManager")
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	public void setEventListeners(EventListeners eventListeners) {

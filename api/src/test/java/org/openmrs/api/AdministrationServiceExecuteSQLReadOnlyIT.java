@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,7 +166,7 @@ public class AdministrationServiceExecuteSQLReadOnlyIT extends BaseContextSensit
 		int obsRows = ((Number) before.get(0).get(0)).intValue();
 		int propertyRows = ((Number) before.get(0).get(1)).intValue();
 
-		assertThrows(IllegalArgumentException.class, () -> adminService.executeSQL(sql, true));
+		assertThrows(DAOException.class, () -> adminService.executeSQL(sql, true));
 
 		List<List<Object>> after = adminService.executeSQL(
 		    "SELECT (SELECT COUNT(*) FROM obs) AS obs_count, (SELECT COUNT(*) FROM global_property) AS property_count",
@@ -176,7 +177,7 @@ public class AdministrationServiceExecuteSQLReadOnlyIT extends BaseContextSensit
 
 	@Test
 	void executeSQL_withSelectOnly_shouldRejectStatementsThatWrite() {
-		assertThrows(IllegalArgumentException.class, () -> Context.getAdministrationService().executeSQL(
+		assertThrows(DAOException.class, () -> Context.getAdministrationService().executeSQL(
 		    "INSERT INTO global_property (property, property_value, uuid) VALUES ('a', 'b', 'uuid-a')", true));
 	}
 

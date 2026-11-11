@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.impl.AdministrationServiceImpl;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -100,7 +101,7 @@ public class AdministrationServiceUnitTest {
 	public void executeSQL_withSelectOnly_shouldRunTheDaoCallInAReadOnlyTransaction() {
 
 		RecordingTransactionManager manager = new RecordingTransactionManager();
-		((AdministrationServiceImpl) adminService).setTransactionManager(manager);
+		ReflectionTestUtils.setField(adminService, "transactionManager", manager);
 		when(adminDAO.executeSQL("SELECT 1", true)).thenReturn(new ArrayList<>());
 
 		adminService.executeSQL("SELECT 1", true);
@@ -116,7 +117,7 @@ public class AdministrationServiceUnitTest {
 	public void executeSQL_withSelectOnlyFalse_shouldNotOpenATransaction() {
 
 		RecordingTransactionManager manager = new RecordingTransactionManager();
-		((AdministrationServiceImpl) adminService).setTransactionManager(manager);
+		ReflectionTestUtils.setField(adminService, "transactionManager", manager);
 
 		adminService.executeSQL("UPDATE t SET id = 1", false);
 

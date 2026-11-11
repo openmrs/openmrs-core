@@ -37,8 +37,6 @@ import org.springframework.util.StringUtils;
  */
 public class DatabaseUtil {
 
-	private static final String ILLEGAL_COMMAND = "Illegal command(s) found in query string";
-
 	private static final Pattern LOAD_DATA = Pattern.compile("\\bload\\s+data\\b");
 
 	private static final Pattern INTO_OUTFILE = Pattern.compile("\\binto\\s+outfile\\b");
@@ -173,16 +171,17 @@ public class DatabaseUtil {
 	 */
 	public static List<List<Object>> executeSQL(Session session, String sql, boolean selectOnly) throws DAOException {
 		if (sql == null) {
-			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+			throw new DAOException("executeSQL.error.nullQuery", new Object[0]);
 		}
 		sql = sql.trim();
-		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
+		if (selectOnly) {
+			validateReadOnlyQuery(sql);
+		}
 
 		final List<List<Object>> result = new ArrayList<>();
 		final String query = sql;
-		final boolean sessionDataManipulation = dataManipulation;
 
-		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, sessionDataManipulation, result));
+		session.doWork(conn -> populateResultsFromSQLQuery(conn, query, result));
 
 		return result;
 	}
@@ -193,53 +192,46 @@ public class DatabaseUtil {
 	 */
 	public static List<List<Object>> executeSQL(Connection conn, String sql, boolean selectOnly) throws DAOException {
 		if (sql == null) {
-			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+			throw new DAOException("executeSQL.error.nullQuery", new Object[0]);
 		}
 		sql = sql.trim();
-		boolean dataManipulation = checkQueryForManipulationCommands(sql, selectOnly);
-		List<List<Object>> result = new ArrayList<>();
-		populateResultsFromSQLQuery(conn, sql, dataManipulation, result);
-		return result;
-	}
-
-	private static boolean checkQueryForManipulationCommands(String sql, boolean selectOnly) {
 		if (selectOnly) {
 			validateReadOnlyQuery(sql);
-			return false;
 		}
-
-		String sqlLower = sql.toLowerCase(Locale.ROOT);
-		return sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
-		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
-		        || sqlLower.startsWith("rename");
+		List<List<Object>> result = new ArrayList<>();
+		populateResultsFromSQLQuery(conn, sql, result);
+		return result;
 	}
 
 	/**
 	 * Validates that the given SQL can only read data.
 	 *
 	 * @param sql the statement to validate
-	 * @throws IllegalArgumentException when the statement cannot be shown to be read-only
+	 * @throws DAOException when the statement cannot be shown to be read-only
 	 */
 	static void validateReadOnlyQuery(String sql) {
 		if (sql == null) {
-			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+			throw new DAOException("executeSQL.error.nullQuery", new Object[0]);
 		}
 
 		SqlText text = analyzeSql(sql);
+		if (text.hasMultipleStatements) {
+			throw new DAOException("executeSQL.error.multipleStatements", new Object[0]);
+		}
 		// structures that the engines resolve differently fail closed
-		if (text.hasMultipleStatements || text.hasWritableComment || text.hasHashOutsideString || text.hasUnclosedQuote
-		        || text.hasAmbiguousQuoteEscape || text.hasAmbiguousCommentMarker || text.hasNestedCommentDivider) {
-			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+		if (text.hasWritableComment || text.hasHashOutsideString || text.hasUnclosedQuote || text.hasAmbiguousQuoteEscape
+		        || text.hasAmbiguousCommentMarker || text.hasNestedCommentDivider) {
+			throw new DAOException("executeSQL.error.unresolvedSyntax", new Object[0]);
 		}
 
 		if (!isReadOnlyStatement(text)) {
-			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+			throw new DAOException("executeSQL.error.notReadOnly", new Object[0]);
 		}
 
 		// the identifier visible pass keeps quoted function names in scope
 		if (containsForbiddenPattern(text.blankedOut.toLowerCase(Locale.ROOT),
 		    text.identifiersKept.toLowerCase(Locale.ROOT))) {
-			throw new IllegalArgumentException(ILLEGAL_COMMAND);
+			throw new DAOException("executeSQL.error.forbiddenFunction", new Object[0]);
 		}
 	}
 
@@ -589,18 +581,12 @@ public class DatabaseUtil {
 	}
 
 	/** Runs the statement on the connection and fills the results. */
-	private static void populateResultsFromSQLQuery(Connection conn, String sql, boolean dataManipulation,
-	        List<List<Object>> results) {
+	private static void populateResultsFromSQLQuery(Connection conn, String sql, List<List<Object>> results) {
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement(sql);
-			if (dataManipulation) {
-				Integer i = ps.executeUpdate();
-				List<Object> row = new ArrayList<>();
-				row.add(i);
-				results.add(row);
-			} else {
-				ResultSet resultSet = ps.executeQuery();
+			if (ps.execute()) {
+				ResultSet resultSet = ps.getResultSet();
 
 				ResultSetMetaData rmd = resultSet.getMetaData();
 				int columnCount = rmd.getColumnCount();
@@ -612,6 +598,10 @@ public class DatabaseUtil {
 					}
 					results.add(rowObjects);
 				}
+			} else {
+				List<Object> row = new ArrayList<>();
+				row.add(ps.getUpdateCount());
+				results.add(row);
 			}
 		} catch (Exception e) {
 			log.debug("Error while running sql: " + sql, e);
