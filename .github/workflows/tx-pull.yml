@@ -32,7 +32,7 @@ jobs:
             | xargs -r sed -i -E '/^[^#![:space:]][^=]*=[[:space:]:]*$/d'
       - name: 🔄 Create PR if necessary
         id: cpr
-        uses: peter-evans/create-pull-request@v8.1.1
+        uses: peter-evans/create-pull-request@v8.1.2
         with:
           commit-message: "(chore) Update translations from Transifex"
           title: "(chore) Update translations from Transifex"
