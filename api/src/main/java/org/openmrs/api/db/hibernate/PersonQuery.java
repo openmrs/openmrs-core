@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateOptionsCollector;
@@ -180,9 +181,39 @@ public class PersonQuery {
 				        .fields("middleNameAnywhere", "familyName2Anywhere").boost(1f);
 			}
 
-			b.must(names.matching(query).defaultOperator(operator));
+			String nameQuery = orQueryParser ? query : prefixSingleCharacterTerms(query);
+			b.must(names.matching(nameQuery).defaultOperator(operator));
 			applyPersonFilters(predicateFactory, b, includeVoided, patientsOnly, dead, null, null);
 		}).toPredicate();
+	}
+
+	/**
+	 * Lets every single-character term of the query also match as a prefix, e.g. "joshua j" becomes
+	 * "joshua (j | j*)". The *Start name fields are indexed with edge n-grams of at least two
+	 * characters, so a single character never matches them, and since every term must match, the whole
+	 * search would otherwise return nothing. The exact term is kept beside the prefix because a prefix
+	 * query is constant-score: on its own it would rank a name that is exactly the initial, such as a
+	 * middle name "J", no higher than any longer name starting with it. Terms inside quoted phrases are
+	 * left unchanged, since a * there is not a prefix operator.
+	 *
+	 * @param query the name search query
+	 * @return the query with single-character terms also matching as prefixes
+	 */
+	static String prefixSingleCharacterTerms(String query) {
+		if (query == null) {
+			return null;
+		}
+		String[] terms = query.trim().split("\\s+");
+		boolean inPhrase = false;
+		for (int i = 0; i < terms.length; i++) {
+			if (!inPhrase && terms[i].length() == 1 && Character.isLetterOrDigit(terms[i].charAt(0))) {
+				terms[i] = "(" + terms[i] + " | " + terms[i] + "*)";
+			}
+			if (StringUtils.countMatches(terms[i], '"') % 2 == 1) {
+				inPhrase = !inPhrase;
+			}
+		}
+		return String.join(" ", terms);
 	}
 
 	private SearchPredicate newSoundexPersonNameSearchQuery(SearchPredicateFactory predicateFactory, String query,
