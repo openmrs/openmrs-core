@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PessimisticLockException;
@@ -69,8 +68,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class HibernateContextDAO implements ContextDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
-
-	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
 
 	/**
 	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
@@ -170,8 +167,7 @@ public class HibernateContextDAO implements ContextDAO {
 			if (lockoutTime > 0) {
 				// unlock them after x mins, otherwise reset the timestamp
 				// to now and make them wait another x mins
-				final Long unlockTime = getUnlockTimeMs();
-				if (System.currentTimeMillis() - lockoutTime > unlockTime) {
+				if (!userDao.isLockedOut(candidateUser)) {
 					clearLockout(userId);
 				} else {
 					userSecurityStateDao.setValue(userId, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
@@ -252,31 +248,6 @@ public class HibernateContextDAO implements ContextDAO {
 	private void clearLockout(Integer userId) {
 		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS);
 		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
-	}
-
-	private Long getUnlockTimeMs() {
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-			String unlockTimeGPValue = Context.getAdministrationService()
-			        .getGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
-			if (StringUtils.isNotBlank(unlockTimeGPValue)) {
-				return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
-			} else {
-				return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
-			}
-		} finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
-		}
-	}
-
-	private Long convertUnlockAccountWaitingTimeGP(String waitingTime) {
-		try {
-			return TimeUnit.MILLISECONDS.convert(Long.valueOf(waitingTime), TimeUnit.MINUTES);
-		} catch (Exception ex) {
-			log.error("Unable to convert the global property " + OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME
-			        + "to a valid Long. Using default value of 5");
-			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
-		}
 	}
 
 	/**

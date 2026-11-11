@@ -775,6 +775,23 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 		Context.getUserService().changePassword(user, null, newPassword);
 	}
 
+	/**
+	 * @see UserService#unlockUser(User)
+	 */
+	@Override
+	public void unlockUser(User user) {
+		dao.unlockUser(user);
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isLockedOut(User user) {
+		return dao.isLockedOut(user);
+	}
+
 	@Override
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changePasswordUsingSecretAnswer(String secretAnswer, String pw) throws APIException {

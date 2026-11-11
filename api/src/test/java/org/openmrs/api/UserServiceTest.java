@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -469,6 +470,108 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 		assertNull(
 		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see UserService#unlockUser(User)
+	 */
+	@Test
+	public void unlockUser_shouldRemoveTheUsersLockoutTimestamp() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis()));
+
+		userService.unlockUser(user);
+
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
+	}
+
+	/**
+	 * @see UserService#unlockUser(User)
+	 */
+	@Test
+	public void unlockUser_shouldResetTheUsersLoginAttempts() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "8");
+
+		userService.unlockUser(user);
+
+		assertNull(
+		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see UserService#unlockUser(User)
+	 */
+	@Test
+	public void unlockUser_shouldFailWithoutTheEditUsersPrivilege() {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User user = userService.getUser(6001);
+		Context.authenticate(user.getUsername(), "userServiceTest");
+
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> userService.unlockUser(user));
+
+		assertThat(exception.getMessage(),
+		    is(messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.EDIT_USERS }, null)));
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
+	public void isLockedOut_shouldReturnTrueWhileTheLockoutIsActive() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis()));
+
+		assertTrue(userService.isLockedOut(user));
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
+	public void isLockedOut_shouldReturnFalseAfterTheLockoutExpires() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
+
+		assertFalse(userService.isLockedOut(user));
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
+	public void isLockedOut_shouldReturnFalseWhenTheUserHasNoLockout() {
+		assertFalse(userService.isLockedOut(userService.getUser(502)));
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
+	public void isLockedOut_shouldReturnFalseWhenTheLockoutTimestampIsNotANumber() {
+		User user = userService.getUser(502);
+		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP, "junk");
+
+		assertFalse(userService.isLockedOut(user));
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
+	public void isLockedOut_shouldFailWithoutTheGetUsersPrivilege() {
+		executeDataSet(XML_FILENAME_WITH_DATA_FOR_CHANGE_PASSWORD_ACTION);
+		User user = userService.getUser(6001);
+		Context.authenticate(user.getUsername(), "userServiceTest");
+
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> userService.isLockedOut(user));
+
+		assertThat(exception.getMessage(),
+		    is(messages.getMessage("error.privilegesRequired", new Object[] { PrivilegeConstants.GET_USERS }, null)));
 	}
 
 	/**
