@@ -12,7 +12,7 @@
 -->
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
             xsi:schemaLocation="urn:infinispan:config:13.0 https://infinispan.org/schemas/infinispan-config-13.0.xsd" 
-            xmlns="urn:infinispan:config:13.0">>
+            xmlns="urn:infinispan:config:13.0">
 	<cache-container>
 		<local-cache-configuration name="entity" simple-cache="true" statistics="false" statistics-available="false">
 			<encoding media-type="application/x-java-object"/>

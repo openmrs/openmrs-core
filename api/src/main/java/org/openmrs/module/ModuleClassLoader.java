@@ -235,7 +235,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		//add module jar to classpath only if we are not in dev mode
 		if (devDir == null) {
-			File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
+			File tmpModuleJar = ModuleUtil.resolveWithinDirectory(tmpModuleDir, module.getModuleId() + ".jar");
 			
 			if (!tmpModuleJar.exists()) {
 				try {
@@ -467,7 +467,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 
 			// each module gets its own folder named /moduleId/
-			File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+			File tmpModuleDir = ModuleUtil.resolveWithinDirectory(OpenmrsClassLoader.getLibCacheFolder(),
+			    module.getModuleId());
 
 			long moduleLastModified = module.getFile().lastModified();
 			File moduleLastModifiedFile = new File(tmpModuleDir, ".moduleLastModified");
