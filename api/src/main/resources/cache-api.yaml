@@ -3,8 +3,6 @@ caches:
         configuration: "user-search-locales"
     conceptIdsByMapping:
         configuration: "concept-ids-by-mapping"
-    serializerWhiteListTypes:
-        configuration: "entity"
     rolePrivileges:
         configuration: "role-privileges"
     globalProperties:
