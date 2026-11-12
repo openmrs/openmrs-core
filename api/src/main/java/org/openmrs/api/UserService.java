@@ -753,13 +753,20 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Ends the login lockout of the given user, if any, and forgets their failed login attempts, so
-	 * that they can log in again without waiting for the lockout to expire.
+	 * that they can log in again without waiting for the lockout to expire. As with
+	 * {@link #saveUser(User)}, the current user must be allowed to assign every role the stored user
+	 * holds.
 	 * <p>
 	 * <strong>Should</strong> remove the users lockout timestamp<br/>
 	 * <strong>Should</strong> reset the users login attempts<br/>
-	 * <strong>Should</strong> fail without the edit users privilege
+	 * <strong>Should</strong> fail without the edit users privilege<br/>
+	 * <strong>Should</strong> fail for a system developer when the current user cannot assign that
+	 * role<br/>
+	 * <strong>Should</strong> keep the lockout of a system developer when the current user cannot
+	 * assign that role
 	 *
 	 * @param user the user to unlock
+	 * @throws APIException if the stored user holds a role the current user may not assign
 	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
 	 *             permission
 	 * @since 3.0.0, 2.9.0
