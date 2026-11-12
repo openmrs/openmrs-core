@@ -47,6 +47,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
@@ -274,6 +276,31 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
 		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "../..", "..", "a/b", "a\\b", ".hidden", "a..b", "a.", "-a", "a b" })
+	public void parse_shouldFailIfModuleHasConfigWithInvalidModuleId(String moduleId) throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
+		        .withModuleName("Reporting").withModuleId(moduleId).build();
+
+		String messageKey = "Module.error.idInvalid";
+		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
+
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "webservices.rest", "fhir2", "legacyui", "ui.springmvc", "my_module-2" })
+	public void parse_shouldAcceptValidModuleIds(String moduleId) throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
+		        .withModuleName("Reporting").withModuleId(moduleId).withPackage("org.openmrs.module.reporting").build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getModuleId(), is(moduleId));
 	}
 
 	@Test
