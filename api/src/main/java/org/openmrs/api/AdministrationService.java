@@ -44,8 +44,19 @@ import org.springframework.validation.Errors;
  */
 public interface AdministrationService extends OpenmrsService {
 
+	/**
+	 * Suffix of the names of the global properties from which serializer type configuration entries are
+	 * read: the part of the name before this suffix must be the id of a loaded module, and only entries
+	 * naming types inside that module's package ({@code org.openmrs.module.<module id>.}) are accepted.
+	 * Everything else is ignored and logged; see
+	 * {@link org.openmrs.api.impl.AdministrationServiceImpl#filterSerializerTypeEntries(String, String, Set)}.
+	 */
 	public static final String GP_SUFFIX_SERIALIZER_WHITELIST_TYPES = ".serializer.whitelist.types";
 
+	/**
+	 * Prefix of the built-in default type entries returned by {@link #getSerializerWhitelistTypes()};
+	 * entries with this prefix are never accepted from configuration.
+	 */
 	public static final String GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX = "hierarchyOf:";
 
 	/**
@@ -482,15 +493,18 @@ public interface AdministrationService extends OpenmrsService {
 	public void updatePostgresSequence();
 
 	/**
-	 * Returns a list of packages and/or individual classes including hierarchy of OpenmrsObject,
-	 * OpenmmrsMetadata, OpenmrsData and other common OpenMRS classes as well as any whitelists defined
-	 * through GPs with the '.serializer.whitelist.types' suffix that are considered to be safe for
-	 * deserializing. It is the responsibility of the serializer to block any unlisted classes from
-	 * being deserialized and posing security risk. It is especially important for serializers using
-	 * XStream.
+	 * Returns the built-in default type entries, followed by the entries of the serializer type
+	 * configuration properties. A property contributes entries only when the part of its name before
+	 * {@link #GP_SUFFIX_SERIALIZER_WHITELIST_TYPES} is exactly the id of a loaded module, and only
+	 * entries naming types inside the owning module's package ({@code org.openmrs.module.<module id>.})
+	 * are included; every other property and entry is ignored and logged, and the serializer rejects
+	 * any type this list does not contain.
 	 * <p>
-	 * <strong>Should</strong> return packages and individual classes defined in GPs<br/>
-	 * <strong>Should</strong> return default common classes if no GPs defined
+	 * <strong>Should</strong> return the default common classes when no property qualifies<br/>
+	 * <strong>Should</strong> return the entries of a property whose name matches a loaded module id,
+	 * restricted to the owning module's package<br/>
+	 * <strong>Should</strong> ignore properties whose name does not match a loaded module id, and
+	 * entries outside the owning module's package
 	 *
 	 * @since 2.7.0, 2.6.2, 2.5.13
 	 * @return a list of packages and/or classes

@@ -35,12 +35,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Credentials;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.api.context.UsernamePasswordCredentials;
+import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.datatype.BooleanDatatype;
 import org.openmrs.customdatatype.datatype.DateDatatype;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.impl.MutableResourceBundleMessageSource;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
@@ -1431,34 +1433,97 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		return (List<Locale>) getCacheForCurrentUser().get();
 	}
 
+	/**
+	 * Returns the serializer configuration service as a plain object with only the data access wiring
+	 * set, so reads of the type list in these tests do not go through the cache.
+	 */
+	private org.openmrs.api.impl.AdministrationServiceImpl rawSerializerConfigurationService() {
+		org.openmrs.api.impl.AdministrationServiceImpl impl = new org.openmrs.api.impl.AdministrationServiceImpl();
+		impl.setAdministrationDAO(Context.getRegisteredComponent("adminDAO", AdministrationDAO.class));
+		return impl;
+	}
+
 	@Test
-	public void getSerializerWhitelistTypes_shouldReturnPackagesAndIndividualClassesDefinedInGPS() {
+	public void getSerializerWhitelistTypes_shouldReturnEntriesOfALoadedModulesOwnPackage() {
 		//given
-		adminService.saveGlobalProperty(
-		    new GlobalProperty("reporting.serializer.whitelist.types", "org.hibernate.*, org.hibernate.mapping.**"));
-		adminService.saveGlobalProperty(new GlobalProperty("serialization.xstream.serializer.whitelist.types",
-		        "org.hibernate.mapping.Column, org.hibernate.mapping.**"));
+		try {
+			Module testModule = new Module("Test Module", "testmodule", "org.openmrs.module.testmodule", "OpenMRS",
+			        "module used by tests", "1.0", "1");
+			ModuleFactory.loadModule(testModule, true);
+			adminService.saveGlobalProperty(new GlobalProperty("testmodule.serializer.whitelist.types",
+			        "org.openmrs.module.testmodule.SomeClass, org.openmrs.module.testmodule.**"));
+			clearSerializerTypeConfigurationCache();
 
-		//when
-		List<String> serializerWhitelistTypes = adminService.getSerializerWhitelistTypes();
+			//when
+			List<String> serializerWhitelistTypes = rawSerializerConfigurationService().getSerializerWhitelistTypes();
 
-		//then
-		assertThat(serializerWhitelistTypes,
-		    containsInAnyOrder("org.hibernate.*", "org.hibernate.mapping.**", "org.hibernate.mapping.Column",
-		        "org.hibernate.mapping.**", "hierarchyOf:org.openmrs.OpenmrsObject",
-		        "hierarchyOf:org.openmrs.OpenmrsMetadata", "hierarchyOf:org.openmrs.OpenmrsData",
-		        "hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
-		        "hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
-		        "hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
-		        "hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
-		        "hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
-		        "hierarchyOf:org.openmrs.messagesource.PresentationMessage",
-		        "hierarchyOf:org.openmrs.person.PersonMergeLogData"));
+			//then
+			assertThat(serializerWhitelistTypes,
+			    containsInAnyOrder("org.openmrs.module.testmodule.SomeClass", "org.openmrs.module.testmodule.**",
+			        "hierarchyOf:org.openmrs.OpenmrsObject", "hierarchyOf:org.openmrs.OpenmrsMetadata",
+			        "hierarchyOf:org.openmrs.OpenmrsData", "hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
+			        "hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
+			        "hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
+			        "hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
+			        "hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
+			        "hierarchyOf:org.openmrs.messagesource.PresentationMessage",
+			        "hierarchyOf:org.openmrs.person.PersonMergeLogData"));
+		} finally {
+			ModuleFactory.getLoadedModulesMap().remove("testmodule");
+		}
+	}
+
+	@Test
+	public void getSerializerWhitelistTypes_shouldIgnorePropertiesWithoutAMatchingLoadedModule() {
+		//given
+		try {
+			Module testModule = new Module("Test Module", "testmodule", "org.openmrs.module.testmodule", "OpenMRS",
+			        "module used by tests", "1.0", "1");
+			ModuleFactory.loadModule(testModule, true);
+			AdministrationDAO administrationDao = Context.getRegisteredComponent("adminDAO", AdministrationDAO.class);
+			administrationDao.saveGlobalProperty(
+			    new GlobalProperty("othermodule.serializer.whitelist.types", "org.openmrs.module.othermodule.SomeClass"));
+			administrationDao.saveGlobalProperty(
+			    new GlobalProperty("x.serializer.whitelist.types", "org.openmrs.module.testmodule.SomeClass"));
+			clearSerializerTypeConfigurationCache();
+
+			//when
+			List<String> serializerWhitelistTypes = rawSerializerConfigurationService().getSerializerWhitelistTypes();
+
+			//then
+			assertThat(serializerWhitelistTypes,
+			    containsInAnyOrder("hierarchyOf:org.openmrs.OpenmrsObject", "hierarchyOf:org.openmrs.OpenmrsMetadata",
+			        "hierarchyOf:org.openmrs.OpenmrsData", "hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
+			        "hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
+			        "hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
+			        "hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
+			        "hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
+			        "hierarchyOf:org.openmrs.messagesource.PresentationMessage",
+			        "hierarchyOf:org.openmrs.person.PersonMergeLogData"));
+		} finally {
+			ModuleFactory.getLoadedModulesMap().remove("testmodule");
+		}
+	}
+
+	/**
+	 * Clears the cached serializer type configuration so a read after a save observes the save; the
+	 * cache configuration differs between supported lines, so an unconfigured cache is skipped.
+	 */
+	private void clearSerializerTypeConfigurationCache() {
+		try {
+			org.springframework.cache.Cache cache = cacheManager.getCache("serializerWhiteListTypes");
+			if (cache != null) {
+				cache.clear();
+			}
+		} catch (RuntimeException e) {
+			// the cache is not configured on this line; nothing to clear
+		}
 	}
 
 	@Test
 	public void getSerializerWhitelistTypes_shouldReturnDefaultCommonClassesIfNoGPS() {
 		//given
+		clearSerializerTypeConfigurationCache();
 		List<GlobalProperty> gps = adminService.getGlobalPropertiesByPrefix(".serializer.whitelist.types");
 		assertThat(gps, is(emptyIterable()));
 
