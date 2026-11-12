@@ -209,17 +209,11 @@ class EnversAuditTableInitializerDatabaseIT extends DatabaseIT {
 	}
 
 	/**
-	 * Checks if a class or any of its superclasses is annotated with @Audited.
+	 * Checks if a class itself is annotated with @Audited. Envers does not audit an entity just because
+	 * its mapped superclass is annotated, as with OutboxEvent and BaseOpenmrsObject.
 	 */
 	private boolean isAudited(Class<?> clazz) {
-		Class<?> current = clazz;
-		while (current != null && current != Object.class) {
-			if (current.isAnnotationPresent(Audited.class)) {
-				return true;
-			}
-			current = current.getSuperclass();
-		}
-		return false;
+		return clazz.isAnnotationPresent(Audited.class);
 	}
 
 	/**

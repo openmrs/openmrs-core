@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import liquibase.exception.LockException;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -95,9 +96,40 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 		DatabaseUpdater.executeChangelog("testLiquibase.xml", (ChangeSetExecutorCallback) null);
 	}
 
+	/**
+	 * The changelog and its sql file are only visible through the application data directory, i.e.
+	 * through the resource accessor DatabaseUpdater installs, not through the classpath. On the second
+	 * run the changeset has already run with a stored checksum, so Liquibase's status check recomputes
+	 * the checksum and reads the sql file. That read must use the same resource accessor as the update.
+	 *
+	 * @see <a href="https://openmrs.atlassian.net/browse/TRUNK-6809">TRUNK-6809</a>
+	 */
+	@Test
+	void executeChangelog_shouldResolveSqlFilesOfAlreadyRunRunOnChangeChangeSets() throws Exception {
+		copyResourcesToApplicationDataDirectory("testLiquibaseRunOnChange.xml", "sql/testSqlFile.sql");
+		DatabaseUpdater.executeChangelog("testLiquibaseRunOnChange.xml", (ChangeSetExecutorCallback) null);
+
+		assertDoesNotThrow(
+		    () -> DatabaseUpdater.executeChangelog("testLiquibaseRunOnChange.xml", (ChangeSetExecutorCallback) null));
+	}
+
+	/**
+	 * @see <a href="https://openmrs.atlassian.net/browse/TRUNK-6809">TRUNK-6809</a>
+	 */
+	@Test
+	void getUnrunDatabaseChanges_shouldResolveSqlFilesOfAlreadyRunRunOnChangeChangeSets() throws Exception {
+		copyResourcesToApplicationDataDirectory("testLiquibaseRunOnChange.xml", "sql/testSqlFile.sql");
+		DatabaseUpdater.executeChangelog("testLiquibaseRunOnChange.xml", (ChangeSetExecutorCallback) null);
+
+		assertTrue(DatabaseUpdater.getUnrunDatabaseChanges("testLiquibaseRunOnChange.xml").isEmpty());
+	}
+
 	private void copyResourcesToApplicationDataDirectory() throws Exception {
+		copyResourcesToApplicationDataDirectory("testLiquibase.xml", "sql/testSqlFile.sql");
+	}
+
+	private void copyResourcesToApplicationDataDirectory(String... files) throws Exception {
 		File appDataDir = OpenmrsUtil.getApplicationDataDirectoryAsFile();
-		String[] files = { "testLiquibase.xml", "sql/testSqlFile.sql" };
 		for (String fileName : files) {
 			String inputResource = "org/openmrs/util/" + fileName;
 			InputStream in = getClass().getClassLoader().getResourceAsStream(inputResource);

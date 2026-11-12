@@ -16,6 +16,8 @@ import java.util.LinkedHashSet;
 
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -65,6 +67,18 @@ public class RolePrivilegesTest {
 
 		assertTrue(privileges.getPrivilegeNames().isEmpty());
 		assertFalse(privileges.grantsSuperuser());
+	}
+
+	@Test
+	public void getPrivilegeNames_shouldReportTheCasingSuppliedNotTheNormalizedForm() {
+		// matching ignores case, but the reported names keep their real spelling, because
+		// OpenmrsAuthenticationToken#getAuthorities() turns these into GrantedAuthority names next to
+		// ROLE_ authorities built from Role#getRole() - which is the role's own casing. Normalizing
+		// only the privilege half would make that one collection inconsistent with itself.
+		RolePrivileges privileges = new RolePrivileges(Collections.singleton("View Patients"), false);
+
+		assertThat(privileges.getPrivilegeNames(), contains("View Patients"));
+		assertTrue(privileges.containsPrivilege("VIEW PATIENTS"));
 	}
 
 	@Test

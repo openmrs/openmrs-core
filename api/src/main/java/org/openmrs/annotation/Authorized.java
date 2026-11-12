@@ -29,11 +29,16 @@ import java.lang.annotation.Target;
  *     &#64;Authorized ()
  *     public void getUsersByName(String name);
  * </pre>
+ *
+ * @deprecated as of 3.0.0, use {@code @PreAuthorize("hasAuthority('&lt;privilege&gt;')")} instead,
+ *             or {@code @PostAuthorize}/{@code @PostFilter} where the check needs the method's
+ *             result; see {@code doc/AUTHORIZATION_MIGRATION.md}
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
+@Deprecated(since = "3.0.0")
 public @interface Authorized {
 
 	/**

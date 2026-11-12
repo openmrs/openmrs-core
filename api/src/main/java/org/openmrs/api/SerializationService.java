@@ -11,10 +11,10 @@ package org.openmrs.api;
 
 import java.util.List;
 
-import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Contains methods for retrieving registered Serializer instances, and for
@@ -65,9 +65,11 @@ public interface SerializationService extends OpenmrsService {
 	 * @param serializerClass - The {@link OpenmrsSerializer} class to use to perform the
 	 *            deserialization
 	 * @return hydrated object of the appropriate type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	@Logging(ignoredArgumentIndexes = { 0 })
-	@Authorized
+	@PreAuthorize("isAuthenticated()")
 	public <T> T deserialize(String serializedObject, Class<? extends T> objectClass,
 	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
 

@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -232,9 +233,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @throws APIException if not allowed to edit encounter
 	 */
 	private void failIfDeniedToEdit(Encounter encounter) throws APIException {
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.edit",
-			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
+		Privilege missingPrivilege = getMissingEditPrivilege(encounter, null);
+		if (missingPrivilege != null) {
+			throw new APIException("Encounter.error.privilege.required.edit", new Object[] { missingPrivilege });
 		}
 	}
 
@@ -418,9 +419,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public Encounter voidEncounter(Encounter encounter, String reason) {
 
 		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.void",
-			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
+		Privilege missingPrivilege = getMissingEditPrivilege(encounter, null);
+		if (missingPrivilege != null) {
+			throw new APIException("Encounter.error.privilege.required.void", new Object[] { missingPrivilege });
 		}
 
 		if (reason == null) {
@@ -449,6 +450,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			encounter.setDateVoided(new Date());
 		}
 		encounter.setVoidReason(reason);
+
+		for (EncounterProvider encounterProvider : encounter.getEncounterProviders()) {
+			if (!encounterProvider.getVoided()) {
+				encounterProvider.setVoided(true);
+				encounterProvider.setVoidedBy(encounter.getVoidedBy());
+				encounterProvider.setDateVoided(encounter.getDateVoided());
+				encounterProvider.setVoidReason(reason);
+			}
+		}
+
 		Context.getEncounterService().saveEncounter(encounter);
 		return encounter;
 	}
@@ -460,9 +471,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException {
 
 		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.unvoid",
-			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
+		Privilege missingPrivilege = getMissingEditPrivilege(encounter, null);
+		if (missingPrivilege != null) {
+			throw new APIException("Encounter.error.privilege.required.unvoid", new Object[] { missingPrivilege });
 		}
 
 		String voidReason = encounter.getVoidReason();
@@ -498,9 +509,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	public void purgeEncounter(Encounter encounter) throws APIException {
 		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.purge",
-			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
+		Privilege missingPrivilege = getMissingEditPrivilege(encounter, null);
+		if (missingPrivilege != null) {
+			throw new APIException("Encounter.error.privilege.required.purge", new Object[] { missingPrivilege });
 		}
 		dao.deleteEncounter(encounter);
 	}
@@ -512,9 +523,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException {
 
 		// if authenticated user is not supposed to edit encounter of certain type
-		if (!canEditEncounter(encounter, null)) {
-			throw new APIException("Encounter.error.privilege.required.purge",
-			        new Object[] { encounter.getEncounterType().getEditPrivilege() });
+		Privilege missingPrivilege = getMissingEditPrivilege(encounter, null);
+		if (missingPrivilege != null) {
+			throw new APIException("Encounter.error.privilege.required.purge", new Object[] { missingPrivilege });
 		}
 
 		if (cascade) {
@@ -636,7 +647,16 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public Encounter getEncounterByUuid(String uuid) throws APIException {
-		return dao.getEncounterByUuid(uuid);
+		Encounter encounter = dao.getEncounterByUuid(uuid);
+		if (encounter == null) {
+			return null;
+		}
+		EncounterType encounterType = encounter.getEncounterType();
+		if (encounterType != null && !canViewEncounter(encounter, null)) {
+			throw new APIException("Encounter.error.privilege.required.view",
+			        new Object[] { encounterType.getViewPrivilege() });
+		}
+		return encounter;
 	}
 
 	/**
@@ -654,7 +674,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	@Transactional(readOnly = true)
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
-		return dao.getAllEncounters(patients);
+		Map<Integer, List<Encounter>> encountersByPatient = dao.getAllEncounters(patients);
+		User user = Context.getAuthenticatedUser();
+		for (List<Encounter> encounters : encountersByPatient.values()) {
+			removeEncountersUserCannotView(encounters, user);
+		}
+		encountersByPatient.values().removeIf(List::isEmpty);
+		return encountersByPatient;
 	}
 
 	/**
@@ -867,18 +893,28 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			if (user == null) {
 				user = Context.getAuthenticatedUser();
 			}
-			for (Iterator<Encounter> iterator = encounters.iterator(); iterator.hasNext();) {
-				Encounter encounter = iterator.next();
-				// determine whether it's need to include this encounter into result or not
-				// as it can be not accessed by current user due to permissions lack
-				EncounterType et = encounter.getEncounterType();
-				if (et != null && !userHasEncounterPrivilege(et.getViewPrivilege(), user)) {
-					// exclude this encounter from result
-					iterator.remove();
-				}
-			}
+			removeEncountersUserCannotView(encounters, user);
 		}
 		return encounters;
+	}
+
+	/**
+	 * Removes from the given list the encounters whose type has a view privilege the user lacks
+	 *
+	 * @param encounters the encounters to filter in place
+	 * @param user the user to check
+	 */
+	private void removeEncountersUserCannotView(List<Encounter> encounters, User user) {
+		for (Iterator<Encounter> iterator = encounters.iterator(); iterator.hasNext();) {
+			Encounter encounter = iterator.next();
+			// determine whether it's need to include this encounter into result or not
+			// as it can be not accessed by current user due to permissions lack
+			EncounterType et = encounter.getEncounterType();
+			if (et != null && !userHasEncounterPrivilege(et.getViewPrivilege(), user)) {
+				// exclude this encounter from result
+				iterator.remove();
+			}
+		}
 	}
 
 	/**
@@ -922,16 +958,46 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (encounter == null) {
 			throw new IllegalArgumentException("The encounter argument can not be null");
 		}
-		// since we restrict by encounter type, if it does not exist, then anyone is allowed to edit the encounter
-		if (encounter.getEncounterType() == null) {
-			return Boolean.TRUE;
-		}
 		// if user is not specified, then use authenticated user from context by default
 		if (user == null) {
 			user = Context.getAuthenticatedUser();
 		}
 
-		return userHasEncounterPrivilege(encounter.getEncounterType().getEditPrivilege(), user);
+		return getMissingEditPrivilege(encounter, user) == null;
+	}
+
+	/**
+	 * Finds the edit privilege the user lacks for the given encounter, checking the encounter type
+	 * stored in the database as well as the one set on the given object
+	 *
+	 * @param encounter the encounter to be edited
+	 * @param user the user to check, or null for the authenticated user
+	 * @return the missing edit privilege, or null if the user is allowed to edit the encounter
+	 */
+	private Privilege getMissingEditPrivilege(Encounter encounter, User user) {
+		if (user == null) {
+			user = Context.getAuthenticatedUser();
+		}
+		if (encounter.getEncounterId() != null) {
+			Privilege missingPrivilege = getMissingEditPrivilege(dao.getSavedEncounterType(encounter), user);
+			if (missingPrivilege != null) {
+				return missingPrivilege;
+			}
+		}
+		return getMissingEditPrivilege(encounter.getEncounterType(), user);
+	}
+
+	/**
+	 * @param encounterType the encounter type whose edit privilege to check, may be null
+	 * @param user the user to check
+	 * @return the edit privilege of the type if the user lacks it, otherwise null
+	 */
+	private Privilege getMissingEditPrivilege(EncounterType encounterType, User user) {
+		// since we restrict by encounter type, if it does not exist, then anyone is allowed to edit the encounter
+		if (encounterType == null || userHasEncounterPrivilege(encounterType.getEditPrivilege(), user)) {
+			return null;
+		}
+		return encounterType.getEditPrivilege();
 	}
 
 	/**
@@ -967,7 +1033,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (privilege == null) {
 			return true;
 		}
-
+		if (user == null || user.equals(Context.getAuthenticatedUser())) {
+			return Context.hasPrivilege(privilege.getPrivilege(), false);
+		}
 		return user.hasPrivilege(privilege.getPrivilege());
 	}
 

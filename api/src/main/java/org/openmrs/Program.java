@@ -30,6 +30,7 @@ import jakarta.persistence.Table;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Program
@@ -50,7 +51,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "program_id")
 	private Integer programId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
@@ -58,7 +59,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	 * Represents the possible outcomes for this program. The concept should have answers or a
 	 * memberSet.
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "outcomes_concept_id")
 	private Concept outcomesConcept;
 
@@ -219,7 +220,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	}
 
 	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
-		this.allWorkflows = allWorkflows;
+		this.allWorkflows = CollectionUtil.setCollection(this.allWorkflows, allWorkflows);
 	}
 
 	/**

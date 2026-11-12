@@ -25,6 +25,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -129,8 +130,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(COHORT_XML);
 		Cohort cohort = service.getAllCohorts(true).get(0);
 		Context.logout();
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
-		    () -> service.purgeCohort(cohort));
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> service.purgeCohort(cohort));
 		assertThat(exception.getMessage(), containsString(PrivilegeConstants.PURGE_COHORTS));
 	}
 
@@ -170,8 +170,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	public void getCohorts_shouldFailIfUserDoesNotHaveTheGetPatientCohortsPrivilege() {
 		executeDataSet(COHORT_XML);
 		Context.logout();
-		APIAuthenticationException exception = assertThrows(APIAuthenticationException.class,
-		    () -> service.getCohorts("Example"));
+		AccessDeniedException exception = assertThrows(AccessDeniedException.class, () -> service.getCohorts("Example"));
 		assertThat(exception.getMessage(), containsString(PrivilegeConstants.GET_PATIENT_COHORTS));
 	}
 

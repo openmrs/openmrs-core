@@ -20,6 +20,8 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
@@ -92,6 +94,7 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 	 * <strong>Should</strong> pass if different concepts have the same short name<br/>
 	 * <strong>Should</strong> fail if the concept datatype is null<br/>
 	 * <strong>Should</strong> fail if the concept class is null<br/>
+	 * <strong>Should</strong> fail if a reference range criteria does not parse<br/>
 	 * <strong>Should</strong> pass if the concept is retired and the only validation failures would be
 	 * in ConceptName
 	 *
@@ -259,6 +262,21 @@ public class ConceptValidator extends BaseCustomizableValidator implements Valid
 			for (ConceptAnswer conceptAnswer : conceptToValidate.getAnswers()) {
 				if (conceptAnswer.getAnswerConcept().equals(conceptToValidate)) {
 					errors.reject("Concept.contains.itself.as.answer");
+				}
+			}
+		}
+		if (conceptToValidate instanceof ConceptNumeric conceptNumeric) {
+			Set<ConceptReferenceRange> referenceRanges = conceptNumeric.getReferenceRanges();
+			if (CollectionUtils.isNotEmpty(referenceRanges)) {
+				int index = 0;
+				for (ConceptReferenceRange referenceRange : referenceRanges) {
+					try {
+						errors.pushNestedPath("referenceRanges[" + index + "]");
+						ValidationUtils.invokeValidator(new ConceptReferenceRangeValidator(), referenceRange, errors);
+					} finally {
+						errors.popNestedPath();
+					}
+					index++;
 				}
 			}
 		}

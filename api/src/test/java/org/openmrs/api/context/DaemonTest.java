@@ -27,6 +27,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -107,7 +108,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			Daemon.runInNewDaemonThread(() -> null);
 			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
+		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
 	}
@@ -117,9 +118,24 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		try {
 			Daemon.runNewDaemonTask(() -> {});
 			fail("Should not hit this line, since the previous needed to throw an exception");
-		} catch (APIAuthenticationException ex) {
+		} catch (AccessDeniedException ex) {
 			assertThat(ex.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 		}
+	}
+
+	@Test
+	public void runInNewDaemonThreadCallable_shouldDenyANonDaemonThreadWithAnAPIAuthenticationException() {
+		// what this threw before 3.0.0, which is now also an AccessDeniedException
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Daemon.runInNewDaemonThread(() -> null));
+		assertThat(denial.getMessage(), is("Only daemon threads can spawn new daemon threads"));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldDenyANonDaemonThreadWithAnAPIAuthenticationException() {
+		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		    () -> Daemon.runNewDaemonTask(() -> {}));
+		assertThat(denial.getMessage(), is("Only daemon threads can spawn new daemon threads"));
 	}
 
 	@Test

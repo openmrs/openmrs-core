@@ -742,10 +742,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relType) throws APIException {
+	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relationshipType) throws APIException {
 
 		// get all relationships with this type
-		List<Relationship> relationships = Context.getPersonService().getRelationships(null, null, relType);
+		List<Relationship> relationships = Context.getPersonService().getRelationships(null, null, relationshipType);
 
 		// the map to return
 		Map<Person, List<Person>> ret = new HashMap<>();

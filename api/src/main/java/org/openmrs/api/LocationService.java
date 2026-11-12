@@ -17,11 +17,13 @@ import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.LocationDAO;
 import org.openmrs.parameter.LocationSearchCriteria;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * API methods for managing Locations <br>
@@ -53,14 +55,16 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return saved object<br/>
 	 * <strong>Should</strong> remove location tag from location<br/>
 	 * <strong>Should</strong> add location tag to location<br/>
-	 * <strong>Should</strong> remove child location from location<br/>
+	 * <strong>Should</strong> not delete child location when removed from parent location<br/>
 	 * <strong>Should</strong> cascade save to child location from location<br/>
 	 * <strong>Should</strong> update location successfully<br/>
 	 * <strong>Should</strong> create location successfully
 	 *
 	 * @param location is the location to be saved to the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.MANAGE_LOCATIONS + "')")
 	public Location saveLocation(Location location) throws APIException;
 
 	/**
@@ -71,8 +75,10 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param locationId integer primary key of the location to find
 	 * @return Location object that has location.locationId = <code>locationId</code> passed in.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#locationId, 'Location', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getLocation(Integer locationId) throws APIException;
 
 	/**
@@ -83,8 +89,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param name the exact name of the location to match on
 	 * @return Location matching the <code>name</code> to Location.name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getLocation(String name) throws APIException;
 
 	/**
@@ -95,8 +104,11 @@ public interface LocationService extends OpenmrsService {
 	 * doesnot exist
 	 *
 	 * @return The default location for this implementation.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getDefaultLocation() throws APIException;
 
 	/**
@@ -107,8 +119,10 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param uuid is the uuid of the desired location
 	 * @return location with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#uuid, 'Location', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public Location getLocationByUuid(String uuid) throws APIException;
 
 	/**
@@ -119,8 +133,10 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param uuid is the uuid of the desired location tag
 	 * @return location tag with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#uuid, 'LocationTag', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public LocationTag getLocationTagByUuid(String uuid) throws APIException;
 
 	/**
@@ -130,8 +146,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return all locations including retired
 	 *
 	 * @return locations that are in the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getAllLocations() throws APIException;
 
 	/**
@@ -141,8 +160,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return only unretired locations when includeRetires is false
 	 *
 	 * @param includeRetired whether or not to include retired locations
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException;
 
 	/**
@@ -153,8 +175,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list when no location match the name fragment
 	 *
 	 * @param nameFragment is the string used to search for locations
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocations(String nameFragment) throws APIException;
 
 	/**
@@ -172,9 +197,12 @@ public interface LocationService extends OpenmrsService {
 	 * @param start the beginning index
 	 * @param length the number of matching locations to return
 	 * @return the list of locations
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#parent, '" + PrivilegeConstants.GET_LOCATIONS + "')")
+	//TODO: DAO auth filter
 	public List<Location> getLocations(String nameFragment, Location parent,
 	        Map<LocationAttributeType, Object> attributeValues, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
@@ -186,9 +214,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list when no locations has the given tag
 	 *
 	 * @param tag LocationTag criterion
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException;
 
 	/**
@@ -198,9 +229,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return all unretired locations given an empty tag list
 	 *
 	 * @param tags Set of LocationTag criteria
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException;
 
 	/**
@@ -211,9 +245,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list when given an empty tag list
 	 *
 	 * @param tags Set of LocationTag criteria
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException;
 
 	/**
@@ -223,8 +260,10 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param location location to be retired
 	 * @param reason is the reason why the location is being retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.MANAGE_LOCATIONS + "')")
 	public Location retireLocation(Location location, String reason) throws APIException;
 
 	/**
@@ -236,8 +275,10 @@ public interface LocationService extends OpenmrsService {
 	 * @param location
 	 * @return the newly unretired location
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.MANAGE_LOCATIONS + "')")
 	public Location unretireLocation(Location location) throws APIException;
 
 	/**
@@ -247,8 +288,10 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> delete location successfully
 	 *
 	 * @param location the Location to clean out of the database.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.PURGE_LOCATIONS + "')")
 	public void purgeLocation(Location location) throws APIException;
 
 	/**
@@ -261,9 +304,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> throw exception if tag name is null
 	 *
 	 * @param tag is the tag to be saved to the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.MANAGE_LOCATION_TAGS + "')")
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException;
 
 	/**
@@ -275,9 +320,11 @@ public interface LocationService extends OpenmrsService {
 	 * @param locationTagId integer primary key of the location tag to find
 	 * @return LocationTag object that has LocationTag.locationTagId = <code>locationTagId</code> passed
 	 *         in.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#locationTagId, 'LocationTag', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public LocationTag getLocationTag(Integer locationTagId) throws APIException;
 
 	/**
@@ -289,9 +336,12 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param tag the exact name of the tag to match on
 	 * @return LocationTag matching the name to LocationTag.tag
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public LocationTag getLocationTagByName(String tag) throws APIException;
 
 	/**
@@ -301,9 +351,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return all location tags including retired
 	 *
 	 * @return location tags that are in the database
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<LocationTag> getAllLocationTags() throws APIException;
 
 	/**
@@ -313,9 +366,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return only unretired location tags if includeRetired is false
 	 *
 	 * @param includeRetired whether or not to include retired location tags
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) throws APIException;
 
 	/**
@@ -326,9 +382,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return empty list when no location tag match given search string
 	 *
 	 * @param search is the string used to search for tags
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<LocationTag> getLocationTags(String search) throws APIException;
 
 	/**
@@ -339,9 +398,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param tag location tag to be retired
 	 * @param reason is the reason why the location tag is being retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.MANAGE_LOCATION_TAGS + "')")
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException;
 
 	/**
@@ -353,9 +414,11 @@ public interface LocationService extends OpenmrsService {
 	 * @param tag
 	 * @return the newly unretired location tag
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.MANAGE_LOCATION_TAGS + "')")
 	public LocationTag unretireLocationTag(LocationTag tag) throws APIException;
 
 	/**
@@ -364,9 +427,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> delete location tag
 	 *
 	 * @param tag the LocationTag to clean out of the database.
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.5
 	 */
-	@Authorized({ PrivilegeConstants.PURGE_LOCATION_TAGS })
+	@PreAuthorize("hasPermission(#tag, '" + PrivilegeConstants.PURGE_LOCATION_TAGS + "')")
 	public void purgeLocationTag(LocationTag tag) throws APIException;
 
 	/**
@@ -376,9 +441,12 @@ public interface LocationService extends OpenmrsService {
 	 * @param nameFragment is the string used to search for locations
 	 * @param includeRetired Specifies if retired locations should be counted or ignored
 	 * @return the number of all locations starting with the given nameFragment
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.8
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	//TODO: DAO auth filter
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 
 	/**
@@ -390,9 +458,12 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param includeRetired
 	 * @return return all root locations depends on includeRetired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public List<Location> getRootLocations(boolean includeRetired);
 
 	/**
@@ -401,9 +472,12 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param criteria the search criteria
 	 * @return locations matching all criteria; never null
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.7
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
+	//TODO: DAO auth filter
 	List<Location> getLocations(LocationSearchCriteria criteria);
 
 	/**
@@ -413,9 +487,12 @@ public interface LocationService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired locations
 	 * @return a list of descendant locations
 	 * @throws APIException
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 2.8.7
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasPermission(#location, '" + PrivilegeConstants.GET_LOCATIONS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	List<Location> getDescendantLocations(Location location, boolean includeRetired);
 
 	/**
@@ -439,11 +516,13 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @return a string value of the default address template. If the GP is empty, the default template
 	 *         is returned
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @see OpenmrsConstants#GLOBAL_PROPERTY_ADDRESS_TEMPLATE
 	 * @see OpenmrsConstants#DEFAULT_ADDRESS_TEMPLATE
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.GET_LOCATIONS })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATIONS + "')")
 	public String getAddressTemplate() throws APIException;
 
 	/**
@@ -454,9 +533,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> create default address template successfully
 	 *
 	 * @param xml is a string to be saved as address template
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized({ PrivilegeConstants.MANAGE_ADDRESS_TEMPLATES })
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_ADDRESS_TEMPLATES + "')")
 	public void saveAddressTemplate(String xml) throws APIException;
 
 	/**
@@ -464,9 +545,12 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> return all location attribute types including retired ones
 	 *
 	 * @return all {@link LocationAttributeType}s
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	List<LocationAttributeType> getAllLocationAttributeTypes();
 
 	/**
@@ -476,9 +560,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param id
 	 * @return the {@link LocationAttributeType} with the given internal id
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#id, 'LocationAttributeType', '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType getLocationAttributeType(Integer id);
 
 	/**
@@ -488,9 +574,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the {@link LocationAttributeType} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#uuid, 'LocationAttributeType', '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
 
 	/**
@@ -501,9 +589,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param locationAttributeType
 	 * @return the LocationAttributeType created/saved
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType);
 
 	/**
@@ -513,9 +603,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param locationAttributeType
 	 * @return the locationAttribute retired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType retireLocationAttributeType(LocationAttributeType locationAttributeType, String reason);
 
 	/**
@@ -525,9 +617,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param locationAttributeType
 	 * @return the LocationAttributeType unretired
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType unretireLocationAttributeType(LocationAttributeType locationAttributeType);
 
 	/**
@@ -536,9 +630,11 @@ public interface LocationService extends OpenmrsService {
 	 * <strong>Should</strong> completely remove a location attribute type
 	 *
 	 * @param locationAttributeType
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.PURGE_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasPermission(#locationAttributeType, '" + PrivilegeConstants.PURGE_LOCATION_ATTRIBUTE_TYPES + "')")
 	void purgeLocationAttributeType(LocationAttributeType locationAttributeType);
 
 	/**
@@ -548,9 +644,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param uuid
 	 * @return the {@link LocationAttribute} with the given uuid
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.9
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATIONS)
+	@PreAuthorize("hasPermission(#uuid, 'LocationAttribute', '" + PrivilegeConstants.GET_LOCATIONS + "')")
 	LocationAttribute getLocationAttributeByUuid(String uuid);
 
 	/**
@@ -561,8 +659,11 @@ public interface LocationService extends OpenmrsService {
 	 *
 	 * @param locationAttributeTypeName
 	 * @return the {@link LocationAttributeType} with the specified name
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 * @since 1.10.0
 	 */
-	@Authorized(PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES)
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
+	@PostAuthorize("hasPermission(returnObject, '" + PrivilegeConstants.GET_LOCATION_ATTRIBUTE_TYPES + "')")
 	LocationAttributeType getLocationAttributeTypeByName(String locationAttributeTypeName);
 }

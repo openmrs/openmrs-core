@@ -11,6 +11,7 @@ package org.openmrs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,11 +42,11 @@ public class Field extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "field_id")
 	private Integer fieldId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "field_type", nullable = false)
 	private FieldType fieldType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id")
 	private Concept concept;
 
