@@ -780,7 +780,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void unlockUser(User user) {
-		dao.unlockUser(user);
+		User account = user.getUserId() == null ? null : dao.getUser(user.getUserId());
+		if (account != null) {
+			checkPrivileges(account);
+			dao.unlockUser(account);
+		}
 	}
 
 	/**

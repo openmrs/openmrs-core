@@ -168,7 +168,7 @@ public class HibernateContextDAO implements ContextDAO {
 				// unlock them after x mins, otherwise reset the timestamp
 				// to now and make them wait another x mins
 				if (!userDao.isLockedOut(candidateUser)) {
-					clearLockout(userId);
+					userDao.unlockUser(candidateUser);
 				} else {
 					userSecurityStateDao.setValue(userId, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 					    String.valueOf(System.currentTimeMillis()));
@@ -193,7 +193,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 				// only clean up if the were some login failures, otherwise all should be clean
 				if (userSecurityStateDao.getValue(userId, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS) != null) {
-					clearLockout(userId);
+					userDao.unlockUser(candidateUser);
 				}
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
@@ -243,11 +243,6 @@ public class HibernateContextDAO implements ContextDAO {
 	private void setLastLoginTime(User candidateUser) {
 		candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LAST_LOGIN_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis()));
-	}
-
-	private void clearLockout(Integer userId) {
-		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS);
-		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
 	}
 
 	/**
