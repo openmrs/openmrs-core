@@ -16,6 +16,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openmrs.api.APIException;
@@ -58,9 +59,16 @@ public class GZIPFilter extends OncePerRequestFilter {
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");
 
-			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(response);
+			// Don't remove this wrapper, even though it looks useless. On Tomcat the unwrapped request keeps
+			// returning REQUEST from getDispatcherType() during an include, and only a request wrapper sees
+			// INCLUDE, because Tomcat swaps the request inside the wrapper for its include request. Without it
+			// GZIPResponseWrapper can't tell when a sendError() or Content-Length comes from an included page,
+			// so the whole page can come out empty or cut off.
+			HttpServletRequest wrappedRequest = request instanceof HttpServletRequestWrapper ? request
+			        : new HttpServletRequestWrapper(request);
+			GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(wrappedRequest, response);
 
-			chain.doFilter(request, wrappedResponse);
+			chain.doFilter(wrappedRequest, wrappedResponse);
 			wrappedResponse.finishResponse();
 
 			return;
