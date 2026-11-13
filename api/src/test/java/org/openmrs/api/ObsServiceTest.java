@@ -62,6 +62,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -2800,7 +2801,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Statistics stats = sessionFactory.getStatistics();
 		stats.clear();
 
-		List<Obs> versions = obsService.getObsVersionHistory(prev);
+		// through the DAO, since the service's privilege check may read roles from the database, for
+		// example when the role privilege cache was cleared earlier in the transaction
+		List<Obs> versions = applicationContext.getBean("obsDAO", ObsDAO.class).getObsVersionHistory(prev);
 		assertNotNull(versions);
 		assertEquals(40, versions.size());
 		assertEquals(prev.getObsId(), versions.get(0).getObsId());
