@@ -2005,6 +2005,38 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getPatients_shouldMatchSingleCharacterNameTermsAsPrefixes() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		// a trailing single character matches the start of the family name
+		List<Patient> patients = patientService.getPatients("John D", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertFalse(patients.contains(patientService.getPatient(7)));
+
+		// a leading single character matches the start of the given name
+		patients = patientService.getPatients("J Doe", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertTrue(patients.contains(patientService.getPatient(4)));
+		assertFalse(patients.contains(patientService.getPatient(5)));
+
+		// every term must still match, so a single character that starts no name finds nothing
+		assertTrue(patientService.getPatients("John X", null, null, false).isEmpty());
+	}
+
+	@Test
+	public void getPatients_shouldMatchQuotedNamesContainingSingleCharacterTerms() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		Patient patient = patientService.getPatient(2);
+		patient.getPersonName().setGivenName("John D Smith");
+		Context.flushSession();
+		updateSearchIndex();
+
+		List<Patient> patients = patientService.getPatients("\"John D Smith\"", null, null, false);
+		assertTrue(patients.contains(patient));
+	}
+
+	@Test
 	public void getPatients_shouldIgnoreAccentsWhenMatchingName() throws Exception {
 		executeDataSet(FIND_PATIENTS_ACCENTS_XML);
 		updateSearchIndex();
