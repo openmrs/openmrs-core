@@ -125,6 +125,21 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	public void getObsVersionHistory_shouldLoadTheWholeChainInTwoQueriesWithRecursiveCte() {
+		Obs latest = buildVersionChain(40);
+		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().clear();
+		Statistics stats = sessionFactory.getStatistics();
+		stats.clear();
+		
+		List<Obs> versions = dao.getObsVersionHistory(latest, true);
+		
+		assertEquals(40, versions.size());
+		// the recursive CTE that walks previous_version, then the IN-clause load, whatever the chain's length
+		assertEquals(2, stats.getPrepareStatementCount());
+	}
+	
+	@Test
 	public void getObsVersionHistory_shouldIssueOneSelfJoinQueryPerJoinDepthOfVersions() {
 		int perQuery = HibernateObsDAO.VERSION_CHAIN_JOIN_DEPTH + 1;
 		Obs latest = buildVersionChain(2 * perQuery + 1);
