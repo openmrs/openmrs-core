@@ -1694,7 +1694,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (Allergy.class.equals(type)) {
 			return (T) getAllergyByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override
