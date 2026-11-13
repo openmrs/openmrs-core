@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,8 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.openmrs.attribute.Attribute;
 import org.openmrs.attribute.BaseAttribute;
@@ -29,8 +26,6 @@ import org.openmrs.attribute.BaseAttribute;
 @Entity
 @Table(name = "concept_attribute")
 @AssociationOverride(name = "owner", joinColumns = @JoinColumn(name = "concept_id", nullable = false))
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptAttribute extends BaseAttribute<ConceptAttributeType, Concept> implements Attribute<ConceptAttributeType, Concept> {
 
 	@Id

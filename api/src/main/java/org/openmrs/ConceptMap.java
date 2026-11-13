@@ -10,7 +10,6 @@
 package org.openmrs;
 
 import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,8 +20,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.envers.Audited;
@@ -39,8 +36,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 @Entity
 @Table(name = "concept_reference_map")
 @AssociationOverride(name = "conceptMapType", joinColumns = @JoinColumn(name = "concept_map_type_id", nullable = false))
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptMap extends BaseConceptMap {
 
 	public static final long serialVersionUID = 754677L;

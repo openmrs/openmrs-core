@@ -42,26 +42,7 @@ public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void secondLevelCaches_shouldHaveExpectedConfiguration() {
-		assertCacheConfiguration("org.openmrs.Concept", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptName", 200000);
-		assertCacheConfiguration("org.openmrs.ConceptDescription", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptAnswer", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptSet", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptMap", 200000);
-		assertCacheConfiguration("org.openmrs.ConceptAttribute", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptReferenceRange", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptReferenceTerm", 200000);
-		assertCacheConfiguration("org.openmrs.ConceptMapType", 1000);
-		assertCacheConfiguration("org.openmrs.ConceptNameTag", 1000);
-		assertCacheConfiguration("org.openmrs.ConceptAttributeType", 1000);
-		assertCacheConfiguration("org.openmrs.ConceptName.tags", 200000);
-		assertCacheConfiguration("org.openmrs.Concept.names", 100000);
-		assertCacheConfiguration("org.openmrs.Concept.descriptions", 100000);
-		assertCacheConfiguration("org.openmrs.Concept.answers", 100000);
-		assertCacheConfiguration("org.openmrs.Concept.conceptSets", 100000);
-		assertCacheConfiguration("org.openmrs.Concept.conceptMappings", 100000);
-		assertCacheConfiguration("org.openmrs.Concept.attributes", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptNumeric.referenceRanges", 100000);
+		assertCacheConfiguration("org.openmrs.Concept", 10000);
 		assertCacheConfiguration("org.openmrs.User", 10000);
 		assertCacheConfiguration("org.openmrs.Privilege", 10000);
 		assertCacheConfiguration("org.openmrs.Person", 10000);

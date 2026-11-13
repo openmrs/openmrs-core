@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,8 +29,6 @@ import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
@@ -58,8 +55,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @BatchSize(size = 25)
 @Indexed
 @Audited
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 
 	public static final long serialVersionUID = 2L;
@@ -104,7 +99,6 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	@Column(name = "void_reason", length = 255)
 	private String voidReason;
 
-	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinTable(name = "concept_name_tag_map", joinColumns = @JoinColumn(name = "concept_name_id"), inverseJoinColumns = @JoinColumn(name = "concept_name_tag_id"))
 	private Collection<ConceptNameTag> tags;

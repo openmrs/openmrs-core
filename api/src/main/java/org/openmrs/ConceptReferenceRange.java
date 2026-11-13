@@ -9,7 +9,6 @@
  */
 package org.openmrs;
 
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,8 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 
@@ -39,8 +36,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId
 @Audited
 @Entity
 @Table(name = "concept_reference_range")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptReferenceRange extends BaseReferenceRange implements OpenmrsObject {
 
 	private static final long serialVersionUID = 47329L;

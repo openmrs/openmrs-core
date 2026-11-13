@@ -11,7 +11,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,8 +22,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
@@ -38,8 +35,6 @@ import org.hibernate.envers.Audited;
 @Table(name = "concept_answer")
 @BatchSize(size = 25)
 @Audited
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptAnswer> {
 
 	public static final long serialVersionUID = 3744L;
