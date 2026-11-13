@@ -12,6 +12,7 @@ package org.openmrs.api;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -851,6 +852,31 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		int totalAttributeTypes = pws.getAllProgramAttributeTypes().size();
 		pws.purgeProgramAttributeType(programAttributeType);
 		assertEquals((totalAttributeTypes - 1), pws.getAllProgramAttributeTypes().size());
+	}
+
+	/**
+	 * @see ProgramWorkflowService#getPatientProgramByAttributeNameAndValue(String, String)
+	 */
+	@Test
+	public void getPatientProgramByAttributeNameAndValue_shouldReturnNonVoidedPatientProgramsWithTheAttributeValue() {
+		ProgramAttributeType attributeType = pws.getProgramAttributeType(1);
+		PatientProgram patientProgram = pws.getPatientProgram(1);
+		PatientProgram voidedPatientProgram = pws.getPatientProgram(2);
+		for (PatientProgram pp : Arrays.asList(patientProgram, voidedPatientProgram)) {
+			PatientProgramAttribute attribute = new PatientProgramAttribute();
+			attribute.setAttributeType(attributeType);
+			attribute.setValue("REG-123");
+			pp.setAttribute(attribute);
+			pws.savePatientProgram(pp);
+		}
+		pws.voidPatientProgram(voidedPatientProgram, "test");
+		// the query runs with manual flush mode, so it only sees saved data
+		Context.flushSession();
+
+		List<PatientProgram> patientPrograms = pws.getPatientProgramByAttributeNameAndValue("ProgramId", "REG-123");
+
+		assertEquals(Collections.singletonList(patientProgram), patientPrograms);
+		assertTrue(pws.getPatientProgramByAttributeNameAndValue("ProgramId", "REG-456").isEmpty());
 	}
 
 	/**
