@@ -1220,6 +1220,34 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNull(userService.setUserProperty(null, "some key", "some value"));
 	}
 
+	@Test
+	public void setUserProperty_shouldEvictCachedSearchLocales() {
+		AdministrationService adminService = Context.getAdministrationService();
+		adminService.saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
+		User user = Context.getAuthenticatedUser();
+		userService.setUserProperty(user, OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "en_US");
+		assertThat(adminService.getSearchLocales(), not(hasItem(new Locale("pl"))));
+
+		userService.setUserProperty(user, OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "pl");
+
+		assertThat(adminService.getSearchLocales(), hasItem(new Locale("pl")));
+	}
+
+	@Test
+	public void removeUserProperty_shouldEvictCachedSearchLocales() {
+		AdministrationService adminService = Context.getAdministrationService();
+		adminService.saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en_GB, en_US, pl"));
+		User user = Context.getAuthenticatedUser();
+		userService.setUserProperty(user, OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, "pl");
+		assertThat(adminService.getSearchLocales(), hasItem(new Locale("pl")));
+
+		userService.removeUserProperty(user, OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES);
+
+		assertThat(adminService.getSearchLocales(), not(hasItem(new Locale("pl"))));
+	}
+
 	/**
 	 * @see UserService#setUserProperty(User,String,String)
 	 */

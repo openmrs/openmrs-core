@@ -658,6 +658,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#setUserProperty(User, String, String)
 	 */
 	@Override
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
 			requireCanEditProperties(user);
@@ -672,6 +673,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 * @see org.openmrs.api.UserService#removeUserProperty(org.openmrs.User, java.lang.String)
 	 */
 	@Override
+	@CacheEvict(value = "userSearchLocales", allEntries = true)
 	public User removeUserProperty(User user, String key) {
 		if (user != null) {
 			requireCanEditProperties(user);
