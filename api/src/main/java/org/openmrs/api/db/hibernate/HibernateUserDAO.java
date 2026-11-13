@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
@@ -40,9 +41,11 @@ import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.openmrs.util.UserByNameComparator;
 import org.slf4j.Logger;
@@ -62,14 +65,19 @@ public class HibernateUserDAO implements UserDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
 
+	private static final long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MINUTES.toMillis(5);
+
 	/**
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
 
+	private final UserSecurityStateDAO userSecurityStateDao;
+
 	@Autowired
-	public HibernateUserDAO(SessionFactory sessionFactory) {
+	public HibernateUserDAO(SessionFactory sessionFactory, UserSecurityStateDAO userSecurityStateDao) {
 		this.sessionFactory = sessionFactory;
+		this.userSecurityStateDao = userSecurityStateDao;
 	}
 
 	/**
@@ -264,6 +272,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteUser(User user) {
+		userSecurityStateDao.deleteAll(user.getUserId());
 		sessionFactory.getCurrentSession().remove(user);
 	}
 
@@ -408,11 +417,62 @@ public class HibernateUserDAO implements UserDAO {
 
 		saveLoginCredential(credentials);
 
-		// reset lockout
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS,
-		    OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
-		saveUser(changeForUser, null);
+		unlock(userIdToChange);
+	}
+
+	/**
+	 * @see UserDAO#unlockUser(User)
+	 */
+	@Override
+	public void unlockUser(User user) {
+		unlock(user.getUserId());
+	}
+
+	/**
+	 * @see UserDAO#isLockedOut(User)
+	 */
+	@Override
+	public boolean isLockedOut(User user) {
+		String lockoutTime = userSecurityStateDao.getValue(user.getUserId(),
+		    OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
+		if (lockoutTime == null) {
+			return false;
+		}
+		try {
+			return System.currentTimeMillis() - Long.parseLong(lockoutTime) <= getUnlockTimeMs();
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	private void unlock(Integer userId) {
+		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS);
+		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
+	}
+
+	private long getUnlockTimeMs() {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String unlockTimeGPValue = Context.getAdministrationService()
+			        .getGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
+			if (StringUtils.isNotBlank(unlockTimeGPValue)) {
+				return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+			} else {
+				return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+			}
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	private long convertUnlockAccountWaitingTimeGP(String waitingTime) {
+		try {
+			return TimeUnit.MINUTES.toMillis(Long.parseLong(waitingTime));
+		} catch (Exception ex) {
+			log.error("Unable to convert the global property " + OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME
+			        + "to a valid Long. Using default value of 5");
+			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		}
 	}
 
 	/**

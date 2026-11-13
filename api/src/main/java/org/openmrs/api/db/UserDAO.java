@@ -225,4 +225,14 @@ public interface UserDAO {
 	 * @see UserService#getLastLoginTime(User)
 	 */
 	String getLastLoginTime(User user);
+
+	/**
+	 * @see UserService#unlockUser(User)
+	 */
+	void unlockUser(User user);
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	boolean isLockedOut(User user);
 }

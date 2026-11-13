@@ -750,4 +750,48 @@ public interface UserService extends OpenmrsService {
 	 */
 	@PreAuthorize("isAuthenticated()")
 	String getLastLoginTime(User user);
+
+	/**
+	 * Ends the login lockout of the given user, if any, and forgets their failed login attempts, so
+	 * that they can log in again without waiting for the lockout to expire. As with
+	 * {@link #saveUser(User)}, the current user must be allowed to assign every role the stored user
+	 * holds.
+	 * <p>
+	 * <strong>Should</strong> remove the users lockout timestamp<br/>
+	 * <strong>Should</strong> reset the users login attempts<br/>
+	 * <strong>Should</strong> fail without the edit users privilege<br/>
+	 * <strong>Should</strong> fail for a system developer when the current user cannot assign that
+	 * role<br/>
+	 * <strong>Should</strong> keep the lockout of a system developer when the current user cannot
+	 * assign that role
+	 *
+	 * @param user the user to unlock
+	 * @throws APIException if the stored user holds a role the current user may not assign
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.EDIT_USERS + "')")
+	void unlockUser(User user);
+
+	/**
+	 * Tells whether the given user is currently locked out of logging in after too many failed login
+	 * attempts. A lockout ends on its own once the waiting time set by the
+	 * {@link org.openmrs.util.OpenmrsConstants#GP_UNLOCK_ACCOUNT_WAITING_TIME} global property has
+	 * passed, or earlier through {@link #unlockUser(User)} or a password change.
+	 * <p>
+	 * <strong>Should</strong> return true while the lockout is active<br/>
+	 * <strong>Should</strong> return false after the lockout expires<br/>
+	 * <strong>Should</strong> return false when the user has no lockout<br/>
+	 * <strong>Should</strong> return false when the lockout timestamp is not a number<br/>
+	 * <strong>Should</strong> fail without the get users privilege
+	 *
+	 * @param user the user to check
+	 * @return true if the user is locked out
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.GET_USERS + "')")
+	boolean isLockedOut(User user);
 }
