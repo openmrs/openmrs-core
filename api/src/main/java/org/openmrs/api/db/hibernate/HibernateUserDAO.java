@@ -20,13 +20,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.persister.entity.EntityPersister;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -36,6 +41,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -94,9 +100,29 @@ public class HibernateUserDAO implements UserDAO {
 
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
-		
-		sessionFactory.getCurrentSession().saveOrUpdate(user);
-		
+
+		Session currentSession = sessionFactory.getCurrentSession();
+		// Attach only stored Roles. User->Role has no cascade, so saving a user never creates or
+		// rewrites a role; a role name that isn't stored is dropped. The set is left alone when every
+		// role is already managed, so Hibernate doesn't rewrite an unchanged user_role collection.
+		if (user.getRoles() != null && !user.getRoles().stream().allMatch(currentSession::contains)) {
+			Set<Role> managedRoles = new LinkedHashSet<>();
+			for (Role role : user.getRoles()) {
+				if (!currentSession.contains(role)) {
+					Role managedRole = currentSession.get(Role.class, role.getRole());
+					if (managedRole != null) {
+						managedRoles.add(managedRole);
+					}
+				} else {
+					managedRoles.add(role);
+				}
+			}
+			user.getRoles().clear();
+			user.getRoles().addAll(managedRoles);
+		}
+
+		currentSession.saveOrUpdate(user);
+
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
 			 for MySQL and SEQUENCE for PostgreSQL. When using IDENTITY strategy, hibernate directly 
@@ -109,9 +135,8 @@ public class HibernateUserDAO implements UserDAO {
 			//update the new user with the password
 			String salt = Security.getRandomToken();
 			String hashedPassword = Security.encodePassword(password + salt);
-			
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
-			        .getUserId());
+
+			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUserId(), new Date(), user.getUserId());
 		}
 		
 		return user;
@@ -308,7 +333,19 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Role saveRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(role);
+		Session session = sessionFactory.getCurrentSession();
+		// UserService#saveRole loads the role's parents, whose eager childRoles can put another instance
+		// of a detached role in the session; saveOrUpdate refuses that, so the role is merged into it
+		if (role.getRole() != null && !session.contains(role)) {
+			SharedSessionContractImplementor sessionImplementor = (SharedSessionContractImplementor) session;
+			EntityPersister persister = sessionImplementor.getFactory().getMetamodel().entityPersister(Role.class);
+			Object managed = sessionImplementor.getPersistenceContextInternal()
+			        .getEntity(sessionImplementor.generateEntityKey(role.getRole(), persister));
+			if (managed != null) {
+				return (Role) session.merge(role);
+			}
+		}
+		session.saveOrUpdate(role);
 		return role;
 	}
 	
@@ -330,15 +367,44 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRole(String)
+	 */
+	@Override
+	public StoredRole getStoredRole(String roleName) throws DAOException {
+		return StoredRoleReader.read(sessionFactory.getCurrentSession(), roleName);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRoleNames(Integer)
+	 */
+	@Override
+	public Set<String> getStoredRoleNames(Integer userId) throws DAOException {
+		return StoredRoleReader.readUserRoleNames(sessionFactory.getCurrentSession(), userId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredUserId(User)
+	 */
+	@Override
+	public Integer getStoredUserId(User user) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		if (!session.contains(user)) {
+			return user.getUserId();
+		}
+		// a proxy's own id follows setUserId, so read the id recorded for the entity behind it
+		return (Integer) session.getIdentifier(Hibernate.unproxy(user));
+	}
+
+	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
 		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		User authUser = Context.getAuthenticatedUser();
-		
-		if (authUser == null) {
-			authUser = u;
+		// an anonymous caller is the forgot-password flow, in which the user changes their own password
+		Integer changedBy = Context.getAuthenticatedUserId();
+		if (changedBy == null) {
+			changedBy = u.getUserId();
 		}
 		
 		String salt = getLoginCredential(u).getSalt();
@@ -346,8 +412,8 @@ public class HibernateUserDAO implements UserDAO {
 			salt = Security.getRandomToken();
 		}
 		String newHashedPassword = Security.encodePassword(pw + salt);
-		
-		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+
+		updateUserPassword(newHashedPassword, salt, changedBy, new Date(), u.getUserId());
 	}
 	
 	/**
@@ -357,8 +423,7 @@ public class HibernateUserDAO implements UserDAO {
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
 		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		User authUser = Context.getAuthenticatedUser();
-		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
+		updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUserId(), new Date(), user.getUserId());
 	}
 	
 	/**
