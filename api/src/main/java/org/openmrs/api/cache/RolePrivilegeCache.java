@@ -33,6 +33,7 @@ import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
@@ -109,9 +110,11 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 
 	@Autowired
 	public RolePrivilegeCache(@Qualifier("apiCacheManager") SpringEmbeddedCacheManager cacheManager, UserDAO dao,
-	    ContextDAO contextDAO) {
-		// the daemon thread has no transaction of its own, so it reads through the transactional ContextDAO
-		this(cacheManager, dao, task -> Daemon.runNewDaemonTask(task, daemonCallerKey()), contextDAO::getStoredRole);
+	    ObjectProvider<ContextDAO> contextDAO) {
+		// the daemon thread has no transaction of its own, so it reads through the transactional ContextDAO;
+		// resolved lazily so creating this cache never creates contextDAO before it can be proxied
+		this(cacheManager, dao, task -> Daemon.runNewDaemonTask(task, daemonCallerKey()),
+		        roleName -> contextDAO.getObject().getStoredRole(roleName));
 	}
 
 	RolePrivilegeCache(SpringEmbeddedCacheManager cacheManager, UserDAO dao, Function<Runnable, Future<?>> backgroundRunner,
