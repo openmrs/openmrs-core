@@ -14,6 +14,7 @@ import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -44,6 +47,8 @@ import org.openmrs.util.CollectionUtil;
 @Entity
 @Table(name = "concept_reference_term")
 @AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 
 	private static final long serialVersionUID = 1L;

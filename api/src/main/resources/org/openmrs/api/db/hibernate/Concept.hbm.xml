@@ -63,18 +63,21 @@
 		</many-to-one>
 
 		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" access="field" batch-size="25">
+			<cache usage="read-write"/>
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptName" />
 		</set>
 
 		<set name="descriptions" access="field" lazy="true" inverse="true" cascade="all-delete-orphan"
 			order-by="concept_description_id" batch-size="25">
+			<cache usage="read-write"/>
 			<key column="concept_id" />
 			<one-to-many class="ConceptDescription" />
 		</set>
 		
 		<set name="answers" lazy="true" cascade="all,delete-orphan"
 				table="concept_answer" order-by="sort_weight asc, concept_answer_id asc" access="field" inverse="true" batch-size="25">
+			<cache usage="read-write"/>
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptAnswer"/>
 		</set>
@@ -83,6 +86,7 @@
 		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
 		<set name="conceptSets" access="field" table="concept_set" lazy="true"
 				cascade="all,delete-orphan" order-by="sort_weight asc" inverse="true" batch-size="25">
+			<cache usage="read-write"/>
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>
@@ -90,6 +94,7 @@
 		</set>
 		
 		<set name="conceptMappings" access="field" inverse="true" cascade="all,delete-orphan,evict" batch-size="25">
+			<cache usage="read-write"/>
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptMap" />
 		</set>
@@ -111,6 +116,7 @@
 		
         <set name="attributes" access="field" lazy="true" inverse="true" batch-size="100"
              cascade="all-delete-orphan" order-by="voided asc">
+            <cache usage="read-write"/>
             <key column="concept_id"/>
             <one-to-many class="ConceptAttribute"/>
         </set>
@@ -127,6 +133,7 @@
 			<property name="allowDecimal" type="java.lang.Boolean" column="allow_decimal" length="1" not-null="true"/>
 			<property name="displayPrecision" type="java.lang.Integer" column="display_precision" not-null="false"/>
 			<set name="referenceRanges" access="field" inverse="true" cascade="all,delete-orphan" order-by="concept_reference_range_id asc">
+				<cache usage="read-write"/>
 				<key column="concept_id" not-null="true" />
 				<one-to-many class="ConceptReferenceRange" />
 			</set>

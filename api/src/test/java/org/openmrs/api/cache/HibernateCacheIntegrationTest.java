@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 
+	private static final long FIFTEEN_MINUTES = 900000L;
+
 	private static final long ONE_HOUR = 3600000L;
 
 	private CacheImplementor cacheImplementor;
@@ -40,25 +42,48 @@ public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void secondLevelCaches_shouldHaveExpectedConfiguration() {
-		assertCacheConfiguration("org.openmrs.Concept", 10000);
+		assertCacheConfiguration("org.openmrs.Concept", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptName", 200000);
+		assertCacheConfiguration("org.openmrs.ConceptDescription", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptAnswer", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptSet", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptMap", 200000);
+		assertCacheConfiguration("org.openmrs.ConceptAttribute", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptReferenceRange", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptReferenceTerm", 200000);
+		assertCacheConfiguration("org.openmrs.ConceptMapType", 1000);
+		assertCacheConfiguration("org.openmrs.ConceptNameTag", 1000);
+		assertCacheConfiguration("org.openmrs.ConceptAttributeType", 1000);
+		assertCacheConfiguration("org.openmrs.ConceptName.tags", 200000);
+		assertCacheConfiguration("org.openmrs.Concept.names", 100000);
+		assertCacheConfiguration("org.openmrs.Concept.descriptions", 100000);
+		assertCacheConfiguration("org.openmrs.Concept.answers", 100000);
+		assertCacheConfiguration("org.openmrs.Concept.conceptSets", 100000);
+		assertCacheConfiguration("org.openmrs.Concept.conceptMappings", 100000);
+		assertCacheConfiguration("org.openmrs.Concept.attributes", 100000);
+		assertCacheConfiguration("org.openmrs.ConceptNumeric.referenceRanges", 100000);
 		assertCacheConfiguration("org.openmrs.User", 10000);
-		assertCacheConfiguration("org.openmrs.Privilege", 500);
+		assertCacheConfiguration("org.openmrs.Privilege", 10000);
 		assertCacheConfiguration("org.openmrs.Person", 10000);
-		assertCacheConfiguration("org.openmrs.PersonName", 10000);
-		assertCacheConfiguration("org.openmrs.PersonAddress", 10000);
-		assertCacheConfiguration("org.openmrs.PersonAttribute", 10000);
 		assertCacheConfiguration("org.openmrs.ConceptDatatype", 100);
 		assertCacheConfiguration("org.openmrs.ConceptClass", 100);
 		assertCacheConfiguration("org.openmrs.Location", 10000);
 	}
 
 	@Test
-	public void collectionCaches_shouldHaveExpectedExpiration() {
-		assertCacheExpiration("org.openmrs.Person.names", ONE_HOUR);
-		assertCacheExpiration("org.openmrs.Person.addresses", ONE_HOUR);
-		assertCacheExpiration("org.openmrs.Person.attributes", ONE_HOUR);
+	public void personDetailCaches_shouldHaveExpectedConfiguration() {
+		assertCacheConfiguration("org.openmrs.PersonName", FIFTEEN_MINUTES, ONE_HOUR, 10000);
+		assertCacheConfiguration("org.openmrs.PersonAddress", FIFTEEN_MINUTES, ONE_HOUR, 10000);
+		assertCacheConfiguration("org.openmrs.PersonAttribute", FIFTEEN_MINUTES, ONE_HOUR, 10000);
 
-		assertCacheExpiration("org.openmrs.User.roles", ONE_HOUR);
+		assertCacheExpiration("org.openmrs.Person.names", FIFTEEN_MINUTES, ONE_HOUR);
+		assertCacheExpiration("org.openmrs.Person.addresses", FIFTEEN_MINUTES, ONE_HOUR);
+		assertCacheExpiration("org.openmrs.Person.attributes", FIFTEEN_MINUTES, ONE_HOUR);
+	}
+
+	@Test
+	public void userRolesCache_shouldExpireAfterOneHour() {
+		assertCacheExpiration("org.openmrs.User.roles", -1, ONE_HOUR);
 	}
 
 	/**
@@ -75,37 +100,31 @@ public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 	}
 
 	private void assertCacheConfiguration(String regionName, long maxEntries) {
-		Region region = cacheImplementor.getRegion(regionName);
-
-		assertNotNull(region, "Cache region should be configured: " + regionName);
-
-		InfinispanBaseRegion infinispanRegion = (InfinispanBaseRegion) region;
-		AdvancedCache nativeCache = infinispanRegion.getCache();
-
-		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().maxIdle());
-		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().lifespan());
-		assertEquals(maxEntries, nativeCache.getCacheConfiguration().memory().maxCount());
+		assertCacheConfiguration(regionName, -1, -1, maxEntries);
 	}
 
-	private void assertCacheExpiration(String regionName, long lifespan) {
-		Region region = cacheImplementor.getRegion(regionName);
+	private void assertCacheConfiguration(String regionName, long maxIdle, long lifespan, long maxEntries) {
+		assertCacheExpiration(regionName, maxIdle, lifespan);
+		assertEquals(maxEntries, getNativeCache(regionName).getCacheConfiguration().memory().maxCount());
+	}
 
-		assertNotNull(region, "Cache region should be configured: " + regionName);
+	private void assertCacheExpiration(String regionName, long maxIdle, long lifespan) {
+		AdvancedCache nativeCache = getNativeCache(regionName);
 
-		InfinispanBaseRegion infinispanRegion = (InfinispanBaseRegion) region;
-		AdvancedCache nativeCache = infinispanRegion.getCache();
-
-		assertEquals(-1L, nativeCache.getCacheConfiguration().expiration().maxIdle());
+		assertEquals(maxIdle, nativeCache.getCacheConfiguration().expiration().maxIdle());
 		assertEquals(lifespan, nativeCache.getCacheConfiguration().expiration().lifespan());
 	}
 
-	private void assertExpires(String regionName) {
+	private AdvancedCache getNativeCache(String regionName) {
 		Region region = cacheImplementor.getRegion(regionName);
 
 		assertNotNull(region, "Cache region should be configured: " + regionName);
 
-		AdvancedCache nativeCache = ((InfinispanBaseRegion) region).getCache();
-		ExpirationConfiguration expiration = nativeCache.getCacheConfiguration().expiration();
+		return ((InfinispanBaseRegion) region).getCache();
+	}
+
+	private void assertExpires(String regionName) {
+		ExpirationConfiguration expiration = getNativeCache(regionName).getCacheConfiguration().expiration();
 
 		assertTrue(expiration.maxIdle() > 0 || expiration.lifespan() > 0, regionName + " should expire");
 	}

@@ -12,6 +12,7 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Locale;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,6 +23,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
@@ -30,6 +33,8 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 @Table(name = "concept_description")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptDescription extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 
 	private static final long serialVersionUID = -7223075113369136584L;
