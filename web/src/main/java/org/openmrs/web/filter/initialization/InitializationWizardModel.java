@@ -10,16 +10,22 @@
 package org.openmrs.web.filter.initialization;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 /**
  * The {@link InitializationFilter} uses this model object to hold all properties that are edited by
- * the user in the wizard. All attributes on this model object are added to all templates rendered
- * by the {@link InitializationFilter}.
+ * the user in the wizard, one model for each HTTP session that walks the wizard. The attributes on
+ * this model object are added to the templates rendered for that session, except the instance
+ * fields named like a password. It is deliberately not Serializable, so a servlet container that
+ * persists or replicates sessions through Java serialization cannot write the passwords it holds.
  */
 public class InitializationWizardModel {
 
@@ -190,7 +196,8 @@ public class InitializationWizardModel {
 	public boolean autoUpdateDatabase = Boolean.FALSE;
 
 	/**
-	 * Password for the admin user if the database was created now
+	 * The password the install gives the admin user if the admin user still has the password the core
+	 * data seeds, whether or not the install creates the tables. Empty for an install that sets none.
 	 */
 	public String adminUserPassword = ADMIN_DEFAULT_PASSWORD;
 
@@ -254,4 +261,31 @@ public class InitializationWizardModel {
 	public int numberOfSteps = 1;
 
 	public Properties additionalPropertiesFromInstallationScript = new Properties();
+
+	/**
+	 * Errors to display to the client walking the wizard with this model
+	 */
+	final Map<String, Object[]> errors = new HashMap<>();
+
+	/**
+	 * Messages to display to the client walking the wizard with this model
+	 */
+	final Map<String, Object[]> msgs = new HashMap<>();
+
+	/**
+	 * The database driver loaded for the connection entered with this model
+	 */
+	String loadedDriverString;
+
+	/**
+	 * Whether the latest wizard page rendered for this model asks to confirm the install, which an
+	 * install from the wizard requires
+	 */
+	boolean wizardCompletePageShown = false;
+
+	/**
+	 * The wizard pages rendered for this model, the only ones past the first its session may post. A
+	 * set requests of the session can add to while an install runs, outside the session's lock.
+	 */
+	final Set<String> pagesShown = ConcurrentHashMap.newKeySet();
 }

@@ -21,7 +21,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class for saving and loading the state of an {@link InitializationWizardModel} to and
  * from an {@link HttpSession}.
+ *
+ * @deprecated as of 3.0.0, because the setup wizard no longer copies its model to and from session
+ *             attributes: it keeps one model in each session that walks it
  */
+@Deprecated(since = "3.0.0")
 public class SessionModelUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(SessionModelUtils.class);
