@@ -10,21 +10,33 @@
 package org.openmrs.api.db.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
@@ -96,5 +108,76 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("personId asc", "obsId asc"),
 			null, null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
+	}
+
+	@Test
+	public void getObsVersionHistory_shouldReturnTheSameChainWithSelfJoinAsWithRecursiveCte() {
+		// chain lengths around the self-join depth: one query covers VERSION_CHAIN_JOIN_DEPTH + 1 obs
+		int perQuery = HibernateObsDAO.VERSION_CHAIN_JOIN_DEPTH + 1;
+		for (int length : new int[] { 1, perQuery, perQuery + 1, 2 * perQuery + 1 }) {
+			Obs latest = buildVersionChain(length);
+			List<Integer> viaCte = obsIds(dao.getObsVersionHistory(latest, true));
+			List<Integer> viaSelfJoin = obsIds(dao.getObsVersionHistory(latest, false));
+			assertEquals(length, viaSelfJoin.size(), "chain length " + length);
+			assertEquals(latest.getObsId(), viaSelfJoin.get(0));
+			assertEquals(viaCte, viaSelfJoin, "chain length " + length);
+		}
+	}
+	
+	@Test
+	public void getObsVersionHistory_shouldIssueOneSelfJoinQueryPerJoinDepthOfVersions() {
+		int perQuery = HibernateObsDAO.VERSION_CHAIN_JOIN_DEPTH + 1;
+		Obs latest = buildVersionChain(2 * perQuery + 1);
+		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().clear();
+		Statistics stats = sessionFactory.getStatistics();
+		stats.clear();
+		
+		dao.getObsVersionHistory(latest, false);
+		
+		// three self-join queries plus the IN-clause load
+		assertEquals(4, stats.getPrepareStatementCount());
+	}
+	
+	@Test
+	public void getObsVersionHistory_shouldReturnEmptyListWithSelfJoinForObsIdWithNoMatchingRow() {
+		assertTrue(dao.getObsVersionHistory(new Obs(999999), false).isEmpty());
+	}
+	
+	@Test
+	public void supportsRecursiveCte_shouldDependOnDatabaseAndVersion() throws SQLException {
+		assertFalse(HibernateObsDAO.supportsRecursiveCte(metaData("MySQL", "5.7.44", 5)));
+		assertTrue(HibernateObsDAO.supportsRecursiveCte(metaData("MySQL", "8.0.46", 8)));
+		assertFalse(HibernateObsDAO.supportsRecursiveCte(metaData("MySQL", "5.5.5-10.1.48-MariaDB-1~bionic", 5)));
+		assertFalse(HibernateObsDAO.supportsRecursiveCte(metaData("MySQL", "5.5.5-10.2.1-MariaDB", 5)));
+		assertTrue(HibernateObsDAO.supportsRecursiveCte(metaData("MySQL", "5.5.5-10.2.2-MariaDB", 5)));
+		assertTrue(HibernateObsDAO.supportsRecursiveCte(metaData("MariaDB", "10.6.12-MariaDB-1:10.6.12+maria~ubu2004", 10)));
+		assertTrue(HibernateObsDAO.supportsRecursiveCte(metaData("MariaDB", "11.4.2-MariaDB", 11)));
+		assertTrue(HibernateObsDAO.supportsRecursiveCte(metaData("PostgreSQL", "12.22", 12)));
+		assertTrue(HibernateObsDAO.supportsRecursiveCte(metaData("H2", "2.2.224 (2023-09-17)", 2)));
+	}
+	
+	private static DatabaseMetaData metaData(String productName, String productVersion, int majorVersion)
+	        throws SQLException {
+		DatabaseMetaData metaData = mock(DatabaseMetaData.class, withSettings().lenient());
+		when(metaData.getDatabaseProductName()).thenReturn(productName);
+		when(metaData.getDatabaseProductVersion()).thenReturn(productVersion);
+		when(metaData.getDatabaseMajorVersion()).thenReturn(majorVersion);
+		return metaData;
+	}
+	
+	/** Saves a copy of obs 7 from the standard test dataset and revises it until the chain has the given number of obs. */
+	private Obs buildVersionChain(int length) {
+		ObsService obsService = Context.getObsService();
+		Obs latest = obsService.saveObs(Obs.newInstance(obsService.getObs(7)), null);
+		for (int i = 1; i < length; i++) {
+			latest.setValueNumeric(50.0 + i);
+			latest = obsService.saveObs(latest, "revision " + i);
+		}
+		return latest;
+	}
+	
+	private static List<Integer> obsIds(List<Obs> obs) {
+		return obs.stream().map(Obs::getObsId).collect(Collectors.toList());
 	}
 }
