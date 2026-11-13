@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.cache.RolePrivileges;
@@ -38,7 +37,7 @@ import org.springframework.util.StringUtils;
  * plain authorities, roles as {@code "ROLE_" +} the role name. No OpenMRS check reads it:
  * {@code @Authorized}, {@code hasPermission}, {@code hasAuthority}/{@code hasRole} (see
  * {@link OpenmrsAuthorizationManagerFactory}) and URL rules all resolve through
- * {@link Context#hasPrivilege(String)} or {@link User#hasRole(String)} against the wrapped
+ * {@link Context#hasPrivilege(String)} or {@link UserContext#hasRole(String)} against the wrapped
  * {@link UserContext}. Proxy privileges are read live, so one added mid-request shows up at once.
  * <p>
  * The set holds what the user actually holds, which is why it cannot be read as an authorization
@@ -123,23 +122,27 @@ public class OpenmrsAuthenticationToken extends AbstractAuthenticationToken {
 			addProxyPrivilegeAuthorities(authorities);
 			return Collections.unmodifiableSet(authorities);
 		} catch (Exception e) {
-			// getAllRoles() only fails if the database is unreachable; fail safe to an empty,
-			// non-authoritative authority set rather than propagate from a getter.
+			// roles can't be resolved while the role privilege cache is unavailable, as during a context
+			// refresh; fail safe to an empty, non-authoritative authority set rather than propagate from a
+			// getter.
 			return Collections.emptySet();
 		}
 	}
 
 	/**
-	 * Adds the authorities for the current user's own roles and their privileges (both flattened
-	 * through {@link #getRolePrivileges(Role)}) into {@code authorities}.
+	 * Adds the authorities for the roles privilege checks use (see
+	 * {@link UserContext#getAssignedRoleNames()}), the roles they inherit, and their privileges, into
+	 * {@code authorities}.
 	 */
-	private void addRoleAndPrivilegeAuthorities(Set<GrantedAuthority> authorities) throws Exception {
-		for (Role role : userContext.getAllRoles()) {
-			for (String privilegeName : getRolePrivileges(role).getPrivilegeNames()) {
+	private void addRoleAndPrivilegeAuthorities(Set<GrantedAuthority> authorities) {
+		RolePrivilegeCache cache = getRolePrivilegeCache();
+		for (String roleName : userContext.getAssignedRoleNames()) {
+			RolePrivileges rolePrivileges = cache.getRolePrivileges(roleName);
+			for (String privilegeName : rolePrivileges.getPrivilegeNames()) {
 				authorities.add(new SimpleGrantedAuthority(privilegeName));
 			}
-			if (role.getRole() != null) {
-				authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getRole()));
+			for (String inherited : rolePrivileges.getRoleNames()) {
+				authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + inherited));
 			}
 		}
 	}
@@ -151,14 +154,6 @@ public class OpenmrsAuthenticationToken extends AbstractAuthenticationToken {
 			if (StringUtils.hasText(privilegeName)) {
 				authorities.add(new SimpleGrantedAuthority(privilegeName));
 			}
-		}
-	}
-
-	private RolePrivileges getRolePrivileges(Role role) {
-		try {
-			return getRolePrivilegeCache().getRolePrivileges(role);
-		} catch (Exception e) {
-			return RolePrivilegeCache.computeRolePrivileges(role);
 		}
 	}
 

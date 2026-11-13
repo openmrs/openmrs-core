@@ -38,6 +38,7 @@ import org.mockito.ArgumentCaptor;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
@@ -102,18 +103,18 @@ public class RolePrivilegeCacheLoadTest {
 
 	@Test
 	public void getRolePrivileges_shouldCacheTheLoadedClosure() {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
 
 		RolePrivileges resolved = cache.getRolePrivileges(new Role("Clerk"));
 		cache.awaitLoads();
 
 		assertTrue(resolved.containsPrivilege("View Patients"));
-		assertEquals(resolved, nativeCache().get("clerk"));
+		assertEquals(resolved, nativeCache().get("Clerk"));
 	}
 
 	@Test
 	public void getRolePrivileges_shouldResolveFromTheLoadedRoleNotTheSuppliedOne() {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
 
 		RolePrivileges resolved = cache.getRolePrivileges(role("Clerk", "Phantom Privilege"));
 
@@ -127,16 +128,16 @@ public class RolePrivilegeCacheLoadTest {
 		RolePrivilegeCache[] holder = new RolePrivilegeCache[1];
 		holder[0] = newCache(name -> {
 			holder[0].clear();
-			return role("Clerk", "Revoked Privilege");
+			return stored("Clerk", "Revoked Privilege");
 		});
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "View Patients"));
 
 		RolePrivileges resolved = holder[0].getRolePrivileges(new Role("Clerk"));
 		holder[0].awaitLoads();
 
 		assertTrue(resolved.containsPrivilege("View Patients"));
 		assertFalse(resolved.containsPrivilege("Revoked Privilege"));
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	@Test
@@ -144,15 +145,15 @@ public class RolePrivilegeCacheLoadTest {
 		// the token can expire or be evicted for space; that must read as an eviction
 		RolePrivilegeCache cache = newCache(name -> {
 			nativeCache().remove(CacheInvalidation.GENERATION);
-			return role("Clerk", "View Patients");
+			return stored("Clerk", "View Patients");
 		});
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "View Patients"));
 
 		RolePrivileges resolved = cache.getRolePrivileges(new Role("Clerk"));
 		cache.awaitLoads();
 
 		assertTrue(resolved.containsPrivilege("View Patients"));
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	@Test
@@ -164,12 +165,12 @@ public class RolePrivilegeCacheLoadTest {
 			if (loadCount.incrementAndGet() == 1) {
 				firstLoadStarted.countDown();
 				await(releaseFirstLoad);
-				return role("Clerk", "Before Privilege");
+				return stored("Clerk", "Before Privilege");
 			}
-			return role("Clerk", "After Privilege");
+			return stored("Clerk", "After Privilege");
 		});
 		// the first caller waited across the eviction, so it reads the role through its own session
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "After Privilege"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "After Privilege"));
 
 		CompletableFuture<RolePrivileges> first = CompletableFuture
 		        .supplyAsync(() -> cache.getRolePrivileges(new Role("Clerk")), executor);
@@ -184,7 +185,7 @@ public class RolePrivilegeCacheLoadTest {
 
 		assertEquals(2, loadCount.get());
 		assertTrue(second.containsPrivilege("After Privilege"));
-		assertEquals(second, nativeCache().get("clerk"));
+		assertEquals(second, nativeCache().get("Clerk"));
 	}
 
 	@Test
@@ -194,7 +195,7 @@ public class RolePrivilegeCacheLoadTest {
 		RolePrivilegeCache cache = newCache(name -> {
 			loadCount.incrementAndGet();
 			await(releaseLoad);
-			return role("Clerk", "View Patients");
+			return stored("Clerk", "View Patients");
 		});
 
 		CompletableFuture<RolePrivileges> first = CompletableFuture
@@ -216,39 +217,39 @@ public class RolePrivilegeCacheLoadTest {
 		RolePrivilegeCache cache = newCache(name -> {
 			throw new DAOException("no connection for the daemon");
 		});
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "View Patients"));
 
 		RolePrivileges resolved = cache.getRolePrivileges(role("Clerk", "Stale Privilege"));
 		cache.awaitLoads();
 
 		assertTrue(resolved.containsPrivilege("View Patients"));
 		assertFalse(resolved.containsPrivilege("Stale Privilege"));
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	@Test
 	public void getRolePrivileges_shouldReadTheRoleThroughTheCallersSessionWhenALoadCannotStart() {
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManager, dao, task -> {
 			throw new IllegalStateException("no threads");
-		}, name -> role("Clerk", "Daemon Privilege"));
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
+		}, name -> stored("Clerk", "Daemon Privilege"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "View Patients"));
 
 		assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
 	}
 
 	@Test
 	public void getRolePrivileges_shouldReadTheRoleThroughTheCallersSessionWhenTheLoadsTaskEndsWithoutRunningIt() {
-		Function<String, Role> loader = mockLoader();
+		Function<String, StoredRole> loader = mockLoader();
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManager, dao,
 		        task -> CompletableFuture.failedFuture(new IllegalStateException("no session")), loader);
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "View Patients"));
 
 		assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
 		assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("View Patients"));
 		cache.awaitLoads();
 
 		verify(loader, never()).apply("Clerk");
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	@Test
@@ -256,14 +257,14 @@ public class RolePrivilegeCacheLoadTest {
 		RolePrivilegeCache cache = newCache(name -> {
 			throw new DAOException("no connection for the daemon");
 		});
-		when(dao.getRole("Clerk")).thenThrow(new IllegalStateException("no session"));
+		when(dao.getStoredRole("Clerk")).thenThrow(new IllegalStateException("no session"));
 
 		RolePrivileges resolved = cache.getRolePrivileges(role("Clerk", "Stale"));
 		cache.awaitLoads();
 
 		assertFalse(resolved.containsPrivilege("Stale"));
 		assertFalse(resolved.grantsSuperuser());
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	@Test
@@ -271,9 +272,9 @@ public class RolePrivilegeCacheLoadTest {
 		CountDownLatch releaseLoad = new CountDownLatch(1);
 		RolePrivilegeCache cache = newCache(name -> {
 			await(releaseLoad);
-			return role("Clerk", "Daemon Privilege");
+			return stored("Clerk", "Daemon Privilege");
 		});
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "View Patients"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "View Patients"));
 
 		Thread.currentThread().interrupt();
 		try {
@@ -297,13 +298,13 @@ public class RolePrivilegeCacheLoadTest {
 
 	@Test
 	public void getRolePrivileges_shouldResolveThroughTheCallersSessionAfterAClearInTheSameTransaction() {
-		Function<String, Role> loader = mockLoader();
+		Function<String, StoredRole> loader = mockLoader();
 		RolePrivilegeCache cache = newCache(loader);
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "Uncommitted Privilege"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "Uncommitted Privilege"));
 
 		TransactionSynchronizationManager.initSynchronization();
 		cache.clear();
-		nativeCache().put("clerk", new RolePrivileges(Collections.singleton("Stale Privilege"), false));
+		nativeCache().put("Clerk", new RolePrivileges(Collections.singleton("Stale Privilege"), false));
 		RolePrivileges resolved = cache.getRolePrivileges(new Role("Clerk"));
 
 		assertTrue(resolved.containsPrivilege("Uncommitted Privilege"));
@@ -312,8 +313,8 @@ public class RolePrivilegeCacheLoadTest {
 
 	@Test
 	public void clear_shouldEvictWhenANestedNewTransactionCompletes() {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
-		when(dao.getRole("Clerk")).thenReturn(role("Clerk", "Uncommitted Privilege"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
+		when(dao.getStoredRole("Clerk")).thenReturn(stored("Clerk", "Uncommitted Privilege"));
 		TransactionTemplate outer = new TransactionTemplate(new NoOpTransactionManager());
 		TransactionTemplate inner = new TransactionTemplate(new NoOpTransactionManager());
 		inner.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -323,10 +324,10 @@ public class RolePrivilegeCacheLoadTest {
 			inner.executeWithoutResult(innerStatus -> {
 				cache.clear();
 				// a load that read the role before the inner transaction's change committed
-				nativeCache().put("clerk", new RolePrivileges(Collections.singleton("Stale Privilege"), false));
+				nativeCache().put("Clerk", new RolePrivileges(Collections.singleton("Stale Privilege"), false));
 			});
 
-			assertFalse(nativeCache().containsKey("clerk"));
+			assertFalse(nativeCache().containsKey("Clerk"));
 			// the outer transaction still bypasses the cache once the inner one has completed
 			assertTrue(cache.getRolePrivileges(new Role("Clerk")).containsPrivilege("Uncommitted Privilege"));
 		});
@@ -336,7 +337,7 @@ public class RolePrivilegeCacheLoadTest {
 
 	@Test
 	public void clear_shouldRegisterOneCompletionEvictionPerTransaction() {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
 		TransactionSynchronizationManager.initSynchronization();
 
 		cache.clear();
@@ -348,16 +349,16 @@ public class RolePrivilegeCacheLoadTest {
 
 	@Test
 	public void clear_shouldLeaveTheCacheForOtherTransactionsUntilTheTransactionCompletes() {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
 		RolePrivileges committed = new RolePrivileges(Collections.singleton("View Patients"), false);
-		nativeCache().put("clerk", committed);
+		nativeCache().put("Clerk", committed);
 		TransactionSynchronizationManager.initSynchronization();
 
 		cache.clear();
 
-		assertEquals(committed, nativeCache().get("clerk"));
+		assertEquals(committed, nativeCache().get("Clerk"));
 		complete(TransactionSynchronization.STATUS_COMMITTED);
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	@Test
@@ -369,7 +370,7 @@ public class RolePrivilegeCacheLoadTest {
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL, Flag.SKIP_LOCKING)).thenReturn(local);
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::submit,
-		        name -> role("Clerk", "View Patients"));
+		        name -> stored("Clerk", "View Patients"));
 
 		cache.clear();
 
@@ -385,7 +386,7 @@ public class RolePrivilegeCacheLoadTest {
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL)).thenReturn(local);
 		when(local.withFlags(Flag.CACHE_MODE_LOCAL, Flag.SKIP_LOCKING)).thenReturn(local);
 		RolePrivilegeCache cache = new RolePrivilegeCache(cacheManagerFor(failing), dao, executor::submit,
-		        name -> role("Clerk", "View Patients"));
+		        name -> stored("Clerk", "View Patients"));
 		TransactionSynchronizationManager.initSynchronization();
 		cache.clear();
 
@@ -399,7 +400,7 @@ public class RolePrivilegeCacheLoadTest {
 	public void destroy_shouldStopListeningForPartitionMerges() {
 		SpringEmbeddedCacheManager springCacheManager = cacheManagerFor(mockNativeCache());
 		RolePrivilegeCache cache = new RolePrivilegeCache(springCacheManager, dao, executor::submit,
-		        name -> role("Clerk", "View Patients"));
+		        name -> stored("Clerk", "View Patients"));
 		ArgumentCaptor<Object> listener = ArgumentCaptor.forClass(Object.class);
 		verify(springCacheManager.getNativeCacheManager()).addListener(listener.capture());
 
@@ -421,7 +422,7 @@ public class RolePrivilegeCacheLoadTest {
 
 	@Test
 	public void clear_shouldStopBypassingTheCacheWhenTheTransactionCompletes() {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
 		TransactionSynchronizationManager.initSynchronization();
 		cache.clear();
 
@@ -429,20 +430,20 @@ public class RolePrivilegeCacheLoadTest {
 		cache.getRolePrivileges(new Role("Clerk"));
 		cache.awaitLoads();
 
-		assertTrue(nativeCache().containsKey("clerk"));
-		verify(dao, never()).getRole("Clerk");
+		assertTrue(nativeCache().containsKey("Clerk"));
+		verify(dao, never()).getStoredRole("Clerk");
 	}
 
 	private void assertEvictsOnCompletion(int status) {
-		RolePrivilegeCache cache = newCache(name -> role("Clerk", "View Patients"));
+		RolePrivilegeCache cache = newCache(name -> stored("Clerk", "View Patients"));
 		TransactionSynchronizationManager.initSynchronization();
 		cache.clear();
 		// a load that read the role before the transaction's change committed
-		nativeCache().put("clerk", new RolePrivileges(Collections.singleton("Stale Privilege"), false));
+		nativeCache().put("Clerk", new RolePrivileges(Collections.singleton("Stale Privilege"), false));
 
 		complete(status);
 
-		assertFalse(nativeCache().containsKey("clerk"));
+		assertFalse(nativeCache().containsKey("Clerk"));
 	}
 
 	private static void complete(int status) {
@@ -471,18 +472,22 @@ public class RolePrivilegeCacheLoadTest {
 		return springCacheManager;
 	}
 
-	private RolePrivilegeCache newCache(Function<String, Role> loader) {
+	private RolePrivilegeCache newCache(Function<String, StoredRole> loader) {
 		return new RolePrivilegeCache(cacheManager, dao, executor::submit, loader);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Function<String, Role> mockLoader() {
+	private static Function<String, StoredRole> mockLoader() {
 		return mock(Function.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Cache<Object, Object> nativeCache() {
 		return (Cache<Object, Object>) cacheManager.getCache(RolePrivilegeCache.CACHE_NAME).getNativeCache();
+	}
+
+	private static StoredRole stored(String name, String privilege) {
+		return new StoredRole(name, Collections.singleton(privilege), Collections.emptySet());
 	}
 
 	private static Role role(String name, String privilege) {

@@ -1033,9 +1033,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (privilege == null) {
 			return true;
 		}
-		if (user == null || user.equals(Context.getAuthenticatedUser())) {
+
+		// any caller can change the authenticated user object's roles and id in memory, so that user's
+		// privileges are resolved from their stored roles instead
+		if (user == null || user == Context.getAuthenticatedUser() || (user.getUserId() != null
+		        && user.getUserId().equals(Context.getUserContext().getAuthenticatedUserId()))) {
 			return Context.hasPrivilege(privilege.getPrivilege(), false);
 		}
+
 		return user.hasPrivilege(privilege.getPrivilege());
 	}
 
