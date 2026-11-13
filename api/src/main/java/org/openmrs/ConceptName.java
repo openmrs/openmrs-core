@@ -17,6 +17,7 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -282,7 +283,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidabl
 	 * @param tags the tags to set.
 	 */
 	public void setTags(Collection<ConceptNameTag> tags) {
-		this.tags = tags;
+		this.tags = CollectionUtil.setCollection(this.tags, tags);
 	}
 	
 	/**

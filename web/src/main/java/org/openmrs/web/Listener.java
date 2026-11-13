@@ -71,6 +71,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 /**
  * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
  * the API: 1) Get the runtime properties 2) Start Spring 3) Start the OpenMRS APi (via
@@ -432,11 +434,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		File dwrFile = Paths.get(servletContext.getRealPath(""), "WEB-INF", "dwr-modules.xml").toFile();
 		
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			// When asked to resolve external entities (such as a DTD) we return an InputSource
-			// with no data at the end, causing the parser to ignore the DTD.
-			db.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+			DocumentBuilder db = createDocumentBuilder();
+
 			Document doc = db.parse(dwrFile);
 			Element elem = doc.getDocumentElement();
 			elem.setTextContent("");
@@ -447,6 +446,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 			log.debug("Error clearing dwr-modules.xml", e);
 			dwrFile.delete();
+			
 			OutputStreamWriter writer = null;
 			try {
 				writer = new OutputStreamWriter(new FileOutputStream(dwrFile), StandardCharsets.UTF_8);
@@ -454,9 +454,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 				    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 			}
 			catch (IOException io) {
-				log.error(
-				    "Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file",
-				    io);
+				log.error("Unable to clear out the {} file.  Please redeploy the openmrs war file", dwrFile.getAbsolutePath(), io);
 			}
 			finally {
 				if (writer != null) {
@@ -464,7 +462,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 						writer.close();
 					}
 					catch (IOException io) {
-						log.warn("Couldn't close Writer: " + io);
+						log.warn("Couldn't close Writer: {}", String.valueOf(io));
 					}
 				}
 			}

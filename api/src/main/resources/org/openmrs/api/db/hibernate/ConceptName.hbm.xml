@@ -43,7 +43,7 @@
 			column="void_reason" length="255" />
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		
-		<set name="tags" table="concept_name_tag_map" cascade="save-update">
+		<set name="tags" access="field" table="concept_name_tag_map" cascade="save-update">
 			<key column="concept_name_id"/>
 			<many-to-many class="ConceptNameTag" column="concept_name_tag_id"/>
 		</set>
