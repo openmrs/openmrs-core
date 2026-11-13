@@ -13,18 +13,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +42,15 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
+import org.openmrs.spring.OpenmrsDelegatingPasswordEncoder;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -57,6 +69,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+
+	private final AtomicInteger standInEncodes = new AtomicInteger();
 	
 	@Resource(name = "testUserSessionListener")
 	TestUserSessionListener testUserSessionListener;
@@ -466,5 +480,93 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		dao.closeSession();
 
 		assertSame(boundSession, TransactionSynchronizationManager.getResource(sessionFactory));
+	}
+
+	@Test
+	public void authenticate_shouldUpgradeALegacyPasswordHashToTheConfiguredEncoder() throws Exception {
+		withStandInEncoder(rawPassword -> "stand-in:" + new StringBuilder(rawPassword).reverse(), hashBefore -> {
+			assertTrue(Security.needsUpgrade(hashBefore), "precondition: the stored hash must need an upgrade");
+
+			assertNotNull(dao.authenticate("admin", "test"));
+			String hashAfter = readStoredPassword();
+			assertNotEquals(hashBefore, hashAfter);
+			assertFalse(Security.needsUpgrade(hashAfter));
+
+			assertNotNull(dao.authenticate("admin", "test"));
+			assertEquals(hashAfter, readStoredPassword());
+			assertEquals(1, standInEncodes.get(), "the second login must not re-encode");
+		});
+	}
+
+	@Test
+	public void authenticate_shouldStillLogInWhenTheUpgradeFails() throws Exception {
+		// longer than users.password holds, so the UPDATE fails
+		withStandInEncoder(rawPassword -> StringUtils.repeat('x', 300), hashBefore -> {
+			assertNotNull(dao.authenticate("admin", "test"));
+			assertEquals(1, standInEncodes.get(), "the upgrade must have been attempted");
+			assertEquals(hashBefore, readStoredPassword());
+		});
+	}
+
+	@Test
+	public void authenticate_shouldNotOverwriteAHashThatChangedDuringTheLogin() throws Exception {
+		withStandInEncoder(rawPassword -> {
+			// encode() runs between authenticate's read of the hash and its UPDATE, so a change made from here
+			// stands in for one made through the same session
+			sessionFactory.getCurrentSession()
+					.createNativeQuery("update users set password = 'changed meanwhile' where user_id = 1")
+					.executeUpdate();
+			return "stand-in:" + rawPassword;
+		}, hashBefore -> {
+			assertNotNull(dao.authenticate("admin", "test"));
+			assertEquals("changed meanwhile", readStoredPassword());
+		});
+	}
+
+	private interface StandInTest {
+
+		void run(String hashBefore) throws Exception;
+	}
+
+	/**
+	 * Swaps openmrsPasswordEncoder for one that writes with the given stand-in, runs the body with the stored
+	 * hash, then puts the original encoder back. The login's changes are rolled back with the test's transaction.
+	 */
+	private void withStandInEncoder(Function<CharSequence, String> standInEncode, StandInTest body) throws Exception {
+		DefaultListableBeanFactory factory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext)
+				.getBeanFactory();
+		PasswordEncoder originalEncoder = applicationContext.getBean("openmrsPasswordEncoder", PasswordEncoder.class);
+		PasswordEncoder legacyEncoder = applicationContext.getBean("openmrsLegacyPasswordEncoder", PasswordEncoder.class);
+		PasswordEncoder standIn = new PasswordEncoder() {
+
+			@Override
+			public String encode(CharSequence rawPassword) {
+				standInEncodes.incrementAndGet();
+				return standInEncode.apply(rawPassword);
+			}
+
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return standInEncode.apply(rawPassword).equals(encodedPassword);
+			}
+		};
+
+		standInEncodes.set(0);
+		String hashBefore = readStoredPassword();
+		factory.destroySingleton("openmrsPasswordEncoder");
+		factory.registerSingleton("openmrsPasswordEncoder", new OpenmrsDelegatingPasswordEncoder("modern",
+				Collections.singletonMap("modern", standIn), legacyEncoder));
+		try {
+			body.run(hashBefore);
+		}
+		finally {
+			factory.destroySingleton("openmrsPasswordEncoder");
+			factory.registerSingleton("openmrsPasswordEncoder", originalEncoder);
+		}
+	}
+
+	private String readStoredPassword() {
+		return (String) sessionFactory.getCurrentSession()
+				.createNativeQuery("select password from users where user_id = 1").uniqueResult();
 	}
 }

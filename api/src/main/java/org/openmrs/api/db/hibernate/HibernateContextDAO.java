@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
-	
+
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
 	 * context.
@@ -214,6 +215,11 @@ public class HibernateContextDAO implements ContextDAO {
 				}
 				setLastLoginTime(candidateUser);
 				saveUserProperties(candidateUser);
+
+				// Lazy rehash: if the stored hash needs upgrading, re-encode transparently on login
+				if (Security.needsUpgrade(passwordOnRecord)) {
+					upgradePasswordHash(candidateUser, passwordOnRecord, password + saltOnRecord);
+				}
 
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
@@ -388,6 +394,49 @@ public class HibernateContextDAO implements ContextDAO {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
+	}
+
+	/**
+	 * Re-encodes a user's password with the configured encoder, in the login's own transaction. authenticate()
+	 * has locked the user's row before it reads the password, so nothing else can change the hash in between,
+	 * and the conditional UPDATE only guards a change made through this same session. A failure is logged and
+	 * does not make authenticate() throw, but if the UPDATE itself fails Hibernate marks the login's transaction
+	 * rollback-only, so the login's own writes (last login time, failed-attempt reset) are discarded. Private on
+	 * purpose: it changes a user's credential, so it must only be reachable from authenticate().
+	 *
+	 * @param user the authenticated user
+	 * @param oldHash the hash currently stored for the user, used to skip the write if it has changed
+	 * @param rawPasswordWithSalt the plaintext password followed by the legacy salt, as checked at login
+	 * @since 2.8.10
+	 */
+	private void upgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
+		try {
+			String newHash = Security.encodePassword(rawPasswordWithSalt);
+			boolean upgraded = conditionallyUpdateUserPassword(user.getUserId(), oldHash, newHash, user.getUserId(),
+				new Date());
+			if (upgraded) {
+				log.info("Successfully upgraded password hash for user: {}", user);
+			} else {
+				log.debug("Password upgrade skipped for user {} - already changed", user);
+			}
+		}
+		catch (Exception e) {
+			log.error("Failed to upgrade password hash for user {}", user, e);
+		}
+	}
+
+	private boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,
+			String newHashedPassword, Integer changedBy, Date dateChanged) {
+		String sql = "UPDATE users SET password = :newHash, date_changed = :dateChanged, changed_by = :changedBy "
+				+ "WHERE user_id = :userId AND password = :oldHash";
+		int rows = sessionFactory.getCurrentSession().createNativeQuery(sql).addSynchronizedQuerySpace("users")
+				.setParameter("newHash", newHashedPassword)
+				.setParameter("dateChanged", dateChanged)
+				.setParameter("changedBy", changedBy)
+				.setParameter("userId", userId)
+				.setParameter("oldHash", oldHashedPassword)
+				.executeUpdate();
+		return rows > 0;
 	}
 	
 	/**
