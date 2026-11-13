@@ -76,6 +76,12 @@ public class UserContext implements Serializable {
 	private User user = null;
 
 	/**
+	 * Id of the authenticated user as loaded, kept apart from the (mutable) {@link #user} object so the
+	 * caller's identity cannot be changed by altering that object in memory
+	 */
+	private Integer userId = null;
+
+	/**
 	 * User's permission proxies
 	 */
 	private final List<String> proxies = Collections.synchronizedList(new ArrayList<>());
@@ -138,7 +144,7 @@ public class UserContext implements Serializable {
 		Authenticated authenticated = null;
 		try {
 			authenticated = performAuthenticate(credentials);
-			this.user = authenticated.getUser();
+			setAuthenticatedUser(authenticated.getUser());
 			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
 		} catch (ContextAuthenticationException e) {
 			User loggingInUser = new User();
@@ -214,7 +220,7 @@ public class UserContext implements Serializable {
 		log.debug("Refreshing authenticated user");
 
 		if (user != null) {
-			user = Context.getUserService().getUser(user.getUserId());
+			user = Context.getUserService().getUser(userId);
 			//update the stored location in the user's session
 			setUserLocation(false);
 			setUserLocale(false);
@@ -255,7 +261,7 @@ public class UserContext implements Serializable {
 			userToBecome.getPrivileges().size();
 		}
 
-		this.user = userToBecome;
+		setAuthenticatedUser(userToBecome);
 
 		//update the user's location and locale
 		setUserLocation(false);
@@ -274,6 +280,20 @@ public class UserContext implements Serializable {
 	}
 
 	/**
+	 * @return id of the "active" user as loaded when they were authenticated, otherwise
+	 *         <code>null</code>
+	 * @since 3.0.0
+	 */
+	public Integer getAuthenticatedUserId() {
+		return userId;
+	}
+
+	private void setAuthenticatedUser(User user) {
+		this.user = user;
+		this.userId = user == null ? null : user.getUserId();
+	}
+
+	/**
 	 * @return true if user has been authenticated in this UserContext
 	 */
 	public boolean isAuthenticated() {
@@ -288,7 +308,7 @@ public class UserContext implements Serializable {
 	public void logout() {
 		log.debug("setting user to null on logout");
 		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
-		user = null;
+		setAuthenticatedUser(null);
 		locationId = null;
 		locale = null;
 		proxies.clear();

@@ -105,11 +105,24 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		// unless they hold the Get Alerts privilege and may therefore read every user's alerts.
 		// Return null - the same as for an unknown id - rather than throwing, so this lookup cannot be
 		// used to probe which alert ids exist (an existence oracle over sequential identifiers).
-		if (alert != null && !canViewAllAlerts() && alert.getRecipient(Context.getAuthenticatedUser()) == null) {
+		if (alert != null && !canViewAllAlerts() && !isAddressedTo(alert, Context.getAuthenticatedUserId())) {
 			return null;
 		}
 
 		return alert;
+	}
+
+	private boolean isAddressedTo(Alert alert, Integer userId) {
+		if (userId == null || alert.getRecipients() == null) {
+			return false;
+		}
+		for (AlertRecipient alertRecipient : alert.getRecipients()) {
+			User recipient = alertRecipient.getRecipient();
+			if (recipient != null && userId.equals(recipient.getUserId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -146,11 +159,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting unread alerts for user " + user);
 
 		if (user == null) {
-			if (Context.isAuthenticated()) {
-				user = Context.getAuthenticatedUser();
-			} else {
-				user = new User();
-			}
+			user = Context.isAuthenticated() ? new User(Context.getAuthenticatedUserId()) : new User();
 		}
 
 		return Context.getAlertService().getAlerts(user, false, false);
@@ -168,9 +177,8 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		// themselves, unless they hold the Get Alerts privilege and may therefore read every user's
 		// alerts. A null/blank user resolves to the anonymous recipient set, which discloses nothing.
 		// Compare on userId, the same key the query filters on, so the check matches what is returned.
-		User authenticatedUser = Context.getAuthenticatedUser();
 		boolean targetsAnotherUser = user != null && user.getUserId() != null
-		        && (authenticatedUser == null || !user.getUserId().equals(authenticatedUser.getUserId()));
+		        && !user.getUserId().equals(Context.getAuthenticatedUserId());
 		if (targetsAnotherUser && !canViewAllAlerts()) {
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.GET_ALERTS);
 		}
