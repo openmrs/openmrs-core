@@ -9,9 +9,65 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
+
+import org.hibernate.envers.Audited;
+
 /**
  * Base superclass for all mutable OpenmrsMetadata.
  *
  * @since 2.2
  */
-public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata {}
+@MappedSuperclass
+@Audited
+public abstract class BaseChangeableOpenmrsMetadata extends BaseOpenmrsMetadata implements Changeable {
+
+	//***** Properties *****
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "changed_by")
+	private User changedBy;
+
+	@Column(name = "date_changed")
+	private Date dateChanged;
+
+	//***** Property Access *****
+
+	/**
+	 * @see org.openmrs.Changeable#getChangedBy()
+	 */
+	@Override
+	public User getChangedBy() {
+		return changedBy;
+	}
+
+	/**
+	 * @see org.openmrs.Changeable#setChangedBy(User)
+	 */
+	@Override
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	/**
+	 * @see org.openmrs.Changeable#getDateChanged()
+	 */
+	@Override
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+
+	/**
+	 * @see org.openmrs.Changeable#setDateChanged(Date)
+	 */
+	@Override
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+}
