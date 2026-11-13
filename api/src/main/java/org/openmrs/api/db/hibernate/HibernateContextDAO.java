@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.persistence.LockTimeoutException;
@@ -48,7 +47,6 @@ import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
@@ -57,14 +55,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
@@ -94,14 +87,6 @@ public class HibernateContextDAO implements ContextDAO {
 	private SearchSessionFactory searchSessionFactory;
 	
 	private UserDAO userDao;
-
-	@Autowired
-	private PlatformTransactionManager transactionManager;
-
-	/** Limits how many password upgrades run at once, since each holds a database connection and computes a hash. */
-	static final int MAX_CONCURRENT_PASSWORD_UPGRADES = 4;
-
-	private final Semaphore passwordUpgradePermits = new Semaphore(MAX_CONCURRENT_PASSWORD_UPGRADES);
 
 	/**
 	 * Session factory to use for this DAO. This is usually injected by spring and its application
@@ -231,7 +216,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 				// Lazy rehash: if the stored hash needs upgrading, re-encode transparently on login
 				if (Security.needsUpgrade(passwordOnRecord)) {
-					scheduleUpgradePasswordHash(candidateUser, passwordOnRecord, password + saltOnRecord);
+					upgradePasswordHash(candidateUser, passwordOnRecord, password + saltOnRecord);
 				}
 
 				// skip out of the method early (instead of throwing the exception)
@@ -376,83 +361,32 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Re-encodes the password once the login transaction has committed. authenticate() holds a row lock on
-	 * the user until then, so a second transaction writing the new hash any earlier would only wait for that
-	 * lock. The work then runs on another thread: this callback still holds the login's database connection,
-	 * so waiting here for a second connection could exhaust the pool when many users log in at once.
-	 */
-	private void scheduleUpgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
-		// read here, as the entity must not be shared with the upgrade's thread
-		Integer userId = user.getUserId();
-		String username = user.toString();
-		if (TransactionSynchronizationManager.isSynchronizationActive()) {
-			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-				@Override
-				public void afterCommit() {
-					startUpgradePasswordHash(userId, username, oldHash, rawPasswordWithSalt);
-				}
-			});
-		} else {
-			startUpgradePasswordHash(userId, username, oldHash, rawPasswordWithSalt);
-		}
-	}
-
-	/**
-	 * Starts the upgrade on another thread unless too many are already running, in which case it is skipped
-	 * and the next login tries again. Never waits, so a login never depends on the upgrade making progress.
-	 */
-	private void startUpgradePasswordHash(Integer userId, String username, String oldHash, String rawPasswordWithSalt) {
-		if (!passwordUpgradePermits.tryAcquire()) {
-			log.debug("Skipping the password upgrade for user {}: too many upgrades are running", username);
-			return;
-		}
-		try {
-			OpenmrsThreadPoolHolder.threadExecutor.execute(() -> {
-				try {
-					String newHash = Security.encodePassword(rawPasswordWithSalt);
-					upgradePasswordHash(userId, username, oldHash, newHash);
-				}
-				catch (Exception e) {
-					log.error("Failed to upgrade password hash for user {}", username, e);
-				}
-				finally {
-					passwordUpgradePermits.release();
-				}
-			});
-		}
-		catch (RuntimeException e) {
-			passwordUpgradePermits.release();
-			log.error("Could not start the password upgrade for user {}", username, e);
-		}
-	}
-
-	/**
-	 * Upgrades a user's stored password hash to the configured encoder in its own transaction. Private on
+	 * Re-encodes a user's password with the configured encoder, in the login's own transaction. authenticate()
+	 * has locked the user's row before it reads the password, so nothing else can change the hash in between,
+	 * and the conditional UPDATE only guards a change made through this same session. A failure is logged and
+	 * does not make authenticate() throw, but if the UPDATE itself fails Hibernate marks the login's transaction
+	 * rollback-only, so the login's own writes (last login time, failed-attempt reset) are discarded. Private on
 	 * purpose: it changes a user's credential, so it must only be reachable from authenticate().
+	 *
+	 * @param user the authenticated user
+	 * @param oldHash the hash currently stored for the user, used to skip the write if it has changed
+	 * @param rawPasswordWithSalt the plaintext password followed by the legacy salt, as checked at login
+	 * @since 2.8.10
 	 */
-	private void upgradePasswordHash(Integer userId, String username, String oldHash, String newHash) {
-		TransactionTemplate template = new TransactionTemplate(transactionManager,
-				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
-		template.execute(status -> {
-			boolean upgraded = conditionallyUpdateUserPassword(userId, oldHash, newHash, userId, new Date());
+	private void upgradePasswordHash(User user, String oldHash, String rawPasswordWithSalt) {
+		try {
+			String newHash = Security.encodePassword(rawPasswordWithSalt);
+			boolean upgraded = conditionallyUpdateUserPassword(user.getUserId(), oldHash, newHash, user.getUserId(),
+				new Date());
 			if (upgraded) {
-				log.info("Successfully upgraded password hash for user: {}", username);
+				log.info("Successfully upgraded password hash for user: {}", user);
 			} else {
-				log.debug("Password upgrade skipped for user {} - already changed", username);
+				log.debug("Password upgrade skipped for user {} - already changed", user);
 			}
-			return null;
-		});
-	}
-
-	/**
-	 * Waits until no password upgrade is running. For tests, which must not read the stored hash while an
-	 * upgrade may still be about to write it. An upgrade takes its permit before authenticate() returns.
-	 */
-	void awaitPasswordUpgrades() throws InterruptedException {
-		if (!passwordUpgradePermits.tryAcquire(MAX_CONCURRENT_PASSWORD_UPGRADES, 30, TimeUnit.SECONDS)) {
-			throw new IllegalStateException("Password upgrades are still running");
 		}
-		passwordUpgradePermits.release(MAX_CONCURRENT_PASSWORD_UPGRADES);
+		catch (Exception e) {
+			log.error("Failed to upgrade password hash for user {}", user, e);
+		}
 	}
 
 	private boolean conditionallyUpdateUserPassword(Integer userId, String oldHashedPassword,

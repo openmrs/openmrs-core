@@ -25,19 +25,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
-import org.hibernate.type.StandardBasicTypes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,14 +52,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.test.util.AopTestUtils;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
@@ -81,6 +69,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+
+	private final AtomicInteger standInEncodes = new AtomicInteger();
 	
 	@Resource(name = "testUserSessionListener")
 	TestUserSessionListener testUserSessionListener;
@@ -498,13 +488,11 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			assertTrue(Security.needsUpgrade(hashBefore), "precondition: the stored hash must need an upgrade");
 
 			assertNotNull(dao.authenticate("admin", "test"));
-			awaitPasswordUpgrades();
 			String hashAfter = readStoredPassword();
 			assertNotEquals(hashBefore, hashAfter);
 			assertFalse(Security.needsUpgrade(hashAfter));
 
 			assertNotNull(dao.authenticate("admin", "test"));
-			awaitPasswordUpgrades();
 			assertEquals(hashAfter, readStoredPassword());
 			assertEquals(1, standInEncodes.get(), "the second login must not re-encode");
 		});
@@ -515,8 +503,6 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// longer than users.password holds, so the UPDATE fails
 		withStandInEncoder(rawPassword -> StringUtils.repeat('x', 300), hashBefore -> {
 			assertNotNull(dao.authenticate("admin", "test"));
-			// also proves that the failed upgrade gave its permit back
-			awaitPasswordUpgrades();
 			assertEquals(1, standInEncodes.get(), "the upgrade must have been attempted");
 			assertEquals(hashBefore, readStoredPassword());
 		});
@@ -525,65 +511,27 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldNotOverwriteAHashThatChangedDuringTheLogin() throws Exception {
 		withStandInEncoder(rawPassword -> {
-			// encode() runs on the upgrade's thread after authenticate's transaction has committed and before the
-			// upgrade UPDATE, so a change committed from here stands in for a concurrent login or password change
-			inNewTransaction(() -> sessionFactory.getCurrentSession()
+			// encode() runs between authenticate's read of the hash and its UPDATE, so a change made from here
+			// stands in for one made through the same session
+			sessionFactory.getCurrentSession()
 					.createNativeQuery("update users set password = 'changed meanwhile' where user_id = 1")
-					.executeUpdate());
+					.executeUpdate();
 			return "stand-in:" + rawPassword;
 		}, hashBefore -> {
 			assertNotNull(dao.authenticate("admin", "test"));
-			awaitPasswordUpgrades();
 			assertEquals("changed meanwhile", readStoredPassword());
 		});
 	}
-
-	@Test
-	public void authenticate_shouldSkipThePasswordUpgradeWhenTooManyAreAlreadyRunning() throws Exception {
-		Object target = AopTestUtils.getUltimateTargetObject(dao);
-		Semaphore permits = (Semaphore) ReflectionTestUtils.getField(target, "passwordUpgradePermits");
-		CountDownLatch encoded = new CountDownLatch(1);
-		withStandInEncoder(rawPassword -> {
-			encoded.countDown();
-			return "stand-in:" + new StringBuilder(rawPassword).reverse();
-		}, hashBefore -> {
-			int taken = permits.drainPermits();
-			try {
-				// must return without waiting for a free permit
-				assertNotNull(dao.authenticate("admin", "test"));
-				// a skipped upgrade never starts, so nothing is encoded
-				assertFalse(encoded.await(2, TimeUnit.SECONDS), "the upgrade should have been skipped");
-				assertEquals(hashBefore, readStoredPassword());
-			}
-			finally {
-				permits.release(taken);
-			}
-		});
-	}
-
-	private final AtomicInteger standInEncodes = new AtomicInteger();
 
 	private interface StandInTest {
 
 		void run(String hashBefore) throws Exception;
 	}
 
-	private void awaitPasswordUpgrades() {
-		Object target = AopTestUtils.getUltimateTargetObject(dao);
-		ReflectionTestUtils.invokeMethod(target, "awaitPasswordUpgrades");
-	}
-
 	/**
-	 * Swaps openmrsPasswordEncoder for one that writes with the given stand-in, runs the body, then puts the
-	 * encoder and admin's rows back.
-	 * <p>
-	 * authenticate() locks the user's row until its transaction commits, and the password upgrade only runs
-	 * after that commit, on another thread. The test-managed transaction never commits and already holds
-	 * admin's lock from the login in the base class, so it is ended here (rolling back the test data) and the
-	 * body runs against the committed initial data. Call awaitPasswordUpgrades() before reading the stored
-	 * hash. Whatever the body commits has to be undone by hand.
+	 * Swaps openmrsPasswordEncoder for one that writes with the given stand-in, runs the body with the stored
+	 * hash, then puts the original encoder back. The login's changes are rolled back with the test's transaction.
 	 */
-	@SuppressWarnings("unchecked")
 	private void withStandInEncoder(Function<CharSequence, String> standInEncode, StandInTest body) throws Exception {
 		DefaultListableBeanFactory factory = (DefaultListableBeanFactory) ((ConfigurableApplicationContext) applicationContext)
 				.getBeanFactory();
@@ -604,58 +552,21 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		};
 
 		standInEncodes.set(0);
-		TestTransaction.end();
-
-		Object[] original = callInNewTransaction(() -> (Object[]) sessionFactory.getCurrentSession()
-				.createNativeQuery("select password, date_changed, changed_by from users where user_id = 1")
-				.uniqueResult());
-		List<Object[]> originalProperties = callInNewTransaction(() -> (List<Object[]>) sessionFactory.getCurrentSession()
-				.createNativeQuery("select property, property_value from user_property where user_id = 1")
-				.addScalar("property", StandardBasicTypes.STRING).addScalar("property_value", StandardBasicTypes.STRING)
-				.list());
-
+		String hashBefore = readStoredPassword();
 		factory.destroySingleton("openmrsPasswordEncoder");
 		factory.registerSingleton("openmrsPasswordEncoder", new OpenmrsDelegatingPasswordEncoder("modern",
 				Collections.singletonMap("modern", standIn), legacyEncoder));
 		try {
-			body.run((String) original[0]);
+			body.run(hashBefore);
 		}
 		finally {
 			factory.destroySingleton("openmrsPasswordEncoder");
 			factory.registerSingleton("openmrsPasswordEncoder", originalEncoder);
-
-			inNewTransaction(() -> {
-				sessionFactory.getCurrentSession()
-						.createNativeQuery("update users set password = ?1, date_changed = ?2, changed_by = ?3 where user_id = 1")
-						.setParameter(1, original[0], StandardBasicTypes.STRING)
-						.setParameter(2, original[1], StandardBasicTypes.TIMESTAMP)
-						.setParameter(3, original[2], StandardBasicTypes.INTEGER).executeUpdate();
-				sessionFactory.getCurrentSession().createNativeQuery("delete from user_property where user_id = 1")
-						.executeUpdate();
-				for (Object[] property : originalProperties) {
-					sessionFactory.getCurrentSession()
-							.createNativeQuery("insert into user_property (user_id, property, property_value) values (1, ?1, ?2)")
-							.setParameter(1, property[0], StandardBasicTypes.STRING)
-							.setParameter(2, property[1], StandardBasicTypes.STRING).executeUpdate();
-				}
-			});
 		}
 	}
 
-	private void inNewTransaction(Runnable work) {
-		callInNewTransaction(() -> {
-			work.run();
-			return null;
-		});
-	}
-
-	private <T> T callInNewTransaction(Supplier<T> work) {
-		return new TransactionTemplate(applicationContext.getBean(PlatformTransactionManager.class),
-				new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW)).execute(status -> work.get());
-	}
-
 	private String readStoredPassword() {
-		return callInNewTransaction(() -> (String) sessionFactory.getCurrentSession()
-				.createNativeQuery("select password from users where user_id = 1").uniqueResult());
+		return (String) sessionFactory.getCurrentSession()
+				.createNativeQuery("select password from users where user_id = 1").uniqueResult();
 	}
 }
