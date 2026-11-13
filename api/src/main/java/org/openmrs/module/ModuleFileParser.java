@@ -75,6 +75,8 @@ public class ModuleFileParser {
 	private static final Pattern OPENMRS_DTD_SYSTEM_ID_PATTERN = Pattern
 	        .compile("https?://resources.openmrs.org/doctype/(?<config>config-[0-9.]+\\.dtd)");
 
+	private static final Pattern MODULE_ID_SEGMENT_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
+
 	/**
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for. These
 	 * are usually stored at http://resources.openmrs.org/doctype/config-x.x.dt
@@ -308,7 +310,7 @@ public class ModuleFileParser {
 		String configVersion = ensureValidModuleConfigVersion(configRoot, moduleFile);
 
 		String name = ensureNonEmptyName(configRoot, moduleFile);
-		String moduleId = ensureNonEmptyId(configRoot, name);
+		String moduleId = ensureValidId(configRoot, name);
 		String packageName = ensureNonEmptyPackage(configRoot, name);
 
 		String author = getElementTrimmed(configRoot, "author");
@@ -320,7 +322,6 @@ public class ModuleFileParser {
 		module.setActivatorName(getElementTrimmed(configRoot, "activator"));
 		module.setRequireDatabaseVersion(getElementTrimmed(configRoot, "require_database_version"));
 		module.setRequireOpenmrsVersion(getElementTrimmed(configRoot, "require_version"));
-		module.setUpdateURL(getElementTrimmed(configRoot, "updateURL"));
 
 		module.setRequiredModulesMap(extractRequiredModules(configRoot));
 		module.setAwareOfModulesMap(extractAwareOfModules(configRoot));
@@ -359,8 +360,24 @@ public class ModuleFileParser {
 		return getTrimmedElementOrFail(configRoot, "name", "Module.error.nameCannotBeEmpty", moduleFile.getName());
 	}
 
-	private String ensureNonEmptyId(Element configRoot, String name) {
-		return getTrimmedElementOrFail(configRoot, "id", "Module.error.idCannotBeEmpty", name);
+	private String ensureValidId(Element configRoot, String name) {
+		String moduleId = getTrimmedElementOrFail(configRoot, "id", "Module.error.idCannotBeEmpty", name);
+		if (!isValidModuleId(moduleId)) {
+			throw new ModuleException(messageSourceService.getMessage("Module.error.idInvalid") + ": " + moduleId, name);
+		}
+		return moduleId;
+	}
+
+	private static boolean isValidModuleId(String moduleId) {
+		if (moduleId.startsWith("_") || moduleId.startsWith("-")) {
+			return false;
+		}
+		for (String segment : moduleId.split("\\.", -1)) {
+			if (!MODULE_ID_SEGMENT_PATTERN.matcher(segment).matches()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private String ensureNonEmptyPackage(Element configRoot, String name) {

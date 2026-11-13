@@ -28,7 +28,7 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Apache Velocity Tools (`org.apache.velocity.tools:velocity-tools-generic`)
 - AWS SDK for Java (`software.amazon.awssdk:s3`)
 - Google Guava (`com.google.guava:guava`)
-- Groovy (`org.codehaus.groovy:groovy-all`)
+- Groovy (`org.apache.groovy:groovy-all`)
 - Hibernate ORM (`org.hibernate.orm:hibernate-core`, `hibernate-c3p0`, `hibernate-envers`)
 - Hibernate Search (`org.hibernate.search:hibernate-search-mapper-orm`, `hibernate-search-backend-lucene`, `hibernate-search-backend-elasticsearch`)
 - Hibernate Validator (`org.hibernate.validator:hibernate-validator`)
@@ -41,6 +41,7 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Liquibase (`org.liquibase:liquibase-core`)
 - S3Mock (`com.adobe.testing:s3mock-testcontainers`)
 - Spring Framework (`org.springframework:spring-core`, `spring-beans`, `spring-context`, `spring-context-support`, `spring-aop`, `spring-orm`, `spring-tx`, `spring-jdbc`, `spring-web`, `spring-webmvc`, `spring-oxm`, `spring-test`)
+- Spring Security Crypto (`org.springframework.security:spring-security-crypto`)
 
 ### Eclipse Public License 2.0
 
@@ -92,6 +93,7 @@ The following dependencies are licensed under BSD or BSD-style licenses:
 
 ### MIT License
 
+- Bouncy Castle (`org.bouncycastle:bcprov-jdk18on`)
 - Mockito (`org.mockito:mockito-core`, `mockito-junit-jupiter`)
 - SLF4J (`org.slf4j:slf4j-api`, `jcl-over-slf4j`)
 - Testcontainers (`org.testcontainers:testcontainers`, `junit-jupiter`, `mysql`, `postgresql`, `mariadb`)
@@ -117,4 +119,3 @@ The following are internal OpenMRS components licensed under the [Mozilla Public
 - OpenMRS Tools (`org.openmrs.tools:openmrs-tools`)
 - OpenMRS Web (`org.openmrs.web:openmrs-web`)
 - OpenMRS Webapp (`org.openmrs.web:openmrs-webapp`)
-- OpenMRS Liquibase Extensions (`org.openmrs.liquibase.ext:type-converter`)

@@ -30,6 +30,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * A concept reference term is typically name for a concept by which it is referred in another
@@ -161,7 +162,8 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	 * @param conceptReferenceTermMaps the conceptReferenceTermMaps to set
 	 */
 	public void setConceptReferenceTermMaps(Set<ConceptReferenceTermMap> conceptReferenceTermMaps) {
-		this.conceptReferenceTermMaps = conceptReferenceTermMaps;
+		this.conceptReferenceTermMaps = CollectionUtil.setCollection(this.conceptReferenceTermMaps,
+		    conceptReferenceTermMaps);
 	}
 
 	/**

@@ -158,29 +158,27 @@ public class WebModuleUtil {
 						// trim out the starting path of "web/module/"
 						String filepath = name.substring(11);
 
-						StringBuilder absPath = new StringBuilder(realPath + "/WEB-INF");
+						File baseDir;
 
 						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
 						if (filepath.startsWith("tags/")) {
 							filepath = filepath.substring(5);
-							absPath.append("/tags/module/");
+							baseDir = new File(webInf, "tags/module".replace("/", File.separator));
 						}
 						// Otherwise, copy it into /WEB-INF/view/module/moduleId/...
 						else {
-							absPath.append("/view/module/");
+							baseDir = new File(webInf, "view/module".replace("/", File.separator));
 						}
 
 						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
 						// ui.springmvc should go in folder names like .../ui/springmvc/...
-						absPath.append(mod.getModuleIdAsPath()).append("/").append(filepath);
-						log.debug("Moving file from: {} to {}", name, absPath);
+						File moduleDir = ModuleUtil.resolveWithinDirectory(baseDir,
+						    mod.getModuleIdAsPath().replace("/", File.separator));
+						log.debug("Moving file from: {} to {}/{}", name, moduleDir, filepath);
 
 						// get the output file
-						File outFile = new File(absPath.toString().replace("/", File.separator));
-						if (!outFile.toPath().normalize().startsWith(webInf.toPath().normalize())) {
-							throw new UnsupportedOperationException("Attempted to write file '" + name
-							        + "' rejected as it attempts to write outside the WEB-INF directory. This may be the result of a zip-slip style attack.");
-						}
+						File outFile = filepath.isEmpty() ? moduleDir
+						        : ModuleUtil.resolveWithinDirectory(moduleDir, filepath.replace("/", File.separator));
 						if (entry.isDirectory()) {
 							if (!outFile.exists()) {
 								outFile.mkdirs();
@@ -285,8 +283,7 @@ public class WebModuleUtil {
 
 			// mark to delete the entire module web directory on exit
 			// this will usually only be used when an improper shutdown has occurred.
-			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
-			File outFile = new File(folderPath.replace("/", File.separator));
+			File outFile = getModuleWebFolder(realPath, mod.getModuleIdAsPath());
 			outFile.deleteOnExit();
 
 			// additional checks on module needing a context refresh
@@ -807,17 +804,6 @@ public class WebModuleUtil {
 
 		String realPath = getRealPath(servletContext);
 
-		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
-		File moduleWebFolder = new File(absPath.replace("/", File.separator));
-		if (moduleWebFolder.exists()) {
-			try {
-				OpenmrsUtil.deleteDirectory(moduleWebFolder);
-			} catch (IOException io) {
-				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
-			}
-		}
-
 		// (not) deleting module message properties
 
 		// remove the module's servlets
@@ -882,6 +868,16 @@ public class WebModuleUtil {
 				} catch (IOException io) {
 					log.error("Error while closing input stream", io);
 				}
+			}
+		}
+
+		// delete the web files from the webapp
+		File moduleWebFolder = getModuleWebFolder(realPath, moduleId);
+		if (moduleWebFolder.exists()) {
+			try {
+				OpenmrsUtil.deleteDirectory(moduleWebFolder);
+			} catch (IOException io) {
+				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
 			}
 		}
 
@@ -1025,6 +1021,20 @@ public class WebModuleUtil {
 
 	public static String getRealPath(ServletContext servletContext) {
 		return servletContext.getRealPath("");
+	}
+
+	/**
+	 * Resolves the web folder of a module (path-to-openmrs/WEB-INF/view/module/moduleIdAsPath) and
+	 * verifies that it stays inside the module web folder.
+	 *
+	 * @param realPath the real path of the web application
+	 * @param moduleIdAsPath the module id, or the module id with dots replaced by slashes
+	 * @return the module's web folder
+	 * @throws ModuleException if the module id escapes the module web folder
+	 */
+	private static File getModuleWebFolder(String realPath, String moduleIdAsPath) {
+		File moduleFolder = new File(realPath, "WEB-INF/view/module".replace("/", File.separator));
+		return ModuleUtil.resolveWithinDirectory(moduleFolder, moduleIdAsPath.replace("/", File.separator));
 	}
 
 }

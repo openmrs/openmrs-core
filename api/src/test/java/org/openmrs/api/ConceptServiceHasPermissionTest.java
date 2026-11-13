@@ -14,14 +14,16 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSearchResult;
+import org.openmrs.security.AuthorizationRules;
 import org.openmrs.security.DomainObjectAuthorizationRule;
+import org.openmrs.security.OpenmrsPermissionEvaluator;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,9 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Each denial is paired with the unarmed call, since a search returning nothing would pass the
  * filtering assertion on its own.
  * <p>
- * {@link DenyingConceptRule} is registered for the whole suite (picked up by the same
- * component-scan as any other bean) but denies nothing until a test names a concept, so it does not
- * affect unrelated tests.
+ * {@link DenyingConceptRule} is registered with the evaluator for each test here and removed
+ * afterward, rather than being a bean (see {@link AuthorizationRules}).
  */
 public class ConceptServiceHasPermissionTest extends BaseContextSensitiveTest {
 
@@ -54,11 +55,18 @@ public class ConceptServiceHasPermissionTest extends BaseContextSensitiveTest {
 	private ConceptService conceptService;
 
 	@Autowired
-	private DenyingConceptRule rule;
+	private OpenmrsPermissionEvaluator evaluator;
+
+	private final DenyingConceptRule rule = new DenyingConceptRule();
+
+	@BeforeEach
+	public void registerRule() {
+		AuthorizationRules.register(evaluator, rule);
+	}
 
 	@AfterEach
-	public void resetRule() {
-		rule.setDeniedConceptId(null);
+	public void unregisterRule() {
+		AuthorizationRules.unregister(evaluator, rule);
 	}
 
 	@Test
@@ -96,10 +104,8 @@ public class ConceptServiceHasPermissionTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * Denies exactly one, test-selected concept, authorizing every other target. Off by default so
-	 * registering it does not change behavior for tests that do not use it.
+	 * Denies exactly one, test-selected concept, authorizing every other target.
 	 */
-	@Component
 	public static class DenyingConceptRule implements DomainObjectAuthorizationRule {
 
 		private volatile Integer deniedConceptId;

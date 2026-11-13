@@ -7,10 +7,13 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.spring;
+package org.openmrs.security;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -25,11 +28,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 
+	private static final Logger log = LoggerFactory.getLogger(OpenmrsDelegatingPasswordEncoder.class);
+
 	private final PasswordEncoder defaultEncoder;
 
 	private final String idForEncode;
 
 	private final Map<String, PasswordEncoder> idToPasswordEncoder;
+
+	private final PasswordEncoder fallbackEncoder;
 
 	public OpenmrsDelegatingPasswordEncoder(String idForEncode, Map<String, PasswordEncoder> idToPasswordEncoder,
 	    PasswordEncoder fallbackEncoder) {
@@ -44,6 +51,7 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 
 		this.idForEncode = idForEncode;
 		this.idToPasswordEncoder = idToPasswordEncoder;
+		this.fallbackEncoder = fallbackEncoder;
 	}
 
 	@Override
@@ -62,12 +70,13 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 		}
 
 		String id = extractId(prefixedPassword);
-		String encodedPassword = prefixedPassword;
-		// if we have an id
-		if (id != null && !id.isEmpty()) {
-			encodedPassword = encodedPassword.substring(encodedPassword.indexOf("}") + 1);
+		// An unprefixed value is a legacy hash (SHA-1/SHA-512) that the encoder new
+		// passwords are written with cannot parse, so verify it against the fallback.
+		if (id == null) {
+			return fallbackEncoder.matches(rawPassword, prefixedPassword);
 		}
 
+		String encodedPassword = prefixedPassword.substring(prefixedPassword.indexOf("}") + 1);
 		PasswordEncoder encoder = idToPasswordEncoder.get(id);
 		if (encoder == null) {
 			return defaultEncoder.matches(rawPassword, encodedPassword);
@@ -78,7 +87,27 @@ public class OpenmrsDelegatingPasswordEncoder implements PasswordEncoder {
 
 	@Override
 	public boolean upgradeEncoding(String prefixedPassword) {
-		return extractId(prefixedPassword) == null && idForEncode != null && !idForEncode.isEmpty();
+		String id = extractId(prefixedPassword);
+		// an unprefixed value is a legacy hash, so it should be upgraded
+		// if we're using a different default encoder
+		if (id == null) {
+			return StringUtils.isNotBlank(idForEncode);
+		}
+		PasswordEncoder encoder = idToPasswordEncoder.get(id);
+		if (encoder == null) {
+			// we don't manage this prefix
+			return false;
+		}
+		String encodedPassword = prefixedPassword.substring(prefixedPassword.indexOf("}") + 1);
+		try {
+			return encoder.upgradeEncoding(encodedPassword);
+		} catch (IllegalArgumentException e) {
+			// A malformed hash is not upgradable, and matches() above reports it by returning
+			// false rather than throwing, so this has to agree: a row that cannot be parsed is a
+			// row to leave alone, not a failure for the caller deciding whether to re-hash.
+			log.warn("Malformed {} password hash", id, e);
+			return false;
+		}
 	}
 
 	private String extractId(String prefixEncodedPassword) {
