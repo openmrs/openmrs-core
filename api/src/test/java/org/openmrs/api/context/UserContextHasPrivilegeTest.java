@@ -9,14 +9,13 @@
  */
 package org.openmrs.api.context;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.cache.RolePrivilegeCache;
@@ -59,7 +58,7 @@ public class UserContextHasPrivilegeTest extends BaseContextSensitiveTest {
 	}
 
 	private void cacheRole(String roleName, RolePrivileges value) {
-		rolePrivilegeCache().put(RolePrivileges.normalize(roleName), value);
+		rolePrivilegeCache().put(roleName, value);
 	}
 
 	private User userWithRole(String roleName) {
@@ -72,14 +71,14 @@ public class UserContextHasPrivilegeTest extends BaseContextSensitiveTest {
 	 * Runs the given action with the supplied user (or <code>null</code> for an unauthenticated
 	 * context) set on the current {@link UserContext}, restoring the previous user afterward.
 	 */
-	private void runAs(User user, Runnable action) throws IllegalAccessException {
+	private void runAs(User user, Runnable action) {
 		UserContext userContext = Context.getUserContext();
 		User previous = userContext.getAuthenticatedUser();
 		try {
-			FieldUtils.getField(UserContext.class, "user", true).set(userContext, user);
+			UserContextTestUtil.setAuthenticatedUser(userContext, user);
 			action.run();
 		} finally {
-			FieldUtils.getField(UserContext.class, "user", true).set(userContext, previous);
+			UserContextTestUtil.setAuthenticatedUser(userContext, previous);
 		}
 	}
 
@@ -139,11 +138,8 @@ public class UserContextHasPrivilegeTest extends BaseContextSensitiveTest {
 		// The pre-cache code resolved the authenticated and anonymous roles via Role.hasPrivilege, which
 		// ignores inherited roles; routing them through the flattening cache deliberately honors inheritance.
 		// Seed the authenticated role's entry as the daemon flatten would for a role that inherits GRANTED.
-		Role inherited = new Role("Inherited Role");
-		inherited.addPrivilege(new Privilege(GRANTED));
-		Role authenticated = new Role(RoleConstants.AUTHENTICATED);
-		authenticated.setInheritedRoles(new HashSet<>(Collections.singletonList(inherited)));
-		cacheRole(RoleConstants.AUTHENTICATED, RolePrivilegeCache.computeRolePrivileges(authenticated));
+		cacheRole(RoleConstants.AUTHENTICATED, new RolePrivileges(Collections.singleton(GRANTED), false,
+		        new HashSet<>(Arrays.asList(RoleConstants.AUTHENTICATED, "Inherited Role"))));
 
 		runAs(userWithRole("Clerk"), () -> assertTrue(Context.hasPrivilege(GRANTED)));
 	}
