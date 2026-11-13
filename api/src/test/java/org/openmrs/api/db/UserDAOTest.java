@@ -10,11 +10,14 @@
 package org.openmrs.api.db;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.Privilege;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -219,6 +222,36 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 		dao.changeQuestionAnswer(userJoe, SECRET_QUESTION, SECRET_ANSWER);
 		assertFalse(dao.isSecretAnswer(userJoe, "foo"));
 
+	}
+
+	@Test
+	public void getStoredRoleNames_shouldReturnMatchingRoleNames() {
+		Role role = new Role("Test Role", "Test description");
+		dao.saveRole(role);
+		List<String> names = dao.getStoredRoleNames("TEST ROLE");
+		assertEquals(List.of("Test Role"), names);
+	}
+
+	@Test
+	public void getStoredRoleNames_shouldReturnEmptyListWhenRoleIsNull() {
+		List<String> names = dao.getStoredRoleNames(null);
+		assertNotNull(names);
+		assertTrue(names.isEmpty());
+	}
+
+	@Test
+	public void getStoredPrivilegeNames_shouldReturnMatchingPrivilegeNames() {
+		Privilege privilege = new Privilege("Test Privilege", "Test description");
+		dao.savePrivilege(privilege);
+		List<String> names = dao.getStoredPrivilegeNames("TEST PRIVILEGE");
+		assertEquals(List.of("Test Privilege"), names);
+	}
+
+	@Test
+	public void getStoredPrivilegeNames_shouldReturnEmptyListWhenPrivilegeIsNull() {
+		List<String> names = dao.getStoredPrivilegeNames(null);
+		assertNotNull(names);
+		assertTrue(names.isEmpty());
 	}
 
 }

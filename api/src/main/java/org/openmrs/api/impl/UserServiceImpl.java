@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -345,12 +346,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void purgePrivilege(Privilege privilege) throws APIException {
-		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
+		if (isCorePrivilege(privilege)) {
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 
 		dao.deletePrivilege(privilege);
 		rolePrivilegeCache.clear();
+	}
+
+	private boolean isCorePrivilege(Privilege privilege) {
+		return matchesCoreName(OpenmrsUtil.getCorePrivileges().keySet(), privilege.getPrivilege(),
+		    dao.getStoredPrivilegeNames(privilege.getPrivilege()));
 	}
 
 	/**
@@ -390,7 +396,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			return;
 		}
 
-		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole())) {
+		if (isCoreRole(role)) {
 			throw new APIException("Role.cannot.delete.core", (Object[]) null);
 		}
 
@@ -400,6 +406,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 		dao.deleteRole(role);
 		rolePrivilegeCache.clear();
+	}
+
+	private boolean isCoreRole(Role role) {
+		return matchesCoreName(OpenmrsUtil.getCoreRoles().keySet(), role.getRole(), dao.getStoredRoleNames(role.getRole()));
+	}
+
+	private static boolean matchesCoreName(Set<String> coreNames, String name, List<String> storedNames) {
+		return Stream.concat(Stream.of(name), storedNames.stream())
+		        .anyMatch(candidate -> coreNames.stream().anyMatch(core -> core.equalsIgnoreCase(candidate)));
 	}
 
 	/**

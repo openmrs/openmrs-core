@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -303,6 +304,19 @@ public class HibernateUserDAO implements UserDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredPrivilegeNames(java.lang.String)
+	 */
+	@Override
+	public List<String> getStoredPrivilegeNames(String privilege) {
+		if (privilege == null) {
+			return Collections.emptyList();
+		}
+		return sessionFactory.getCurrentSession()
+		        .createQuery("select p.privilege from Privilege p where p.privilege = :privilege", String.class)
+		        .setParameter("privilege", privilege).list();
+	}
+
+	/**
 	 * @see org.openmrs.api.db.UserDAO#deletePrivilege(org.openmrs.Privilege)
 	 */
 	@Override
@@ -349,6 +363,18 @@ public class HibernateUserDAO implements UserDAO {
 	@Override
 	public Role getRole(String r) throws DAOException {
 		return sessionFactory.getCurrentSession().get(Role.class, r);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRoleNames(java.lang.String)
+	 */
+	@Override
+	public List<String> getStoredRoleNames(String role) {
+		if (role == null) {
+			return Collections.emptyList();
+		}
+		return sessionFactory.getCurrentSession().createQuery("select r.role from Role r where r.role = :role", String.class)
+		        .setParameter("role", role).list();
 	}
 
 	/**
