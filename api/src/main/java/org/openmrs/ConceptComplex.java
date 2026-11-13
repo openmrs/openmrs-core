@@ -9,6 +9,10 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.obs.ComplexObsHandler;
 
@@ -17,6 +21,9 @@ import org.openmrs.obs.ComplexObsHandler;
  *
  * @since 1.5
  */
+@Entity
+@Table(name = "concept_complex")
+@PrimaryKeyJoinColumn(name = "concept_id")
 @Audited
 public class ConceptComplex extends Concept {
 
