@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <privilege privilege="Add Users" description="Able to add users" uuid="1b8e2a3f-4c5d-4e6f-9a71-82b3c4d5e601" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Add Users" />
+  <privilege privilege="Purge Users" description="Able to purge users" uuid="1b8e2a3f-4c5d-4e6f-9a71-82b3c4d5e602" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Purge Users" />
+  <privilege privilege="Get Users" description="Able to get users" uuid="1b8e2a3f-4c5d-4e6f-9a71-82b3c4d5e603" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Get Users" />
+  <privilege privilege="Get Roles" description="Able to get roles" uuid="1b8e2a3f-4c5d-4e6f-9a71-82b3c4d5e604" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Get Roles" />
+  <role role="User Adder" description="Adds users, but can't edit them" uuid="1b8e2a3f-4c5d-4e6f-9a71-82b3c4d5e605"/>
+  <role role="User Purger" description="Purges users" uuid="1b8e2a3f-4c5d-4e6f-9a71-82b3c4d5e606"/>
+  <role_privilege role="User Adder" privilege="Add Users" />
+  <role_privilege role="User Adder" privilege="Get Users" />
+  <role_privilege role="User Adder" privilege="Get Roles" />
+  <role_privilege role="User Purger" privilege="Purge Users" />
+  <user_role user_id="5511" role="User Adder" />
+  <user_role user_id="5511" role="User Purger" />
+</dataset>

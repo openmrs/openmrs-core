@@ -12,6 +12,7 @@ package org.openmrs.validator;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Role;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.RoleConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -75,6 +76,27 @@ public class RoleValidatorTest extends BaseContextSensitiveTest {
 	/**
 	 * @see RoleValidator#validate(Object,Errors)
 	 */
+	@Test
+	public void validate_shouldFailValidationIfAnotherRolesNameDiffersOnlyInCase() {
+		Role role = new Role("system developer", "some text");
+
+		Errors errors = new BindException(role, "type");
+		new RoleValidator().validate(role, errors);
+
+		assertTrue(errors.hasFieldErrors("role"));
+		assertEquals("Role.duplicateName", errors.getFieldError("role").getCode());
+	}
+
+	@Test
+	public void validate_shouldPassValidationForAnExistingRoleUnderItsOwnName() {
+		Role role = new Role(RoleConstants.SUPERUSER, "some text");
+
+		Errors errors = new BindException(role, "type");
+		new RoleValidator().validate(role, errors);
+
+		assertFalse(errors.hasFieldErrors("role"));
+	}
+
 	@Test
 	public void validate_shouldFailValidationIfRoleHasLeadingOrTrailingSpace() {
 		Role role = new Role();

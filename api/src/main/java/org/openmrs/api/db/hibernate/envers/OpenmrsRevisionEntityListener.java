@@ -22,7 +22,7 @@ public class OpenmrsRevisionEntityListener implements RevisionListener {
 	public void newRevision(Object o) {
 		OpenmrsRevisionEntity customRevisionEntity = (OpenmrsRevisionEntity) o;
 		if (Context.getUserContext().isAuthenticated()) {
-			customRevisionEntity.setChangedBy(Context.getUserContext().getAuthenticatedUser().getUserId());
+			customRevisionEntity.setChangedBy(Context.getUserContext().getAuthenticatedUserId());
 		} else if (Daemon.getDaemonThreadUser() != null) {
 			customRevisionEntity.setChangedBy(Daemon.getDaemonThreadUser().getUserId());
 		}

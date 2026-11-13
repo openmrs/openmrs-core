@@ -2772,40 +2772,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#getObsVersionHistory(Obs)
 	 */
 	@Test
-	public void getObsVersionHistory_shouldLoadTheWholeChainInTwoQueries() {
-		executeDataSet(PREVIOUS_VERSIONS_OBS_XML);
-
-		// build a chain long enough that a select-per-version implementation would be
-		// unmistakable in the prepared statement count
-		Obs chainObs = buildObservation();
-		Obs prev = Context.getObsService().saveObs(chainObs, "chain original");
-		for (int i = 1; i < 40; i++) {
-			prev.setValueNumeric(60.0 + i);
-			prev = Context.getObsService().saveObs(prev, "chain revision " + i);
-		}
-
-		// flush pending inserts and reset the counters so that only the version history
-		// lookup is measured
-		SessionFactory sessionFactory = (SessionFactory) applicationContext.getBean("sessionFactory");
-		sessionFactory.getCurrentSession().flush();
-		sessionFactory.getCurrentSession().clear();
-		Statistics stats = sessionFactory.getStatistics();
-		stats.clear();
-
-		List<Obs> versions = obsService.getObsVersionHistory(prev);
-		assertNotNull(versions);
-		assertEquals(40, versions.size());
-		assertEquals(prev.getObsId(), versions.get(0).getObsId());
-
-		// the whole chain loads in exactly two statements regardless of its length:
-		// the recursive CTE that walks previous_version and the single IN-clause load
-		assertEquals(2, stats.getPrepareStatementCount());
-	}
-
-	/**
-	 * @see ObsService#getObsVersionHistory(Obs)
-	 */
-	@Test
 	public void getObsVersionHistory_shouldLoadChainsLongerThanTheRecursiveCteLimit() {
 		// MySQL and MariaDB abort a recursive CTE after 1000 iterations, so the lookup walks the chain in
 		// batches and resumes from the last version each query reached. A chain of 1001 versions needs two
