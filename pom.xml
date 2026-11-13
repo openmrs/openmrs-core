@@ -1372,7 +1372,7 @@
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>13.0.22.Final</infinispanVersion>
 		<aspectjVersion>1.9.24</aspectjVersion>
-		<jacksonVersion>2.19.1</jacksonVersion>
+		<jacksonVersion>2.22</jacksonVersion>
 		<junitVersion>5.11.4</junitVersion>
 		<byteBuddyVersion>1.12.18</byteBuddyVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
