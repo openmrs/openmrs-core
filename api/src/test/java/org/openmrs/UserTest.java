@@ -9,11 +9,15 @@
  */
 package org.openmrs;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.util.RoleConstants;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserTest {
@@ -92,4 +96,25 @@ public class UserTest {
 		assertFalse(user.containsRole(ROLE_WHICH_DOES_NOT_EXIT));
 	}
 
+	@Test
+	public void setRoles_shouldCopyTheGivenSet() {
+		User someUser = new User();
+		Set<Role> roles = new HashSet<>();
+		someUser.setRoles(roles);
+
+		roles.add(new Role(RoleConstants.SUPERUSER));
+
+		assertTrue(someUser.getRoles().isEmpty());
+	}
+
+	@Test
+	public void setRoles_shouldKeepTheSetTheUserAlreadyHolds() {
+		User someUser = new User();
+		someUser.setRoles(new HashSet<>());
+		Set<Role> roles = someUser.getRoles();
+
+		someUser.setRoles(roles);
+
+		assertSame(roles, someUser.getRoles());
+	}
 }

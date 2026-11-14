@@ -700,6 +700,18 @@ public class Context {
 	}
 
 	/**
+	 * Prefer this to the id on {@link #getAuthenticatedUser()}.
+	 *
+	 * @return the id of the authenticated user as loaded (see
+	 *         {@link UserContext#getAuthenticatedUserId()}), or of the daemon user on a daemon thread;
+	 *         null if no stored user is authenticated
+	 * @since 2.8.11
+	 */
+	public static Integer getAuthenticatedUserId() {
+		return getUserContext().getAuthenticatedUserId();
+	}
+
+	/**
 	 * @return true if user has been authenticated in this context
 	 */
 	public static boolean isAuthenticated() {

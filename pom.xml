@@ -70,21 +70,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<!-- Scope overrides: direct entries take precedence over BOM imports
-			     in Maven, so consumers who import only the BOM get scope-free
-			     version management while internal modules get correct default scopes. -->
-			<dependency>
-				<groupId>jakarta.servlet</groupId>
-				<artifactId>jakarta.servlet-api</artifactId>
-				<version>6.1.0</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.reflections</groupId>
-				<artifactId>reflections</artifactId>
-				<version>0.10.2</version>
-				<scope>test</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -462,6 +447,9 @@
 									<exclude>xerces:xercesImpl</exclude>
 								</excludes>
 							</bannedDependencies>
+							<requireReleaseDeps>
+								<onlyWhenRelease>true</onlyWhenRelease>
+							</requireReleaseDeps>
 						</rules>
 					</configuration>
 				</plugin>
@@ -689,52 +677,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>sonar</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<properties>
-								<property>
-									<name>listener</name>
-									<value>org.sonar.java.jacoco.JUnitListener</value>
-								</property>
-							</properties>
-							<testFailureIgnore>false</testFailureIgnore>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>prepare-agent</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-								<phase>validate</phase>
-								<configuration>
-									<includes>
-										<include>org.openmrs.*</include>
-									</includes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-
-			<dependencies>
-				<dependency>
-					<groupId>org.codehaus.sonar-plugins.java</groupId>
-					<artifactId>sonar-jacoco-listeners</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 		<profile>
 			<id>sonar-cloud</id>
