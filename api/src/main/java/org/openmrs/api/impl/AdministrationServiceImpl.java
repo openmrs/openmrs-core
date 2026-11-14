@@ -897,7 +897,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#validate(java.lang.Object, Errors)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void validate(Object object, Errors errors) throws APIException {
 		if (object == null) {
 			throw new APIException("error.null", (Object[]) null);
