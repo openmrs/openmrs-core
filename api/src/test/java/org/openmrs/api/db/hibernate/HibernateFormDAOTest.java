@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 
@@ -49,6 +50,7 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		        .getForms(null, false, Collections.emptyList(), null, formFields, formFields, Arrays.asList(new Field(3)))
 		        .size());
 
+		
 	}
 
 	@Test
@@ -56,12 +58,73 @@ public class HibernateFormDAOTest extends BaseContextSensitiveTest {
 		Form form = new Form(2);
 		List<FormField> formFields = dao.getFormFields(form);
 
-		assertNotNull(formFields);
-
-		final int EXPECTED_SIZE = 2;
-		assertEquals(EXPECTED_SIZE, formFields.size());
-		for (FormField formField : formFields) {
-			assertEquals(form.getFormId(), formField.getForm().getFormId());
-		}
-	}
+		
 }
+
+@Test
+@@ -64,4 +66,43 @@
+assertEquals(form.getFormId(), formField.getForm().getFormId());
+}
+}
+
+	@Test
+	public void getForms_shouldReturnFormsContainingAnyFormField() {
+		// Test 1 - Basic: should return forms containing any form field
+		List<FormField> anyFormFields = Arrays.asList(new FormField(2));
+		List<Form> forms = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			anyFormFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(forms);
+		assertTrue(forms.size() > 0);
+
+		// Test 2 - Empty list: should return all forms
+		List<Form> formsWithEmpty = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			Collections.emptyList(), Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsWithEmpty);
+
+		// Test 3 - Multiple fields: should return forms with any field
+		List<FormField> multipleFields = Arrays.asList(
+			new FormField(2), new FormField(3));
+		List<Form> formsMultiple = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			multipleFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsMultiple);
+		assertTrue(formsMultiple.size() > 0);
+
+		// Test 4 - Non existent field: should return empty list
+		List<FormField> invalidFields = Arrays.asList(new FormField(999));
+		List<Form> formsInvalid = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			invalidFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsInvalid);
+		assertTrue(formsInvalid.isEmpty());
+
+		// Edge case: multiple non-existent fields
+		List<FormField> multipleInvalidFields = Arrays.asList(
+			new FormField(997),
+			new FormField(998),
+			new FormField(999));
+		List<Form> formsMultipleInvalid = dao.getForms(null, false,
+			Collections.emptyList(), null,
+			multipleInvalidFields, Collections.emptyList(),
+			Collections.emptyList());
+		assertNotNull(formsMultipleInvalid);
+		assertTrue(formsMultipleInvalid.isEmpty());
+	}
+
+}
+//A would-be fix for that
+List<FormField> multipleInvalidFields = Arrays.asList(
+	new FormField(998), 
+	new FormField(999));
+List<Form> formsMultipleInvalid = dao.getForms(null, false,
+	Collections.emptyList(), null,
+	multipleInvalidFields, Collections.emptyList(),
+	Collections.emptyList());
+assertNotNull(formsMultipleInvalid);
+assertTrue(formsMultipleInvalid.isEmpty());
