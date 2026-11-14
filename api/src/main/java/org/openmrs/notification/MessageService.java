@@ -15,6 +15,8 @@ import java.util.Map;
 
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.util.PrivilegeConstants;
 
 public interface MessageService {
 
@@ -79,8 +81,22 @@ public interface MessageService {
 	public Message createMessage(String recipients, String sender, String subject, String message, String attachment,
 	        String attachmentContentType, String attachmentFileName) throws MessageException;
 
+	/**
+	 * Prepares a message from a stored template, rendering it with the Velocity engine. Because the
+	 * template body is treated as executable Velocity source, this is gated behind
+	 * {@link PrivilegeConstants#MANAGE_ALERTS} so that untrusted callers cannot drive the template
+	 * engine.
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public Message prepareMessage(String templateName, Map data) throws MessageException;
 
+	/**
+	 * Prepares a message from the given template, rendering it with the Velocity engine. Because the
+	 * template body is treated as executable Velocity source, this is gated behind
+	 * {@link PrivilegeConstants#MANAGE_ALERTS} so that untrusted callers cannot drive the template
+	 * engine.
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public Message prepareMessage(Template template) throws MessageException;
 
 	// Template methods
