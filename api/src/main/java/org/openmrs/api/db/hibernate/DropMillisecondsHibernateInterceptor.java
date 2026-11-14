@@ -69,7 +69,7 @@ public class DropMillisecondsHibernateInterceptor implements Interceptor {
 		boolean anyChanges = false;
 		for (int i = fieldValues.length - 1; i >= 0; --i) {
 			Object candidate = fieldValues[i];
-			if (!(candidate instanceof Time || candidate instanceof java.sql.Date) && candidate instanceof Date) {
+			if (dropsMilliseconds(candidate)) {
 				Date noMilliseconds = DateUtil.truncateToSeconds((Date) candidate);
 				if (!noMilliseconds.equals(candidate)) {
 					fieldValues[i] = noMilliseconds;
@@ -78,6 +78,15 @@ public class DropMillisecondsHibernateInterceptor implements Interceptor {
 			}
 		}
 		return anyChanges;
+	}
+
+	/**
+	 * @param value a property value about to be written
+	 * @return true if this interceptor drops the milliseconds of the value before it is written; it
+	 *         leaves a {@link Time} or a {@link java.sql.Date} as it is
+	 */
+	static boolean dropsMilliseconds(Object value) {
+		return value instanceof Date && !(value instanceof Time || value instanceof java.sql.Date);
 	}
 
 }
