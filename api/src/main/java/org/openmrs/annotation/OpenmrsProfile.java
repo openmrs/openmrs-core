@@ -15,21 +15,40 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Component;
+
 /**
  * Place it on classes which you want to be beans created conditionally based on OpenMRS version
  * and/or started modules.
+ * <p>
+ * This annotation is self-enforcing: it meta-annotates {@link Component} so that the class is
+ * picked up by any default-filter component-scan, and {@link Conditional} so that the bean is only
+ * registered when the profile actually matches — regardless of which component-scan discovers it.
  *
  * @since 1.10, 1.9.8, 1.8.5, 1.7.5
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Component // makes bare @OpenmrsProfile a scan stereotype
+@Conditional(OpenmrsProfileCondition.class) // gates registration in every scan / @Bean / @Import
 public @interface OpenmrsProfile {
+
+	/**
+	 * Optional bean name, equivalent to {@link Component#value()}. Use this when
+	 * {@code @OpenmrsProfile} is the only stereotype on the class. If the class also carries another
+	 * stereotype annotation with a non-empty value, the two names must agree; a conflict will cause a
+	 * Spring startup exception.
+	 *
+	 * @since 3.0.0
+	 */
+	String value() default "";
 
 	/**
 	 * @since 1.11.3, 1.10.2, 1.9.9
 	 */
-	public String openmrsPlatformVersion() default "";
+	String openmrsPlatformVersion() default "";
 
-	public String[] modules() default {};
+	String[] modules() default {};
 }
