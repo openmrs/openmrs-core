@@ -16,6 +16,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.ModuleException;
 import org.openmrs.util.DatabaseUpdateException;
@@ -44,6 +45,13 @@ public final class WebDaemon {
 	 */
 	public static void startOpenmrs(final ServletContext servletContext)
 	        throws DatabaseUpdateException, InputRequiredException {
+
+		// The runtime properties may have been loaded or built after the servlet context was
+		// initialized, for example on the very first boot where the installation wizard creates them
+		// (possibly including the "session.timeout" runtime property) between the listener startup and
+		// this call. Re-applying here ensures every boot path that starts OpenMRS uses the current
+		// value, and calling it again later on an already-started context is harmless.
+		Listener.applySessionTimeout(servletContext, Context.getRuntimeProperties());
 
 		Daemon.CallerKey callerKey = daemonCallerKey();
 		if (callerKey == null) {

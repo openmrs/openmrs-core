@@ -238,6 +238,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 			loadCsrfGuardProperties(servletContext);
 
+			applySessionTimeout(servletContext, props);
+
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 			if (!setupNeeded()) {
@@ -263,6 +265,47 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		} catch (Exception e) {
 			setErrorAtStartup(e);
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to obtain JDBC connection", e);
+		}
+	}
+
+	/**
+	 * Reads the "session.timeout" runtime property (in minutes) and applies it as the default session
+	 * timeout for new sessions on this servlet context. Called when the runtime properties are loaded
+	 * at webapp startup and again whenever OpenMRS is started, since the runtime properties may have
+	 * been loaded or built after the servlet context was initialized, for example when the installation
+	 * wizard creates them on the very first boot. When the property is not set, nothing changes and the
+	 * servlet container's default session timeout applies. A value that is not a positive number of
+	 * minutes is logged and ignored rather than failing startup.
+	 *
+	 * @param servletContext the servlet context to apply the session timeout to
+	 * @param runtimeProperties the runtime properties to read the session timeout from
+	 * @see OpenmrsConstants#SESSION_TIMEOUT_RUNTIME_PROPERTY
+	 * @see ServletContext#setSessionTimeout(int)
+	 */
+	static void applySessionTimeout(ServletContext servletContext, Properties runtimeProperties) {
+		if (runtimeProperties == null) {
+			return;
+		}
+
+		String timeoutValue = runtimeProperties.getProperty(OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY, null);
+		if (!StringUtils.hasLength(timeoutValue)) {
+			return;
+		}
+
+		try {
+			int sessionTimeoutInMinutes = Integer.parseInt(timeoutValue.trim());
+			if (sessionTimeoutInMinutes <= 0) {
+				log.warn("The {} runtime property must be a positive number of minutes, ignoring value: {}",
+				    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY, timeoutValue);
+				return;
+			}
+
+			servletContext.setSessionTimeout(sessionTimeoutInMinutes);
+			log.info("Set the default session timeout to {} minute(s) from the {} runtime property", sessionTimeoutInMinutes,
+			    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY);
+		} catch (NumberFormatException e) {
+			log.warn("The {} runtime property must be a positive number of minutes, ignoring value: {}",
+			    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY, timeoutValue);
 		}
 	}
 
