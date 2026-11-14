@@ -11,6 +11,7 @@ package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,7 +29,10 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 	 * <strong>Should</strong> handle date<br/>
 	 * <strong>Should</strong> handle date and time<br/>
 	 * <strong>Should</strong> fail on partial date<br/>
-	 * <strong>Should</strong> fail on partial date and time
+	 * <strong>Should</strong> fail on partial date and time<br/>
+	 * <strong>Should</strong> fail on date and time with two digit year<br/>
+	 * <strong>Should</strong> fail on invalid date and time<br/>
+	 * <strong>Should</strong> fail on date with invalid time ending in four digits
 	 *
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
@@ -44,7 +48,15 @@ public class DateOrDatetimeEditor extends PropertyEditorSupport {
 		} catch (ParseException dateTimeEx) {
 			// next try just date
 			try {
-				setValue(Context.getDateFormat().parse(asString));
+				SimpleDateFormat dateFormat = Context.getDateFormat();
+				Date date = dateFormat.parse(asString);
+				// the date format ignores any text after the date, so make sure a rejected time isn't silently dropped
+				ParsePosition pos = new ParsePosition(0);
+				dateFormat.parse(asString, pos);
+				if (pos.getIndex() != asString.length()) {
+					throw new IllegalArgumentException(dateTimeEx);
+				}
+				setValue(date);
 			} catch (ParseException dateEx) {
 				// those were the only two options, so we fail
 				throw new IllegalArgumentException(dateTimeEx);
