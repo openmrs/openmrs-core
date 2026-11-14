@@ -135,6 +135,9 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		authenticate();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT,
 		    String.valueOf(ALLOWED_FAILED_LOGINS));
+		// these tests are about lockout accounting, so keep the back-off out of the way unless a test
+		// turns it on explicitly
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "0");
 		Context.clearSession();
 	}
 
@@ -162,6 +165,49 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		String stillLocked = authenticateInSeparateSession(LOCKED_USERNAME, LOCKED_USER_PASSWORD);
 		assertTrue(stillLocked.contains(LOCKOUT_MESSAGE),
 		    "the correct password must not be checked while the account is locked; outcome: " + stillLocked);
+	}
+
+	/**
+	 * Attempts refused because the back-off has not elapsed check no password, so a concurrent burst
+	 * of them must not advance the lockout counter or extend the back-off. Otherwise a client that
+	 * retries faster than the back-off would lock out an account that a plain retry would have let in.
+	 *
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	void authenticate_shouldNotCountAttemptsRefusedByTheBackoff() throws Exception {
+		// build up the counter with the back-off disabled, so every attempt is really checked. The
+		// lockout limit is raised because the attempts are only needed to make the back-off long
+		// enough to outlast the burst below.
+		Context.getAdministrationService().setGlobalProperty(
+		    OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT, "1000");
+		int countedAttempts = 11;
+		for (int i = 0; i < countedAttempts; i++) {
+			assertFalse(authenticateInSeparateSession(LOCKED_USERNAME, WRONG_PASSWORD).contains(LOCKOUT_MESSAGE));
+		}
+
+		// one more checked failure starts a back-off that cannot expire during the burst
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, "600");
+		assertFalse(authenticateInSeparateSession(LOCKED_USERNAME, WRONG_PASSWORD).contains(LOCKOUT_MESSAGE));
+		countedAttempts++;
+		Context.clearSession();
+		String backoffTimestamp = Context.getUserService().getUserByUsername(LOCKED_USERNAME)
+		        .getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
+		assertTrue(Long.parseLong(backoffTimestamp) > System.currentTimeMillis(),
+		    "the seeded failure should have started an active back-off");
+
+		List<String> outcomes = authenticateConcurrently(LOCKED_USERNAME, WRONG_PASSWORD, CONCURRENT_ATTEMPTS);
+
+		assertTrue(outcomes.stream().noneMatch(m -> m.contains(LOCKOUT_MESSAGE)), outcomes.toString());
+		Context.clearSession();
+		User afterRefusals = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
+		assertEquals(String.valueOf(countedAttempts),
+		    afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS),
+		    "attempts refused by the back-off must not count towards the lockout; outcomes: " + outcomes);
+		assertEquals(backoffTimestamp,
+		    afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP),
+		    "attempts refused by the back-off must not extend it");
+		assertNull(afterRefusals.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
 	}
 
 	/**
