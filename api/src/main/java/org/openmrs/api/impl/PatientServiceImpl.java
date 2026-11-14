@@ -822,6 +822,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	private void mergeDateOfDeath(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
+		mergedData.setPriorDateOfDeathEstimated(preferred.getDeathdateEstimated());
+		if (preferred.getDeathdateEstimated() == null) {
+			preferred.setDeathdateEstimated(notPreferred.getDeathdateEstimated());
+		}
+
 		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
 		if (preferred.getDeathDate() == null) {
 			preferred.setDeathDate(notPreferred.getDeathDate());
@@ -898,8 +903,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return tmpName;
 	}
 
-	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
-	        throws SerializationException {
+	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all addresses
 		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
 		for (PersonAddress newAddress : notPreferred.getAddresses()) {
@@ -923,69 +927,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
 			}
 		}
-
-		// copy person attributes
-		for (PersonAttribute attr : notPreferred.getAttributes()) {
-			if (!attr.getVoided()) {
-				PersonAttribute tmpAttr = attr.copy();
-				tmpAttr.setPerson(null);
-				tmpAttr.setUuid(UuidUtil.newUuidString());
-				preferred.addAttribute(tmpAttr);
-				mergedData.addCreatedAttribute(tmpAttr.getUuid());
-			}
-		}
-
-		// move all other patient info
-		mergedData.setPriorGender(preferred.getGender());
-		if (!"M".equals(preferred.getGender()) && !"F".equals(preferred.getGender())) {
-			preferred.setGender(notPreferred.getGender());
-		}
-
-		mergedData.setPriorDateOfBirth(preferred.getBirthdate());
-		mergedData.setPriorDateOfBirthEstimated(preferred.getBirthdateEstimated());
-		if (preferred.getBirthdate() == null
-		        || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
-			preferred.setBirthdate(notPreferred.getBirthdate());
-			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
-		}
-		mergedData.setPriorDateOfDeathEstimated(preferred.getDeathdateEstimated());
-		if (preferred.getDeathdateEstimated() == null) {
-			preferred.setDeathdateEstimated(notPreferred.getDeathdateEstimated());
-		}
-
-		mergedData.setPriorDateOfDeath(preferred.getDeathDate());
-		if (preferred.getDeathDate() == null) {
-			preferred.setDeathDate(notPreferred.getDeathDate());
-		}
-
-		if (preferred.getCauseOfDeath() != null) {
-			mergedData.setPriorCauseOfDeath(preferred.getCauseOfDeath().getUuid());
-		}
-		if (preferred.getCauseOfDeath() == null) {
-			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
-		}
-
-		// void the non preferred patient
-		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
-
-		// void the person associated with not preferred patient
-		Context.getPersonService().voidPerson(notPreferred,
-		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
-
-		// associate the Users associated with the not preferred person, to the preferred person.
-		changeUserAssociations(preferred, notPreferred, mergedData);
-
-		// Save the newly update preferred patient
-		// This must be called _after_ voiding the nonPreferred patient so that
-		//  a "Duplicate Identifier" error doesn't pop up.
-		preferred = savePatient(preferred);
-
-		//save the person merge log
-		PersonMergeLog personMergeLog = new PersonMergeLog();
-		personMergeLog.setWinner(preferred);
-		personMergeLog.setLoser(notPreferred);
-		personMergeLog.setPersonMergeLogData(mergedData);
-		Context.getPersonService().savePersonMergeLog(personMergeLog);
 	}
 
 	/**
