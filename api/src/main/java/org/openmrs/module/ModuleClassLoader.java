@@ -233,7 +233,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			        FileOutputStream out = new FileOutputStream(tmpModuleJar)) {
 				OpenmrsUtil.copyFile(in, out);
 			} catch (IOException io) {
-				log.warn("Unable to copy tmpModuleFile", io);
+				throw new ModuleException(
+				        "Unable to copy the module jar for " + module.getModuleId() + " into the lib cache", io);
 			}
 
 			// add the module jar as a url in the classpath of the classloader
@@ -299,7 +300,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		} catch (MalformedURLException e) {
 			log.warn("Error while adding module 'lib' folder to URL result list");
 		} catch (IOException io) {
-			log.warn("Error while expanding lib folder", io);
+			throw new ModuleException("Unable to expand the lib folder for " + module.getModuleId(), io);
 		}
 
 		// add each xml document to the url list
