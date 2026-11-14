@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 
 import jakarta.annotation.Resource;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -31,6 +30,7 @@ import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.api.context.UserContextTestUtil;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,8 +191,7 @@ public class OpenmrsAuthorizationManagerFactoryTest extends BaseContextSensitive
 		// master too - so this primes a role granting the privilege in a different casing.
 		Cache cache = Context.getRegisteredComponent("apiCacheManager", CacheManager.class)
 		        .getCache(RolePrivilegeCache.CACHE_NAME);
-		cache.put(RolePrivileges.normalize(ROLE),
-		    new RolePrivileges(Collections.singleton(UNREGISTERED.toUpperCase()), false));
+		cache.put(ROLE, new RolePrivileges(Collections.singleton(UNREGISTERED.toUpperCase()), false));
 		try {
 			runAs(userWithRoles(ROLE), () -> assertEquals("ok", service.viaHasAuthority()));
 		} finally {
@@ -367,17 +366,17 @@ public class OpenmrsAuthorizationManagerFactoryTest extends BaseContextSensitive
 
 	/**
 	 * Swaps the authenticated user on the current {@link UserContext} for a synthetic, non-superuser
-	 * one, so the {@link User#hasRole(String)} path can be exercised without its superuser bypass
-	 * short-circuiting every check. Same approach as {@code UserContextHasPrivilegeTest}.
+	 * one, so the {@link UserContext#hasRole(String)} path can be exercised without its superuser
+	 * bypass short-circuiting every check. Same approach as {@code UserContextHasPrivilegeTest}.
 	 */
-	private void runAs(User user, Runnable action) throws IllegalAccessException {
+	private void runAs(User user, Runnable action) {
 		UserContext userContext = Context.getUserContext();
 		User previous = userContext.getAuthenticatedUser();
 		try {
-			FieldUtils.getField(UserContext.class, "user", true).set(userContext, user);
+			UserContextTestUtil.setAuthenticatedUser(userContext, user);
 			action.run();
 		} finally {
-			FieldUtils.getField(UserContext.class, "user", true).set(userContext, previous);
+			UserContextTestUtil.setAuthenticatedUser(userContext, previous);
 		}
 	}
 

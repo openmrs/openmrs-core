@@ -9,13 +9,17 @@
  */
 package org.openmrs.module;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -27,11 +31,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+
+import com.sun.net.httpserver.HttpServer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -44,6 +52,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link org.openmrs.module.ModuleUtil} class
@@ -865,5 +875,94 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 			destinationFolder.mkdirs();
 		}
 		return destinationFolder;
+	}
+
+	/**
+	 * @see ModuleUtil#resolveWithinDirectory(File, String)
+	 */
+	@Test
+	public void resolveWithinDirectory_shouldReturnTheFileInsideTheBaseDirectoryForAPlainRelativePath(
+	        @TempDir File baseDir) {
+		File resolved = ModuleUtil.resolveWithinDirectory(baseDir, "webservices.rest");
+
+		assertEquals(new File(baseDir, "webservices.rest").getAbsoluteFile(), resolved);
+	}
+
+	/**
+	 * @see ModuleUtil#resolveWithinDirectory(File, String)
+	 */
+	@ParameterizedTest
+	@ValueSource(strings = { "", ".", "a/.." })
+	public void resolveWithinDirectory_shouldFailIfThePathResolvesToTheBaseDirectoryItself(String relativePath,
+	        @TempDir File baseDir) {
+		assertThrows(ModuleException.class, () -> ModuleUtil.resolveWithinDirectory(baseDir, relativePath));
+	}
+
+	/**
+	 * @see ModuleUtil#resolveWithinDirectory(File, String)
+	 */
+	@ParameterizedTest
+	@ValueSource(strings = { "..", "../..", "../sibling", "a/../../sibling" })
+	public void resolveWithinDirectory_shouldFailIfThePathResolvesOutsideTheBaseDirectory(String relativePath,
+	        @TempDir File baseDir) {
+		assertThrows(ModuleException.class, () -> ModuleUtil.resolveWithinDirectory(baseDir, relativePath));
+	}
+
+	/**
+	 * @see ModuleUtil#insertModuleFile(InputStream, String)
+	 */
+	@Test
+	public void insertModuleFile_shouldFailIfTheFilenameResolvesOutsideTheModuleRepository(@TempDir File parent) {
+		File repository = new File(parent, "modules");
+		repository.mkdir();
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, repository.getAbsolutePath()));
+
+		assertThrows(ModuleException.class,
+		    () -> ModuleUtil.insertModuleFile(new ByteArrayInputStream(new byte[0]), "../outside.omod"));
+		assertFalse(new File(parent, "outside.omod").exists());
+	}
+
+	/**
+	 * @see ModuleUtil#openConnectionCheckRedirects(java.net.URLConnection)
+	 */
+	@Test
+	public void openConnectionCheckRedirects_shouldRefuseARedirectFromHttpsToHttp() throws Exception {
+		HttpURLConnection connection = mock(HttpURLConnection.class);
+		when(connection.getURL()).thenReturn(new URL("https://modules.openmrs.org/update.rdf"));
+		when(connection.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+		when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_TEMP);
+		when(connection.getHeaderField("Location")).thenReturn("http://modules.openmrs.org/update.rdf");
+
+		assertThrows(SecurityException.class, () -> ModuleUtil.openConnectionCheckRedirects(connection));
+	}
+
+	/**
+	 * @see ModuleUtil#openConnectionCheckRedirects(java.net.URLConnection)
+	 */
+	@Test
+	public void openConnectionCheckRedirects_shouldFollowHttpRedirects() throws Exception {
+		HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+		try {
+			String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+			server.createContext("/old", exchange -> {
+				exchange.getResponseHeaders().add("Location", baseUrl + "/new");
+				exchange.sendResponseHeaders(HttpURLConnection.HTTP_MOVED_TEMP, -1);
+				exchange.close();
+			});
+			server.createContext("/new", exchange -> {
+				byte[] body = "redirected".getBytes(StandardCharsets.UTF_8);
+				exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, body.length);
+				exchange.getResponseBody().write(body);
+				exchange.close();
+			});
+			server.start();
+
+			try (InputStream in = ModuleUtil.openConnectionCheckRedirects(new URL(baseUrl + "/old").openConnection())) {
+				assertEquals("redirected", IOUtils.toString(in, StandardCharsets.UTF_8));
+			}
+		} finally {
+			server.stop(0);
+		}
 	}
 }
