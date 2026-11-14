@@ -27,6 +27,7 @@ import org.openmrs.Allergies;
 import org.openmrs.Allergy;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -1099,10 +1100,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 					}
 
 					if (obsExit != null) {
-						// put the right concept and (maybe) text in this
-						// obs
+						// put the right concept and (maybe) text in this obs
+						// resolve the coded name before mutating the saved obs below, since
+						// Concept.getName() can read the locale global properties and thus
+						// auto-flush the mutation mid-edit (TRUNK-6867)
+						ConceptName causeName = cause.getName(); // ABKTODO: presume current locale?
+
 						obsExit.setValueCoded(cause);
-						obsExit.setValueCodedName(cause.getName()); // ABKTODO: presume current locale?
+						obsExit.setValueCodedName(causeName);
 						obsExit.setObsDatetime(exitDate);
 						Context.getObsService().saveObs(obsExit, "updated by PatientService.saveReasonForExit");
 					}
@@ -1229,8 +1234,26 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 					if (currCause != null) {
 						log.debug("Current cause is not null, setting to value_coded");
+
+						// check if this is an "other" concept - if so, then
+						// we need to add value_text
+						// do these lookups before the saved obs is mutated
+						// below, so that no database query triggers a
+						// Hibernate auto-flush of the mutated obs, which
+						// ImmutableObsInterceptor would reject and stop us
+						// from ever reaching saveObs below (TRUNK-6867)
+						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
+
+						// Concept.getName() can read the locale global properties, so it is a
+						// lookup too: resolve it while the saved obs is still unmutated, so
+						// that no database query auto-flushes the mutation and ImmutableObs
+						// Interceptor rejects it, which would prevent ever reaching saveObs
+						// below (TRUNK-6867)
+						ConceptName currCauseName = currCause.getName(); // ABKTODO: presume current locale?
+
 						obsDeath.setValueCoded(currCause);
-						obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
+						obsDeath.setValueCodedName(currCauseName);
 
 						Date dateDeath = patient.getDeathDate();
 						if (dateDeath == null) {
@@ -1238,10 +1261,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						}
 						obsDeath.setObsDatetime(dateDeath);
 
-						// check if this is an "other" concept - if so, then
-						// we need to add value_text
-						String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-						Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
 						if (conceptOther != null) {
 							if (conceptOther.equals(currCause)) {
 								// seems like this is an other concept -
