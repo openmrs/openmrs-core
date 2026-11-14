@@ -43,6 +43,7 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.ServiceNotFoundException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
+import org.openmrs.api.cache.CacheConfig;
 import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.hl7.HL7Service;
@@ -1066,6 +1067,10 @@ public class ServiceContext implements ApplicationContextAware {
 				getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class).clear();
 			} else if (GlobalPropertyCache.CACHE_NAME.equals(cacheName)) {
 				getRegisteredComponent("globalPropertyCache", GlobalPropertyCache.class).clear();
+			} else if (CacheConfig.SESSIONS_CACHE_NAME.equals(cacheName)) {
+				// distributed HTTP sessions are not derived data: clearing them would log out every
+				// user on every node; they end on their own (inactivity or the configured lifespan)
+				log.debug("Leaving the distributed HTTP sessions cache ({}) alone", cacheName);
 			} else {
 				apiCacheManager.getCache(cacheName).invalidate();
 			}
