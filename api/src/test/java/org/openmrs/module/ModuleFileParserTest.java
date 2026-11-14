@@ -123,8 +123,8 @@ public class ModuleFileParserTest extends BaseContextSensitiveTest {
 		configXml.appendChild(root);
 		configXml.getDocumentElement().setAttribute("configVersion", invalidConfigVersion);
 
-		expectModuleExceptionWithMessage(() -> new ModuleFileParser().parse(writeConfigXmlToFile(configXml)),
-		    expectedMessage);
+		expectModuleExceptionWithMessage(
+		    () -> new ModuleFileParser(messageSourceService).parse(writeConfigXmlToFile(configXml)), expectedMessage);
 	}
 
 	@Test
