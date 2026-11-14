@@ -73,8 +73,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.Errors;
 
 /**
@@ -110,6 +113,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Autowired
 	@Qualifier("implementationIdHttpClient")
 	private HttpClient implementationIdHttpClient;
+
+	@Autowired(required = false)
+	@Qualifier("transactionManager")
+	private PlatformTransactionManager transactionManager;
 
 	/**
 	 * Default empty constructor
@@ -419,6 +426,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
 		if (sql == null || "".equals(sql.trim())) {
 			return null;
+		}
+
+		if (selectOnly && transactionManager != null) {
+			// the statement runs inside a new read-only transaction
+			TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			template.setReadOnly(true);
+			return template.execute(status -> dao.executeSQL(sql, true));
 		}
 
 		return dao.executeSQL(sql, selectOnly);
