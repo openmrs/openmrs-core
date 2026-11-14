@@ -79,7 +79,9 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	@Override
 	public void merge(MutableMessageSource fromSource, boolean overwrite) {
 		for (PresentationMessage message : fromSource.getPresentations()) {
-			addPresentation(message);
+			if (overwrite || getPresentation(message.getCode(), message.getLocale()) == null) {
+				addPresentation(message);
+			}
 		}
 	}
 
