@@ -282,12 +282,15 @@ public class ObsValidator implements Validator {
 	}
 
 	/**
-	 * Evaluates the criteria and return the most strict {@link ConceptReferenceRange} for a given
-	 * concept and patient contained in an observation. It considers all valid ranges that match the
-	 * criteria for the person.
+	 * Evaluates the criteria and returns the {@link ConceptReferenceRange} to apply for a given concept
+	 * and patient contained in an observation. If several ranges match the criteria, the ones with the
+	 * highest {@link ConceptReferenceRange#getPriority() priority} are used and, when several share
+	 * that priority, merged into the most strict one. Matching ranges without a priority are only
+	 * considered when none of the matching ranges has one, in which case all of them are merged into
+	 * the most strict one.
 	 *
 	 * @param obs containing The concept and patient for whom the range is being evaluated
-	 * @return The strictest {@link ConceptReferenceRange}, or null if no valid range is found
+	 * @return The applicable {@link ConceptReferenceRange}, or null if no valid range is found
 	 * @since 2.7.0
 	 */
 	public ConceptReferenceRange getReferenceRange(Obs obs) {

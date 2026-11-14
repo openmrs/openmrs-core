@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -2106,7 +2107,40 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			return null;
 		}
 
-		return findStrictestReferenceRange(validRanges);
+		return selectReferenceRange(validRanges);
+	}
+
+	/**
+	 * Selects the applicable reference range from the list of matching ranges.
+	 * <p>
+	 * Selection rules (per TRUNK-6510):
+	 * <ol>
+	 * <li>If all matching ranges have a null priority, the legacy "strictest bounds" merging is used
+	 * (backward compatible).</li>
+	 * <li>If any matching range has a priority set, only the ranges with the highest priority value are
+	 * considered (null-priority ranges are ignored in this case). If several ranges share the same
+	 * highest priority, the strictest bounds are applied among them.</li>
+	 * </ol>
+	 */
+	private static ConceptReferenceRange selectReferenceRange(List<ConceptReferenceRange> conceptReferenceRanges) {
+		List<ConceptReferenceRange> prioritizedRanges = conceptReferenceRanges.stream().filter(r -> r.getPriority() != null)
+		        .collect(Collectors.toList());
+
+		if (prioritizedRanges.isEmpty()) {
+			// All priorities are null — use legacy strictest-bounds logic
+			return findStrictestReferenceRange(conceptReferenceRanges);
+		}
+
+		int maxPriority = prioritizedRanges.stream().mapToInt(ConceptReferenceRange::getPriority).max().getAsInt();
+
+		List<ConceptReferenceRange> highestPriorityRanges = prioritizedRanges.stream()
+		        .filter(r -> r.getPriority().equals(maxPriority)).collect(Collectors.toList());
+
+		ConceptReferenceRange selectedRange = findStrictestReferenceRange(highestPriorityRanges);
+		// A merged result of tied ranges is a new instance with a null priority; keep the priority that
+		// governed the selection so callers can tell an explicit priority was applied.
+		selectedRange.setPriority(maxPriority);
+		return selectedRange;
 	}
 
 	/**
