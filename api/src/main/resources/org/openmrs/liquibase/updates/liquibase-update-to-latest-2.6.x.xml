@@ -130,8 +130,16 @@
     </changeSet>
 
 	<changeSet id="TRUNK-6081-2022-11-21" author="wikumChamith">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="encounter_diagnosis" />
+			<columnExists tableName="encounter_diagnosis" columnName="dx_rank" />
+		</preConditions>
 		<comment>Adding not null constraint to encounter_diagnosis.dx_rank. TRUNK-6081</comment>
-		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int"/>
+		<update tableName="encounter_diagnosis">
+			<column name="dx_rank" valueNumeric="1" />
+			<where>dx_rank IS NULL</where>
+		</update>
+		<addNotNullConstraint tableName="encounter_diagnosis" columnName="dx_rank" columnDataType="int" defaultNullValue="1"/>
 	</changeSet>
 	
 </databaseChangeLog>
