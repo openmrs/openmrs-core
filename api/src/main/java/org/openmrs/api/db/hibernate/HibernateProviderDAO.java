@@ -412,6 +412,21 @@ public class HibernateProviderDAO implements ProviderDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ProviderDAO#getProviderRoleByName(String)
+	 */
+	@Override
+	public ProviderRole getProviderRoleByName(String name) {
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<ProviderRole> cq = cb.createQuery(ProviderRole.class);
+		Root<ProviderRole> root = cq.from(ProviderRole.class);
+
+		cq.where(cb.equal(root.get("name"), name));
+
+		return session.createQuery(cq).uniqueResult();
+	}
+
+	/**
 	 * @see ProviderDAO#getProvidersByRoles(List, boolean)
 	 */
 	@Override
