@@ -73,46 +73,47 @@ public class ModifyColumnGenerator extends AbstractSqlGenerator<ModifyColumnStat
 	public Sql[] generateSql(ModifyColumnStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 		List<Sql> sql = new ArrayList<>();
 		for (ColumnConfig column : statement.getColumns()) {
-			String alterTable = "ALTER TABLE "
-			        + database.escapeTableName(null, statement.getSchemaName(), statement.getTableName());
+			StringBuilder alterTable = new StringBuilder()
+			        .append("ALTER TABLE ")
+			        .append(database.escapeTableName(null, statement.getSchemaName(), statement.getTableName()));
 
 			// add "MODIFY"
-			alterTable += " " + getModifyString(database) + " ";
+			alterTable.append(" ").append(getModifyString(database)).append(" ");
 
 			// add column name
-			alterTable += database.escapeColumnName(null, statement.getSchemaName(), statement.getTableName(),
-			    column.getName());
+			alterTable.append(database.escapeColumnName(null, statement.getSchemaName(), statement.getTableName(),
+			    column.getName()));
 
-			alterTable += getPreDataTypeString(database); // adds a space if nothing else
+			alterTable.append(getPreDataTypeString(database)); // adds a space if nothing else
 
 			// add column type
-			alterTable += DataTypeFactory.getInstance().fromDescription(column.getType(), database)
-			        .toDatabaseDataType(database);
+			alterTable.append(DataTypeFactory.getInstance().fromDescription(column.getType(), database)
+			        .toDatabaseDataType(database));
 
 			if (supportsExtraMetaData(database)) {
 				if (column.getConstraints() != null && !column.getConstraints().isNullable()) {
-					alterTable += " NOT NULL";
+					alterTable.append(" NOT NULL");
 				} else {
 					if (database instanceof SybaseDatabase || database instanceof SybaseASADatabase) {
-						alterTable += " NULL";
+						alterTable.append(" NULL");
 					}
 				}
 
-				alterTable += getDefaultClause(column, database);
+				alterTable.append(getDefaultClause(column, database));
 
 				if (column.isAutoIncrement() != null && column.isAutoIncrement()) {
-					alterTable += " " + database.getAutoIncrementClause(BigInteger.ONE, BigInteger.ONE, null, null);
+					alterTable.append(" ").append(database.getAutoIncrementClause(BigInteger.ONE, BigInteger.ONE, null, null));
 				}
 
 				if (column.getConstraints() != null && column.getConstraints().isPrimaryKey() != null
 				        && column.getConstraints().isPrimaryKey()) {
-					alterTable += " PRIMARY KEY";
+					alterTable.append(" PRIMARY KEY");
 				}
 			}
 
-			alterTable += getPostDataTypeString(database);
+			alterTable.append(getPostDataTypeString(database));
 
-			sql.add(new UnparsedSql(alterTable));
+			sql.add(new UnparsedSql(alterTable.toString()));
 		}
 
 		log.debug("generated sql is '{}'", sql);

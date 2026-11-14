@@ -203,7 +203,6 @@ public interface FormService extends OpenmrsService {
 	 * @see #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_FORMS + "')")
-	//TODO: DAO auth filter
 	public Integer getFormCount(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
 	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
 	        Collection<Field> fields);

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -130,13 +131,13 @@ public abstract class AbstractSnapshotTuner {
 		return false;
 	}
 
-	static Document readChangeLogFile(String path) throws DocumentException, SAXException {
+	static Document readChangeLogFile(String path) throws DocumentException, SAXException, IOException {
 		File file = Paths.get(path).toFile();
 		if (!file.exists()) {
 			log.error("The source file '{}' does not exist. Please generate both Liquibase changelog files and retry. "
 			        + "Please check if you are running this program from the 'openmrs-core/liquibase' folder.",
 			    path);
-			System.exit(0);
+			throw new FileNotFoundException("Changelog file not found: " + path);
 		}
 		SAXReader reader = new SAXReader();
 		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
