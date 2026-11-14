@@ -27,6 +27,7 @@ public class ListPart<E> extends CollectionPart<E> {
 	 * @param firstElement
 	 * @param maxElements
 	 * @param totalElements
+	 * @param totalElementsExact
 	 */
 	public ListPart(List<E> list, Long firstElement, Long maxElements, Long totalElements, Boolean totalElementsExact) {
 		super(list, firstElement, maxElements, totalElements, totalElementsExact);

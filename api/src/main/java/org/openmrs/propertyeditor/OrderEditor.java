@@ -14,8 +14,8 @@ import org.openmrs.api.context.Context;
 
 /**
  * Allows for serializing/deserializing a Order object to a string so that Spring knows how to pass
- * a Order back and forth through an html form or other medium <br>
- * In version 1.9, added ability for this to also retrieve objects by uuid
+ * an Order back and forth through an HTML form or other medium <br>
+ * In version 1.9, added ability for this to also retrieve objects by UUID
  *
  * @see Order
  */

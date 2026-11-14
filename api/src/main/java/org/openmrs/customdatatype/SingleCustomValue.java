@@ -16,7 +16,7 @@ import org.openmrs.VisitAttribute;
 /**
  * Either a one-off custom value (e.g. a {@link GlobalProperty}) or a single custom value within a
  * {@link Customizable} object that may hold multiple (e.g. a {@link VisitAttribute} within a
- * {@link Visit}). The "referenceString" property is a String suitable for persistance in a database
+ * {@link Visit}). The "referenceString" property is a String suitable for persistence in a database
  * varchar column. It is typically a reference to the real value (e.g. it is the UUID of a location
  * or the URI of an image in a PACS). The "objectValue" property accessors are convenience methods
  * that use a {@link CustomDatatype} to convert to/from the String serializedValue.
