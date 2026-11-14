@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -103,15 +104,23 @@ public class ModuleResourcesServlet extends HttpServlet {
 		} else {
 			basePath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources";
 		}
-
-		Path normalizedPath = Path.of(realPath).normalize();
-		Path normalizedBase = Path.of(basePath).normalize();
-		if (!normalizedPath.startsWith(normalizedBase)) {
-			log.warn("Detected attempted directory traversal with path: " + path);
+		
+		realPath = realPath.replace("/", File.separator);
+		
+		// Determine the expected base directory and verify the resolved path stays
+		// within it to prevent path traversal attacks (e.g. "/../../../etc/passwd").
+		Path baseDir;
+		if (devDir != null) {
+			baseDir = Paths.get(devDir.getAbsolutePath(), "omod", "target", "classes", "web", "module", "resources").normalize();
+		} else {
+			baseDir = Paths.get(getServletContext().getRealPath(""), "WEB-INF", "view", "module", module.getModuleIdAsPath(), "resources").normalize();
+		}
+		if (!Paths.get(realPath).normalize().startsWith(baseDir)) {
+			log.warn("Possible path traversal attack: resolved path '{}' is outside the expected base directory '{}'", Paths.get(realPath).normalize(), baseDir);
 			return null;
 		}
-
-		File f = normalizedPath.toFile();
+		
+		File f = new File(realPath);
 		if (!f.exists()) {
 			log.warn("No file with path '" + normalizedPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;
