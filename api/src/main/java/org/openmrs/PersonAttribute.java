@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
@@ -94,6 +95,9 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	@FullTextField(name = "valueStart", analyzer = SearchAnalysis.START_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	@FullTextField(name = "valueAnywhere", analyzer = SearchAnalysis.ANYWHERE_ANALYZER, searchAnalyzer = SearchAnalysis.EXACT_ANALYZER)
 	private String value;
+
+	private static final Set<Class<?>> VALUE_TYPES = Set.of(String.class, Integer.class, Long.class, Double.class,
+	    Float.class, Boolean.class, Date.class);
 
 	/** default constructor */
 	public PersonAttribute() {
@@ -269,7 +273,8 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
 	 * <p>
 	 * <strong>Should</strong> load class in format property<br/>
-	 * <strong>Should</strong> still load class in format property if not Attributable
+	 * <strong>Should</strong> still load class in format property if not Attributable<br/>
+	 * <strong>Should</strong> not call no arg constructor of class that is not permitted
 	 *
 	 * @return hydrated object or getValue()
 	 */
@@ -282,6 +287,14 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 
 		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
+
+			if (!Attributable.class.isAssignableFrom(c) && !VALUE_TYPES.contains(c)) {
+				if (!isPermittedClass(c)) {
+					log.warn("Refusing to hydrate PersonAttributeType '{}': format '{}' is not a permitted class",
+					    getAttributeType().getName(), getAttributeType().getFormat());
+				}
+				return getValue();
+			}
 			try {
 				Object o = c.newInstance();
 				if (o instanceof Attributable) {
@@ -289,6 +302,12 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 					return attr.hydrate(getValue());
 				}
 			} catch (InstantiationException e) {
+				if (!VALUE_TYPES.contains(c)) {
+					log.warn(
+					    "Unable to hydrate PersonAttributeType '{}': Attributable format '{}' has no no-arg constructor",
+					    getAttributeType().getName(), getAttributeType().getFormat());
+					return getValue();
+				}
 				// try to hydrate the object with the String constructor
 				log.trace("Unable to call no-arg constructor for class: " + c.getName());
 				return c.getConstructor(String.class).newInstance(getValue());
@@ -391,6 +410,26 @@ public class PersonAttribute extends BaseChangeableOpenmrsData implements java.i
 
 			return OpenmrsUtil.compareWithNullAsGreatest(pa1.getPersonAttributeId(), pa2.getPersonAttributeId());
 		}
+	}
+
+	/**
+	 * Whether a class may be used as a {@link PersonAttributeType#getFormat()}: an {@link Attributable}
+	 * implementation, one of a fixed set of value types, an {@link OpenmrsObject} or {@link Character}.
+	 * Only the first two are ever instantiated by {@link #getHydratedObject()}; the others are accepted
+	 * so that existing types referencing domain objects remain valid.
+	 * <p>
+	 * <strong>Should</strong> return true for attributable class<br/>
+	 * <strong>Should</strong> return true for permitted value type<br/>
+	 * <strong>Should</strong> return true for openmrs object class<br/>
+	 * <strong>Should</strong> return true for character<br/>
+	 * <strong>Should</strong> return false for class outside permitted set
+	 *
+	 * @param c the class named by a person attribute type format
+	 * @return true if a type with that format passes validation
+	 */
+	public static boolean isPermittedClass(Class<?> c) {
+		return Attributable.class.isAssignableFrom(c) || VALUE_TYPES.contains(c) || OpenmrsObject.class.isAssignableFrom(c)
+		        || Character.class.equals(c);
 	}
 
 }

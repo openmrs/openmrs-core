@@ -33,6 +33,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
@@ -254,6 +256,31 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = { "../..", "..", "a/b", "a\\b", ".hidden", "a..b", "a.", "-a", "a b" })
+	public void parse_shouldFailIfModuleHasConfigWithInvalidModuleId(String moduleId) throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
+		        .withModuleName("Reporting").withModuleId(moduleId).build();
+
+		String messageKey = "Module.error.idInvalid";
+		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
+
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "webservices.rest", "fhir2", "legacyui", "ui.springmvc", "my_module-2" })
+	public void parse_shouldAcceptValidModuleIds(String moduleId) throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
+		        .withModuleName("Reporting").withModuleId(moduleId).withPackage("org.openmrs.module.reporting").build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getModuleId(), is(moduleId));
+	}
+
 	@Test
 	public void parse_shouldFailIfModuleHasConfigWithNoPackageName() throws Exception {
 
@@ -286,7 +313,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		        .withTextNode("author", "Community").withTextNode("description", "Reporting everything")
 		        .withTextNode("activator", "org.openmrs.module.ReportingModuleActivator")
 		        .withTextNode("require_database_version", "0.9.5").withTextNode("require_version", "1.11.3 - 1.11.*, 1.12")
-		        .withTextNode("updateURL", "https://dev.openmrs.org/modules/download/reporting/update.rdf").build();
+		        .build();
 
 		File moduleFile = writeConfigXmlToFile(config);
 		Module module = parser.parse(moduleFile);
@@ -299,7 +326,6 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		assertThat(module.getActivatorName(), is("org.openmrs.module.ReportingModuleActivator"));
 		assertThat(module.getRequireDatabaseVersion(), is("0.9.5"));
 		assertThat(module.getRequireOpenmrsVersion(), is("1.11.3 - 1.11.*, 1.12"));
-		assertThat(module.getUpdateURL(), is("https://dev.openmrs.org/modules/download/reporting/update.rdf"));
 		assertThat(module.getFile(), is(moduleFile));
 		assertThat(module.getPrivileges(), is(equalTo(Collections.EMPTY_LIST)));
 		assertThat(module.getGlobalProperties(), is(equalTo(Collections.EMPTY_LIST)));
@@ -318,7 +344,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		        .withTextNode("description", "Reporting everything")
 		        .withTextNode("activator", "org.openmrs.module.ReportingModuleActivator")
 		        .withTextNode("require_database_version", "0.9.5").withTextNode("require_version", "1.11.3 - 1.11.*, 1.12")
-		        .withTextNode("updateURL", "https://dev.openmrs.org/modules/download/reporting/update.rdf").build();
+		        .build();
 
 		Module module = parser.parse(writeConfigXmlToFile(config));
 

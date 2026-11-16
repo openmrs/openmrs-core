@@ -208,6 +208,7 @@
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.validation</groupId>
@@ -257,8 +258,9 @@
 			<artifactId>jackson-datatype-hibernate7</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
+			<groupId>org.apache.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
