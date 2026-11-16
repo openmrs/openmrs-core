@@ -126,11 +126,12 @@ public interface UserSecurityStateService extends OpenmrsService {
 	 * @param user the user whose entry to increment
 	 * @param property the namespaced key of the entry
 	 * @return the value after incrementing
-	 * @throws org.openmrs.api.db.DAOException if the current value is not a number
-	 *             <strong>Should</strong> create the entry with the value one <strong>Should</strong>
-	 *             add one to the current value <strong>Should</strong> fail when the current value is
-	 *             not a number <strong>Should</strong> fail without the manage user security state
-	 *             privilege
+	 * @throws org.openmrs.api.db.DAOException if the current value is not a number or is already the
+	 *             largest long <strong>Should</strong> create the entry with the value one
+	 *             <strong>Should</strong> add one to the current value <strong>Should</strong> fail
+	 *             when the current value is not a number <strong>Should</strong> fail when the current
+	 *             value is the largest long <strong>Should</strong> fail without the manage user
+	 *             security state privilege
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	long increment(User user, String property);

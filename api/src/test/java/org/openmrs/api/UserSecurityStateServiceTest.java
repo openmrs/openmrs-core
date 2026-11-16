@@ -432,6 +432,16 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 		assertThrows(DAOException.class, () -> service.increment(admin(), PROPERTY));
 	}
 
+	/**
+	 * @see UserSecurityStateService#increment(User, String)
+	 */
+	@Test
+	public void increment_shouldFailWhenTheCurrentValueIsTheLargestLong() {
+		service.setValue(admin(), PROPERTY, String.valueOf(Long.MAX_VALUE));
+
+		assertThrows(DAOException.class, () -> service.increment(admin(), PROPERTY));
+	}
+
 	private User admin() {
 		return Context.getUserService().getUser(ADMIN_USER_ID);
 	}

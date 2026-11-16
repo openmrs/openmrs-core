@@ -73,7 +73,7 @@ public interface UserSecurityStateDAO {
 	 * @param userId the id of the user
 	 * @param property the key of the entry
 	 * @return the value after incrementing
-	 * @throws DAOException if the current value is not a number
+	 * @throws DAOException if the current value is not a number or is already the largest long
 	 */
 	long increment(Integer userId, String property);
 

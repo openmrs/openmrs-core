@@ -120,10 +120,10 @@ public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
 		}
 		long next;
 		try {
-			next = Long.parseLong(current) + 1;
-		} catch (NumberFormatException e) {
-			throw new DAOException("The user security state entry " + property + " of user " + userId
-			        + " does not hold a number and cannot be incremented", e);
+			next = Math.incrementExact(Long.parseLong(current));
+		} catch (NumberFormatException | ArithmeticException e) {
+			throw new DAOException("The user security state entry " + property + " of user " + userId + " holds the value "
+			        + current + ", which cannot be incremented", e);
 		}
 		update(userId, property, String.valueOf(next));
 		return next;
