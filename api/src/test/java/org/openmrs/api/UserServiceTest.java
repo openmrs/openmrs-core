@@ -585,6 +585,28 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#unlockUser(User)
+	 */
+	@Test
+	public void unlockUser_shouldCheckTheRolesOfTheStoredUserNotOfTheGivenObject() {
+		User admin = userService.getUser(1);
+		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis()));
+		User currentUser = new User();
+		currentUser.addRole(new Role(RoleConstants.AUTHENTICATED));
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+
+		try {
+			assertThrows(APIException.class,
+			    () -> withCurrentUserAs(currentUser, () -> userService.unlockUser(new User(1))));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+
+		assertTrue(userService.isLockedOut(admin));
+	}
+
+	/**
 	 * @see UserService#isLockedOut(User)
 	 */
 	@Test
