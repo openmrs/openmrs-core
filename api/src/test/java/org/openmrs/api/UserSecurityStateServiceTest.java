@@ -173,6 +173,22 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	 * @see UserSecurityStateService#getValue(User, String)
 	 */
 	@Test
+	public void getValue_shouldFailForANullUser() {
+		assertThrows(APIException.class, () -> service.getValue(null, PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateService#getValue(User, String)
+	 */
+	@Test
+	public void getValue_shouldFailForAnUnsavedUser() {
+		assertThrows(APIException.class, () -> service.getValue(new User(), PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateService#getValue(User, String)
+	 */
+	@Test
 	public void getValue_shouldReadTheCallersOwnEntryUnderAProxyPrivilege() {
 		User testUser = Context.getUserService().getUserByUsername(TEST_USERNAME);
 		service.setValue(testUser, PROPERTY, "value");
@@ -370,6 +386,22 @@ public class UserSecurityStateServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void delete_shouldReturnFalseWhenTheUserHasNoSuchEntry() {
 		assertFalse(service.delete(admin(), PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateService#delete(User, String)
+	 */
+	@Test
+	public void delete_shouldFailForANullUser() {
+		assertThrows(APIException.class, () -> service.delete(null, PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateService#delete(User, String)
+	 */
+	@Test
+	public void delete_shouldFailForAnUnsavedUser() {
+		assertThrows(APIException.class, () -> service.delete(new User(), PROPERTY));
 	}
 
 	/**

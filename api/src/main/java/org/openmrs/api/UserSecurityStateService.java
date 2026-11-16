@@ -26,8 +26,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * {@code authentication.totpSecret}, and are at most 255 characters long. Values are of any length
  * but never blank: the absence of an entry is the only representation of "no state". The methods
  * that may store an entry throw {@link ValidationException} for a user without an id, a blank or
- * over-long key, or a blank value; {@link #getValue} and {@link #delete} find no entry for such
- * arguments.
+ * over-long key, or a blank value; {@link #getValue} and {@link #delete} throw {@link APIException}
+ * for a user without an id and find no entry for any other such arguments.
  *
  * @since 3.0.0, 2.9.0
  */
@@ -40,6 +40,9 @@ public interface UserSecurityStateService extends OpenmrsService {
 	 *         the value from the database <strong>Should</strong> return null when the user has no such
 	 *         entry <strong>Should</strong> read the callers own entry under a proxy privilege
 	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
+	 *         user
+	 * @throws APIException if the user is null or has no id
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	String getValue(User user, String property);
@@ -109,6 +112,9 @@ public interface UserSecurityStateService extends OpenmrsService {
 	 * @return true if an entry was removed <strong>Should</strong> remove the entry
 	 *         <strong>Should</strong> return false when the user has no such entry
 	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
+	 *         user
+	 * @throws APIException if the user is null or has no id
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	boolean delete(User user, String property);

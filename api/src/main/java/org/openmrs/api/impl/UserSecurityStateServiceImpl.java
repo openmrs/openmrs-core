@@ -11,6 +11,7 @@ package org.openmrs.api.impl;
 
 import org.openmrs.User;
 import org.openmrs.UserSecurityState;
+import org.openmrs.api.APIException;
 import org.openmrs.api.UserSecurityStateService;
 import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.validator.ValidateUtil;
@@ -41,6 +42,9 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	@Override
 	@Transactional(readOnly = true)
 	public String getValue(User user, String property) {
+		if (user == null || user.getUserId() == null) {
+			throw new APIException("error.null", (Object[]) null);
+		}
 		return dao.getValue(user.getUserId(), property);
 	}
 
@@ -76,6 +80,9 @@ public class UserSecurityStateServiceImpl extends BaseOpenmrsService implements 
 	 */
 	@Override
 	public boolean delete(User user, String property) {
+		if (user == null || user.getUserId() == null) {
+			throw new APIException("error.null", (Object[]) null);
+		}
 		return dao.delete(user.getUserId(), property);
 	}
 
