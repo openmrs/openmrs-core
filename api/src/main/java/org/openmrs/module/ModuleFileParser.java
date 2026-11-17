@@ -50,6 +50,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
+
 /**
  * This class will parse an OpenMRS module, specifically its {@code config.xml} file into a {@link org.openmrs.module.Module} object.
  * <p>Typical usage is:
@@ -69,6 +71,8 @@ public class ModuleFileParser {
 	
 	//https://resources.openmrs.org/doctype/config-1.5.dtd
 	private static final Pattern OPENMRS_DTD_SYSTEM_ID_PATTERN = Pattern.compile("https?://resources.openmrs.org/doctype/(?<config>config-[0-9.]+\\.dtd)");
+	
+	private static final Pattern MODULE_ID_SEGMENT_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
 	
 	/**
 	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
@@ -287,8 +291,7 @@ public class ModuleFileParser {
 	}
 
 	private DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
+		DocumentBuilder db = createDocumentBuilder();;
 
 		// When asked to resolve external entities (such as a
 		// DTD) we return an InputSource
@@ -312,7 +315,7 @@ public class ModuleFileParser {
 		String configVersion = ensureValidModuleConfigVersion(configRoot, moduleFile);
 		
 		String name = ensureNonEmptyName(configRoot, moduleFile);
-		String moduleId = ensureNonEmptyId(configRoot, name);
+		String moduleId = ensureValidId(configRoot, name);
 		String packageName = ensureNonEmptyPackage(configRoot, name);
 		
 		String author = getElementTrimmed(configRoot, "author");
@@ -362,8 +365,24 @@ public class ModuleFileParser {
 		return getTrimmedElementOrFail(configRoot, "name", "Module.error.nameCannotBeEmpty", moduleFile.getName());
 	}
 
-	private String ensureNonEmptyId(Element configRoot, String name) {
-		return getTrimmedElementOrFail(configRoot, "id", "Module.error.idCannotBeEmpty", name);
+	private String ensureValidId(Element configRoot, String name) {
+		String moduleId = getTrimmedElementOrFail(configRoot, "id", "Module.error.idCannotBeEmpty", name);
+		if (!isValidModuleId(moduleId)) {
+			throw new ModuleException(messageSourceService.getMessage("Module.error.idInvalid") + ": " + moduleId, name);
+		}
+		return moduleId;
+	}
+
+	private static boolean isValidModuleId(String moduleId) {
+		if (moduleId.startsWith("_") || moduleId.startsWith("-")) {
+			return false;
+		}
+		for (String segment : moduleId.split("\\.", -1)) {
+			if (!MODULE_ID_SEGMENT_PATTERN.matcher(segment).matches()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private String ensureNonEmptyPackage(Element configRoot, String name) {

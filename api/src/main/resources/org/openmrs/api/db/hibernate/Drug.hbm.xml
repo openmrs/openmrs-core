@@ -54,7 +54,7 @@
 		<many-to-one name="doseLimitUnits" class="org.openmrs.Concept"
 		    not-null="false" column="dose_limit_units" />
 
-		<set name="ingredients" lazy="true" inverse="true" cascade="all-delete-orphan">
+		<set name="ingredients" access="field" lazy="true" inverse="true" cascade="all-delete-orphan">
 			<key column="drug_id" />	
 			<one-to-many class="org.openmrs.DrugIngredient" />
 		</set>
@@ -83,7 +83,7 @@
 		<many-to-one name="retiredBy" class="org.openmrs.User"
 			not-null="false" column="retired_by" />
 
-		<set name="drugReferenceMaps" inverse="true" cascade="all,delete-orphan,evict">
+		<set name="drugReferenceMaps" access="field" inverse="true" cascade="all,delete-orphan,evict">
 			<key column="drug_id" />
 			<one-to-many class="org.openmrs.DrugReferenceMap" />
 		</set>

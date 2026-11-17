@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.UuidUtil;
 
@@ -91,9 +92,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 		this.comments = comments;
 		
 		//we do not allow to be in a state where reactions is null
-		if (reactions != null) {
-			this.reactions = reactions;
-		}
+		this.reactions = CollectionUtil.setCollection(this.reactions, reactions);
 	}
 	
     /**
@@ -234,13 +233,7 @@ public class Allergy extends BaseFormRecordableOpenmrsData {
 	 * @param reactions the reactions to set
 	 */
 	public void setReactions(List<AllergyReaction> reactions) {
-		//we do not allow to be in a state where reactions is null
-		if (reactions != null) {
-			this.reactions = reactions;
-		}
-		else {
-			this.reactions.clear();
-		}
+		this.reactions = CollectionUtil.setCollection(this.reactions, reactions);
 	}
 
 	/**

@@ -736,6 +736,27 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see ConceptName#setTags(Collection)
+	 */
+	@Test
+	public void setTags_shouldAcceptACopyOfTheCurrentTagsOfASavedName() {
+		ConceptService cs = Context.getConceptService();
+		ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
+		cn.addTag(cs.getConceptNameTagByName("short"));
+		Concept concept = new Concept();
+		concept.addName(cn);
+		concept.addDescription(new ConceptDescription("some description", null));
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
+		cs.saveConcept(concept);
+
+		cn.setTags(new HashSet<>(cn.getTags()));
+		Context.flushSession();
+
+		assertEquals(1, cn.getTags().size());
+	}
+
+	/**
 	 * @see ConceptService#saveConceptSource(ConceptSource)
 	 */
 	@Test
@@ -1801,6 +1822,30 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertThrows(ConceptNameInUseException.class, () -> conceptService.purgeConcept(concept));
 	}
 	
+	/**
+	 * @see ConceptService#purgeConcept(Concept)
+	 */
+	@Test
+	public void purgeConcept_shouldEvictConceptIdsByMappingCache() {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-purgeConceptCache.xml");
+		Concept concept = conceptService.getConcept(9999);
+		assertNotNull(concept);
+
+		String code = "PURGEPROBE";
+		String source = "SNOMED CT";
+
+		// Populate the cache with the concept's mapping.
+		List<Integer> conceptIds = conceptService.getConceptIdsByMapping(code, source, true);
+		assertTrue(conceptIds.contains(concept.getId()));
+
+		// Purge the concept.
+		conceptService.purgeConcept(concept);
+
+		// The cache should have been evicted, so the purged concept must no longer be returned.
+		conceptIds = conceptService.getConceptIdsByMapping(code, source, true);
+		assertFalse(conceptIds.contains(concept.getId()));
+	}
+
 	/**
 	 * @see ConceptService#saveConcept(Concept)
 	 */

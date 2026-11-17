@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -406,6 +407,18 @@ public class ConceptTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Concept#setConceptSets(Collection)
+	 */
+	@Test
+	public void setConceptSets_shouldKeepMembersWithEqualSortWeights() {
+		Concept concept = new Concept();
+
+		concept.setConceptSets(Arrays.asList(new ConceptSet(new Concept(1), null), new ConceptSet(new Concept(2), null)));
+
+		assertEquals(2, concept.getConceptSets().size());
+	}
+
+	/**
 	 * @see Concept#addSetMember(Concept,int)
 	 */
 	@Test
@@ -662,10 +675,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept setMember = new Concept(3);
 		concept.addSetMember(setMember, 0);
 		
-		ConceptSet firstConceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
-		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
-		assertTrue(firstConceptSet.getSortWeight() < secondConceptSet.getSortWeight());
-	}
+		assertEquals(setMember, concept.getSetMembers().get(0));
+			}
 	
 	/**
 	 * @see Concept#addSetMember(Concept,int)
@@ -701,9 +712,8 @@ public class ConceptTest extends BaseContextSensitiveTest {
 		Concept newThirdSetMember = new Concept(5);
 		concept.addSetMember(newThirdSetMember, 2);
 		
-		ConceptSet thirdConceptSet = (ConceptSet) concept.getConceptSets().toArray()[2];
-		assertEquals(newThirdSetMember, thirdConceptSet.getConcept());
-	}
+		assertEquals(newThirdSetMember, concept.getSetMembers().get(2));
+			}
 	
 	/**
 	 * @see Concept#getAllConceptNameLocales()

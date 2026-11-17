@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -62,8 +64,8 @@ public class RolePrivilegeCacheClusterTest {
 		clerk.addPrivilege(new Privilege("View Patients"));
 
 		loadExecutor = Executors.newCachedThreadPool();
-		cache1 = new RolePrivilegeCache(nodes[0], mock(UserDAO.class), loadExecutor::submit, name -> clerk);
-		cache2 = new RolePrivilegeCache(nodes[1], mock(UserDAO.class), loadExecutor::submit, name -> clerk);
+		cache1 = new RolePrivilegeCache(nodes[0], mock(UserDAO.class), loadExecutor::submit, name -> storedClerk());
+		cache2 = new RolePrivilegeCache(nodes[1], mock(UserDAO.class), loadExecutor::submit, name -> storedClerk());
 	}
 
 	@AfterEach
@@ -77,8 +79,8 @@ public class RolePrivilegeCacheClusterTest {
 		load(cache1);
 		load(cache2);
 
-		assertTrue(nativeCache(0).containsKey("clerk"));
-		assertTrue(nativeCache(1).containsKey("clerk"));
+		assertTrue(nativeCache(0).containsKey("Clerk"));
+		assertTrue(nativeCache(1).containsKey("Clerk"));
 	}
 
 	@Test
@@ -88,16 +90,15 @@ public class RolePrivilegeCacheClusterTest {
 
 		cache1.clear();
 
-		assertFalse(nativeCache(0).containsKey("clerk"));
-		assertFalse(nativeCache(1).containsKey("clerk"));
+		assertFalse(nativeCache(0).containsKey("Clerk"));
+		assertFalse(nativeCache(1).containsKey("Clerk"));
 	}
 
 	@Test
 	public void getRolePrivileges_shouldNotCacheOrUseALoadThatRacesAnEvictionOnAnotherNode() {
-		Role revoked = new Role("Clerk");
-		revoked.addPrivilege(new Privilege("Revoked Privilege"));
+		StoredRole revoked = new StoredRole("Clerk", Collections.singleton("Revoked Privilege"), Collections.emptySet());
 		UserDAO dao = mock(UserDAO.class);
-		when(dao.getRole("Clerk")).thenReturn(clerk);
+		when(dao.getStoredRole("Clerk")).thenReturn(storedClerk());
 		RolePrivilegeCache racing = new RolePrivilegeCache(nodes[1], dao, loadExecutor::submit, name -> {
 			cache1.clear();
 			return revoked;
@@ -108,7 +109,7 @@ public class RolePrivilegeCacheClusterTest {
 
 		assertTrue(resolved.containsPrivilege("View Patients"));
 		assertFalse(resolved.containsPrivilege("Revoked Privilege"));
-		assertFalse(nativeCache(1).containsKey("clerk"));
+		assertFalse(nativeCache(1).containsKey("Clerk"));
 	}
 
 	@Test
@@ -124,8 +125,8 @@ public class RolePrivilegeCacheClusterTest {
 		}
 
 		assertTrue(expireToken.fired);
-		assertFalse(nativeCache(1).containsKey("clerk"));
-		assertTrue(nativeCache(0).containsKey("clerk"));
+		assertFalse(nativeCache(1).containsKey("Clerk"));
+		assertTrue(nativeCache(0).containsKey("Clerk"));
 	}
 
 	@Test
@@ -135,13 +136,13 @@ public class RolePrivilegeCacheClusterTest {
 		        name -> {
 			        // node2 has no token yet, so this creates one while node1's load is running
 			        creatingOnNode2.getRolePrivileges(new Role("Other"));
-			        return clerk;
+			        return storedClerk();
 		        });
 
 		load(loadingOnNode1);
 
 		assertTrue(nativeCache(1).containsKey(CacheInvalidation.GENERATION));
-		assertTrue(nativeCache(0).containsKey("clerk"));
+		assertTrue(nativeCache(0).containsKey("Clerk"));
 	}
 
 	private void load(RolePrivilegeCache cache) {
@@ -171,10 +172,14 @@ public class RolePrivilegeCacheClusterTest {
 
 		@CacheEntryCreated
 		public void entryCreated(CacheEntryCreatedEvent<Object, Object> event) {
-			if (!event.isPre() && "clerk".equals(event.getKey())) {
+			if (!event.isPre() && "Clerk".equals(event.getKey())) {
 				fired = true;
 				cache.getAdvancedCache().withFlags(Flag.CACHE_MODE_LOCAL).remove(CacheInvalidation.GENERATION);
 			}
 		}
+	}
+
+	private static StoredRole storedClerk() {
+		return new StoredRole("Clerk", Collections.singleton("View Patients"), Collections.emptySet());
 	}
 }

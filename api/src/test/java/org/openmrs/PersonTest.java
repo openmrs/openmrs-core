@@ -30,7 +30,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.CollectionStatistics;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 /**
@@ -870,6 +874,55 @@ public class PersonTest extends BaseContextSensitiveTest {
 		assertEquals(4, person.getAgeInDays());
 	}
 	
+	/**
+	 * @see Person#setNames(Set)
+	 */
+	@Test
+	public void setNames_shouldNotRewriteRowsWhenGivenTheSameInstances() {
+		Person person = Context.getPersonService().getPerson(9);
+		Statistics statistics = ((SessionFactory) applicationContext.getBean("sessionFactory")).getStatistics();
+		statistics.clear();
+	
+		person.setNames(new HashSet<>(person.getNames()));
+		Context.flushSession();
+	
+		CollectionStatistics names = statistics.getCollectionStatistics("org.openmrs.Person.names");
+		assertEquals(0, names.getRecreateCount() + names.getRemoveCount() + names.getUpdateCount());
+	}
+	
+	/**
+	 * @see Person#setNames(Set)
+	 */
+	@Test
+	public void setNames_shouldRemoveTheDroppedNameWithoutAnOrphanError() {
+		Person person = Context.getPersonService().getPerson(9);
+		Set<PersonName> kept = new HashSet<>(person.getNames());
+		PersonName dropped = kept.iterator().next();
+		kept.remove(dropped);
+	
+		person.setNames(kept);
+		Context.flushSession();
+		Context.clearSession();
+	
+		assertNull(Context.getPersonService().getPersonName(dropped.getPersonNameId()));
+	}
+	
+	/**
+	 * @see Person#setNames(Set)
+	 */
+	@Test
+	public void setNames_shouldAllowSavingANewPersonGivenAnUnsortedSet() {
+		Person person = new Person();
+		person.setGender("M");
+		PersonName name = new PersonName("Given", null, "Family");
+		name.setPerson(person);
+	
+		person.setNames(Collections.singleton(name));
+		Context.getPersonService().savePerson(person);
+		Context.flushSession();
+	
+		assertNotNull(person.getPersonId());
+	}
 	// helper class
 	private static class PersonNameBuilder {
 		

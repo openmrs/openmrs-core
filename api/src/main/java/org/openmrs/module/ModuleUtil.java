@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -190,9 +191,9 @@ public class ModuleUtil {
 		if (OpenmrsUtil.folderContains(folder, filename)) {
 			throw new ModuleException(filename + " is already associated with a loaded module.");
 		}
-		
-		File file = new File(folder.getAbsolutePath(), filename);
-		
+
+		File file = resolveWithinDirectory(folder, filename);
+
 		try (FileOutputStream outputStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
@@ -207,6 +208,30 @@ public class ModuleUtil {
 		}
 		
 		return file;
+	}
+
+	/**
+	 * Resolves <code>relativePath</code> against <code>baseDir</code> and verifies that the normalized
+	 * result is strictly inside <code>baseDir</code>. Use this for every path that is derived from
+	 * untrusted input, such as a module id, before deleting, creating or writing it.
+	 * <p>
+	 * <strong>Should</strong> return the file inside the base directory for a plain relative path<br/>
+	 * <strong>Should</strong> fail if the path resolves to the base directory itself<br/>
+	 * <strong>Should</strong> fail if the path resolves outside the base directory
+	 *
+	 * @param baseDir the directory the result must stay within
+	 * @param relativePath the path to resolve against <code>baseDir</code>
+	 * @return the normalized absolute file
+	 * @throws ModuleException if the resolved path is not strictly inside <code>baseDir</code>
+	 * @since 2.9.0
+	 */
+	public static File resolveWithinDirectory(File baseDir, String relativePath) {
+		Path base = baseDir.toPath().toAbsolutePath().normalize();
+		Path resolved = new File(baseDir, relativePath).toPath().toAbsolutePath().normalize();
+		if (resolved.equals(base) || !resolved.startsWith(base)) {
+			throw new ModuleException("Path '" + relativePath + "' resolves outside of " + base);
+		}
+		return resolved.toFile();
 	}
 
 	/**
@@ -685,8 +710,12 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Convenience method to follow http to https redirects. Will follow a total of 5 redirects,
-	 * then fail out due to foolishness on the url's part.
+	 * Convenience method to follow http to https redirects. Will follow a total of 5 redirects, then
+	 * fail out due to foolishness on the url's part. Once a connection in the chain uses https, a
+	 * redirect to a non-https url is refused.
+	 * <p>
+	 * <strong>Should</strong> follow http redirects<br/>
+	 * <strong>Should</strong> refuse a redirect from https to http
 	 *
 	 * @param c the {@link URLConnection} to open
 	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403
@@ -697,6 +726,7 @@ public class ModuleUtil {
 	protected static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException {
 		boolean redir;
 		int redirects = 0;
+		boolean secure = "https".equals(c.getURL().getProtocol());
 		InputStream in;
 		do {
 			if (c instanceof HttpURLConnection) {
@@ -723,6 +753,10 @@ public class ModuleUtil {
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
+					if (secure && !"https".equals(target.getProtocol())) {
+						throw new SecurityException("illegal URL redirect from https to " + target.getProtocol());
+					}
+					secure = secure || "https".equals(target.getProtocol());
 					redir = true;
 					c = target.openConnection();
 					redirects++;

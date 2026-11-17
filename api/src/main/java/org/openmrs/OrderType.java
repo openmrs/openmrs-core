@@ -16,6 +16,7 @@ import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.CollectionUtil;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -182,7 +183,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	 * @param conceptClasses the collection containing the {@link ConceptClass}es
 	 */
 	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
-		this.conceptClasses = (Set<ConceptClass>)conceptClasses;
+		this.conceptClasses = CollectionUtil.setCollection(this.conceptClasses, conceptClasses);
 	}
 	
 	/**

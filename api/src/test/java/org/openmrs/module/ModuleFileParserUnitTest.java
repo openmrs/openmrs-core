@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,6 +47,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
@@ -65,9 +68,7 @@ import org.w3c.dom.ls.LSSerializer;
  * Tests {@link ModuleFileParser} without a database but with file IO (so technically not a unit test but close).
  */
 public class ModuleFileParserUnitTest extends BaseContextMockTest {
-
-	private static DocumentBuilderFactory documentBuilderFactory;
-
+	
 	private static DocumentBuilder documentBuilder;
 	
 	@TempDir
@@ -80,8 +81,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 
 	@BeforeAll
 	public static void setUp() throws ParserConfigurationException {
-		documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		documentBuilder = createDocumentBuilder();
 	}
 
 	@BeforeEach
@@ -276,6 +276,31 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
 
 		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "../..", "..", "a/b", "a\\b", ".hidden", "a..b", "a.", "-a", "a b" })
+	public void parse_shouldFailIfModuleHasConfigWithInvalidModuleId(String moduleId) throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
+		        .withModuleName("Reporting").withModuleId(moduleId).build();
+
+		String messageKey = "Module.error.idInvalid";
+		whenGettingMessageFromMessageSourceServiceWithKeyReturnSameKey(messageKey);
+
+		expectModuleExceptionWithMessage(() -> parser.parse(writeConfigXmlToFile(config)), messageKey);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "webservices.rest", "fhir2", "legacyui", "ui.springmvc", "my_module-2" })
+	public void parse_shouldAcceptValidModuleIds(String moduleId) throws Exception {
+
+		Document config = new ModuleConfigXmlBuilder(documentBuilder).withModuleRoot().withConfigVersion("1.6")
+		        .withModuleName("Reporting").withModuleId(moduleId).withPackage("org.openmrs.module.reporting").build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		assertThat(module.getModuleId(), is(moduleId));
 	}
 
 	@Test

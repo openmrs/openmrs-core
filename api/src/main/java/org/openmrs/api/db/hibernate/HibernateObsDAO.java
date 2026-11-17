@@ -9,9 +9,21 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -37,6 +49,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.parameter.ObsSearchCriteria;
@@ -64,9 +77,40 @@ public class HibernateObsDAO implements ObsDAO {
 	private static final String ASCENDING = "asc";
 
 	private static final String DESCENDING = "desc";
+	
+	private static final String VERSION_CHAIN_CTE_SQL = "WITH RECURSIVE version_chain (obs_id, previous_version, depth) AS ("
+	        + "  SELECT obs_id, previous_version, 0 FROM obs WHERE obs_id = :startId UNION ALL"
+	        + "  SELECT o.obs_id, o.previous_version, vc.depth + 1 FROM obs o"
+	        + "  INNER JOIN version_chain vc ON o.obs_id = vc.previous_version WHERE vc.depth < 999)"
+	        + " SELECT obs_id, previous_version FROM version_chain ORDER BY depth";
+	
+	/**
+	 * Number of previous_version links the self-join follows per query. Most obs have only a few
+	 * versions, so this covers them in one query; each extra level adds planning cost on MySQL 5.7.
+	 */
+	static final int VERSION_CHAIN_JOIN_DEPTH = 7;
+	
+	/** Selects the ids of o0 ... o7 followed by o7.previous_version, the id to resume from. */
+	private static final String VERSION_CHAIN_SELF_JOIN_SQL = buildVersionChainSelfJoinSql();
+	
+	private static final Pattern MARIADB_VERSION = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)-MariaDB");
+	
+	private volatile Boolean recursiveCteSupported;
 
 	protected SessionFactory sessionFactory;
 
+	private static String buildVersionChainSelfJoinSql() {
+		StringBuilder select = new StringBuilder("SELECT o0.obs_id AS v0");
+		StringBuilder from = new StringBuilder(" FROM obs o0");
+		for (int i = 1; i <= VERSION_CHAIN_JOIN_DEPTH; i++) {
+			select.append(", o").append(i).append(".obs_id AS v").append(i);
+			from.append(" LEFT JOIN obs o").append(i).append(" ON o").append(i).append(".obs_id = o").append(i - 1)
+			        .append(".previous_version");
+		}
+		select.append(", o").append(VERSION_CHAIN_JOIN_DEPTH).append(".previous_version AS next_id");
+		return select.append(from).append(" WHERE o0.obs_id = :startId").toString();
+	}
+	
 	/**
 	 * Set session factory that allows us to connect to the database that Hibernate knows about.
 	 *
@@ -82,6 +126,122 @@ public class HibernateObsDAO implements ObsDAO {
 	@Override
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().delete(obs);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 */
+	@Override
+	public List<Obs> getObsVersionHistory(Obs obs) {
+		if (obs == null) {
+			throw new APIException("Obs must not be null");
+		}
+		if (obs.getObsId() == null) {
+			throw new APIException("Obs must be committed before its version history can be retrieved");
+		}
+		return getObsVersionHistory(obs, isRecursiveCteSupported());
+	}
+	
+	/**
+	 * Collects the obs_ids in the previousVersion chain, then loads the Obs entities in one IN-clause
+	 * query. Package-private so tests can run both chain-walking strategies against the same database.
+	 *
+	 * @param obs a persisted Obs
+	 * @param useRecursiveCte true to walk the chain with a recursive CTE, false to use the fixed-depth
+	 *            self-join that also works on databases without CTE support (MySQL 5.x)
+	 */
+	List<Obs> getObsVersionHistory(Obs obs, boolean useRecursiveCte) {
+		Session session = sessionFactory.getCurrentSession();
+		Set<Integer> ids = new LinkedHashSet<>();
+		Set<Integer> visited = new HashSet<>();
+		Integer startId = obs.getObsId();
+		while (startId != null && visited.add(startId)) {
+			startId = useRecursiveCte ? walkVersionChainWithRecursiveCte(session, startId, ids)
+			        : walkVersionChainWithSelfJoin(session, startId, ids);
+		}
+		
+		if (ids.isEmpty()) {
+			return Collections.emptyList();
+		}
+		
+		List<Obs> loaded = session
+		        .createQuery("FROM Obs o LEFT JOIN FETCH o.referenceRange WHERE o.obsId IN (:obsIds)", Obs.class)
+		        .setParameter("obsIds", ids).getResultList();
+		Map<Integer, Obs> byId = new HashMap<>();
+		for (Obs o : loaded) {
+			byId.put(o.getObsId(), o);
+		}
+		return ids.stream().map(byId::get).filter(Objects::nonNull).collect(Collectors.toCollection(ArrayList::new));
+	}
+	
+	/**
+	 * Adds the ids of startId and the versions before it to ids, newest first, and returns the id to
+	 * resume from, or null once the chain has ended. MySQL (cte_max_recursion_depth) and MariaDB
+	 * (max_recursive_iterations) stop a recursive CTE after 1000 iterations by default, so each query
+	 * walks at most 1000 versions.
+	 */
+	@SuppressWarnings("unchecked")
+	private Integer walkVersionChainWithRecursiveCte(Session session, Integer startId, Set<Integer> ids) {
+		List<Object[]> rows = session.createNativeQuery(VERSION_CHAIN_CTE_SQL).setParameter("startId", startId)
+		        .getResultList();
+		Integer next = null;
+		for (Object[] row : rows) {
+			ids.add(((Number) row[0]).intValue());
+			next = row[1] == null ? null : ((Number) row[1]).intValue();
+		}
+		return next;
+	}
+	
+	/**
+	 * Same contract as {@link #walkVersionChainWithRecursiveCte}, but follows at most
+	 * {@link #VERSION_CHAIN_JOIN_DEPTH} previous_version links per query by joining obs to itself.
+	 */
+	@SuppressWarnings("unchecked")
+	private Integer walkVersionChainWithSelfJoin(Session session, Integer startId, Set<Integer> ids) {
+		List<Object[]> rows = session.createNativeQuery(VERSION_CHAIN_SELF_JOIN_SQL).setParameter("startId", startId)
+		        .getResultList();
+		if (rows.isEmpty()) {
+			return null;
+		}
+		Object[] row = rows.get(0);
+		for (int i = 0; i <= VERSION_CHAIN_JOIN_DEPTH; i++) {
+			if (row[i] == null) {
+				return null;
+			}
+			ids.add(((Number) row[i]).intValue());
+		}
+		Object next = row[VERSION_CHAIN_JOIN_DEPTH + 1];
+		return next == null ? null : ((Number) next).intValue();
+	}
+	
+	private boolean isRecursiveCteSupported() {
+		Boolean supported = recursiveCteSupported;
+		if (supported == null) {
+			supported = sessionFactory.getCurrentSession()
+			        .doReturningWork(connection -> supportsRecursiveCte(connection.getMetaData()));
+			recursiveCteSupported = supported;
+		}
+		return supported;
+	}
+	
+	/**
+	 * Recursive CTEs need MySQL 8.0 or MariaDB 10.2.2. PostgreSQL and H2 support them in every version
+	 * OpenMRS runs on. The configured Hibernate dialect can't be used here because it defaults to
+	 * MySQL57Dialect regardless of the server version.
+	 */
+	static boolean supportsRecursiveCte(DatabaseMetaData metaData) throws SQLException {
+		// MySQL Connector/J reports MariaDB as e.g. "5.5.5-10.6.12-MariaDB", so match the real version
+		Matcher mariaDb = MARIADB_VERSION.matcher(metaData.getDatabaseProductVersion());
+		if (mariaDb.find()) {
+			int major = Integer.parseInt(mariaDb.group(1));
+			int minor = Integer.parseInt(mariaDb.group(2));
+			int patch = Integer.parseInt(mariaDb.group(3));
+			return major > 10 || (major == 10 && (minor > 2 || (minor == 2 && patch >= 2)));
+		}
+		if ("MySQL".equalsIgnoreCase(metaData.getDatabaseProductName())) {
+			return metaData.getDatabaseMajorVersion() >= 8;
+		}
+		return true;
 	}
 	
 	/**
