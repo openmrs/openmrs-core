@@ -479,13 +479,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePassword_shouldClearTheUsersLockout() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis()));
 
 		userService.changePassword(user, "Tester12");
 
-		assertNull(
-		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
+		assertNull(Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 	}
 
 	/**
@@ -494,12 +493,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void changePassword_shouldResetTheUsersLoginAttempts() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "8");
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "8");
 
 		userService.changePassword(user, "Tester12");
 
-		assertNull(
-		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+		assertNull(Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
 	}
 
 	/**
@@ -508,13 +506,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unlockUser_shouldRemoveTheUsersLockoutTimestamp() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis()));
 
 		userService.unlockUser(user);
 
-		assertNull(
-		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
+		assertNull(Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 	}
 
 	/**
@@ -523,12 +520,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unlockUser_shouldResetTheUsersLoginAttempts() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "8");
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "8");
 
 		userService.unlockUser(user);
 
-		assertNull(
-		    Context.getUserSecurityStateService().getValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+		assertNull(Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
 	}
 
 	/**
@@ -569,7 +565,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unlockUser_shouldKeepTheLockoutOfASystemDeveloperWhenTheCurrentUserCannotAssignThatRole() {
 		User admin = userService.getUser(1);
-		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().setSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis()));
 		User currentUser = new User();
 		currentUser.addRole(new Role(RoleConstants.AUTHENTICATED));
@@ -590,7 +586,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void unlockUser_shouldCheckTheRolesOfTheStoredUserNotOfTheGivenObject() {
 		User admin = userService.getUser(1);
-		Context.getUserSecurityStateService().setValue(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().setSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis()));
 		User currentUser = new User();
 		currentUser.addRole(new Role(RoleConstants.AUTHENTICATED));
@@ -612,7 +608,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void isLockedOut_shouldReturnTrueWhileTheLockoutIsActive() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis()));
 
 		assertTrue(userService.isLockedOut(user));
@@ -624,7 +620,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void isLockedOut_shouldReturnFalseAfterTheLockoutExpires() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
 
 		assertFalse(userService.isLockedOut(user));
@@ -644,7 +640,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void isLockedOut_shouldReturnFalseWhenTheLockoutTimestampIsNotANumber() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP, "junk");
+		Context.getUserService().setSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP, "junk");
 
 		assertFalse(userService.isLockedOut(user));
 	}
@@ -1302,11 +1298,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void purgeUser_shouldRemoveTheUsersSecurityState() {
 		User user = userService.getUser(502);
-		Context.getUserSecurityStateService().setValue(user, "test.secret", "value");
+		Context.getUserService().setSecurityState(user, "test.secret", "value");
 
 		userService.purgeUser(user);
 
-		assertNull(Context.getUserSecurityStateService().getValue(user, "test.secret"));
+		assertNull(Context.getUserService().getSecurityState(user, "test.secret"));
 	}
 
 	/**

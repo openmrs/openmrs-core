@@ -32,6 +32,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
  *
  * List&lt;User&gt; users = Context.getUserService().getAllUsers();
  * </pre>
+ * <p>
+ * The security state methods, {@link #getSecurityState(User, String)} and the others that take a
+ * {@code property}, keep per-user security state: failed login counts, lockout timestamps,
+ * second-factor secrets, remember-me tokens and the like. Unlike user properties, entries are not
+ * part of {@link User}, are not returned with it (through REST or otherwise), are always read from
+ * the database rather than from a cached user, and can be changed atomically. Each of these methods
+ * requires the {@link PrivilegeConstants#MANAGE_USER_SECURITY_STATE} privilege, including for the
+ * caller's own entries; modules call them under a proxy privilege or from a daemon thread. Keys are
+ * namespaced by their owner, e.g. {@code core.loginAttempts} or {@code authentication.totpSecret},
+ * and are at most 255 characters long. Values are of any length but never blank: the absence of an
+ * entry is the only representation of "no state". The methods that may store an entry throw
+ * {@link ValidationException} for a user without an id, a blank or over-long key, or a blank value;
+ * {@link #getSecurityState} and {@link #deleteSecurityState} throw {@link APIException} for a user
+ * without an id and find no entry for any other such arguments.
  *
  * @see org.openmrs.api.context.Context
  */
@@ -795,4 +809,113 @@ public interface UserService extends OpenmrsService {
 	 */
 	@PreAuthorize("hasPermission(#user, '" + PrivilegeConstants.GET_USERS + "')")
 	boolean isLockedOut(User user);
+
+	/**
+	 * @param user the user whose entry to read
+	 * @param property the namespaced key of the entry
+	 * @return the stored value, or null when the user has no such entry <strong>Should</strong> read
+	 *         the value from the database <strong>Should</strong> return null when the user has no such
+	 *         entry <strong>Should</strong> read the callers own entry under a proxy privilege
+	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
+	 *         user
+	 * @throws APIException if the user is null or has no id
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
+	String getSecurityState(User user, String property);
+
+	/**
+	 * Creates or replaces a security state entry.
+	 *
+	 * @param user the user whose entry to set
+	 * @param property the namespaced key of the entry
+	 * @param value the value to store <strong>Should</strong> create the entry when it does not exist
+	 *            <strong>Should</strong> replace the value of an existing entry <strong>Should</strong>
+	 *            record the caller as the creator of a new entry <strong>Should</strong> record the
+	 *            caller as the user who changed an existing entry <strong>Should</strong> not store the
+	 *            entry as a user property <strong>Should</strong> fail for a blank value
+	 *            <strong>Should</strong> store a value longer than 4000 characters
+	 *            <strong>Should</strong> fail for a blank property <strong>Should</strong> fail for an
+	 *            unsaved user <strong>Should</strong> fail without the manage user security state
+	 *            privilege
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
+	@Logging(ignoredArgumentIndexes = { 2 })
+	void setSecurityState(User user, String property, String value);
+
+	/**
+	 * Replaces a security state entry's value only if its current value is exactly
+	 * {@code expectedValue}. Passing null as {@code expectedValue} means the entry must not exist yet,
+	 * so the call creates it. The check and the change happen atomically: of several concurrent calls
+	 * with the same expected value and a different new value, exactly one succeeds.
+	 *
+	 * @param user the user whose entry to change
+	 * @param property the namespaced key of the entry
+	 * @param expectedValue the value the entry must currently have, or null for "no entry"
+	 * @param newValue the value to store
+	 * @return true if the entry was changed, false if its current value was not the expected one
+	 *         <strong>Should</strong> create the entry when expected value is null and the entry does
+	 *         not exist <strong>Should</strong> not create the entry when expected value is null and
+	 *         the entry exists <strong>Should</strong> replace the value when the current value matches
+	 *         <strong>Should</strong> not replace the value when the current value does not match
+	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
+	@Logging(ignoredArgumentIndexes = { 2, 3 })
+	boolean compareAndSetSecurityState(User user, String property, String expectedValue, String newValue);
+
+	/**
+	 * Removes a security state entry only if its current value is exactly {@code expectedValue}. The
+	 * check and the removal happen atomically: of several concurrent calls for the same entry, exactly
+	 * one returns true.
+	 *
+	 * @param user the user whose entry to remove
+	 * @param property the namespaced key of the entry
+	 * @param expectedValue the value the entry must currently have, never blank
+	 * @return true if an entry was removed <strong>Should</strong> remove the entry when the current
+	 *         value matches <strong>Should</strong> not remove the entry when the current value does
+	 *         not match <strong>Should</strong> fail for a blank expected value <strong>Should</strong>
+	 *         fail without the manage user security state privilege
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
+	@Logging(ignoredArgumentIndexes = { 2 })
+	boolean deleteSecurityStateIfValueMatches(User user, String property, String expectedValue);
+
+	/**
+	 * Removes a security state entry whatever its value.
+	 *
+	 * @param user the user whose entry to remove
+	 * @param property the namespaced key of the entry
+	 * @return true if an entry was removed <strong>Should</strong> remove the entry
+	 *         <strong>Should</strong> return false when the user has no such entry
+	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
+	 *         user
+	 * @throws APIException if the user is null or has no id
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
+	boolean deleteSecurityState(User user, String property);
+
+	/**
+	 * Adds one to a security state entry's numeric value, creating the entry with the value 1 when it
+	 * does not exist yet. Concurrent increments of the same entry are never lost.
+	 *
+	 * @param user the user whose entry to increment
+	 * @param property the namespaced key of the entry
+	 * @return the value after incrementing
+	 * @throws org.openmrs.api.db.DAOException if the current value is not a number or is already the
+	 *             largest long <strong>Should</strong> create the entry with the value one
+	 *             <strong>Should</strong> add one to the current value <strong>Should</strong> fail
+	 *             when the current value is not a number <strong>Should</strong> fail when the current
+	 *             value is the largest long <strong>Should</strong> fail without the manage user
+	 *             security state privilege
+	 * @since 3.0.0, 2.9.0
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
+	long incrementSecurityState(User user, String property);
 }

@@ -36,14 +36,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 /**
- * Runs the atomic operations of {@link UserSecurityStateService} against a real database
+ * Runs the atomic security state operations of {@link UserService} against a real database
  * (Testcontainers, never the in-memory H2) from genuinely concurrent sessions. The schema is
  * created by Liquibase, so this also covers the fresh-install path of the user_security_state
  * changeset.
  */
 @SkipBaseSetup
-@TestExecutionListeners(listeners = UserSecurityStateServiceConcurrencyIT.DiscardApplicationContextAroundClass.class, mergeMode = MERGE_WITH_DEFAULTS)
-public class UserSecurityStateServiceConcurrencyIT extends BaseContextSensitiveNonTransactionalTest {
+@TestExecutionListeners(listeners = UserServiceSecurityStateConcurrencyIT.DiscardApplicationContextAroundClass.class, mergeMode = MERGE_WITH_DEFAULTS)
+public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveNonTransactionalTest {
 
 	/**
 	 * The session factory reads its connection settings when the application context is built, so a
@@ -105,46 +105,46 @@ public class UserSecurityStateServiceConcurrencyIT extends BaseContextSensitiveN
 	}
 
 	/**
-	 * @see UserSecurityStateService#deleteIfValueMatches(User, String, String)
+	 * @see UserService#deleteSecurityStateIfValueMatches(User, String, String)
 	 */
 	@Test
-	void deleteIfValueMatches_shouldSucceedForExactlyOneOfConcurrentCalls() throws Exception {
-		Context.getUserSecurityStateService().setValue(user(), PROPERTY, TOKEN);
+	void deleteSecurityStateIfValueMatches_shouldSucceedForExactlyOneOfConcurrentCalls() throws Exception {
+		Context.getUserService().setSecurityState(user(), PROPERTY, TOKEN);
 
 		List<Boolean> outcomes = runConcurrently(
-		    () -> Context.getUserSecurityStateService().deleteIfValueMatches(user(), PROPERTY, TOKEN));
+		    () -> Context.getUserService().deleteSecurityStateIfValueMatches(user(), PROPERTY, TOKEN));
 
 		assertEquals(1, outcomes.stream().filter(Boolean::booleanValue).count(), outcomes.toString());
 	}
 
 	/**
-	 * @see UserSecurityStateService#compareAndSet(User, String, String, String)
+	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
 	 */
 	@Test
-	void compareAndSet_shouldSucceedForExactlyOneOfConcurrentCallsCreatingTheEntry() throws Exception {
+	void compareAndSetSecurityState_shouldSucceedForExactlyOneOfConcurrentCallsCreatingTheEntry() throws Exception {
 		List<Boolean> outcomes = runConcurrently(
-		    () -> Context.getUserSecurityStateService().compareAndSet(user(), PROPERTY, null, TOKEN));
+		    () -> Context.getUserService().compareAndSetSecurityState(user(), PROPERTY, null, TOKEN));
 
 		assertEquals(1, outcomes.stream().filter(Boolean::booleanValue).count(), outcomes.toString());
 	}
 
 	/**
-	 * @see UserSecurityStateService#increment(User, String)
+	 * @see UserService#incrementSecurityState(User, String)
 	 */
 	@Test
-	void increment_shouldNotLoseConcurrentIncrements() throws Exception {
-		List<Long> outcomes = runConcurrently(() -> Context.getUserSecurityStateService().increment(user(), PROPERTY));
+	void incrementSecurityState_shouldNotLoseConcurrentIncrements() throws Exception {
+		List<Long> outcomes = runConcurrently(() -> Context.getUserService().incrementSecurityState(user(), PROPERTY));
 
-		assertEquals(String.valueOf(CONCURRENT_CALLS), Context.getUserSecurityStateService().getValue(user(), PROPERTY),
+		assertEquals(String.valueOf(CONCURRENT_CALLS), Context.getUserService().getSecurityState(user(), PROPERTY),
 		    outcomes.toString());
 	}
 
 	/**
-	 * @see UserSecurityStateService#increment(User, String)
+	 * @see UserService#incrementSecurityState(User, String)
 	 */
 	@Test
-	void increment_shouldReturnEveryValueOnceUnderConcurrentIncrements() throws Exception {
-		List<Long> outcomes = runConcurrently(() -> Context.getUserSecurityStateService().increment(user(), PROPERTY));
+	void incrementSecurityState_shouldReturnEveryValueOnceUnderConcurrentIncrements() throws Exception {
+		List<Long> outcomes = runConcurrently(() -> Context.getUserService().incrementSecurityState(user(), PROPERTY));
 
 		assertEquals(CONCURRENT_CALLS, outcomes.stream().distinct().count(), outcomes.toString());
 	}

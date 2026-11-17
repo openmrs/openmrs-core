@@ -1106,18 +1106,18 @@ public final class OpenmrsConstants {
 	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP = "lockoutTimestamp";
 
 	/**
-	 * Key of the {@link org.openmrs.api.UserSecurityStateService} entry that counts a user's
-	 * consecutive unsuccessful login attempts; cleared on a successful login, when a lockout expires
-	 * and when the password is changed
+	 * Key of the {@link org.openmrs.api.UserService#getSecurityState security state} entry that counts
+	 * a user's consecutive unsuccessful login attempts; cleared on a successful login, when a lockout
+	 * expires and when the password is changed
 	 *
 	 * @since 3.0.0, 2.9.0
 	 */
 	public static final String USER_SECURITY_STATE_LOGIN_ATTEMPTS = "core.loginAttempts";
 
 	/**
-	 * Key of the {@link org.openmrs.api.UserSecurityStateService} entry that stores the time, in
-	 * milliseconds since the epoch, from which a user's current lockout runs; every login attempt
-	 * during the lockout resets it to the present
+	 * Key of the {@link org.openmrs.api.UserService#getSecurityState security state} entry that stores
+	 * the time, in milliseconds since the epoch, from which a user's current lockout runs; every login
+	 * attempt during the lockout resets it to the present
 	 *
 	 * @since 3.0.0, 2.9.0
 	 */

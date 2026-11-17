@@ -33,6 +33,7 @@ import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.UserSecurityState;
 import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -46,6 +47,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -55,11 +57,13 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
+import org.openmrs.validator.ValidateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -79,6 +83,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 
 	@Autowired
 	protected UserDAO dao;
+
+	@Autowired
+	private UserSecurityStateDAO userSecurityStateDao;
 
 	@Autowired
 	private RolePrivilegeCache rolePrivilegeCache;
@@ -980,6 +987,79 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Transactional(readOnly = true)
 	public boolean isLockedOut(User user) {
 		return dao.isLockedOut(user);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getSecurityState(User, String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public String getSecurityState(User user, String property) {
+		if (user == null || user.getUserId() == null) {
+			throw new APIException("error.null", (Object[]) null);
+		}
+		return userSecurityStateDao.getValue(user.getUserId(), property);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#setSecurityState(User, String, String)
+	 */
+	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public void setSecurityState(User user, String property, String value) {
+		UserSecurityState entry = validatedSecurityState(user, property, value);
+		userSecurityStateDao.setValue(entry.getUserId(), entry.getProperty(), entry.getValue());
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#compareAndSetSecurityState(User, String, String, String)
+	 */
+	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public boolean compareAndSetSecurityState(User user, String property, String expectedValue, String newValue) {
+		UserSecurityState entry = validatedSecurityState(user, property, newValue);
+		return userSecurityStateDao.compareAndSet(entry.getUserId(), entry.getProperty(), expectedValue, entry.getValue());
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#deleteSecurityStateIfValueMatches(User, String, String)
+	 */
+	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public boolean deleteSecurityStateIfValueMatches(User user, String property, String expectedValue) {
+		UserSecurityState entry = validatedSecurityState(user, property, expectedValue);
+		return userSecurityStateDao.deleteIfValueMatches(entry.getUserId(), entry.getProperty(), entry.getValue());
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#deleteSecurityState(User, String)
+	 */
+	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public boolean deleteSecurityState(User user, String property) {
+		if (user == null || user.getUserId() == null) {
+			throw new APIException("error.null", (Object[]) null);
+		}
+		return userSecurityStateDao.delete(user.getUserId(), property);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#incrementSecurityState(User, String)
+	 */
+	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public long incrementSecurityState(User user, String property) {
+		UserSecurityState entry = validatedSecurityState(user, property, "1");
+		return userSecurityStateDao.increment(entry.getUserId(), entry.getProperty());
+	}
+
+	private static UserSecurityState validatedSecurityState(User user, String property, String value) {
+		UserSecurityState entry = new UserSecurityState();
+		entry.setUserId(user == null ? null : user.getUserId());
+		entry.setProperty(property);
+		entry.setValue(value);
+		ValidateUtil.validate(entry);
+		return entry;
 	}
 
 	@Override

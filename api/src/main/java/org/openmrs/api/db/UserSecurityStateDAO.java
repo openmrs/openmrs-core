@@ -14,7 +14,7 @@ package org.openmrs.api.db;
  * method reads and writes the database directly; nothing is served from a cached
  * {@link org.openmrs.User}.
  *
- * @see org.openmrs.api.UserSecurityStateService
+ * @see org.openmrs.api.UserService#getSecurityState(org.openmrs.User, String)
  * @since 3.0.0, 2.9.0
  */
 public interface UserSecurityStateDAO {
