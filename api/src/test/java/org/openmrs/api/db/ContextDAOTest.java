@@ -308,6 +308,22 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void authenticate_shouldIgnoreStoredBackoffWhenBackoffIsDisabled() {
+		User user = getAdmin();
+		String backoffTimestamp = String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, backoffTimestamp);
+		Context.getUserService().saveUser(user);
+		setMaxFailedLoginBackoffSeconds(0);
+
+		User authenticated = dao.authenticate("admin", "test");
+
+		assertEquals("admin", authenticated.getUsername());
+		assertNull(authenticated.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP, null),
+		    "A successful login should clear the stored back-off");
+	}
+
+	@Test
 	public void authenticate_shouldResetFailedLoginBackoffAfterSuccessfulLogin() {
 		User user = getAdmin();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
