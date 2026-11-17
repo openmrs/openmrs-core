@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +44,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -308,6 +310,40 @@ public class HibernateContextDAO implements ContextDAO {
 		return u;
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getUserById(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserById(Integer userId) {
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			return session.get(User.class, userId);
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getStoredRoleNames(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Set<String> getStoredRoleNames(Integer userId) {
+		return StoredRoleReader.readUserRoleNames(sessionFactory.getCurrentSession(), userId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getStoredRole(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public StoredRole getStoredRole(String roleName) {
+		return StoredRoleReader.read(sessionFactory.getCurrentSession(), roleName);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUsername(String)
 	 */

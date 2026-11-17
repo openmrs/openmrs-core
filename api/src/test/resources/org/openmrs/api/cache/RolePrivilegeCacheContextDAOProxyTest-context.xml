@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!-- Just enough of the API wiring to show whether contextDAO keeps its transaction proxy -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<context:annotation-config/>
+	<tx:annotation-driven proxy-target-class="true"/>
+
+	<!-- As a module's @EnableAspectJAutoProxy with an Advisor bean, such as the FHIR2 module's, adds -->
+	<aop:aspectj-autoproxy/>
+	<bean id="typeMatchingAdvisor"
+		  class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest$TypeMatchingAdvisor"/>
+
+	<bean id="transactionManager" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
+		  factory-method="transactionManager"/>
+	<bean id="transactionAttributeSource"
+		  class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+
+	<!-- A service declared like the API's, whose target needs the RolePrivilegeCache -->
+	<bean id="userService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="target" ref="userServiceTarget"/>
+		<property name="transactionAttributeSource" ref="transactionAttributeSource"/>
+	</bean>
+	<bean id="userServiceTarget"
+		  class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest$ServiceTarget">
+		<property name="rolePrivilegeCache" ref="rolePrivilegeCache"/>
+	</bean>
+
+	<bean id="rolePrivilegeCache" class="org.openmrs.api.cache.RolePrivilegeCache"/>
+	<bean id="apiCacheManager" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
+		  factory-method="cacheManager"/>
+	<bean id="userDAO" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
+		  factory-method="userDAO"/>
+
+	<bean id="contextDAO" class="org.openmrs.api.db.hibernate.HibernateContextDAO"/>
+	<bean id="sessionFactory" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
+		  factory-method="sessionFactory"/>
+	<bean id="searchSessionFactory" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
+		  factory-method="searchSessionFactory"/>
+</beans>
