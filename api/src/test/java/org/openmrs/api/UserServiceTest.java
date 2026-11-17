@@ -31,6 +31,7 @@ import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.stat.CollectionStatistics;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -143,12 +144,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void setup() {
 		userService = Context.getUserService();
 		messages = Context.getMessageSourceService();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 	}
 
 	/**
 	 * Methods in this class might authenticate with a different user, so log that user out after this
 	 * whole junit class is done.
 	 */
+	@AfterEach
+	public void removeProxyPrivilege() {
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+	}
+
 	@AfterAll
 	public static void logOutAfterThisTest() {
 		Context.logout();

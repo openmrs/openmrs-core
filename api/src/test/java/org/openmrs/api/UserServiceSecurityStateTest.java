@@ -24,6 +24,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -50,7 +51,8 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 
 	private static final String PROPERTY = "test.secret";
 
-	private static final String DENIAL = "Privileges required: " + PrivilegeConstants.MANAGE_USER_SECURITY_STATE;
+	private static final String DENIAL = "Security state may be accessed only from a daemon thread or under the "
+	        + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + " proxy privilege";
 
 	@Autowired
 	private UserService service;
@@ -62,6 +64,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	public void loadTestUser() {
 		executeDataSet(TEST_USER_DATASET);
 		RolePrivilegeCacheTestUtil.clear();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 	}
 
 	@AfterEach
@@ -76,11 +79,25 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 * @see UserService#getSecurityState(User, String)
 	 */
 	@Test
-	public void getSecurityState_shouldFailWithoutTheManageUserSecurityStatePrivilege() {
+	public void getSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
-		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
 		    () -> service.getSecurityState(self, PROPERTY));
+
+		assertEquals(DENIAL, denial.getMessage());
+	}
+
+	/**
+	 * @see UserService#getSecurityState(User, String)
+	 */
+	@Test
+	public void getSecurityState_shouldFailForASuperuserWithoutTheProxyPrivilege() {
+		User admin = admin();
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
+		    () -> service.getSecurityState(admin, PROPERTY));
 
 		assertEquals(DENIAL, denial.getMessage());
 	}
@@ -89,10 +106,10 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 * @see UserService#setSecurityState(User, String, String)
 	 */
 	@Test
-	public void setSecurityState_shouldFailWithoutTheManageUserSecurityStatePrivilege() {
+	public void setSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
-		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
 		    () -> service.setSecurityState(self, PROPERTY, "value"));
 
 		assertEquals(DENIAL, denial.getMessage());
@@ -102,10 +119,10 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
 	 */
 	@Test
-	public void compareAndSetSecurityState_shouldFailWithoutTheManageUserSecurityStatePrivilege() {
+	public void compareAndSetSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
-		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
 		    () -> service.compareAndSetSecurityState(self, PROPERTY, null, "value"));
 
 		assertEquals(DENIAL, denial.getMessage());
@@ -115,10 +132,10 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 * @see UserService#deleteSecurityStateIfValueMatches(User, String, String)
 	 */
 	@Test
-	public void deleteSecurityStateIfValueMatches_shouldFailWithoutTheManageUserSecurityStatePrivilege() {
+	public void deleteSecurityStateIfValueMatches_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
-		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
 		    () -> service.deleteSecurityStateIfValueMatches(self, PROPERTY, "value"));
 
 		assertEquals(DENIAL, denial.getMessage());
@@ -128,10 +145,10 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 * @see UserService#deleteSecurityState(User, String)
 	 */
 	@Test
-	public void deleteSecurityState_shouldFailWithoutTheManageUserSecurityStatePrivilege() {
+	public void deleteSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
-		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
 		    () -> service.deleteSecurityState(self, PROPERTY));
 
 		assertEquals(DENIAL, denial.getMessage());
@@ -141,10 +158,10 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 * @see UserService#incrementSecurityState(User, String)
 	 */
 	@Test
-	public void incrementSecurityState_shouldFailWithoutTheManageUserSecurityStatePrivilege() {
+	public void incrementSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
-		APIAuthenticationException denial = assertThrows(APIAuthenticationException.class,
+		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
 		    () -> service.incrementSecurityState(self, PROPERTY));
 
 		assertEquals(DENIAL, denial.getMessage());

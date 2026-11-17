@@ -26,6 +26,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
@@ -100,6 +101,7 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
 		getConnection().commit();
 		authenticate();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 		userId = Context.getUserService().getUserByUsername(USERNAME).getUserId();
 		Context.clearSession();
 	}
@@ -182,6 +184,7 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 					Context.openSession();
 					try {
 						Context.authenticate("admin", "test");
+						Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 						ready.countDown();
 						start.await();
 						return call.call();

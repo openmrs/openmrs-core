@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -33,6 +34,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestContext;
@@ -130,9 +132,15 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
 		getConnection().commit();
 		authenticate();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT,
 		    String.valueOf(ALLOWED_FAILED_LOGINS));
 		Context.clearSession();
+	}
+
+	@AfterEach
+	void removeProxyPrivilege() {
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 	}
 
 	/**

@@ -38,14 +38,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * second-factor secrets, remember-me tokens and the like. Unlike user properties, entries are not
  * part of {@link User}, are not returned with it (through REST or otherwise), are always read from
  * the database rather than from a cached user, and can be changed atomically. Each of these methods
- * requires the {@link PrivilegeConstants#MANAGE_USER_SECURITY_STATE} privilege, including for the
- * caller's own entries; modules call them under a proxy privilege or from a daemon thread. Keys are
- * namespaced by their owner, e.g. {@code core.loginAttempts} or {@code authentication.totpSecret},
- * and are at most 255 characters long. Values are of any length but never blank: the absence of an
- * entry is the only representation of "no state". The methods that may store an entry throw
- * {@link ValidationException} for a user without an id, a blank or over-long key, or a blank value;
- * {@link #getSecurityState} and {@link #deleteSecurityState} throw {@link APIException} for a user
- * without an id and find no entry for any other such arguments.
+ * may be called only from a daemon thread or under the
+ * {@link PrivilegeConstants#MANAGE_USER_SECURITY_STATE} proxy privilege; holding that privilege
+ * through a role, or being a superuser, gives no access, not even to the caller's own entries, and
+ * each method throws {@link org.springframework.security.access.AccessDeniedException} otherwise.
+ * Code adds the proxy privilege around the call and always removes it again: <pre>
+ * Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+ * try {
+ *     Context.getUserService().getSecurityState(user, "mymodule.totpSecret");
+ * } finally {
+ *     Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+ * }
+ * </pre> Keys are namespaced by their owner, e.g. {@code core.loginAttempts} or
+ * {@code authentication.totpSecret}, and are at most 255 characters long. Values are of any length
+ * but never blank: the absence of an entry is the only representation of "no state". The methods
+ * that may store an entry throw {@link ValidationException} for a user without an id, a blank or
+ * over-long key, or a blank value; {@link #getSecurityState} and {@link #deleteSecurityState} throw
+ * {@link APIException} for a user without an id and find no entry for any other such arguments.
  *
  * @see org.openmrs.api.context.Context
  */
@@ -816,13 +825,13 @@ public interface UserService extends OpenmrsService {
 	 * @return the stored value, or null when the user has no such entry <strong>Should</strong> read
 	 *         the value from the database <strong>Should</strong> return null when the user has no such
 	 *         entry <strong>Should</strong> read the callers own entry under a proxy privilege
-	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail without the manage user security state proxy privilege
+	 *         <strong>Should</strong> fail for a superuser without the proxy privilege
 	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
 	 *         user
 	 * @throws APIException if the user is null or has no id
 	 * @since 3.0.0, 2.9.0
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	String getSecurityState(User user, String property);
 
 	/**
@@ -837,11 +846,10 @@ public interface UserService extends OpenmrsService {
 	 *            entry as a user property <strong>Should</strong> fail for a blank value
 	 *            <strong>Should</strong> store a value longer than 4000 characters
 	 *            <strong>Should</strong> fail for a blank property <strong>Should</strong> fail for an
-	 *            unsaved user <strong>Should</strong> fail without the manage user security state
-	 *            privilege
+	 *            unsaved user <strong>Should</strong> fail without the manage user security state proxy
+	 *            privilege <strong>Should</strong> allow a daemon thread
 	 * @since 3.0.0, 2.9.0
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	@Logging(ignoredArgumentIndexes = { 2 })
 	void setSecurityState(User user, String property, String value);
 
@@ -860,10 +868,9 @@ public interface UserService extends OpenmrsService {
 	 *         not exist <strong>Should</strong> not create the entry when expected value is null and
 	 *         the entry exists <strong>Should</strong> replace the value when the current value matches
 	 *         <strong>Should</strong> not replace the value when the current value does not match
-	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail without the manage user security state proxy privilege
 	 * @since 3.0.0, 2.9.0
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	@Logging(ignoredArgumentIndexes = { 2, 3 })
 	boolean compareAndSetSecurityState(User user, String property, String expectedValue, String newValue);
 
@@ -878,10 +885,9 @@ public interface UserService extends OpenmrsService {
 	 * @return true if an entry was removed <strong>Should</strong> remove the entry when the current
 	 *         value matches <strong>Should</strong> not remove the entry when the current value does
 	 *         not match <strong>Should</strong> fail for a blank expected value <strong>Should</strong>
-	 *         fail without the manage user security state privilege
+	 *         fail without the manage user security state proxy privilege
 	 * @since 3.0.0, 2.9.0
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	@Logging(ignoredArgumentIndexes = { 2 })
 	boolean deleteSecurityStateIfValueMatches(User user, String property, String expectedValue);
 
@@ -892,13 +898,12 @@ public interface UserService extends OpenmrsService {
 	 * @param property the namespaced key of the entry
 	 * @return true if an entry was removed <strong>Should</strong> remove the entry
 	 *         <strong>Should</strong> return false when the user has no such entry
-	 *         <strong>Should</strong> fail without the manage user security state privilege
+	 *         <strong>Should</strong> fail without the manage user security state proxy privilege
 	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
 	 *         user
 	 * @throws APIException if the user is null or has no id
 	 * @since 3.0.0, 2.9.0
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	boolean deleteSecurityState(User user, String property);
 
 	/**
@@ -913,9 +918,8 @@ public interface UserService extends OpenmrsService {
 	 *             <strong>Should</strong> add one to the current value <strong>Should</strong> fail
 	 *             when the current value is not a number <strong>Should</strong> fail when the current
 	 *             value is the largest long <strong>Should</strong> fail without the manage user
-	 *             security state privilege
+	 *             security state proxy privilege
 	 * @since 3.0.0, 2.9.0
 	 */
-	@PreAuthorize("hasAuthority('" + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + "')")
 	long incrementSecurityState(User user, String property);
 }

@@ -43,6 +43,7 @@ import org.openmrs.api.RefByUuid;
 import org.openmrs.api.UserService;
 import org.openmrs.api.cache.RolePrivilegeCache;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.StoredRole;
@@ -62,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -995,6 +997,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(readOnly = true)
 	public String getSecurityState(User user, String property) {
+		requireSecurityStateAccess();
 		if (user == null || user.getUserId() == null) {
 			throw new APIException("error.null", (Object[]) null);
 		}
@@ -1007,6 +1010,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void setSecurityState(User user, String property, String value) {
+		requireSecurityStateAccess();
 		UserSecurityState entry = validatedSecurityState(user, property, value);
 		userSecurityStateDao.setValue(entry.getUserId(), entry.getProperty(), entry.getValue());
 	}
@@ -1017,6 +1021,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public boolean compareAndSetSecurityState(User user, String property, String expectedValue, String newValue) {
+		requireSecurityStateAccess();
 		UserSecurityState entry = validatedSecurityState(user, property, newValue);
 		return userSecurityStateDao.compareAndSet(entry.getUserId(), entry.getProperty(), expectedValue, entry.getValue());
 	}
@@ -1027,6 +1032,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public boolean deleteSecurityStateIfValueMatches(User user, String property, String expectedValue) {
+		requireSecurityStateAccess();
 		UserSecurityState entry = validatedSecurityState(user, property, expectedValue);
 		return userSecurityStateDao.deleteIfValueMatches(entry.getUserId(), entry.getProperty(), entry.getValue());
 	}
@@ -1037,6 +1043,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public boolean deleteSecurityState(User user, String property) {
+		requireSecurityStateAccess();
 		if (user == null || user.getUserId() == null) {
 			throw new APIException("error.null", (Object[]) null);
 		}
@@ -1049,8 +1056,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public long incrementSecurityState(User user, String property) {
+		requireSecurityStateAccess();
 		UserSecurityState entry = validatedSecurityState(user, property, "1");
 		return userSecurityStateDao.increment(entry.getUserId(), entry.getProperty());
+	}
+
+	private static void requireSecurityStateAccess() {
+		if (!Daemon.isDaemonThread()
+		        && !Context.getUserContext().getProxyPrivileges().contains(PrivilegeConstants.MANAGE_USER_SECURITY_STATE)) {
+			throw new AccessDeniedException("Security state may be accessed only from a daemon thread or under the "
+			        + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + " proxy privilege");
+		}
 	}
 
 	private static UserSecurityState validatedSecurityState(User user, String property, String value) {

@@ -18,6 +18,7 @@ import jakarta.annotation.Resource;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -71,6 +72,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void runExtraSetup() {
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 
 		if (dao == null) {
 			// fetch the dao from the spring application context
@@ -83,6 +85,11 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * Methods in this class might authenticate with a different user, so log that user out after this
 	 * whole junit class is done.
 	 */
+	@AfterEach
+	public void removeProxyPrivilege() {
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+	}
+
 	@AfterAll
 	public static void logOutAfterThisTest() {
 		Context.logout();
