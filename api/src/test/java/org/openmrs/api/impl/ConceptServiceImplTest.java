@@ -1245,6 +1245,8 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		assertNotNull(range);
 		// prioritized range (priority=1) wins over the existing null-priority dataset ranges
 		assertEquals(159.0, range.getHiNormal());
+		// the winner is used as is: no bound is taken from the null-priority ranges
+		assertNull(range.getHiAbsolute());
 	}
 
 	/**
