@@ -777,6 +777,27 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * A single merge must write exactly one audit row. The merge tail used to run twice, which saved
+	 * the preferred patient twice and wrote two {@link PersonMergeLog} rows for the same merge.
+	 *
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldWriteExactlyOnePersonMergeLog() throws Exception {
+		Patient notPreferred = patientService.getPatient(2);
+		voidOrders(Collections.singleton(notPreferred));
+		Patient preferred = patientService.getPatient(6);
+
+		patientService.mergePatients(preferred, notPreferred);
+
+		long logsForThisMerge = personService.getAllPersonMergeLogs(true).stream()
+		        .filter(log -> preferred.getPatientId().equals(log.getWinner().getPersonId())
+		                && notPreferred.getPatientId().equals(log.getLoser().getPersonId()))
+		        .count();
+		assertThat(logsForThisMerge, is(1L));
+	}
+
+	/**
 	 * @see PatientService#savePatient(Patient)
 	 */
 	@Test
