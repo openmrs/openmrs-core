@@ -10,6 +10,7 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -76,6 +77,37 @@ public interface UserDAO {
 	 * @see org.openmrs.api.UserService#getRole(java.lang.String)
 	 */
 	public Role getRole(String r) throws DAOException;
+
+	/**
+	 * Reads a role from the database, without flushing, rather than returning the session's copy, which
+	 * may hold unsaved changes. A change saved in this transaction is seen once it has been flushed.
+	 *
+	 * @param roleName the role's name
+	 * @return the role as stored, or null if there is no such role
+	 * @since 2.8.11
+	 */
+	public StoredRole getStoredRole(String roleName) throws DAOException;
+
+	/**
+	 * Reads the names of the user's roles from the database, without flushing, rather than from the
+	 * session's copy of the user, which may hold unsaved changes.
+	 *
+	 * @param userId id of the user
+	 * @return the names of the roles assigned to the user
+	 * @since 2.8.11
+	 */
+	public Set<String> getStoredRoleNames(Integer userId) throws DAOException;
+
+	/**
+	 * Returns the id the user is stored under. For a user loaded in the current session, this is the id
+	 * it was loaded with, which is what Hibernate writes and deletes by, even if the user's own id has
+	 * since been changed in memory. For any other user, it is the user's own id.
+	 *
+	 * @param user the user
+	 * @return the id the user is stored under, or null if it has none
+	 * @since 2.8.11
+	 */
+	public Integer getStoredUserId(User user) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.UserService#getAllRoles()
