@@ -1218,7 +1218,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	/**
 	 * TRUNK-6510: when matching ranges have mixed priorities (some set, some null), the explicitly
 	 * prioritized ranges should take precedence and null-priority ranges are ignored. Concept 4090
-	 * already has two null-priority ranges in the dataset; adding a priority=1 range should make it win
+	 * already has two null-priority ranges in the dataset; adding a priority=0 range should make it win
 	 * over those existing null-priority ranges.
 	 *
 	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
@@ -1233,7 +1233,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		prioritizedRange.setConceptNumeric(conceptNumeric);
 		prioritizedRange.setCriteria(TEST_CRITERIA);
 		prioritizedRange.setHiNormal(159.0);
-		prioritizedRange.setPriority(1);
+		prioritizedRange.setPriority(0);
 		conceptService.saveConceptReferenceRange(prioritizedRange);
 
 		Person person = new Person();
@@ -1243,7 +1243,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
 
 		assertNotNull(range);
-		// prioritized range (priority=1) wins over the existing null-priority dataset ranges
+		// prioritized range (priority=0) wins over the existing null-priority dataset ranges
 		assertEquals(159.0, range.getHiNormal());
 		// the winner is used as is: no bound is taken from the null-priority ranges
 		assertNull(range.getHiAbsolute());
