@@ -167,6 +167,23 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 	}
 
 	@Test
+	public void getDataWithMetadata_shouldReturnDataAndMetadataWhenLegacyFileExists() throws IOException {
+		String key = "obs/" + UUID.randomUUID() + ".txt";
+		Path legacyPath = Paths.get(OpenmrsUtil.getApplicationDataDirectory()).resolve(key);
+		try {
+			Files.createDirectories(legacyPath.getParent());
+			Files.writeString(legacyPath, "legacy content");
+
+			try (DataWithMetadata dwm = storageService.getDataWithMetadata(key)) {
+				assertEquals("legacy content", IOUtils.toString(dwm.data(), Charset.defaultCharset()));
+				assertEquals(Long.valueOf(14), dwm.metadata().getLength());
+			}
+		} finally {
+			Files.deleteIfExists(legacyPath);
+		}
+	}
+
+	@Test
 	public void getData_shouldFallBackToLegacyForUnicodeFilenameThatEncodesPastNameLimit() throws IOException {
 		String filename = "я".repeat(60) + "_" + UUID.randomUUID() + ".txt";
 		String key = "obs/" + filename;
