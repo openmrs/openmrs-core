@@ -14,6 +14,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import org.hibernate.envers.Audited;
 import org.openmrs.util.CollectionUtil;
 
@@ -22,6 +35,10 @@ import org.openmrs.util.CollectionUtil;
  *
  * @version 1.0
  */
+@Entity
+@Table(name = "form")
+@AttributeOverride(name = "description", column = @Column(name = "description", length = 1024))
+@AttributeOverride(name = "retireReason", column = @Column(name = "retired_reason", length = 255))
 @Audited
 public class Form extends BaseChangeableOpenmrsMetadata {
 
@@ -29,16 +46,25 @@ public class Form extends BaseChangeableOpenmrsMetadata {
 
 	// Fields
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "form_id")
 	private Integer formId;
 
+	@Column(name = "version", nullable = false, length = 50)
 	private String version;
 
+	@Column(name = "build")
 	private Integer build;
 
+	@Column(name = "published")
 	private Boolean published = false;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "encounter_type")
 	private EncounterType encounterType;
 
+	@OneToMany(mappedBy = "form", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<FormField> formFields;
 
 	// Constructors

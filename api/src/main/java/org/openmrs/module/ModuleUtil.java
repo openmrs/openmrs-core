@@ -10,7 +10,6 @@
 package org.openmrs.module;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -185,7 +184,7 @@ public class ModuleUtil {
 			throw new ModuleException(filename + " is already associated with a loaded module.");
 		}
 
-		File file = new File(folder.getAbsolutePath(), filename);
+		File file = resolveWithinDirectory(folder, filename);
 
 		try (FileOutputStream outputStream = new FileOutputStream(file)) {
 			OpenmrsUtil.copyFile(inputStream, outputStream);
@@ -198,6 +197,30 @@ public class ModuleUtil {
 		}
 
 		return file;
+	}
+
+	/**
+	 * Resolves <code>relativePath</code> against <code>baseDir</code> and verifies that the normalized
+	 * result is strictly inside <code>baseDir</code>. Use this for every path that is derived from
+	 * untrusted input, such as a module id, before deleting, creating or writing it.
+	 * <p>
+	 * <strong>Should</strong> return the file inside the base directory for a plain relative path<br/>
+	 * <strong>Should</strong> fail if the path resolves to the base directory itself<br/>
+	 * <strong>Should</strong> fail if the path resolves outside the base directory
+	 *
+	 * @param baseDir the directory the result must stay within
+	 * @param relativePath the path to resolve against <code>baseDir</code>
+	 * @return the normalized absolute file
+	 * @throws ModuleException if the resolved path is not strictly inside <code>baseDir</code>
+	 * @since 3.0.0
+	 */
+	public static File resolveWithinDirectory(File baseDir, String relativePath) {
+		Path base = baseDir.toPath().toAbsolutePath().normalize();
+		Path resolved = new File(baseDir, relativePath).toPath().toAbsolutePath().normalize();
+		if (resolved.equals(base) || !resolved.startsWith(base)) {
+			throw new ModuleException("Path '" + relativePath + "' resolves outside of " + base);
+		}
+		return resolved.toFile();
 	}
 
 	/**
@@ -695,7 +718,11 @@ public class ModuleUtil {
 
 	/**
 	 * Convenience method to follow http to https redirects. Will follow a total of 5 redirects, then
-	 * fail out due to foolishness on the url's part.
+	 * fail out due to foolishness on the url's part. Once a connection in the chain uses https, a
+	 * redirect to a non-https url is refused.
+	 * <p>
+	 * <strong>Should</strong> follow http redirects<br/>
+	 * <strong>Should</strong> refuse a redirect from https to http
 	 *
 	 * @param c the {@link URLConnection} to open
 	 * @return an {@link InputStream} that is not necessarily at the same url, possibly at a 403
@@ -706,6 +733,7 @@ public class ModuleUtil {
 	protected static InputStream openConnectionCheckRedirects(URLConnection c) throws IOException {
 		boolean redir;
 		int redirects = 0;
+		boolean secure = "https".equals(c.getURL().getProtocol());
 		InputStream in;
 		do {
 			if (c instanceof HttpURLConnection) {
@@ -732,6 +760,10 @@ public class ModuleUtil {
 					        || redirects >= 5) {
 						throw new SecurityException("illegal URL redirect");
 					}
+					if (secure && !"https".equals(target.getProtocol())) {
+						throw new SecurityException("illegal URL redirect from https to " + target.getProtocol());
+					}
+					secure = secure || "https".equals(target.getProtocol());
 					redir = true;
 					c = target.openConnection();
 					redirects++;
@@ -739,102 +771,6 @@ public class ModuleUtil {
 			}
 		} while (redir);
 		return in;
-	}
-
-	/**
-	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
-	 * <p>
-	 * <strong>Should</strong> return an update rdf page for old https dev urls<br/>
-	 * <strong>Should</strong> return an update rdf page for old https module urls<br/>
-	 * <strong>Should</strong> return an update rdf page for module urls
-	 *
-	 * @param url
-	 * @return String contents of the URL
-	 */
-	public static String getURL(URL url) {
-		InputStream in = null;
-		ByteArrayOutputStream out = null;
-		String output = "";
-		try {
-			in = getURLStream(url);
-			if (in == null) {
-				// skip this module if updateURL is not defined
-				return "";
-			}
-
-			out = new ByteArrayOutputStream();
-			OpenmrsUtil.copyFile(in, out);
-			output = out.toString(StandardCharsets.UTF_8.name());
-		} catch (IOException io) {
-			log.warn("io while reading: " + url, io);
-		} finally {
-			try {
-				in.close();
-			} catch (Exception e) { /* pass */}
-			try {
-				out.close();
-			} catch (Exception e) { /* pass */}
-		}
-
-		return output;
-	}
-
-	/**
-	 * Iterates over the modules and checks each update.rdf file for an update
-	 *
-	 * @return True if an update was found for one of the modules, false if none were found
-	 * @throws ModuleException
-	 */
-	public static Boolean checkForModuleUpdates() throws ModuleException {
-
-		Boolean updateFound = false;
-
-		for (Module mod : ModuleFactory.getLoadedModules()) {
-			String updateURL = mod.getUpdateURL();
-			if (StringUtils.isNotEmpty(updateURL)) {
-				try {
-					// get the contents pointed to by the url
-					URL url = new URL(updateURL);
-					if (!url.toString().endsWith(ModuleConstants.UPDATE_FILE_NAME)) {
-						log.warn("Illegal url: " + url);
-						continue;
-					}
-					String content = getURL(url);
-
-					// skip empty or invalid updates
-					if ("".equals(content)) {
-						continue;
-					}
-
-					// process and parse the contents
-					UpdateFileParser parser = new UpdateFileParser(content);
-					parser.parse();
-
-					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
-					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
-
-					// check the update.rdf version against the installed version
-					if (compareVersion(mod.getVersion(), parser.getCurrentVersion()) < 0) {
-						if (mod.getModuleId().equals(parser.getModuleId())) {
-							mod.setDownloadURL(parser.getDownloadURL());
-							mod.setUpdateVersion(parser.getCurrentVersion());
-							updateFound = true;
-						} else {
-							log.warn("Module id does not match in update.rdf:" + parser.getModuleId());
-						}
-					} else {
-						mod.setDownloadURL(null);
-						mod.setUpdateVersion(null);
-					}
-				} catch (ModuleException e) {
-					log.warn("Unable to get updates from update.xml", e);
-				} catch (MalformedURLException e) {
-					log.warn("Unable to form a URL object out of: " + updateURL, e);
-				}
-			}
-		}
-
-		return updateFound;
 	}
 
 	/**

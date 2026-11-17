@@ -47,12 +47,6 @@ public final class Module {
 
 	private String version;
 
-	private String updateURL; // should be a URL to an update.rdf file
-
-	private String updateVersion = null; // version obtained from the remote update.rdf file
-
-	private String downloadURL = null; // will only be populated when the remote file is newer than the current module
-
 	private ModuleActivator moduleActivator;
 
 	private String activatorName;
@@ -439,48 +433,6 @@ public final class Module {
 	 */
 	public void setVersion(String version) {
 		this.version = version;
-	}
-
-	/**
-	 * @return the updateURL
-	 */
-	public String getUpdateURL() {
-		return updateURL;
-	}
-
-	/**
-	 * @param updateURL the updateURL to set
-	 */
-	public void setUpdateURL(String updateURL) {
-		this.updateURL = updateURL;
-	}
-
-	/**
-	 * @return the downloadURL
-	 */
-	public String getDownloadURL() {
-		return downloadURL;
-	}
-
-	/**
-	 * @param downloadURL the downloadURL to set
-	 */
-	public void setDownloadURL(String downloadURL) {
-		this.downloadURL = downloadURL;
-	}
-
-	/**
-	 * @return the updateVersion
-	 */
-	public String getUpdateVersion() {
-		return updateVersion;
-	}
-
-	/**
-	 * @param updateVersion the updateVersion to set
-	 */
-	public void setUpdateVersion(String updateVersion) {
-		this.updateVersion = updateVersion;
 	}
 
 	/**
