@@ -19,6 +19,8 @@ import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -71,6 +73,45 @@ public class ConceptCacheInvalidationIntegrationTest extends BaseContextSensitiv
 				conceptService.purgeConcept(toPurge);
 			}
 			Context.clearSession();
+		}
+	}
+
+	@Test
+	public void savingAndPurgingReferenceRange_shouldNotServeStaleCachedRanges() {
+		ConceptService conceptService = Context.getConceptService();
+		ConceptNumeric warmed = conceptService.getConceptNumeric(5089);
+		int originalCount = warmed.getReferenceRanges().size();
+		assertTrue(originalCount > 0);
+		Context.clearSession();
+
+		ConceptReferenceRange range = new ConceptReferenceRange();
+		range.setConceptNumeric(conceptService.getConceptNumeric(5089));
+		range.setCriteria("$patient.getAge() >= 1");
+		range.setLowAbsolute(1.0);
+		range.setHiAbsolute(10.0);
+
+		ConceptReferenceRange saved = null;
+		try {
+			saved = conceptService.saveConceptReferenceRange(range);
+
+			Context.clearSession();
+			ConceptNumeric reloaded = conceptService.getConceptNumeric(5089);
+			assertEquals(originalCount + 1, reloaded.getReferenceRanges().size());
+
+			Context.clearSession();
+			conceptService.purgeConceptReferenceRange(conceptService.getConceptReferenceRangeByUuid(saved.getUuid()));
+
+			Context.clearSession();
+			assertEquals(originalCount, conceptService.getConceptNumeric(5089).getReferenceRanges().size());
+		} finally {
+			if (saved != null && saved.getId() != null) {
+				Context.clearSession();
+				ConceptReferenceRange toPurge = conceptService.getConceptReferenceRangeByUuid(saved.getUuid());
+				if (toPurge != null) {
+					conceptService.purgeConceptReferenceRange(toPurge);
+				}
+				Context.clearSession();
+			}
 		}
 	}
 }
