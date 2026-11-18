@@ -32,9 +32,6 @@ updates:
       - dependency-name: "org.apache.lucene:lucene-queries"
         versions:
           - ">= 6.0"
-      - dependency-name: "org.apache.lucene:lucene-backward-codecs"
-        versions:
-          - ">= 6.0"
       - dependency-name: "org.apache.lucene:lucene-analyzers-phonetic"
         versions:
           - ">= 6.0"
