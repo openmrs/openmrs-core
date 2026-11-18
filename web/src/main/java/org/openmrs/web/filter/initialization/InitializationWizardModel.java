@@ -254,4 +254,19 @@ public class InitializationWizardModel {
 	public int numberOfSteps = 1;
 
 	public Properties additionalPropertiesFromInstallationScript = new Properties();
+
+	/**
+	 * True once the user has submitted credentials in the wizard. Prevents clearPasswords() from wiping
+	 * the shared singleton mid-flow (e.g. on a parameterless GET caused by a favicon request or
+	 * redirect) before the background install thread has read them.
+	 */
+	private boolean passwordsEntered = false;
+
+	public boolean isPasswordsEntered() {
+		return passwordsEntered;
+	}
+
+	public void setPasswordsEntered(boolean passwordsEntered) {
+		this.passwordsEntered = passwordsEntered;
+	}
 }
