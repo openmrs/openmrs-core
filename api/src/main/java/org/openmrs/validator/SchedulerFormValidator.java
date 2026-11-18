@@ -71,11 +71,12 @@ public class SchedulerFormValidator implements Validator {
 			try {
 				Class<?> taskClass = OpenmrsClassLoader.getInstance().loadClass(taskDefinition.getTaskClass());
 
-				Object o = taskClass.newInstance();
-				if (!(o instanceof Task)) {
+				if (!Task.class.isAssignableFrom(taskClass)) {
 					errors.rejectValue("taskClass", "Scheduler.taskForm.classDoesNotImplementTask",
 					    new Object[] { taskDefinition.getTaskClass(), Task.class.getName() },
 					    "Class does not implement Task interface");
+				} else {
+					taskClass.newInstance();
 				}
 
 			} catch (IllegalAccessException iae) {

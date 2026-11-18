@@ -28,14 +28,12 @@ public class LegacyTask implements TaskHandler<TaskDefinition> {
 		} catch (ClassNotFoundException e) {
 			throw new TaskException("Task class " + taskData.getTaskClass() + " not found", false);
 		}
-		Object instance = taskClass.getDeclaredConstructor().newInstance();
-
-		if (instance instanceof Task) {
-			Task task = (Task) instance;
-			task.initialize(taskData);
-			task.execute();
-		} else {
+		if (!Task.class.isAssignableFrom(taskClass)) {
 			throw new TaskException("Task class " + taskData.getTaskClass() + " must implement Task", false);
 		}
+
+		Task task = (Task) taskClass.getDeclaredConstructor().newInstance();
+		task.initialize(taskData);
+		task.execute();
 	}
 }
