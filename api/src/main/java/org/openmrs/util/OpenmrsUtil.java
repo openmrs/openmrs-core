@@ -42,7 +42,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -640,21 +639,6 @@ public class OpenmrsUtil {
 	 * @deprecated as of 2.2 use Java's {@link String#join} or Apache Commons StringUtils.join for
 	 *             iterables which do not extend {@link CharSequence}
 	 */
-	@Deprecated
-	public static <E> String join(Collection<E> c, String separator) {
-		if (c == null) {
-			return "";
-		}
-
-		StringBuilder ret = new StringBuilder();
-		for (Iterator<E> i = c.iterator(); i.hasNext();) {
-			ret.append(i.next());
-			if (i.hasNext()) {
-				ret.append(separator);
-			}
-		}
-		return ret.toString();
-	}
 
 	public static Set<Concept> conceptSetHelper(String descriptor) {
 		Set<Concept> ret = new HashSet<>();

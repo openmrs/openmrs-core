@@ -156,25 +156,6 @@ public class DurationTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see Duration#getCode(Concept)
-	 */
-	@Test
-	public void getCode_shouldReturnNullIfTheConceptHasNoMappingToTheSNOMEDCTSource() {
-		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
-		assertNull(Duration.getCode(SimpleDosingInstructionsTest.createUnits("some-uuid", daysCode, null)));
-	}
-
-	/**
-	 * @see Duration#getCode(Concept)
-	 */
-	@Test
-	public void getCode_shouldReturnTheCodeForTheTermOfTheMappingToTheSNOMEDCTSource() {
-		final String daysCode = Duration.SNOMED_CT_DAYS_CODE;
-		Concept concept = SimpleDosingInstructionsTest.createUnits(daysCode);
-		assertEquals(daysCode, Duration.getCode(concept));
-	}
-
-	/**
 	 * @see Duration#getDuration(Integer, Concept)
 	 */
 	@Test

@@ -45,7 +45,7 @@ public class SecurityTest {
 	}
 
 	/**
-	 * @see Security#hashMatches(String,String)
+	 * @see Security#hashMatches(String, String)
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithSha1Algorithm() {
@@ -54,7 +54,7 @@ public class SecurityTest {
 	}
 
 	/**
-	 * @see Security#hashMatches(String,String)
+	 * @see Security#hashMatches(String, String)
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithSha512AlgorithmAnd128CharactersSalt() {
@@ -65,7 +65,7 @@ public class SecurityTest {
 	}
 
 	/**
-	 * @see Security#hashMatches(String,String)
+	 * @see Security#hashMatches(String, String)
 	 */
 	@Test
 	public void hashMatches_shouldMatchStringsHashedWithIncorrectSha1Algorithm() {
@@ -75,7 +75,7 @@ public class SecurityTest {
 
 	/**
 	 * @see Security#encodePassword(String)
-	 * @see Security#checkPassword(String,String)
+	 * @see Security#checkPassword(String, String)
 	 */
 	@Test
 	public void checkPassword_shouldMatchPasswordsEncodedTogetherWithTheirSalt() {
@@ -86,7 +86,7 @@ public class SecurityTest {
 	}
 
 	/**
-	 * @see Security#checkPassword(String,String)
+	 * @see Security#checkPassword(String, String)
 	 */
 	@Test
 	public void checkPassword_shouldReturnFalseForNullPasswordOrStoredValue() {
@@ -209,11 +209,14 @@ public class SecurityTest {
 	 */
 	@Test
 	public void encrypt_shouldEncryptShortAndLongText() {
+		byte[] initVector = Security.generateNewInitVector();
+		byte[] secretKey = Security.generateNewSecretKey();
+
 		// small text
 		String expected = "a";
-		String encrypted = Security.encrypt(expected);
+		String encrypted = Security.encrypt(expected, initVector, secretKey);
 		assertTrue(StringUtils.hasText(encrypted));
-		String actual = Security.decrypt(encrypted);
+		String actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 
 		// long text
@@ -222,17 +225,16 @@ public class SecurityTest {
 		        + "Quisque vel erat eget eros bibendum convallis vitae a augue. Maecenas posuere ullamcorper quam, ac ullamcorper eros egestas at. Nulla ipsum purus, venenatis ac dignissim in, bibendum eget enim. Nulla rhoncus dui eu augue egestas in tempus augue congue. Suspendisse potenti. Aenean faucibus felis ut leo venenatis congue lacinia felis tempor. Phasellus fermentum nisl venenatis quam molestie fermentum euismod metus pretium. Duis facilisis pharetra vehicula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec aliquet feugiat sapien, vitae tristique nisl lacinia non. Fusce eros dolor, egestas et auctor vel, aliquam ac lorem. In lacinia cursus pretium."
 		        + "Nulla vitae nisi vitae magna varius posuere. Curabitur non dui at odio scelerisque mattis a a risus. Suspendisse augue lacus, pulvinar vitae fringilla tempor, adipiscing vel velit. Suspendisse lorem dui, eleifend vel rhoncus ac, porta sed odio. Maecenas eget pellentesque ligula. Cras vitae auctor justo. Duis at massa vitae risus semper elementum. Proin at magna et augue volutpat tincidunt nec sed erat. Quisque id sapien tortor, ut gravida erat. Vivamus dictum, enim non sodales laoreet, ante libero suscipit erat, ac tristique purus eros sed augue. Quisque magna mi, varius ac accumsan aliquam, aliquam id risus. Phasellus dignissim dictum massa, ac consequat risus venenatis in. Morbi imperdiet bibendum sem, eu mollis urna aliquet a. In ac augue vitae ante ultrices sollicitudin vel sed elit. Nunc fringilla vestibulum egestas. Duis risus lorem, varius a vulputate at, blandit vel lectus. Sed mollis, ipsum nec fringilla accumsan, risus nibh iaculis ligula, non tristique nibh tortor vitae sem. Nulla facilisi. In id lectus vitae felis elementum lobortis. Aenean et nisi orci."
 		        + "Nam mi lorem, posuere non auctor sed, accumsan eu magna. Fusce sit amet tellus augue. Nunc eleifend, justo id pharetra hendrerit, urna augue ultricies mi, sed fringilla arcu libero quis nulla. Maecenas tristique auctor cursus. Curabitur venenatis lacus non leo aliquet ornare. Praesent justo turpis, dictum eu dictum convallis, faucibus sit amet erat. Praesent sed dui id enim euismod interdum. Integer sed fermentum neque. Curabitur enim nunc, euismod adipiscing iaculis eget, tincidunt vel nunc. Nullam at neque sem, rutrum aliquet elit. In et velit enim, tempus mollis nunc. Sed sit amet quam justo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis dolor non ligula fermentum imperdiet.";
-		encrypted = Security.encrypt(expected);
+		encrypted = Security.encrypt(expected, initVector, secretKey);
 		assertTrue(StringUtils.hasText(encrypted));
-		actual = Security.decrypt(encrypted);
+		actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 
 		// foreign text
 		expected = "傑里米 (Jeremy), 潔儀 (Kitty) and 贏 (Win) like encryption :-D";
-		encrypted = Security.encrypt(expected);
+		encrypted = Security.encrypt(expected, initVector, secretKey);
 		assertTrue(StringUtils.hasText(encrypted));
-		actual = Security.decrypt(encrypted);
+		actual = Security.decrypt(encrypted, initVector, secretKey);
 		assertTrue(OpenmrsUtil.nullSafeEquals(expected, actual));
 	}
-
 }
