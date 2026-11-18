@@ -269,4 +269,13 @@ public class DoubleRangeTest {
 		DoubleRange r = new DoubleRange(null, 1.0);
 		assertEquals("< 1.0", r.toString());
 	}
+
+	/**
+	 * @see DoubleRange#toString()
+	 */
+	@Test
+	public void contains_shouldReturnFalseIfBothLowAndHighAreNull() {
+		DoubleRange dr = new DoubleRange();
+		assertFalse(dr.contains(5.0));
+	}
 }
