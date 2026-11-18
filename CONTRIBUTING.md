@@ -2,7 +2,19 @@
 
 ## Resources for Getting Started
 
-Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read both our [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
+Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community.
+
+Before you get started contributing to OpenMRS, we encourage you to:
+
+*   Read our [OpenMRS Developers Guide](http://om.rs/newdev)
+*   Check out our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page
+
+## For First-Time Contributors
+
+If you are new to contributing to OpenMRS:
+- Start with documentation-only changes to become familiar with the contribution workflow
+- Create a separate branch for your changes instead of working directly on the main branch
+- Keep pull requests small and focused to make reviews easier
 
 ## Reporting Bugs
 
@@ -38,7 +50,10 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 ## Contributing (Step-by-step)
 
-1. After finding a JIRA issue for the "Ready for Work" bug or feature on which you'd like to work, claim the issue by clicking the "Claim Issue" button. This will assign the issue to you and change its status to "In Progress".
+1.  **Find an issue to work on.**
+    Browse JIRA for issues marked "Ready for Work".
+    *   If you find one you'd like to work on, click the "Claim Issue" button.
+    *   This will assign the issue to you and change its status to "In Progress".
 
 2. [Fork the repo](http://help.github.com/fork-a-repo) on which you're working, clone your forked repo to your local computer, and set up the upstream remote:
 
@@ -112,7 +127,11 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 ## Responding to Feedback
 
-  The OpenMRS team may recommend adjustments to your code. Part of interacting with a healthy open source community requires you to be open to learning new techniques and strategies; *don't get discouraged!* Remember: if the OpenMRS team suggests changes to your code, **they care enough about your work that they want to include it**, and hope that you can assist by implementing those revisions on your own.
+The OpenMRS team may recommend adjustments to your code. Part of interacting with a healthy open source community requires you to be open to learning new techniques and strategies; *don't get discouraged!*
+
+Remember:
+*   If the OpenMRS team suggests changes to your code, **they care enough about your work that they want to include it**.
+*   They hope that you can assist by implementing those revisions on your own.
 
   > Though we ask you to clean your history and squash commit before submitting a pull-request, please do not change any commits you've submitted already (as other work might be build on top).
 
