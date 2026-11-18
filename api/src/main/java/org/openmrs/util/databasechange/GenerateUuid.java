@@ -19,6 +19,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,12 +28,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Generates UUIDs for all rows in all tables in the tableNames parameter. <br/>
  * If run on MySQL, it generates SQL statements using the in-built uuid() MySQL function, otherwise
- * it uses Java's {@link UUID} class, which is less efficient.<br/>
+ * it generates them in Java via {@link UuidUtil}, which is less efficient.<br/>
  * <br/>
  * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br/>
  * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br/>
@@ -152,7 +152,7 @@ public class GenerateUuid implements CustomTaskChange {
 							ResultSet ids = idStatement.executeQuery(idSql);
 							while (ids.next()) {
 								updateStatement.setObject(2, ids.getObject(1)); // set the primary key number
-								updateStatement.setString(1, UUID.randomUUID().toString()); // set the uuid for this row
+								updateStatement.setString(1, UuidUtil.newUuidString()); // set the uuid for this row
 								updateStatement.executeUpdate();
 								
 								transactionBatchSize++;

@@ -12,6 +12,7 @@ package org.openmrs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -196,7 +197,7 @@ public class PatientTest {
 	public void addIdentifier_shouldNotFailWithNullIdentifiersList() {
 		Patient p = new Patient();
 		p.setIdentifiers(null);
-		p.addIdentifier(new PatientIdentifier());
+		assertDoesNotThrow(() -> p.addIdentifier(new PatientIdentifier()));
 	}
 	
 	/**

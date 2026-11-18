@@ -7,3 +7,5 @@ caches:
         configuration: "entity"
     testCache:
         configuration: "entity"
+    rolePrivileges:
+        configuration: "role-privileges"

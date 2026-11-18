@@ -35,6 +35,7 @@ public class DtdTestValidator {
 			domFactory = DocumentBuilderFactory.newInstance();
 			domFactory.setValidating(true);
 			builder = domFactory.newDocumentBuilder();
+			
 			final boolean[] isValidConfig = { true };
 			
 			builder.setErrorHandler(new ErrorHandler() {

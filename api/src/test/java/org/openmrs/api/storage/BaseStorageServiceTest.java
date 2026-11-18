@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -444,15 +445,11 @@ public abstract class BaseStorageServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void saveData_shouldNotFailIfModuleIdOrGroupContainsAllowedCharacters() throws IOException {
-		String key = null;
-		try {
-			key = storageService.saveData((out) -> {
-				out.write(1);
-			}, null, "test10-.a/10");
-		} finally {
-			if (key != null) {
-				storageService.purgeData(key);
-			}
+		String key = assertDoesNotThrow(() -> storageService.saveData((out) -> {
+			out.write(1);
+		}, null, "test10-.a/10"));
+		if (key != null) {
+			storageService.purgeData(key);
 		}
 	}
 

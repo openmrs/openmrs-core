@@ -16,6 +16,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -53,14 +54,14 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	/**
 	 * The question concept that this object is answering
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 	
 	/**
 	 * The answer to the question
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "answer_concept", nullable = false)
 	private Concept answerConcept;
 	
@@ -68,11 +69,11 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	 * The {@link Drug} answer to the question. This can be null if this does not represent a drug
 	 * type of answer
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "answer_drug")
 	private Drug answerDrug;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 	

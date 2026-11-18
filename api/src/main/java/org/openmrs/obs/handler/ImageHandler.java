@@ -96,7 +96,15 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 				// Do not fail if image is missing
 			}
 			
-			ComplexData complexData = new ComplexData(key, img);
+			String filename = parseFilename(obs, "image");
+			
+			// hack--if this is old version of the image where we aren't explicitly saving the filename, we
+			// need to use "key"/"path" portion as the file, see https://openmrs.atlassian.net/browse/TRUNK-6472
+			if (extensions.contains(filename)) {
+				filename = key.replaceFirst(getObsDir(), "");
+			}
+			
+			ComplexData complexData = new ComplexData(filename, img);
 			complexData.setMimeType(mimeType); // Set mimeType based on file content and not filename
 			if (img != null) { // Do not inject if image is missing
 				injectMissingMetadata(key, complexData);
@@ -127,12 +135,9 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	@Override
 	public Obs saveObs(Obs obs) throws APIException {
 		try {
-			String[] splitTitle = obs.getComplexData().getTitle().split("\\|");
-			String filename = splitTitle[0];
-			if (splitTitle.length > 1) {
-				filename = splitTitle[1];
-			}
+			String filename = obs.getComplexData().getTitle();
 			String extension = FilenameUtils.getExtension(filename);
+			
 			String assignedKey = storageService.saveData((out) -> {
 				Object data = obs.getComplexData().getData();
 				
@@ -158,7 +163,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 			}, ObjectMetadata.builder().setFilename(filename).build(), getObsDir());
 
 			// Set the Title and URI for the valueComplex
-			obs.setValueComplex(extension + " image |" + assignedKey);
+			obs.setValueComplex(filename + " image |" + assignedKey);
 
 			// Remove the ComlexData from the Obs
 			obs.setComplexData(null);

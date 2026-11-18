@@ -12,10 +12,12 @@ package org.openmrs.api.context;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
@@ -28,14 +30,19 @@ import java.util.concurrent.TimeUnit;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.cache.GlobalPropertyCacheTestUtil;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivilegeCacheTestUtil;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -145,7 +152,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void logout_shouldNotFailIfSessionHasntBeenOpenedYet() {
 		Context.closeSession();
-		Context.logout();
+		assertDoesNotThrow(() -> Context.logout());
 	}
 	
 	/**
@@ -367,5 +374,103 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
 		Context.getPatientService().getPatient(PERSON_NAME_ID_2);
 		assertThat(sf.getStatistics().getSecondLevelCacheHitCount(), is(hitCount));
+	}
+
+	/**
+	 * @see Context#clearEntireCache()
+	 */
+	@Test
+	public void clearEntireCache_shouldEvictTheGlobalPropertyAndRolePrivilegeCachesAsTheyEvictThemselves() {
+		GlobalPropertyCacheTestUtil.seed(new GlobalProperty("seeded.property", "value"));
+		RolePrivilegeCacheTestUtil.seed("Seeded Role", "Seeded Privilege");
+		RolePrivilegeCache rolePrivilegeCache = Context.getRegisteredComponent("rolePrivilegeCache",
+		    RolePrivilegeCache.class);
+		assertNotNull(GlobalPropertyCacheTestUtil.getIfCached("seeded.property"));
+		assertTrue(rolePrivilegeCache.getRolePrivileges(new Role("Seeded Role")).containsPrivilege("Seeded Privilege"));
+
+		Context.clearEntireCache();
+
+		// unlike a plain clear, their own eviction waits for the transaction to complete, while the
+		// transaction reads without them
+		assertTrue(GlobalPropertyCacheTestUtil.isCached("seeded.property"));
+		assertNull(GlobalPropertyCacheTestUtil.getIfCached("seeded.property"));
+		assertTrue(RolePrivilegeCacheTestUtil.isCached("Seeded Role"));
+		assertFalse(rolePrivilegeCache.getRolePrivileges(new Role("Seeded Role")).containsPrivilege("Seeded Privilege"));
+	}
+
+	/**
+	 * @see Context#addProxyPrivilege(String...)
+	 */
+	@Test
+	public void addProxyPrivilege_shouldAddMultiplePrivileges() {
+		Context.logout(); // logout to ensure user doesn't have privileges through roles
+		try {
+			// arrange - verify user doesn't have these privileges
+			assertFalse(Context.hasPrivilege("Some Privilege"));
+			assertFalse(Context.hasPrivilege("Another Privilege"));
+
+			// act
+			Context.addProxyPrivilege("Some Privilege", "Another Privilege");
+
+			// assert
+			assertTrue(Context.hasPrivilege("Some Privilege"));
+			assertTrue(Context.hasPrivilege("Another Privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Some Privilege", "Another Privilege");
+			authenticate(); // restore authenticated state
+		}
+	}
+
+	/**
+	 * @see Context#addProxyPrivilege(String...)
+	 */
+	@Test
+	public void addProxyPrivilege_shouldThrowExceptionForNullArray() {
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> Context.addProxyPrivilege((String[]) null));
+	}
+
+	/**
+	 * @see Context#removeProxyPrivilege(String...)
+	 */
+	@Test
+	public void removeProxyPrivilege_shouldRemoveMultiplePrivileges() {
+		Context.logout();
+		try {
+			// arrange
+			Context.addProxyPrivilege("Privilege A", "Privilege B", "Privilege C");
+
+			// act
+			Context.removeProxyPrivilege("Privilege A", "Privilege C");
+
+			// assert
+			assertFalse(Context.hasPrivilege("Privilege A"));
+			assertTrue(Context.hasPrivilege("Privilege B"));
+			assertFalse(Context.hasPrivilege("Privilege C"));
+		} finally {
+			Context.removeProxyPrivilege("Privilege B");
+			authenticate();
+		}
+	}
+
+	/**
+	 * @see Context#removeProxyPrivilege(String...)
+	 */
+	@Test
+	public void removeProxyPrivilege_shouldHandleNullArrayGracefully() {
+		Context.logout();
+		try {
+			// arrange
+			Context.addProxyPrivilege("Some Test Privilege");
+
+			// act
+			Context.removeProxyPrivilege((String[]) null);
+
+			// assert - should still have the privilege since null was passed
+			assertTrue(Context.hasPrivilege("Some Test Privilege"));
+		} finally {
+			Context.removeProxyPrivilege("Some Test Privilege");
+			authenticate();
+		}
 	}
 }

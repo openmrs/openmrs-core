@@ -417,30 +417,36 @@
 <td>jar</td>
 <td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
 <tr class="a">
+<td>org.springframework.security</td>
+<td><a class="externalLink" href="https://spring.io/projects/spring-security">spring-security-crypto</a></td>
+<td>5.8.16</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
+<tr class="b">
 <td>taglibs</td>
 <td>page</td>
 <td>1.0.1</td>
 <td>jar</td>
 <td>-</td></tr>
-<tr class="b">
+<tr class="a">
 <td>taglibs</td>
 <td>request</td>
 <td>1.0.1</td>
 <td>jar</td>
 <td>-</td></tr>
-<tr class="a">
+<tr class="b">
 <td>taglibs</td>
 <td>response</td>
 <td>1.0.1</td>
 <td>jar</td>
 <td>-</td></tr>
-<tr class="b">
+<tr class="a">
 <td>taglibs</td>
 <td>standard</td>
 <td>1.1.2</td>
 <td>jar</td>
 <td>-</td></tr>
-<tr class="a">
+<tr class="b">
 <td>xerces</td>
 <td><a class="externalLink" href="http://xerces.apache.org/xerces2-j">xercesImpl</a></td>
 <td>2.8.0</td>
@@ -463,12 +469,18 @@
 <td>jar</td>
 <td><a class="externalLink" href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">The GNU General Public License, Version 2</a></td></tr>
 <tr class="a">
+<td>org.bouncycastle</td>
+<td><a class="externalLink" href="https://www.bouncycastle.org/java.html">bcprov-jdk18on</a></td>
+<td>1.84</td>
+<td>jar</td>
+<td><a class="externalLink" href="https://www.bouncycastle.org/licence.html">MIT License</a></td></tr>
+<tr class="b">
 <td>org.slf4j</td>
 <td><a class="externalLink" href="http://www.slf4j.org">slf4j-log4j12</a></td>
 <td>1.6.0</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.opensource.org/licenses/mit-license.php">MIT License</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>postgresql</td>
 <td><a class="externalLink" href="http://jdbc.postgresql.org">postgresql</a></td>
 <td>9.0-801.jdbc4</td>

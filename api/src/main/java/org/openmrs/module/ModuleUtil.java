@@ -564,11 +564,13 @@ public class ModuleUtil {
 	 * @param keepFullPath if true, will recreate entire directory structure in tmpModuleDir
 	 *            relating to <code>name</code>. if false will start directory structure at
 	 *            <code>name</code>
+	 * @throws UnsupportedOperationException if an entry would be extracted outside of tmpModuleDir (Zip slip attack)
 	 * <strong>Should</strong> expand entire jar if name is null
 	 * <strong>Should</strong> expand entire jar if name is empty string
 	 * <strong>Should</strong> expand directory with parent tree if name is directory and keepFullPath is true
 	 * <strong>Should</strong> expand directory without parent tree if name is directory and keepFullPath is false
 	 * <strong>Should</strong> expand file with parent tree if name is file and keepFullPath is true
+	 * <strong>Should</strong> throw exception for Zip slip attack
 	 */
 	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		String docBase = tmpModuleDir.getAbsolutePath();
@@ -590,6 +592,9 @@ public class ModuleUtil {
 					int last = entryName.lastIndexOf('/');
 					if (last >= 0) {
 						File parent = new File(docBase, entryName.substring(0, last));
+						if (!parent.toPath().normalize().startsWith(docBase)) {
+							throw new UnsupportedOperationException("Attempted to create directory '" + entryName + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
+						}
 						parent.mkdirs();
 						log.debug("Creating parent dirs: " + parent.getAbsolutePath());
 					}
@@ -858,7 +863,7 @@ public class ModuleUtil {
 					module.getModuleActivator().willRefreshContext();
 				}
 			}
-			catch (Exception e) {
+			catch (Error e) {
 				log.warn("Unable to call willRefreshContext() method in the module's activator", e);
 			}
 		}
@@ -933,14 +938,14 @@ public class ModuleUtil {
 							}
 							log.debug("Done running module started: {}", module.getModuleId());
 						}
-						catch (Exception e) {
+						catch (Error e) {
 							log.warn("Unable to invoke started() method on the module's activator", e);
 							ModuleFactory.stopModule(module, true, true);
 						}
 					}
 					
 				}
-				catch (Exception e) {
+				catch (Error e) {
 					log.warn("Unable to invoke method on the module's activator ", e);
 				}
 			}

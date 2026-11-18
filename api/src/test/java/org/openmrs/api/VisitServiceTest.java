@@ -12,6 +12,7 @@ package org.openmrs.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -762,10 +763,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void endVisit_shouldNotFailIfNoValidationErrorsAreFound() {
-		
 		Visit visit = visitService.getVisit(1);
-		
-		visitService.endVisit(visit, new Date());
+		assertDoesNotThrow(() -> visitService.endVisit(visit, new Date()));
 	}
 	
 	/**

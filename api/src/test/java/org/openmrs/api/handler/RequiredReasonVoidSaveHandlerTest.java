@@ -21,6 +21,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -69,9 +70,9 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("Some Reason");
-		Context.getEncounterService().saveEncounter(e);
+		assertDoesNotThrow(() -> Context.getEncounterService().saveEncounter(e));
 	}
-	
+
 	/**
 	 * @see RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)
 	 */
@@ -80,6 +81,6 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 		PersonAddress pa = Context.getPersonService().getPersonAddressByUuid("3350d0b5-821c-4e5e-ad1d-a9bce331e118");
 		pa.setVoided(true);
 		pa.setVoidReason(null);
-		Context.getPersonService().savePersonAddress(pa);
+		assertDoesNotThrow(() -> Context.getPersonService().savePersonAddress(pa));
 	}
 }

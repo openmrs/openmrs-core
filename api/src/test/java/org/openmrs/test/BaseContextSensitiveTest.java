@@ -78,6 +78,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.annotation.OpenmrsProfileExcludeFilter;
+import org.openmrs.api.cache.ApiCacheTestUtil;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextMockHelper;
@@ -352,18 +353,22 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "update");
 		}
 		
-		try {
-			File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
-			tempappdir.delete(); // so we can make it into a directory
-			tempappdir.mkdir(); // turn it into a directory
-			tempappdir.deleteOnExit(); // clean up when we're done with tests
-			
-			runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
-			        .getAbsolutePath());
-			OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
-		}
-		catch (IOException e) {
-			log.error("Unable to create temp dir", e);
+		runtimeProperties.setProperty("hibernate.search.backend.directory.type", "local-heap");
+		
+		String appDataDir = OpenmrsUtil.getApplicationDataDirectory();
+		if (appDataDir == null || !appDataDir.contains("appdir-for-unit-tests-")) {
+			try {
+				File tempappdir = File.createTempFile("appdir-for-unit-tests-", "");
+				tempappdir.delete(); // so we can make it into a directory
+				tempappdir.mkdir(); // turn it into a directory
+				tempappdir.deleteOnExit(); // clean up when we're done with tests
+
+				runtimeProperties.setProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, tempappdir
+					.getAbsolutePath());
+				OpenmrsUtil.setApplicationDataDirectory(tempappdir.getAbsolutePath());
+			} catch (IOException e) {
+				log.error("Unable to create temp dir", e);
+			}
 		}
 		
 		return runtimeProperties;
@@ -827,6 +832,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			//Do the actual update/insert:
 			//insert new rows, update existing rows, and leave others alone
 			DatabaseOperation.REFRESH.execute(dbUnitConn, dataset);
+
+			// the dataset may have written global properties, roles or privileges behind the API
+			ApiCacheTestUtil.clearNow();
 		}
 		catch (DatabaseUnitException | SQLException e) {
 			throw new DatabaseUnitRuntimeException(e);
@@ -840,6 +848,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new H2MetadataHandler());
 		}
 		else {
 			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
@@ -940,6 +949,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				
 				//Commit so that it is not rolled back after a test.
 				getConnection().commit();
+				// the data is committed, so this transaction need not keep bypassing the API caches
+				ApiCacheTestUtil.forgetWritesInCurrentTransaction();
 
 				updateSearchIndex();
 				
@@ -974,6 +985,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	@After
 	public void clearSessionAfterEachTest() {
+		// a load still running from this test would otherwise land in the next one
+		ApiCacheTestUtil.awaitLoads();
+
 		// clear the session to make sure nothing is cached, etc
 		Context.clearSession();
 		Context.clearEntireCache();

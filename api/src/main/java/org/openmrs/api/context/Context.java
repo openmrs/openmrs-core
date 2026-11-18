@@ -11,7 +11,6 @@ package org.openmrs.api.context;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.openmrs.Allergen;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
@@ -136,12 +135,11 @@ import java.util.concurrent.Future;
  */
 public class Context {
 
-	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	// Global resources
 	private static ContextDAO contextDAO;
 
-	private static Session mailSession;
+	private static volatile Session mailSession;
 
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal
 	// bug in Java 1.5
@@ -154,6 +152,8 @@ public class Context {
 	private static Properties configProperties = new Properties();
 
 	private static AuthenticationScheme authenticationScheme;
+
+	private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 	/**
 	 * Default public constructor
@@ -274,13 +274,10 @@ public class Context {
 		if (serviceContext == null) {
 			synchronized (Context.class) {
 				if (serviceContext == null) {
-					log.info("Creating new service context");
 					serviceContext = ServiceContext.getInstance();
 				}
 			}
 		}
-		log.trace("serviceContext: {}", serviceContext);
-
 		return ServiceContext.getInstance();
 	}
 
@@ -385,11 +382,10 @@ public class Context {
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
-		log.trace("getting runtime properties. size: {}", runtimeProperties.size());
-
 		Properties props = new Properties();
-		props.putAll(runtimeProperties);
-
+		if( runtimeProperties != null ) {
+			props.putAll(runtimeProperties);
+		}
 		return props;
 	}
 
@@ -683,6 +679,18 @@ public class Context {
 	}
 
 	/**
+	 * Prefer this to the id on {@link #getAuthenticatedUser()}.
+	 *
+	 * @return the id of the authenticated user as loaded (see
+	 *         {@link UserContext#getAuthenticatedUserId()}), or of the daemon user on a daemon thread;
+	 *         null if no stored user is authenticated
+	 * @since 2.8.11
+	 */
+	public static Integer getAuthenticatedUserId() {
+		return getUserContext().getAuthenticatedUserId();
+	}
+
+	/**
 	 * @return true if user has been authenticated in this context
 	 */
 	public static boolean isAuthenticated() {
@@ -725,9 +733,7 @@ public class Context {
 	}
 
 	/**
-	 * Convenience method. Passes through to userContext.hasPrivilege(String)
-	 *
-	 * <strong>Should</strong> give daemon user full privileges
+	 * Tests whether the currently authenticated user has a particular privilege
 	 */
 	public static boolean hasPrivilege(String privilege) {
 		// the daemon threads have access to all things
@@ -736,6 +742,27 @@ public class Context {
 		}
 
 		return getUserContext().hasPrivilege(privilege);
+	}
+
+	/**
+	 * Tests whether the currently authenticated user has a particular privilege, optionally excluding
+	 * proxy privileges. Passing <code>false</code> checks only the user's granted roles (and the
+	 * anonymous and authenticated roles), so a proxy privilege added merely to invoke a service method
+	 * cannot satisfy a per-resource access check.
+	 *
+	 * @param privilege the privilege to check
+	 * @param includeProxyPrivileges whether proxy privileges may satisfy the check
+	 * @return true if the current user has the given privilege
+	 * @see UserContext#hasPrivilege(String, boolean)
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static boolean hasPrivilege(String privilege, boolean includeProxyPrivileges) {
+		// the daemon threads have access to all things
+		if (Daemon.isDaemonThread()) {
+			return true;
+		}
+
+		return getUserContext().hasPrivilege(privilege, includeProxyPrivileges);
 	}
 
 	/**
@@ -759,19 +786,107 @@ public class Context {
 			throw new ContextAuthenticationException(errorMessage);
 		}
 	}
-
+	
 	/**
-	 * Convenience method. Passes through to {@link UserContext#addProxyPrivilege(String)}
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privilege privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String)
 	 */
 	public static void addProxyPrivilege(String privilege) {
 		getUserContext().addProxyPrivilege(privilege);
 	}
+	
+	/**
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privileges privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String...)
+	 * @since 3.0.0, 2.8.2, 2.7.8
+	 */
+	public static void addProxyPrivilege(String... privileges) {
+		getUserContext().addProxyPrivilege(privileges);
+	}
 
 	/**
-	 * Convenience method. Passes through to {@link UserContext#removeProxyPrivilege(String)}
+	 * Removes one or more privileges from the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privilege privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String)
 	 */
 	public static void removeProxyPrivilege(String privilege) {
 		getUserContext().removeProxyPrivilege(privilege);
+	}
+
+	/**
+	 * Removes a privilege from the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privileges privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String...)
+	 * * @since 3.0.0, 2.8.2, 2.7.8
+	 */
+	public static void removeProxyPrivilege(String... privileges) {
+		getUserContext().removeProxyPrivilege(privileges);
+	}
+
+	/**
+	 * Used by {@link org.openmrs.aop.AuthorizationAdvice} to give access for unauthenticated users when
+	 * running initialization code with proxy privileges. See e.g.
+	 * {@link org.openmrs.event.outbox.tasks.OutboxTaskSchedulerInitializer#schedule()}.
+	 *
+	 * @return true if there are any proxy privileges
+	 * @since 2.8.10
+	 */
+	public static boolean hasProxyPrivileges() {
+		return getUserContext().hasProxyPrivileges();
 	}
 
 	/**

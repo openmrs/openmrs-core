@@ -277,6 +277,50 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
 	 */
 	@Test
+	public void validate_shouldFailValidationIfDoseIsZero() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(0.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("dose"));
+		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldFailValidationIfDoseIsNegative() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(-1.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertTrue(errors.hasFieldErrors("dose"));
+		assertEquals("DrugOrder.error.doseZeroOrLess", errors.getFieldError("dose").getCode());
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
+	public void validate_shouldPassValidationIfDoseIsGreaterThanZero() {
+		DrugOrder order = new DrugOrder();
+		order.setDosingType(FreeTextDosingInstructions.class);
+		order.setDose(1.0);
+		order.setDoseUnits(Context.getConceptService().getConcept(51));
+		Errors errors = new BindException(order, "order");
+		new DrugOrderValidator().validate(order, errors);
+		assertFalse(errors.hasFieldErrors("dose"));
+	}
+	
+	/**
+	 * @see DrugOrderValidator#validate(Object, org.springframework.validation.Errors)
+	 */
+	@Test
 	public void validate_shouldFailValidationIfQuantityUnitsIsNullWhenQuantityIsPresent() {
 		DrugOrder order = new DrugOrder();
 		order.setDosingType(FreeTextDosingInstructions.class);

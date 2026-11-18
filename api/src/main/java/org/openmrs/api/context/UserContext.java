@@ -11,11 +11,15 @@ package org.openmrs.api.context;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
@@ -27,8 +31,11 @@ import org.openmrs.UserSessionListener.Event;
 import org.openmrs.UserSessionListener.Status;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.cache.RolePrivilegeCache;
+import org.openmrs.api.cache.RolePrivileges;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +59,25 @@ public class UserContext implements Serializable {
 	private static final Logger log = LoggerFactory.getLogger(UserContext.class);
 	
 	/**
-	 * User object containing details about the authenticated user
+	 * Guards the one-time warning emitted when the role privilege cache component cannot be obtained
+	 * outside of a context refresh. Static so the warning is emitted once across all user contexts
+	 * rather than once per session.
 	 */
-	private User user = null;
-	
+	private static final AtomicBoolean rolePrivilegeCacheUnavailableWarned = new AtomicBoolean(false);
+
+	/**
+	 * The authenticated user, with the id and roles read from the database when they were loaded.
+	 * Privilege checks, role checks and refreshes use these recorded values, never the user object,
+	 * which any caller can change in memory. Replaced as a whole, so a check never mixes one user's id
+	 * with another's roles. Null in a session serialized before this field existed, which is treated as
+	 * logged out.
+	 */
+	private volatile Principal principal = Principal.NONE;
+
 	/**
 	 * User's permission proxies
 	 */
-	private List<String> proxies = Collections.synchronizedList(new ArrayList<>());
+	private final List<String> proxies = Collections.synchronizedList(new ArrayList<>());
 	
 	/**
 	 * User's locale
@@ -113,10 +131,9 @@ public class UserContext implements Serializable {
 		Authenticated authenticated = null;
 		try {
 			authenticated = authenticationScheme.authenticate(credentials);
-			this.user = authenticated.getUser();
-			notifyUserSessionListener(this.user, Event.LOGIN, Status.SUCCESS);
-		}
-		catch (ContextAuthenticationException e) {
+			setUser(authenticated.getUser());
+			notifyUserSessionListener(getAuthenticatedUser(), Event.LOGIN, Status.SUCCESS);
+		} catch (ContextAuthenticationException e) {
 			User loggingInUser = new User();
 			loggingInUser.setUsername(credentials.getClientName());
 			notifyUserSessionListener(loggingInUser, Event.LOGIN, Status.FAIL);
@@ -125,9 +142,9 @@ public class UserContext implements Serializable {
 		
 		setUserLocation(true);
 		setUserLocale(true);
-		
-		log.debug("Authenticated as: {}", this.user);
-		
+
+		log.debug("Authenticated as: {}", getAuthenticatedUser());
+
 		return authenticated;
 	}
 	
@@ -140,15 +157,45 @@ public class UserContext implements Serializable {
 	 */
 	public void refreshAuthenticatedUser() {
 		log.debug("Refreshing authenticated user");
-		
-		if (user != null) {
-			user = Context.getUserService().getUser(user.getUserId());
+
+		if (isAuthenticated()) {
+			// by the id recorded when the user was loaded, never the user object's, which any caller can
+			// change in memory; read through ContextDAO rather than UserService: the user may lack Get Users
+			Integer userId = getPrincipal().userId;
+			User user = userId == null ? null : hydrate(Context.getContextDAO().getUserById(userId));
+			principal = Principal.of(user, userId);
 			//update the stored location in the user's session
 			setUserLocation(false);
 			setUserLocale(false);
 		}
 	}
 	
+	/**
+	 * Makes the given user the authenticated one, or logs out if null. Package-private for tests; see
+	 * {@link Principal#of(User)} for how the user's roles are recorded.
+	 */
+	void setUser(User newUser) {
+		principal = Principal.of(newUser);
+	}
+
+	private Principal getPrincipal() {
+		Principal current = principal;
+		return current == null ? Principal.NONE : current;
+	}
+
+	/**
+	 * Initializes the user's lazy state, since the user is kept beyond the Hibernate session it was
+	 * loaded in.
+	 */
+	private static User hydrate(User user) {
+		if (user != null) {
+			user.getAllRoles().size();
+			user.getUserProperties().size();
+			user.getPrivileges().size();
+		}
+		return user;
+	}
+
 	/**
 	 * Change current authentication to become another user. (You can only do this if you're already
 	 * authenticated as a superuser.)
@@ -158,7 +205,7 @@ public class UserContext implements Serializable {
 	 * @throws ContextAuthenticationException
 	 */
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
-		if (!Context.getAuthenticatedUser().isSuperUser()) {
+		if (!hasRole(RoleConstants.SUPERUSER)) {
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
 		}
 		
@@ -182,15 +229,15 @@ public class UserContext implements Serializable {
 		if (userToBecome.getPrivileges() != null) {
 			userToBecome.getPrivileges().size();
 		}
-		
-		this.user = userToBecome;
-		
+
+		setUser(userToBecome);
+
 		//update the user's location and locale
 		setUserLocation(false);
 		setUserLocale(false);
-		
-		log.debug("Becoming user: {}", user);
-		
+
+		log.debug("Becoming user: {}", userToBecome);
+
 		return userToBecome;
 	}
 	
@@ -198,14 +245,29 @@ public class UserContext implements Serializable {
 	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */
 	public User getAuthenticatedUser() {
-		return user;
+		return getPrincipal().user;
+	}
+
+	/**
+	 * @return the id the authenticated user had when they were loaded, which, unlike the id on
+	 *         {@link #getAuthenticatedUser()}, can't be changed in memory; the daemon user's id on a
+	 *         daemon thread; or null if no stored user is authenticated
+	 * @since 2.8.11
+	 */
+	public Integer getAuthenticatedUserId() {
+		if (Daemon.isDaemonThread()) {
+			User daemonUser = Daemon.getDaemonThreadUser();
+			return daemonUser == null ? null : daemonUser.getUserId();
+		}
+
+		return getPrincipal().userId;
 	}
 	
 	/**
 	 * @return true if user has been authenticated in this UserContext
 	 */
 	public boolean isAuthenticated() {
-		return user != null;
+		return getAuthenticatedUser() != null;
 	}
 	
 	/**
@@ -215,8 +277,8 @@ public class UserContext implements Serializable {
 	 */
 	public void logout() {
 		log.debug("setting user to null on logout");
-		notifyUserSessionListener(user, Event.LOGOUT, Status.SUCCESS);
-		user = null;
+		notifyUserSessionListener(getAuthenticatedUser(), Event.LOGOUT, Status.SUCCESS);
+		setUser(null);
 		locationId = null;
 		locale = null;
 		proxies.clear();
@@ -239,13 +301,11 @@ public class UserContext implements Serializable {
 	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
-		
 		if (privilege == null) {
 			throw new IllegalArgumentException("UserContext.addProxyPrivilege does not accept null privileges");
 		}
-		
+
 		log.debug("Adding proxy privilege: {}", privilege);
-		
 		proxies.add(privilege);
 	}
 	
@@ -255,8 +315,78 @@ public class UserContext implements Serializable {
 	 * @param privilege Privilege to remove in string form
 	 */
 	public void removeProxyPrivilege(String privilege) {
-		log.debug("Removing proxy privilege: {}", privilege);
+		if (privilege == null) {
+			return;
+		}
+
+		log.debug("Removing privilege: {}", privilege);
 		proxies.remove(privilege);
+	}
+	
+	/**
+	 * Adds one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is useful for situations where a system process may need access to some piece of data that the
+	 * user would not otherwise have access to, like a GlobalProperty. <strong>This facility should not be
+	 * used to return data to the user that they otherwise would be unable to see.</strong>
+	 * <p/>
+	 * The expected usage is:
+	 * <p/>
+	 * <pre>{@code
+	 * try {
+	 *   Context.addProxyPrivilege(&quot;AAA&quot;);
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege(&quot;AAA&quot;);
+	 * }}
+	 * </pre>
+	 * <p/>
+	 *
+	 * @param privileges privileges to add in string form
+	 * @see #hasPrivilege(String)
+	 * @see #removeProxyPrivilege(String...)
+	 */
+	public void addProxyPrivilege(String... privileges) {
+		if (privileges == null || Arrays.stream(privileges).anyMatch(Objects::isNull)) {
+			throw new IllegalArgumentException("UserContext.addProxyPrivilege does not accept null privileges");
+		}
+		
+		for (String privilege : privileges) {
+			addProxyPrivilege(privilege);
+		}
+	}
+	
+	/**
+	 * Removes one or more privileges to the list of privileges that that {@link #hasPrivilege(String)} will
+	 * regard as available regardless of whether the user would otherwise have the privilege.
+	 * <p/>
+	 * This is the compliment for {@link #addProxyPrivilege(String...)} to clean-up the context.
+	 * <p/>
+	 *
+	 * @param privileges privileges to remove in string form
+	 * @see #hasPrivilege(String)
+	 * @see #addProxyPrivilege(String...)
+	 */
+	public void removeProxyPrivilege(String... privileges) {
+		if (privileges == null || Arrays.stream(privileges).allMatch(Objects::isNull)) {
+			return;
+		}
+		
+		for (String privilege : privileges) {
+			if (privilege != null) {
+				removeProxyPrivilege(privilege);
+			}
+		}
+	}
+
+	/**
+	 * @return true if there are any proxy privileges
+	 * @since 2.8.10
+	 */
+	public boolean hasProxyPrivileges() {
+		return !proxies.isEmpty();
 	}
 	
 	/**
@@ -315,9 +445,58 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
-	 * Tests whether currently authenticated user has a particular privilege
+	 * Unlike {@link #getAllRoles()}, which reads the authenticated user's roles in memory, this gives
+	 * the roles privilege checks use.
 	 *
-	 * @param privilege
+	 * @return the names of the roles the authenticated user held when loaded, plus
+	 *         {@link RoleConstants#AUTHENTICATED} if a user is authenticated, and
+	 *         {@link RoleConstants#ANONYMOUS}; not including the roles those inherit
+	 * @since 2.8.11
+	 */
+	public Set<String> getAssignedRoleNames() {
+		Set<String> names = new HashSet<>();
+		Principal current = getPrincipal();
+		if (current.isAuthenticated()) {
+			names.addAll(current.roleNames);
+			names.add(RoleConstants.AUTHENTICATED);
+		}
+		names.add(RoleConstants.ANONYMOUS);
+		return names;
+	}
+
+	/**
+	 * Tests whether the authenticated user holds a role, directly or by inheritance, as stored when
+	 * they were loaded. Like {@link User#hasRole(String)}, a superuser holds every role, and names are
+	 * compared case-insensitively.
+	 *
+	 * @param role the name of the role
+	 * @return true if the authenticated user holds the role
+	 * @since 2.8.11
+	 */
+	public boolean hasRole(String role) {
+		Principal current = getPrincipal();
+		if (!current.isAuthenticated()) {
+			return false;
+		}
+		RolePrivilegeCache cache = getRolePrivilegeCache();
+		for (String roleName : current.roleNames) {
+			if (roleName.equalsIgnoreCase(role)) {
+				return true;
+			}
+		}
+		for (String roleName : current.roleNames) {
+			RolePrivileges rolePrivileges = resolveRole(cache, roleName);
+			if (rolePrivileges.grantsSuperuser() || rolePrivileges.includesRole(role)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Tests whether the currently authenticated user has a particular privilege
+	 *
+	 * @param privilege The privilege to check if it's available
 	 * @return true if authenticated user has given privilege
 	 * <strong>Should</strong> authorize if authenticated user has specified privilege
 	 * <strong>Should</strong> authorize if authenticated role has specified privilege
@@ -329,33 +508,132 @@ public class UserContext implements Serializable {
 	 * <strong>Should</strong> not authorize if anonymous user does not have specified privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		log.debug("Checking '{}' against proxies: {}", privilege, proxies);
-		// check proxied privileges
-		for (String s : new ArrayList<>(proxies)) {
-			if (s.equals(privilege)) {
-				notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+		return hasPrivilege(privilege, true);
+	}
+
+	/**
+	 * Tests whether the current user has a particular privilege, optionally excluding proxy privileges.
+	 * <p>
+	 * Passing <code>false</code> resolves the privilege only from the user's roles (and the anonymous
+	 * and authenticated roles), ignoring any {@link #addProxyPrivilege(String...) proxy privileges}.
+	 * This is intended for per-resource access checks that must reflect the user's actual granted roles
+	 * and must not be satisfied by a proxy privilege added merely to invoke the surrounding service
+	 * method. Role privileges are still resolved authoritatively (from the role privilege cache),
+	 * unlike {@link User#hasPrivilege(String)} which reads a potentially stale in-memory role graph.
+	 *
+	 * @param privilege The privilege to check if it's available
+	 * @param includeProxyPrivileges whether proxy privileges may satisfy the check
+	 * @return true if the current user has the given privilege
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public boolean hasPrivilege(String privilege, boolean includeProxyPrivileges) {
+		if (includeProxyPrivileges) {
+			log.debug("Checking '{}' against proxies: {}", privilege, proxies);
+			// check proxied privileges; ArrayList so we have a consistent view
+			for (String s : new ArrayList<>(proxies)) {
+				if (s.equals(privilege)) {
+					notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
+					return true;
+				}
+			}
+		}
+
+		boolean hasPrivilege = resolvePrivilege(privilege);
+		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, hasPrivilege);
+		return hasPrivilege;
+	}
+
+	/**
+	 * Resolves whether the current user (authenticated or anonymous) holds the given privilege by
+	 * consulting the per-role privilege cache instead of recursively re-expanding the role graph on
+	 * every call. Proxy privileges are handled separately by {@link #hasPrivilege(String)}.
+	 *
+	 * @param privilege the privilege to check
+	 * @return true if the privilege is granted
+	 */
+	private boolean resolvePrivilege(String privilege) {
+		RolePrivilegeCache cache = getRolePrivilegeCache();
+
+		// if a user has logged in, check their privileges
+		Principal current = getPrincipal();
+		if (current.isAuthenticated()) {
+			// All authenticated users have the "" (empty) privilege, matching User.hasPrivilege.
+			if (StringUtils.isEmpty(privilege)) {
+				return true;
+			}
+
+			for (String roleName : current.roleNames) {
+				if (roleGrants(cache, roleName, privilege)) {
+					return true;
+				}
+			}
+
+			// by name, never the cached Role instance, which getAllRoles hands to callers
+			if (roleGrants(cache, RoleConstants.AUTHENTICATED, privilege)) {
 				return true;
 			}
 		}
-		
-		// if a user has logged in, check their privileges
-		if (isAuthenticated()
-			&& (getAuthenticatedUser().hasPrivilege(privilege) || getAuthenticatedRole().hasPrivilege(privilege))) {
-			
-			// check user's privileges
-			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-			return true;
-			
+
+		return roleGrants(cache, RoleConstants.ANONYMOUS, privilege);
+	}
+
+	/**
+	 * Tests whether a single role (and its inherited closure) grants the given privilege.
+	 *
+	 * @param cache the role privilege cache, or <code>null</code> if unavailable
+	 * @param roleName the name of the directly assigned role to test
+	 * @param privilege the privilege to check
+	 * @return true if the role grants superuser status or contains the privilege
+	 */
+	private boolean roleGrants(RolePrivilegeCache cache, String roleName, String privilege) {
+		RolePrivileges rolePrivileges = resolveRole(cache, roleName);
+		return rolePrivileges.grantsSuperuser() || rolePrivileges.containsPrivilege(privilege);
+	}
+
+	/**
+	 * Resolves a role as stored, through the cache when it is available. Without it, as while the
+	 * application context refreshes, the role is read from the database on every call, and grants
+	 * nothing if that read fails.
+	 *
+	 * @param cache the role privilege cache, or <code>null</code> if unavailable
+	 * @param roleName the name of the role
+	 * @return the role's flattened privileges
+	 */
+	private static RolePrivileges resolveRole(RolePrivilegeCache cache, String roleName) {
+		if (cache != null) {
+			return cache.getRolePrivileges(roleName);
 		}
-		
-		if (getAnonymousRole().hasPrivilege(privilege)) {
-			notifyPrivilegeListeners(getAuthenticatedUser(), privilege, true);
-			return true;
+		try {
+			return RolePrivilegeCache.resolve(roleName, Context.getContextDAO()::getStoredRole);
+		} catch (RuntimeException e) {
+			log.error("Could not read role {} without the role privilege cache; it grants nothing", roleName, e);
+			return new RolePrivileges(Collections.emptySet(), false);
 		}
-		
-		// default return value
-		notifyPrivilegeListeners(getAuthenticatedUser(), privilege, false);
-		return false;
+	}
+
+	/**
+	 * Looks up the {@link RolePrivilegeCache} component, or returns <code>null</code> so callers fall
+	 * back to direct computation. Absence during a context refresh is expected (logged at debug);
+	 * absence otherwise is a misconfiguration that silently drops every check to the uncached path, so
+	 * it is warned once.
+	 *
+	 * @return the cache component, or <code>null</code> if unavailable
+	 */
+	private RolePrivilegeCache getRolePrivilegeCache() {
+		try {
+			return Context.getRegisteredComponent("rolePrivilegeCache", RolePrivilegeCache.class);
+		} catch (Exception e) {
+			if (Context.isRefreshingContext()) {
+				log.debug("Role privilege cache is unavailable while the context is refreshing; "
+				        + "computing role privileges directly",
+				    e);
+			} else if (rolePrivilegeCacheUnavailableWarned.compareAndSet(false, true)) {
+				log.warn("Could not obtain the rolePrivilegeCache component; privilege checks will recompute role "
+				        + "privileges on every call until this is resolved",
+				    e);
+			}
+			return null;
+		}
 	}
 	
 	/**
@@ -369,7 +647,7 @@ public class UserContext implements Serializable {
 			return anonymousRole;
 		}
 		
-		anonymousRole = Context.getUserService().getRole(RoleConstants.ANONYMOUS);
+		anonymousRole = readImplicitRole(RoleConstants.ANONYMOUS);
 		if (anonymousRole == null) {
 			throw new RuntimeException(
 				"Database out of sync with code: " + RoleConstants.ANONYMOUS + " role does not exist");
@@ -390,13 +668,26 @@ public class UserContext implements Serializable {
 			return authenticatedRole;
 		}
 		
-		authenticatedRole = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
+		authenticatedRole = readImplicitRole(RoleConstants.AUTHENTICATED);
 		if (authenticatedRole == null) {
 			throw new RuntimeException("Database out of sync with code: " + RoleConstants.AUTHENTICATED
 				+ " role does not exist");
 		}
 		
 		return authenticatedRole;
+	}
+	
+	/**
+	 * Holds the proxy privilege around the read because {@code getRole} is itself privilege-checked;
+	 * without it, resolving any privilege recurses.
+	 */
+	private Role readImplicitRole(String roleName) {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
+		try {
+			return Context.getUserService().getRole(roleName);
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
+		}
 	}
 	
 	/**
@@ -442,14 +733,15 @@ public class UserContext implements Serializable {
 	 */
 	private void setUserLocation(boolean useDefault) {
 		// location should be null if no user is logged in
-		if (this.user == null) {
+		User user = getAuthenticatedUser();
+		if (user == null) {
 			this.locationId = null;
 			return;
 		}
 		
 		// intended to be when the user initially authenticates
 		if (this.locationId == null && useDefault) {
-			this.locationId = getDefaultLocationId(this.user);
+			this.locationId = getDefaultLocationId(user);
 		}
 	}
 
@@ -459,7 +751,8 @@ public class UserContext implements Serializable {
 	 */
 	private void setUserLocale(boolean useDefault) {
 		// local should be null if no user is logged in
-		if (this.user == null) {
+		User user = getAuthenticatedUser();
+		if (user == null) {
 			this.locale = null;
 			return;
 		}
@@ -532,6 +825,61 @@ public class UserContext implements Serializable {
 	private void notifyUserSessionListener(User user, Event event, Status status) {
 		for (UserSessionListener userSessionListener : Context.getRegisteredComponents(UserSessionListener.class)) {
 			userSessionListener.loggedInOrOut(user, event, status);
+		}
+	}
+
+	/**
+	 * The authenticated user's identity and roles as read from the database when they were loaded.
+	 */
+	private static final class Principal implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private static final Principal NONE = new Principal(null, null, Collections.emptySet());
+
+		/** The user object this was recorded for */
+		private final User user;
+
+		private final Integer userId;
+
+		/** Names of the roles the user holds directly */
+		private final Set<String> roleNames;
+
+		private Principal(User user, Integer userId, Set<String> roleNames) {
+			this.user = user;
+			this.userId = userId;
+			this.roleNames = Collections.unmodifiableSet(new HashSet<>(roleNames));
+		}
+
+		private boolean isAuthenticated() {
+			return user != null;
+		}
+
+		/**
+		 * Records a stored user's roles as read from the database. A user that isn't stored, as in tests or
+		 * authentication schemes that don't persist users, keeps its in-memory roles.
+		 */
+		private static Principal of(User user) {
+			return user == null ? NONE : of(user, user.getUserId());
+		}
+
+		/**
+		 * As {@link #of(User)}, but for a user already known to be stored under {@code userId}, such as one
+		 * reloaded by that id, whose own id may have been changed in memory.
+		 */
+		private static Principal of(User user, Integer userId) {
+			if (user == null) {
+				return NONE;
+			}
+			Set<String> roleNames;
+			if (userId != null) {
+				roleNames = Context.getContextDAO().getStoredRoleNames(userId);
+			} else {
+				roleNames = user.getRoles() == null ? Collections.emptySet()
+				        : user.getRoles().stream().filter(Objects::nonNull).map(Role::getRole).filter(Objects::nonNull)
+				                .collect(Collectors.toSet());
+			}
+			return new Principal(user, userId, roleNames);
 		}
 	}
 }

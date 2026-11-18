@@ -18,6 +18,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,11 +50,11 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	@Column(name = "patient_state_id")
 	private Integer patientStateId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_program_id", nullable = false)
 	private PatientProgram patientProgram;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "state", nullable = false)
 	private ProgramWorkflowState state;
 
@@ -63,7 +64,7 @@ public class PatientState extends BaseFormRecordableOpenmrsData implements java.
 	@Column(name = "end_date", length = 19)
 	private Date endDate;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	

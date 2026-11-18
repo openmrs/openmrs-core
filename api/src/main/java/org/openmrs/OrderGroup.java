@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.api.APIException;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Contains a group of {@link org.openmrs.Order}s that are ordered together within a single encounter,often driven by an {@link org.openmrs.OrderSet}. 
@@ -118,7 +119,7 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	 * @param orders the orders to set
 	 */
 	public void setOrders(List<Order> orders) {
-		this.orders = orders;
+		this.orders = CollectionUtil.setCollection(this.orders, orders);
 	}
 	
 	/**
@@ -302,6 +303,6 @@ public class OrderGroup extends BaseCustomizableData<OrderGroupAttribute> {
 	 * @since 2.4.0
 	 */
 	public void setNestedOrderGroups(Set<OrderGroup> nestedOrderGroups) {
-		this.nestedOrderGroups = nestedOrderGroups;
+		this.nestedOrderGroups = CollectionUtil.setCollection(this.nestedOrderGroups, nestedOrderGroups);
 	}
 }

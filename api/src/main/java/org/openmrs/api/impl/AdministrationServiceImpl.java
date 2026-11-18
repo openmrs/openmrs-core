@@ -43,6 +43,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -65,6 +66,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -91,6 +93,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	private HttpClient implementationIdHttpClient;
 	
+	private GlobalPropertyCache globalPropertyCache;
+	
 	/**
 	 * Default empty constructor
 	 */
@@ -103,6 +107,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public void setAdministrationDAO(AdministrationDAO dao) {
 		this.dao = dao;
+	}
+	
+	public void setGlobalPropertyCache(GlobalPropertyCache globalPropertyCache) {
+		this.globalPropertyCache = globalPropertyCache;
 	}
 	
 	public void setEventListeners(EventListeners eventListeners) {
@@ -157,23 +165,24 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	// a cache hit needs no transaction, and a miss can read through the caller's session or one opened
+	// for the call
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
 		// This method should not have any authorization check
 		if (propertyName == null) {
 			return null;
 		}
 		
-		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
-		if (gp != null) {
-			if (canViewGlobalProperty(gp)) {
-				return gp.getPropertyValue();
-			} else {
-				throw new APIException("GlobalProperty.error.privilege.required.view", new Object[] {
-					gp.getViewPrivilege().getPrivilege(), propertyName });
-			}
-		} else {
-			return null;
+		GlobalPropertyCache.Entry gp = globalPropertyCache.get(propertyName);
+		checkCanView(gp, propertyName);
+		return gp.getValue();
+	}
+	
+	private void checkCanView(GlobalPropertyCache.Entry gp, String propertyName) {
+		if (gp.getViewPrivilege() != null && !Context.hasPrivilege(gp.getViewPrivilege(), false)) {
+			throw new APIException("GlobalProperty.error.privilege.required.view",
+			        new Object[] { gp.getViewPrivilege(), propertyName });
 		}
 	}
 	
@@ -181,24 +190,24 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (property.getViewPrivilege() == null) {
 			return true;
 		}
-		
-		return Context.getAuthenticatedUser().hasPrivilege(property.getViewPrivilege().getPrivilege());
+
+		return Context.hasPrivilege(property.getViewPrivilege().getPrivilege(), false);
 	}
 	
 	private boolean canDeleteGlobalProperty(GlobalProperty property) {
 		if (property.getDeletePrivilege() == null) {
 			return true;
 		}
-		
-		return Context.getAuthenticatedUser().hasPrivilege(property.getDeletePrivilege().getPrivilege());
+
+		return Context.hasPrivilege(property.getDeletePrivilege().getPrivilege(), false);
 	}
 	
 	private boolean canEditGlobalProperty(GlobalProperty property) {
 		if (property.getEditPrivilege() == null) {
 			return true;
 		}
-		
-		return Context.getAuthenticatedUser().hasPrivilege(property.getEditPrivilege().getPrivilege());
+
+		return Context.hasPrivilege(property.getEditPrivilege().getPrivilege(), false);
 	}
 	
 	private List<GlobalProperty> filterGlobalPropertiesByViewPrivilege(List<GlobalProperty> properties) {
@@ -206,7 +215,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			for (Iterator<GlobalProperty> iterator = properties.iterator(); iterator.hasNext();) {
 				GlobalProperty property = iterator.next();
 				Privilege vp = property.getViewPrivilege();
-				if (vp != null && !Context.getAuthenticatedUser().hasPrivilege(vp.getPrivilege())) {
+				if (vp != null && !Context.hasPrivilege(vp.getPrivilege(), false)) {
 					iterator.remove();
 				}
 			}
@@ -219,7 +228,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 *      java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
 		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (s == null) {
@@ -280,6 +289,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		
 		gp.setPropertyValue(propertyValue);
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 	
 	/**
@@ -321,6 +331,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		
 		notifyGlobalPropertyDelete(globalProperty.getProperty());
 		dao.deleteGlobalProperty(globalProperty);
+		globalPropertyCache.evict(globalProperty.getProperty());
 	}
 	
 	/**
@@ -384,6 +395,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
+			globalPropertyCache.evict(gp.getProperty());
 			notifyGlobalPropertyChange(gp);
 			return gp;
 		}
@@ -726,6 +738,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
 		if (defaultValue == null) {
 			throw new IllegalArgumentException("The defaultValue argument cannot be null");

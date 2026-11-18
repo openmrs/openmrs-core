@@ -33,6 +33,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * A 'visit' is a contiguous time period where encounters occur between patients and healthcare
@@ -86,6 +87,26 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * Default Constructor
 	 */
 	public Visit() {
+	}
+	
+	/**
+	 * The attributes are mapped with property access, so Hibernate loads them through
+	 * {@link #setAttributes(Set)}, which must keep the collection it is given rather than copy it as
+	 * {@link BaseCustomizableData#setAttributes(Set)} does.
+	 *
+	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
+	 */
+	@Override
+	public Set<VisitAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	/**
+	 * @param attributes the attributes to set
+	 */
+	@Override
+	public void setAttributes(Set<VisitAttribute> attributes) {
+		this.attributes = attributes;
 	}
 	
 	/**
@@ -248,7 +269,7 @@ public class Visit extends BaseCustomizableData<VisitAttribute> implements Audit
 	 * @param encounters the encounters to set
 	 */
 	public void setEncounters(Set<Encounter> encounters) {
-		this.encounters = encounters;
+		this.encounters = CollectionUtil.setCollection(this.encounters, encounters);
 	}
 	
 	/**

@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.openmrs.Concept;
@@ -43,6 +42,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.UuidUtil;
 import org.openmrs.validator.FormValidator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
@@ -106,9 +106,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			formField.setUuid(null);
 			formField.setFormFieldId(null);
 		}
-		// this is required because Hibernate would recognize the original collection
-		form.setFormFields(new HashSet<>(form.getFormFields()));
-		
 		form.setUuid(null);
 		form.setFormId(null);
 		form.setCreator(null);
@@ -549,7 +546,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		// set the uuid here because the RequiredDataAdvice only looks at child lists
 		if (field.getUuid() == null) {
-			field.setUuid(UUID.randomUUID().toString());
+			field.setUuid(UuidUtil.newUuidString());
 		}
 
 		FormField tmpFormField = dao.saveFormField(formField);

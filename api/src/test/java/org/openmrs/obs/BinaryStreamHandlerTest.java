@@ -65,7 +65,7 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
     }
     	
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws IOException {
 		
 		adminService.saveGlobalProperty(new GlobalProperty(
 			OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
@@ -93,7 +93,9 @@ public class BinaryStreamHandlerTest  extends BaseContextSensitiveTest {
 			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
 			assertEquals(complexObs1.getComplexData().getMimeType(), mimetype);
+			assertEquals(complexObs1.getComplexData().getTitle(), filename);
 			assertEquals(complexObs2.getComplexData().getMimeType(), mimetype);
+			assertEquals(complexObs2.getComplexData().getTitle(), filename);
 		} finally {
 			if (complexObs1 != null) {
 				((InputStream) complexObs1.getComplexData().getData()).close();

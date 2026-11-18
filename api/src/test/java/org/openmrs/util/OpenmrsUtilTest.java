@@ -12,6 +12,7 @@ package org.openmrs.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -187,7 +188,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldPassWithDigitOnlyPasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "12345678", "1-8"));
 	}
 	
 	/**
@@ -214,7 +215,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldPassWithCharOnlyPasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "testonly", "1-8"));
 	}
 	
 	/**
@@ -240,7 +241,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void validatePassword_shouldPassWithoutUpperAndLowerCasePasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
-		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8"));
 	}
 	
 	/**
@@ -266,7 +267,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void validatePassword_shouldPassWithPasswordEqualsToUserNameIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
-		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8"));
 	}
 	
 	/**
@@ -292,7 +293,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void validatePassword_shouldPassWithPasswordEqualsToSystemIdIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
-		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234"));
 	}
 	
 	/**
@@ -318,9 +319,26 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void validatePassword_shouldPassWithShortPasswordIfAllowed() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "0");
-		OpenmrsUtil.validatePassword("admin", "H4t", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "H4t", "1-8"));
 	}
 	
+	/**
+	 * The password policy belongs to the system, not to the user being validated, so it has to be
+	 * readable even for someone holding no privilege to read global properties. The forgot-password and
+	 * activation-key flows validate a password with no one authenticated at all.
+	 *
+	 * @see OpenmrsUtil#validatePassword(String,String,String)
+	 */
+	@Test
+	public void validatePassword_shouldReadThePolicyWithoutRequiringGlobalPropertyPrivileges() {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "12");
+		Context.logout();
+
+		// 12 characters is only in force if the property was really read; the built-in fallback is 8, so
+		// a 10-character password distinguishes the two
+		assertThrows(ShortPasswordException.class, () -> OpenmrsUtil.validatePassword("someuser", "H4tt3rsHat", "1-8"));
+	}
+
 	/**
 	 * @see OpenmrsUtil#validatePassword(String,String,String)
 	 */
@@ -338,7 +356,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldPassWithPasswordMatchingConfiguredRegex() {
 		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
 		    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
-		OpenmrsUtil.validatePassword("admin", "He11oWorld", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "He11oWorld", "1-8"));
 	}
 	
 	/**
@@ -346,7 +364,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validatePassword_shouldAllowPasswordToContainNonAlphanumericCharacters() {
-		OpenmrsUtil.validatePassword("admin", "Test1234?", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "Test1234?", "1-8"));
 	}
 	
 	/**
@@ -354,7 +372,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() {
-		OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8");
+		assertDoesNotThrow(() -> OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8"));
 	}
 	
 	/**

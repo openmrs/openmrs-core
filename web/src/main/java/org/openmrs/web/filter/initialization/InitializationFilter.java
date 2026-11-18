@@ -185,23 +185,25 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Variable set to true as soon as the installation begins and set to false when the process ends
-	 * This thread should only be accesses through the synchronized method.
 	 */
-	private static boolean isInstallationStarted = false;
-	
+	private static volatile boolean isInstallationStarted = false;
+
 	// the actual driver loaded by the DatabaseUpdater class
 	private String loadedDriverString;
 
-	private static final Set<String> NON_NORMALIZED_KEYS = new HashSet<>(Arrays.asList(
-		"INSTALL_METHOD", "DATABASE_NAME", "HAS_CURRENT_OPENMRS_DATABASE", "CREATE_DATABASE_USER",
-		"CREATE_TABLES", "ADD_DEMO_DATA", "MODULE_WEB_ADMIN", "AUTO_UPDATE_DATABASE", "ADMIN_USER_PASSWORD"));
+	private static final Set<String> NON_NORMALIZED_KEYS = new HashSet<>(Arrays.asList("INSTALL_METHOD", "DATABASE_NAME",
+	    "HAS_CURRENT_OPENMRS_DATABASE", "CREATE_DATABASE_USER", "CREATE_TABLES", "ADD_DEMO_DATA", "MODULE_WEB_ADMIN",
+	    "AUTO_UPDATE_DATABASE", "ADMIN_USER_PASSWORD", "CREATE_DATABASE_USERNAME", "CREATE_DATABASE_PASSWORD",
+	    "CREATE_USER_USERNAME", "CREATE_USER_PASSWORD", "CONNECTION_DRIVER_CLASS", "IMPORT_TEST_DATA", "REMOTE_URL",
+	    "REMOTE_USERNAME", "REMOTE_PASSWORD", "ADMIN_PASSWORD_LOCKED"));
+
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
-	private static boolean initializationComplete = false;
-	
-	protected synchronized void setInitializationComplete(boolean initializationComplete) {
-		InitializationFilter.initializationComplete = initializationComplete;
+	private static volatile boolean initializationComplete = false;
+
+	protected void setInitializationComplete(boolean complete) {
+		initializationComplete = complete;
 	}
 	
 	/**
@@ -352,7 +354,8 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.installMethod = script.getProperty("install_method", wizardModel.installMethod);
 			
 			wizardModel.databaseConnection = script.getProperty("connection.url", wizardModel.databaseConnection);
-			wizardModel.databaseDriver = script.getProperty("connection.driver_class", wizardModel.databaseDriver);
+			wizardModel.databaseDriver = script.getProperty("connection.driver_class",
+			    script.getProperty("connection_driver_class", wizardModel.databaseDriver));
 			wizardModel.databaseName = script.getProperty("database_name", wizardModel.databaseName);
 			wizardModel.currentDatabaseUsername = script.getProperty("connection.username",
 				wizardModel.currentDatabaseUsername);
@@ -391,11 +394,26 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			wizardModel.adminUserPassword = script.getProperty("admin_user_password", wizardModel.adminUserPassword);
-			
-			for (Map.Entry<Object, Object> entry : installScript.entrySet()) {
+
+			String importTestData = script.getProperty("import_test_data", script.getProperty("add_demo_data"));
+			if (importTestData != null) {
+				wizardModel.importTestData = Boolean.parseBoolean(importTestData);
+			}
+
+			wizardModel.remoteUrl = script.getProperty("remote_url", wizardModel.remoteUrl);
+			wizardModel.remoteUsername = script.getProperty("remote_username", wizardModel.remoteUsername);
+			wizardModel.remotePassword = script.getProperty("remote_password", wizardModel.remotePassword);
+
+			for (Map.Entry<Object, Object> entry : script.entrySet()) {
 				if (entry.getKey() instanceof String && ((String) entry.getKey()).startsWith("property.")) {
 					wizardModel.additionalPropertiesFromInstallationScript.put(((String) entry.getKey()).substring(9), entry.getValue());
 				}
+			}
+
+			String adminPasswordLocked = script.getProperty("admin_password_locked",
+			    script.getProperty("admin.password.locked"));
+			if (adminPasswordLocked != null) {
+				wizardModel.additionalPropertiesFromInstallationScript.put("admin.password.locked", adminPasswordLocked);
 			}
 		}
 	}
@@ -862,7 +880,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private void startInstallation() {
+	protected void startInstallation() {
 		//if no one has run any installation
 		if (!isInstallationStarted()) {
 			initJob = new InitializationCompletion();
@@ -945,6 +963,10 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.tasksToExecute = new ArrayList<>();
 		createDatabaseTask();
 		createTablesTask();
+		if (wizardModel.importTestData) {
+			wizardModel.tasksToExecute.add(WizardTask.IMPORT_TEST_DATA);
+			wizardModel.tasksToExecute.add(WizardTask.ADD_MODULES);
+		}
 		wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 		startInstallation();
 	}
@@ -1014,8 +1036,7 @@ public class InitializationFilter extends StartupFilter {
 		String databaseConnectionFinalUrl) {
 		try {
 			// verify connection
-			//Set Database Driver using driver String
-			Class.forName(loadedDriverString).newInstance();
+			DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl, loadedDriverString);
 			try (Connection ignored = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword)) {
 				return true;
 			}
@@ -1078,10 +1099,15 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		// If progress.vm makes an ajax request even immediately after initialization has completed
-		// let the request pass in order to let progress.vm load the start page of OpenMRS
-		// (otherwise progress.vm is displayed "forever")
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !initializationRequired();
+		if (initializationRequired()) {
+			return false;
+		}
+		// Once initialization completes, only the progress page's final poll still needs this filter; without it
+		// progress.vm never leaves the wizard. Check the servlet path first so other requests aren't parsed.
+		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
+			return true;
+		}
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 	
 	/**
@@ -1096,7 +1122,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @param isInstallationStarted the value to set
 	 */
-	protected static synchronized void setInstallationStarted(boolean isInstallationStarted) {
+	protected static void setInstallationStarted(boolean isInstallationStarted) {
 		InitializationFilter.isInstallationStarted = isInstallationStarted;
 	}
 	
@@ -1163,7 +1189,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 	}
 	
-	private boolean isCurrentDatabase(String database) {
+	protected boolean isCurrentDatabase(String database) {
 		return wizardModel.databaseConnection.contains(database);
 	}
 	
@@ -1253,7 +1279,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	private static synchronized boolean isInitializationComplete() {
+	private static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 	

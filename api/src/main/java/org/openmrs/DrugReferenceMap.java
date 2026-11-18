@@ -11,6 +11,7 @@ package org.openmrs;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -54,29 +55,29 @@ public class DrugReferenceMap extends BaseOpenmrsObject implements Auditable, Se
 	@Column(name = "drug_reference_map_id")
 	private Integer drugReferenceMapId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "drug_id", nullable = false)
 	private Drug drug;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "term_id", nullable = false)
 	@Cascade(CascadeType.SAVE_UPDATE)
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	private ConceptReferenceTerm conceptReferenceTerm;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_map_type", nullable = false)
 	private ConceptMapType conceptMapType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
 	@Column(name = "date_created", nullable = false, length = 19)
 	private Date dateCreated;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 

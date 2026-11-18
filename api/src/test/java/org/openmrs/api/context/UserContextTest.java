@@ -19,11 +19,17 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserContextTest extends BaseContextSensitiveTest {
 	
@@ -104,11 +110,201 @@ public class UserContextTest extends BaseContextSensitiveTest {
 		Context.getUserContext().setLocationId(null);
 		testUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "0e32f474-eca5-4cc2-a64d-53b086f27e52");
 		userService.saveUser(testUser);
-		
+
 		// act
 		Integer locationId = Context.getUserContext().getDefaultLocationId(testUser);
 
 		// assert
 		assertThat(locationId, nullValue());
+	}
+
+	@Test
+	void addProxyPrivilege_shouldAddMultiplePrivileges() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		// act
+		userContext.addProxyPrivilege("Privilege1", "Privilege2", "Privilege3");
+
+		// assert
+		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+		assertThat(userContext.hasPrivilege("Privilege2"), is(true));
+		assertThat(userContext.hasPrivilege("Privilege3"), is(true));
+	}
+
+	@Test
+	void addProxyPrivilege_shouldThrowExceptionForNullArray() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> userContext.addProxyPrivilege((String[]) null));
+	}
+
+	@Test
+	void addProxyPrivilege_shouldThrowExceptionForNullString() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> userContext.addProxyPrivilege((String) null));
+	}
+
+	@Test
+	void removeProxyPrivilege_shouldRemoveMultiplePrivileges() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+		userContext.addProxyPrivilege("Privilege1");
+		userContext.addProxyPrivilege("Privilege2");
+		userContext.addProxyPrivilege("Privilege3");
+
+		// act
+		userContext.removeProxyPrivilege("Privilege1", "Privilege3");
+
+		// assert
+		assertThat(userContext.hasPrivilege("Privilege1"), is(false));
+		assertThat(userContext.hasPrivilege("Privilege2"), is(true));
+		assertThat(userContext.hasPrivilege("Privilege3"), is(false));
+	}
+
+	@Test
+	void removeProxyPrivilege_shouldHandleNullArrayGracefully() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+		userContext.addProxyPrivilege("Privilege1");
+
+		// act
+		userContext.removeProxyPrivilege((String[]) null);
+
+		// assert - should still have the privilege since null was passed
+		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	@Test
+	void removeProxyPrivilege_shouldHandleNullStringGracefully() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+		userContext.addProxyPrivilege("Privilege1");
+
+		// act
+		userContext.removeProxyPrivilege((String) null);
+
+		// assert - should still have the privilege since null was passed
+		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	@Test
+	void removeProxyPrivilege_shouldHandleNonExistentPrivilegeGracefully() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+
+		// act & assert
+		assertDoesNotThrow(() -> userContext.removeProxyPrivilege("Privilege 1"));
+	}
+	
+	@Test
+	void proxyPrivileges_shouldStackCorrectly() {
+		// arrange
+		UserContext userContext = new UserContext(new TestUsernameAuthenticationScheme());
+		
+		// act - deep nesting
+		userContext.addProxyPrivilege("Privilege1");
+		try {
+			userContext.addProxyPrivilege("Privilege1");
+			try {
+				userContext.addProxyPrivilege("Privilege1");
+				try {
+					userContext.addProxyPrivilege("Privilege1");
+				} finally {
+					userContext.removeProxyPrivilege("Privilege1");
+				}
+			} finally {
+				userContext.removeProxyPrivilege("Privilege1");
+			}
+		} finally {
+			userContext.removeProxyPrivilege("Privilege1");
+		}
+		
+		// assert
+		assertThat(userContext.hasPrivilege("Privilege1"), is(true));
+	}
+
+	/**
+	 * A separate context logged in as {@link #testUser}, whose user is detached as a web session's is
+	 * on every request after login.
+	 */
+	private UserContext loggedInAsTestUser() {
+		Context.flushSession();
+		UserContext session = new UserContext(Context.getAuthenticationScheme());
+		session.authenticate(new UsernamePasswordCredentials("testUser", "Test1234"));
+		Context.evictFromSession(session.getAuthenticatedUser());
+		return session;
+	}
+
+	@Test
+	void hasPrivilege_shouldIgnoreARoleAddedToTheAuthenticatedUserInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			session.getAuthenticatedUser().addRole(userService.getRole(RoleConstants.SUPERUSER));
+
+			assertFalse(session.hasPrivilege(PrivilegeConstants.EDIT_USERS));
+		} finally {
+			authenticate();
+		}
+	}
+
+	@Test
+	void getAuthenticatedUserId_shouldKeyUserCachesByTheRecordedIdWhenTheUsersIdIsChangedInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		Integer userId = testUser.getUserId();
+		try {
+			session.getAuthenticatedUser().setUserId(1);
+
+			assertThat(Context.getAuthenticatedUserId(), is(userId));
+		} finally {
+			session.getAuthenticatedUser().setUserId(userId);
+			authenticate();
+		}
+	}
+
+	@Test
+	void refreshAuthenticatedUser_shouldKeepTheRecordedIdWhenTheUsersIdIsChangedInMemory() {
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			// refreshing makes the user the session's managed copy, whose id can be changed until the next flush
+			session.refreshAuthenticatedUser();
+			session.getAuthenticatedUser().setUserId(1);
+			session.refreshAuthenticatedUser();
+
+			assertThat(session.getAuthenticatedUserId(), is(testUser.getUserId()));
+			assertFalse(session.hasRole(RoleConstants.SUPERUSER));
+		} finally {
+			Context.evictFromSession(session.getAuthenticatedUser());
+			authenticate();
+		}
+	}
+
+	@Test
+	void refreshAuthenticatedUser_shouldNotLoadAnotherUserWhenTheUsersUuidIsChangedInMemory() {
+		String adminUuid = userService.getUser(1).getUuid();
+		UserContext session = loggedInAsTestUser();
+		Context.setUserContext(session);
+		try {
+			session.refreshAuthenticatedUser();
+			session.getAuthenticatedUser().setUuid(adminUuid);
+			session.refreshAuthenticatedUser();
+			session.refreshAuthenticatedUser();
+
+			assertThat(session.getAuthenticatedUserId(), is(testUser.getUserId()));
+			assertFalse(session.hasRole(RoleConstants.SUPERUSER));
+		} finally {
+			// users are equal by uuid, so authenticate() would otherwise take this user for the admin
+			session.getAuthenticatedUser().setUuid(testUser.getUuid());
+			Context.evictFromSession(session.getAuthenticatedUser());
+			authenticate();
+		}
 	}
 }

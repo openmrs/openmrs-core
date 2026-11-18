@@ -29,6 +29,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -64,7 +65,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	@Column(name = "form_resource_id")
 	private Integer formResourceId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "form_id", nullable = false)
 	private Form form;
 
@@ -93,7 +94,7 @@ public class FormResource extends BaseOpenmrsObject implements CustomValueDescri
 	
 	private transient Object typedValue;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "changed_by")
 	private User changedBy;
 	

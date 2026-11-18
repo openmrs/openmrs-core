@@ -44,7 +44,6 @@ public class HibernateMedicationDispenseDAOTest extends BaseContextSensitiveTest
 	@BeforeEach
 	public void setUp() {
 		executeDataSet("org/openmrs/api/include/MedicationDispenseServiceTest-initialData.xml");
-		updateSearchIndex();
 	}
 
 	/**

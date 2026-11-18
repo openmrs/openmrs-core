@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.AllowDirectAccess;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Program
@@ -194,7 +195,7 @@ public class Program extends BaseChangeableOpenmrsMetadata {
 	}
 	
 	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
-		this.allWorkflows = allWorkflows;
+		this.allWorkflows = CollectionUtil.setCollection(this.allWorkflows, allWorkflows);
 	}
 	
 	/**

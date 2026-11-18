@@ -33,10 +33,14 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
+import org.openmrs.parameter.ObsSearchCriteriaBuilder;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,7 +50,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(ObsServiceImpl.class);
+
 	/**
 	 * The data access object for the obs service
 	 */
@@ -95,9 +101,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		if(obs.getId() != null && changeMessage == null){
 			throw new APIException("Obs.error.ChangeMessage.required", (Object[]) null);
 		}
-
-		handleExistingObsWithComplexConcept(obs);
-
+		
 		ensureRequirePrivilege(obs);
 
 		//Should allow updating a voided Obs, it seems to be pointless to restrict it,
@@ -152,7 +156,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		Obs newObs = Obs.newInstance(obs);
 
 		unsetVoidedAndCreationProperties(newObs,obs);
-		
+		handleObsWithComplexConcept(newObs);
 		Obs.Status originalStatus = dao.getSavedStatus(obs);
 		updateStatusIfNecessary(newObs, originalStatus);
 
@@ -209,6 +213,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	private Obs saveNewOrVoidedObs(Obs obs, String changeMessage) {
+		handleObsWithComplexConcept(obs);
 		Obs ret = dao.saveObs(obs);
 		saveObsGroup(ret,changeMessage);
 		return ret;
@@ -239,7 +244,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 	}
 
-	private void handleExistingObsWithComplexConcept(Obs obs) {
+	private void handleObsWithComplexConcept(Obs obs) {
 		ComplexData complexData = obs.getComplexData();
 		Concept concept = obs.getConcept();
 		if (null != concept && concept.isComplex()
@@ -304,16 +309,19 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	public void purgeObs(Obs obs, boolean cascade) throws APIException {
 		if (!purgeComplexData(obs)) {
-			throw new APIException("Obs.error.unable.purge.complex.data", new Object[] { obs });
+			// Log a warning instead of throwing an error.
+			// This allows purging the obs row even if the associated file is missing,
+			// which matches the behavior expected by modules like Attachments.
+			log.warn("purgeComplexData returned false for Obs ID: " + (obs != null ? obs.getObsId() : "null") + ". " + 
+				"This may mean the file is already missing. Proceeding to purge the database row.");
 		}
-		
+
 		if (cascade) {
 			throw new APIException("Obs.error.cascading.purge.not.implemented", (Object[]) null);
 			// TODO delete any related objects here before deleting the obs
 			// obsGroups objects?
 			// orders?
 		}
-		
 		dao.deleteObs(obs);
 	}
 	
@@ -333,17 +341,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	                                 boolean includeVoidedObs) throws APIException {
-		
-		if (sort == null) {
-			sort = new ArrayList<>();
-		}
-		if (sort.isEmpty()) {
-			sort.add("obsDatetime");
-		}
-		
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+	        throws APIException {
+
 		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
 		    obsGroupId, fromDate, toDate, includeVoidedObs, null);
 	}
@@ -372,21 +373,60 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
-	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                 List<String> sort, List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
-	                                 boolean includeVoidedObs, String accessionNumber) throws APIException {
-		
-		if (sort == null) {
-			sort = new ArrayList<>();
-		}
-		if (sort.isEmpty()) {
-			sort.add("obsDatetime");
-		}
-		
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber) throws APIException {
+
 		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, visits, mostRecentN,
 		    obsGroupId, fromDate, toDate, includeVoidedObs, accessionNumber);
 	}
 	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws APIException {
+		requireSearchCriteria(obsSearchCriteria);
+
+		return dao.getObservations(obsSearchCriteria);
+	}
+
+	/**
+	 * Every individual search parameter is optional, so passing null for the criteria object as a whole
+	 * is an easy mistake to make. Caught at the service boundary it names the problem, where the DAO
+	 * would only raise an NPE from inside a query.
+	 *
+	 * @param obsSearchCriteria the criteria to check
+	 * @throws IllegalArgumentException if obsSearchCriteria is null
+	 */
+	private static void requireSearchCriteria(ObsSearchCriteria obsSearchCriteria) {
+		if (obsSearchCriteria == null) {
+			throw new IllegalArgumentException("obsSearchCriteria cannot be null");
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, List, List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean, java.lang.String,
+	 *      java.lang.Integer, java.lang.Integer)
+	 */
+	@Override
+	@SuppressWarnings("squid:S107")
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws APIException {
+
+		return this.getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setEncounters(encounters)
+		        .setQuestions(questions).setAnswers(answers).setPersonTypes(personTypes).setLocations(locations)
+		        .setSort(sort).setVisits(visits).setMostRecentN(mostRecentN).setObsGroupId(obsGroupId).setFromDate(fromDate)
+		        .setToDate(toDate).setIncludeVoidedObs(includeVoidedObs).setAccessionNumber(accessionNumber)
+		        .setStartIndex(startIndex).setMaxResults(maxResults).createObsSearchCriteria());
+	}
+
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
@@ -433,9 +473,28 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * This implementation queries the obs table comparing the given <code>searchString</code> with
-	 * the patient's identifier, encounterId, and obsId
-	 * 
+	 * @see org.openmrs.api.ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Integer getObservationCount(ObsSearchCriteria obsSearchCriteria) throws APIException {
+		requireSearchCriteria(obsSearchCriteria);
+
+		// the sort and the row bounds the criteria carry say which of the matching rows come back, not
+		// which rows match, so a count deliberately ignores them: a paging client counting the result set
+		// it is walking wants the whole of it. valueCodedNameAnswers is passed as null because the search
+		// criteria cannot express it, matching the other getObservationCount() overloads
+		return OpenmrsUtil.convertToInteger(dao.getObservationCount(obsSearchCriteria.getWhom(),
+		    obsSearchCriteria.getEncounters(), obsSearchCriteria.getQuestions(), obsSearchCriteria.getAnswers(),
+		    obsSearchCriteria.getPersonTypes(), obsSearchCriteria.getLocations(), obsSearchCriteria.getObsGroupId(),
+		    obsSearchCriteria.getFromDate(), obsSearchCriteria.getToDate(), null, obsSearchCriteria.getVisits(),
+		    obsSearchCriteria.isIncludeVoidedObs(), obsSearchCriteria.getAccessionNumber()));
+	}
+
+	/**
+	 * This implementation queries the obs table comparing the given <code>searchString</code> with the
+	 * patient's identifier, encounterId, and obsId
+	 *
 	 * @see org.openmrs.api.ObsService#getObservations(java.lang.String)
 	 */
 	@Override

@@ -15,6 +15,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,15 +44,15 @@ public class Relationship extends BaseChangeableOpenmrsData {
 	)
 	@Column(name = "relationship_id")
 	private Integer relationshipId;
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "person_a", nullable = false)
 	private Person personA;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "relationship", nullable = false)
 	private RelationshipType relationshipType;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "person_b", nullable = false)
 	private Person personB;
 

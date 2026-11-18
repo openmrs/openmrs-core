@@ -20,6 +20,7 @@ import org.openmrs.util.OpenmrsUtil;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,7 +51,7 @@ public class PersonAddress extends BaseChangeableOpenmrsData implements java.io.
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer personAddressId;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "person_id")
 	private Person person;
 	

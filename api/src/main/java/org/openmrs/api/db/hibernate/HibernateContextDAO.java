@@ -17,8 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import javax.persistence.LockTimeoutException;
+import javax.persistence.PessimisticLockException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
@@ -40,16 +44,19 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -65,7 +72,13 @@ public class HibernateContextDAO implements ContextDAO {
 	private static final Logger log = LoggerFactory.getLogger(HibernateContextDAO.class);
 	
 	private static final Long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES);
-	
+
+	/**
+	 * The capability that proves to {@link Daemon} that this class is allowed to act with daemon
+	 * permissions.
+	 */
+	private static volatile Daemon.CallerKey daemonCallerKey;
+
 	/**
 	 * Hibernate session factory
 	 */
@@ -94,7 +107,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@Transactional(noRollbackFor = ContextAuthenticationException.class)
+	@Transactional(noRollbackFor = ContextAuthenticationException.class, isolation = Isolation.READ_COMMITTED)
 	public User authenticate(String login, String password) throws ContextAuthenticationException {
 		String errorMsg = "Invalid username and/or password: " + login;
 
@@ -126,6 +139,27 @@ public class HibernateContextDAO implements ContextDAO {
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
 			log.debug("Candidate user id: {}", candidateUser.getUserId());
+
+			session.flush();
+			Integer lockedUserId;
+			try {
+				lockedUserId = (Integer) session
+				        .createNativeQuery("select user_id from users where user_id = ?1 for update")
+				        .addScalar("user_id", StandardBasicTypes.INTEGER)
+				        .setParameter(1, candidateUser.getUserId()).uniqueResult();
+			} catch (LockTimeoutException | PessimisticLockException | org.hibernate.PessimisticLockException e) {
+				log.warn("Could not lock the user row for login (login={}, userId={})", login, candidateUser.getUserId(), e);
+				throw new ContextAuthenticationException(errorMsg);
+			} catch (RuntimeException e) {
+				log.error("Could not lock the user row for login (login={}, userId={})", login, candidateUser.getUserId(),
+				    e);
+				throw new ContextAuthenticationException(errorMsg);
+			}
+			if (lockedUserId == null) {
+				log.info("Failed login attempt (login={}) - {}", login, errorMsg);
+				throw new ContextAuthenticationException(errorMsg);
+			}
+			session.refresh(candidateUser);
 
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			long lockoutTime = -1;
@@ -166,7 +200,7 @@ public class HibernateContextDAO implements ContextDAO {
 			String saltOnRecord = (String) passwordAndSalt[1];
 
 			// if the username and password match, hydrate the user and return it
-			if (passwordOnRecord != null && Security.hashMatches(passwordOnRecord, password + saltOnRecord)) {
+			if (passwordOnRecord != null && Security.checkPassword(passwordOnRecord, password + saltOnRecord)) {
 				// hydrate the user object
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();
@@ -193,12 +227,16 @@ public class HibernateContextDAO implements ContextDAO {
 
 				int allowedFailedLoginCount = 7;
 				try {
+					Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 					allowedFailedLoginCount = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
 						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT).trim());
 				}
 				catch (Exception ex) {
 					log.error("Unable to convert the global property {} to a valid integer. Using default value of 7.",
 						OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT);
+				}
+				finally {
+					Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 				}
 
 				if (attempts > allowedFailedLoginCount) {
@@ -227,13 +265,18 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	private Long getUnlockTimeMs() {
-		String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String unlockTimeGPValue = Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
-		if (StringUtils.isNotBlank(unlockTimeGPValue)) {
-			return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+			if (StringUtils.isNotBlank(unlockTimeGPValue)) {
+				return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+			} else {
+				return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+			}
 		}
-		else {
-			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 	
@@ -268,6 +311,40 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ContextDAO#getUserById(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public User getUserById(Integer userId) {
+		Session session = sessionFactory.getCurrentSession();
+		FlushMode flushMode = session.getHibernateFlushMode();
+		session.setHibernateFlushMode(FlushMode.MANUAL);
+		try {
+			return session.get(User.class, userId);
+		} finally {
+			session.setHibernateFlushMode(flushMode);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getStoredRoleNames(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Set<String> getStoredRoleNames(Integer userId) {
+		return StoredRoleReader.readUserRoleNames(sessionFactory.getCurrentSession(), userId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#getStoredRole(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public StoredRole getStoredRole(String roleName) {
+		return StoredRoleReader.read(sessionFactory.getCurrentSession(), roleName);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUsername(String)
 	 */
 	@Override
@@ -283,7 +360,7 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	@Transactional
 	public User createUser(User user, String password, List<String> roleNames) throws Exception {
-		return Daemon.createUser(user, password, roleNames);
+		return Daemon.createUser(user, password, roleNames, daemonCallerKey());
 	}
 	
 	/**
@@ -316,19 +393,20 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.context.Context#openSession()
 	 */
-	private boolean participate = false;
-	
 	@Override
 	public void openSession() {
 		log.debug("HibernateContext: Opening Hibernate Session");
-		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
+		Object value = TransactionSynchronizationManager.getResource(sessionFactory);
+		if (value instanceof ContextSessionHolder) {
 			log.debug("Participating in existing session ({})", sessionFactory.hashCode());
-			participate = true;
+			((ContextSessionHolder) value).openCount++;
+		} else if (value != null) {
+			log.debug("Participating in session bound by another owner ({})", sessionFactory.hashCode());
 		} else {
 			log.debug("Registering session with synchronization manager ({})", sessionFactory.hashCode());
 			Session session = sessionFactory.openSession();
 			session.setHibernateFlushMode(FlushMode.MANUAL);
-			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
+			TransactionSynchronizationManager.bindResource(sessionFactory, new ContextSessionHolder(session));
 		}
 	}
 	
@@ -338,23 +416,29 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void closeSession() {
 		log.debug("HibernateContext: closing Hibernate Session");
-		if (!participate) {
-			log.debug("Unbinding session from synchronization manager (" + sessionFactory.hashCode() + ")");
-			
-			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
-				try {
-					if (value instanceof SessionHolder) {
-						Session session = ((SessionHolder) value).getSession();
-						SessionFactoryUtils.closeSession(session);
-					}
-				}
-				catch (RuntimeException e) {
-					log.error("Unexpected exception on closing Hibernate Session", e);
-				}
+		Object value = TransactionSynchronizationManager.getResource(sessionFactory);
+		if (value instanceof ContextSessionHolder) {
+			ContextSessionHolder holder = (ContextSessionHolder) value;
+			if (holder.openCount == 1 && holder.isInSpringTransaction()) {
+				log.warn("Ignoring closeSession() without a matching openSession() inside a transaction",
+				    new IllegalStateException("Unmatched closeSession() call"));
+				return;
 			}
-		} else {
-			log.debug("Participating in existing session, so not releasing session through synchronization manager");
+
+			if (--holder.openCount > 0) {
+				log.debug("Participating in existing session, so not releasing session through synchronization manager");
+				return;
+			}
+
+			log.debug("Unbinding session from synchronization manager ({})", sessionFactory.hashCode());
+			TransactionSynchronizationManager.unbindResource(sessionFactory);
+			try {
+				holder.getSession().close();
+			} catch (RuntimeException e) {
+				log.error("Unexpected exception on closing Hibernate Session", e);
+			}
+		} else if (value != null) {
+			log.debug("Not closing a session this thread did not open ({})", sessionFactory.hashCode());
 		}
 	}
 	
@@ -586,10 +670,16 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	@Override
 	public void setupSearchIndex() {
-		String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
-		
-		if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
-			updateSearchIndex();
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
+
+			if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
+				updateSearchIndex();
+			}
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 	
@@ -599,8 +689,9 @@ public class HibernateContextDAO implements ContextDAO {
 	@Override
 	public void updateSearchIndex() {
 		try {
-			log.info("Updating the search index... It may take a few minutes.");
+			log.warn("Updating the search index... It may take a few minutes.");
 			searchSessionFactory.getSearchSession().massIndexer().startAndWait();
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 			    OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 			if (gp == null) {
@@ -612,6 +703,9 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Failed to update the search index", e);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 
@@ -638,6 +732,56 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		catch (SQLException e) {
 			throw new RuntimeException("Unable to retrieve a database connection", e);
+		}
+	}
+
+	/**
+	 * Receives the {@link Daemon} caller key. Called only by {@link Daemon} during its initialization.
+	 *
+	 * @param callerKey the caller key issued by {@link Daemon}
+	 * @since 3.0.0, 2.9.0, 2.8.9
+	 */
+	public static void setDaemonCallerKey(Daemon.CallerKey callerKey) {
+		if (callerKey != null && daemonCallerKey == null) {
+			daemonCallerKey = callerKey;
+		}
+	}
+
+	private static Daemon.CallerKey daemonCallerKey() {
+		if (daemonCallerKey == null) {
+			// Guarantee Daemon has initialized and therefore handed us the key, regardless of the order in
+			// which the two classes were first loaded.
+			Daemon.ensureInitialized();
+		}
+		return daemonCallerKey;
+	}
+
+	/**
+	 * Marks a session bound by {@link #openSession()}, the only kind {@link #closeSession()} unbinds
+	 * and closes. Any other session bound to the thread belongs to whoever bound it, such as a Spring
+	 * transaction or {@code OpenSessionInViewFilter}, which releases it. Closing a transaction's
+	 * session here would leave the JDBC connection bound alongside it and break the next transaction on
+	 * the thread.
+	 * <p>
+	 * The holder counts the {@link #openSession()} calls it has not yet seen closed. The count lives on
+	 * the holder, rather than in a thread-local, so an unmatched open on some other session cannot keep
+	 * this one from closing. It needs no synchronization, as a bound resource is only reachable from
+	 * its own thread.
+	 */
+	private static final class ContextSessionHolder extends SessionHolder {
+
+		private int openCount = 1;
+
+		private ContextSessionHolder(Session session) {
+			super(session);
+		}
+
+		/**
+		 * Whether a Spring transaction manager is using this session. The flag is set when the transaction
+		 * begins and cleared only once its cleanup has finished, after the completion callbacks.
+		 */
+		private boolean isInSpringTransaction() {
+			return isTransactionActive();
 		}
 	}
 }

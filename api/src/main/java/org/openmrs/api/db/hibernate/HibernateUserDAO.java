@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,13 +20,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.persister.entity.EntityPersister;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -35,6 +41,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -70,28 +77,52 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * Rejects any call that did not arrive via {@link org.openmrs.api.UserService}, which is the only
+	 * supported way to change a user's password or login credential. The permit the service raises
+	 * covers the whole of the single DAO call it brackets, so a guarded method reached from within
+	 * another one is allowed.
+	 *
+	 * @param message the message for the {@link DAOException} thrown when the permit is absent
+	 * @see UserServiceImpl.UserPasswordGuard
+	 */
+	private static void requireUserService(String message) {
+		if (!UserServiceImpl.UserPasswordGuard.isPermitted()) {
+			throw new DAOException(message);
+		}
+	}
+
+	/**
 	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 */
 	@Override
 	public User saveUser(User user, String password) {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		requireUserService("Illegal attempt to save user from unknown caller");
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass) &&
-		    !HibernateUserDAO.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
 		// only change the user's password when creating a new user
 		boolean isNewUser = user.getUserId() == null;
-		
-		sessionFactory.getCurrentSession().saveOrUpdate(user);
-		
+
+		Session currentSession = sessionFactory.getCurrentSession();
+		// Attach only stored Roles. User->Role has no cascade, so saving a user never creates or
+		// rewrites a role; a role name that isn't stored is dropped. The set is left alone when every
+		// role is already managed, so Hibernate doesn't rewrite an unchanged user_role collection.
+		if (user.getRoles() != null && !user.getRoles().stream().allMatch(currentSession::contains)) {
+			Set<Role> managedRoles = new LinkedHashSet<>();
+			for (Role role : user.getRoles()) {
+				if (!currentSession.contains(role)) {
+					Role managedRole = currentSession.get(Role.class, role.getRole());
+					if (managedRole != null) {
+						managedRoles.add(managedRole);
+					}
+				} else {
+					managedRoles.add(role);
+				}
+			}
+			user.getRoles().clear();
+			user.getRoles().addAll(managedRoles);
+		}
+
+		currentSession.saveOrUpdate(user);
+
 		if (isNewUser && password != null) {
 			/* In OpenMRS, we are using generation strategy as native which will convert to IDENTITY 
 			 for MySQL and SEQUENCE for PostgreSQL. When using IDENTITY strategy, hibernate directly 
@@ -103,10 +134,9 @@ public class HibernateUserDAO implements UserDAO {
 			
 			//update the new user with the password
 			String salt = Security.getRandomToken();
-			String hashedPassword = Security.encodeString(password + salt);
-			
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
-			        .getUserId());
+			String hashedPassword = Security.encodePassword(password + salt);
+
+			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUserId(), new Date(), user.getUserId());
 		}
 		
 		return user;
@@ -303,7 +333,19 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public Role saveRole(Role role) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(role);
+		Session session = sessionFactory.getCurrentSession();
+		// UserService#saveRole loads the role's parents, whose eager childRoles can put another instance
+		// of a detached role in the session; saveOrUpdate refuses that, so the role is merged into it
+		if (role.getRole() != null && !session.contains(role)) {
+			SharedSessionContractImplementor sessionImplementor = (SharedSessionContractImplementor) session;
+			EntityPersister persister = sessionImplementor.getFactory().getMetamodel().entityPersister(Role.class);
+			Object managed = sessionImplementor.getPersistenceContextInternal()
+			        .getEntity(sessionImplementor.generateEntityKey(role.getRole(), persister));
+			if (managed != null) {
+				return (Role) session.merge(role);
+			}
+		}
+		session.saveOrUpdate(role);
 		return role;
 	}
 	
@@ -325,34 +367,53 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRole(String)
+	 */
+	@Override
+	public StoredRole getStoredRole(String roleName) throws DAOException {
+		return StoredRoleReader.read(sessionFactory.getCurrentSession(), roleName);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRoleNames(Integer)
+	 */
+	@Override
+	public Set<String> getStoredRoleNames(Integer userId) throws DAOException {
+		return StoredRoleReader.readUserRoleNames(sessionFactory.getCurrentSession(), userId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredUserId(User)
+	 */
+	@Override
+	public Integer getStoredUserId(User user) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		if (!session.contains(user)) {
+			return user.getUserId();
+		}
+		// a proxy's own id follows setUserId, so read the id recorded for the entity behind it
+		return (Integer) session.getIdentifier(Hibernate.unproxy(user));
+	}
+
+	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
-		User authUser = Context.getAuthenticatedUser();
-		
-		if (authUser == null) {
-			authUser = u;
+		// an anonymous caller is the forgot-password flow, in which the user changes their own password
+		Integer changedBy = Context.getAuthenticatedUserId();
+		if (changedBy == null) {
+			changedBy = u.getUserId();
 		}
 		
 		String salt = getLoginCredential(u).getSalt();
 		if (StringUtils.isBlank(salt)) {
 			salt = Security.getRandomToken();
 		}
-		String newHashedPassword = Security.encodeString(pw + salt);
-		
-		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		String newHashedPassword = Security.encodePassword(pw + salt);
+
+		updateUserPassword(newHashedPassword, salt, changedBy, new Date(), u.getUserId());
 	}
 	
 	/**
@@ -360,20 +421,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
-		User authUser = Context.getAuthenticatedUser();
-		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
+		updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUserId(), new Date(), user.getUserId());
 	}
 	
 	/**
@@ -397,10 +447,11 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setChangedBy(changedByUser);
 		credentials.setDateChanged(dateChanged);
 		credentials.setUuid(changeForUser.getUuid());
-		
-		sessionFactory.getCurrentSession().merge(credentials);
-		
-		// reset lockout 
+		credentials.setActivationKey(null);
+
+		saveLoginCredential(credentials);
+
+		// reset lockout
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
 		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
 		saveUser(changeForUser, null);
@@ -411,18 +462,8 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void changePassword(String oldPassword, String newPassword) throws DAOException {
-		StackTraceElement[] stack = new Exception().getStackTrace();
-		if (stack.length < 2) {
-			throw new DAOException("Could not determine where change password was called from");
-		}
-		StackTraceElement caller = stack[1];
-		String callerClass = caller.getClassName();
+		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		if (!"org.openmrs.api.db.UserDAOTest".equals(callerClass) &&
-			!UserServiceImpl.class.getName().equals(callerClass)) {
-			throw new DAOException("Illegal attempt to change user password from unknown caller");
-		}
-		
 		User u = Context.getAuthenticatedUser();
 		LoginCredential credentials = getLoginCredential(u);
 		if (!credentials.checkPassword(oldPassword)) {
@@ -434,7 +475,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		// update the user with the new password
 		String salt = credentials.getSalt();
-		String newHashedPassword = Security.encodeString(newPassword + salt);
+		String newHashedPassword = Security.encodePassword(newPassword + salt);
 		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
@@ -468,8 +509,8 @@ public class HibernateUserDAO implements UserDAO {
 		credentials.setSecretAnswer(hashedAnswer);
 		credentials.setDateChanged(new Date());
 		credentials.setChangedBy(u);
-		
-		updateLoginCredential(credentials);
+
+		saveLoginCredential(credentials);
 	}
 	
 	/**
@@ -622,7 +663,18 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void updateLoginCredential(LoginCredential credential) {
-		sessionFactory.getCurrentSession().update(credential);
+		requireUserService("Illegal attempt to change user password from unknown caller");
+
+		saveLoginCredential(credential);
+	}
+
+	/**
+	 * Persists a credential without the service-layer check
+	 * {@link #updateLoginCredential(LoginCredential)} applies, for the DAO methods that write a
+	 * credential as part of an operation of their own.
+	 */
+	private void saveLoginCredential(LoginCredential credential) {
+		sessionFactory.getCurrentSession().merge(credential);
 	}
 	
 	/**
@@ -753,8 +805,18 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.db.UserDAO#createActivationKey(org.openmrs.User)
 	 */
 	@Override
-	public void setUserActivationKey(LoginCredential credentials) {		
-			sessionFactory.getCurrentSession().merge(credentials);	
+	public void setUserActivationKey(LoginCredential credentials) {
+		saveLoginCredential(credentials);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredentialForUpdate(org.openmrs.User)
+	 */
+	@Override
+	public LoginCredential getLoginCredentialForUpdate(User user) {
+		LoginCredential credentials = getLoginCredential(user);
+		sessionFactory.getCurrentSession().refresh(credentials, LockModeType.PESSIMISTIC_WRITE);
+		return credentials;
 	}
 
 	/**

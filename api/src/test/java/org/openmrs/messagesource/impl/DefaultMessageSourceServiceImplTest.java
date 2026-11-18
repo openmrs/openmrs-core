@@ -9,6 +9,8 @@
  */
 package org.openmrs.messagesource.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 
@@ -21,6 +23,6 @@ public class DefaultMessageSourceServiceImplTest {
 	
 	@Test
 	public void getMessageSourceService_shouldNotThrowServiceNotFoundException() {
-		Context.getMessageSourceService();
+		assertDoesNotThrow(() -> Context.getMessageSourceService());
 	}
 }

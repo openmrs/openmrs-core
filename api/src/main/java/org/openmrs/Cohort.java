@@ -11,6 +11,7 @@ package org.openmrs;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -349,7 +350,7 @@ public class Cohort extends BaseChangeableOpenmrsData {
 	}
 	
 	public void setMemberships(Collection<CohortMembership> members) {
-		this.memberships = members;
+		this.memberships = CollectionUtil.setCollection(this.memberships, members);
 	}
 	
 	/**

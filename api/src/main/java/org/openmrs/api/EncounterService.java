@@ -672,10 +672,12 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter the encounter instance to be checked
 	 * @param subject the user, who requests edit access
-	 * @return true if user has privilege denoted by <em>editPrivilege</em> given on encounter type
+	 * @return true if user has the <em>editPrivilege</em> of the encounter type saved in the database
+	 *         for the given encounter, if any, as well as that of the encounter type set on it
 	 * <strong>Should</strong> return true if user can edit encounter
 	 * <strong>Should</strong> return false if user can not edit encounter
 	 * <strong>Should</strong> fail if encounter is null
+	 * <strong>Should</strong> return false if user is not supposed to edit encounters of saved type when type is changed
 	 */
 	public boolean canEditEncounter(Encounter encounter, User subject);
 	

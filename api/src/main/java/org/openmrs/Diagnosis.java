@@ -24,6 +24,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -55,7 +56,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	@Column(name = "diagnosis_id")
 	private Integer diagnosisId;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id")
 	private Encounter encounter;
 	
@@ -65,7 +66,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	        @AssociationOverride(name = "specificName", joinColumns = @JoinColumn(name = "diagnosis_coded_name")) })
 	private CodedOrFreeText diagnosis;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "condition_id")
 	private Condition condition;
 	
@@ -76,7 +77,7 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	@Column(name="dx_rank", nullable = false)
 	private Integer rank;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
@@ -93,6 +94,26 @@ public class Diagnosis extends BaseCustomizableData<DiagnosisAttribute> implemen
 	 * Default no-arg Constructor; instantiates a new Diagnosis without passing any initial values.
 	 */
 	public Diagnosis() {
+	}
+	
+	/**
+	 * The attributes are mapped with property access, so Hibernate loads them through
+	 * {@link #setAttributes(Set)}, which must keep the collection it is given rather than copy it as
+	 * {@link BaseCustomizableData#setAttributes(Set)} does.
+	 *
+	 * @see org.openmrs.customdatatype.Customizable#getAttributes()
+	 */
+	@Override
+	public Set<DiagnosisAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	/**
+	 * @param attributes the attributes to set
+	 */
+	@Override
+	public void setAttributes(Set<DiagnosisAttribute> attributes) {
+		this.attributes = attributes;
 	}
 	
 	/**

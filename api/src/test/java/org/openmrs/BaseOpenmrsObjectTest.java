@@ -9,9 +9,13 @@
  */
 package org.openmrs;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -133,12 +137,12 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 	public void hashCode_shouldNotFailIfUuidIsNull() {
 		//given
 		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
-		
+
 		//when
 		o.setUuid(null);
-		
+
 		//then
-		o.hashCode();
+		assertDoesNotThrow(() -> o.hashCode());
 	}
 	
 	@Test
@@ -396,6 +400,20 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		assertTrue(testObjsameuuid.equals(testObj));
 		assertTrue(anotherTestObjectsameUuid.equals(anotherTestObj));
 
+	}
+
+	/**
+	 * @see BaseOpenmrsObject#getUuid()
+	 */
+	@Test
+	public void getUuid_shouldGiveEveryNewlyConstructedObjectItsOwnValidUuid() {
+		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
+		BaseOpenmrsObject other = new BaseOpenmrsObjectMock();
+
+		// UUID.fromString() throws if this string is not a valid UUID
+		UUID.fromString(o.getUuid());
+
+		assertNotEquals(o.getUuid(), other.getUuid());
 	}
 
 	/**

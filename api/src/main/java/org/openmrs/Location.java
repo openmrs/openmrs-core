@@ -15,8 +15,9 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-
+import org.openmrs.util.CollectionUtil;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
@@ -63,7 +64,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer locationId;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_type_concept_id")
 	private Concept type;
 	
@@ -133,11 +134,11 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Column(name = "address15")
 	private String address15;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_location")
 	private Location parentLocation;
 	
-	@OneToMany(mappedBy = "parentLocation", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "parentLocation", cascade = CascadeType.ALL)
 	@BatchSize(size = 100)
 	@OrderBy("name")
 	private Set<Location> childLocations;
@@ -147,6 +148,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 		name = "location_tag_map",
 		joinColumns = @JoinColumn(name = "location_id"),
 		inverseJoinColumns = @JoinColumn(name = "location_tag_id"))
+	@BatchSize(size = 100)
 	@Independent
 	private Set<LocationTag> tags;
 	
@@ -461,7 +463,9 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @param includeRetired specifies whether or not to include voided childLocations
 	 * @return Returns a Set&lt;Location&gt; of the descendant location.
 	 * @since 1.10
+	 * @deprecated since 2.8.7 in favor of {@link LocationService#getDescendantLocations(Location, boolean)}
 	 */
+	@Deprecated
 	public Set<Location> getDescendantLocations(boolean includeRetired) {
 		Set<Location> result = new HashSet<>();
 		
@@ -479,7 +483,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setChildLocations(Set<Location> childLocations) {
-		this.childLocations = childLocations;
+		this.childLocations = CollectionUtil.setCollection(this.childLocations, childLocations);
 	}
 	
 	/**
@@ -568,7 +572,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setTags(Set<LocationTag> tags) {
-		this.tags = tags;
+		this.tags = CollectionUtil.setCollection(this.tags, tags);
 	}
 	
 	/**

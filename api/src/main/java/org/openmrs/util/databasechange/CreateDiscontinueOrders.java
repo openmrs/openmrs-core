@@ -16,9 +16,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.openmrs.Order;
+import org.openmrs.util.UuidUtil;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -66,7 +66,7 @@ public class CreateDiscontinueOrders implements CustomTaskChange {
 				insertStatement.setDate(6, new Date(System.currentTimeMillis()));
 				setIntOrNull(insertStatement, 7, discontinuedOrder.discontinuedReasonId);
 				insertStatement.setString(8, discontinuedOrder.discontinuedReasonNonCoded);
-				insertStatement.setString(9, UUID.randomUUID().toString());
+				insertStatement.setString(9, UuidUtil.newUuidString());
 				insertStatement.setString(10, Order.Action.DISCONTINUE.name());
 				setIntOrNull(insertStatement, 11, discontinuedOrder.discontinuedById);
 				insertStatement.setString(12, discontinuedOrder.orderNumber);

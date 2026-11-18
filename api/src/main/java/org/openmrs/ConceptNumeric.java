@@ -9,13 +9,12 @@
  */
 package org.openmrs;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some number range values
@@ -97,28 +96,28 @@ public class ConceptNumeric extends Concept {
 		this.setVersion(c.getVersion());
 		this.setUuid(c.getUuid());
 		
-		this.setNames(new HashSet<>(c.getNames()));
+		this.setNames(c.getNames());
 		for (ConceptName cName : this.getNames()) {
 			cName.setConcept(this);
 		}
 		
-		this.setAnswers(new HashSet<>(c.getAnswers(true)));
+		this.setAnswers(c.getAnswers(true));
 		for (ConceptAnswer cAnswer : this.getAnswers()) {
 			cAnswer.setConcept(this);
 		}
 		
-		this.setConceptSets(new TreeSet<>(c.getConceptSets()));
+		this.setConceptSets(c.getConceptSets());
 		for (ConceptSet cSet : this.getConceptSets()) {
 			cSet.setConceptSet(this);
 		}
 		
-		this.setDescriptions(new HashSet<>(c.getDescriptions()));
+		this.setDescriptions(c.getDescriptions());
 		for (ConceptDescription cDescription : this.getDescriptions()) {
 			cDescription.setConcept(this);
 		}
 		
-		this.setConceptMappings(new HashSet<>(c.getConceptMappings()));
-		for (ConceptMap cMap : this.getConceptMappings()) {
+		this.setConceptMappings(c.getConceptMappings());
+				for (ConceptMap cMap : this.getConceptMappings()) {
 			cMap.setConcept(this);
 		}
 		
@@ -253,7 +252,7 @@ public class ConceptNumeric extends Concept {
 	 * @param referenceRanges List of ConceptReferenceRange
 	 */
 	public void setReferenceRanges(Set<ConceptReferenceRange> referenceRanges) {
-		this.referenceRanges = referenceRanges;
+		this.referenceRanges = CollectionUtil.setCollection(this.referenceRanges, referenceRanges);
 	}
 
 	/**

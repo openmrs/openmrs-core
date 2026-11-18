@@ -10,6 +10,7 @@
 package org.openmrs.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,16 +34,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openmrs.Allergen;
 import org.openmrs.AllergenType;
 import org.openmrs.Allergy;
@@ -54,6 +60,7 @@ import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -76,6 +83,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.builder.DrugOrderBuilder;
 import org.openmrs.api.builder.OrderBuilder;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.handler.EncounterVisitHandler;
 import org.openmrs.api.handler.ExistingOrNewVisitAssignmentHandler;
 import org.openmrs.api.handler.ExistingVisitAssignmentHandler;
@@ -87,6 +95,7 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -134,8 +143,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		es.saveEncounter(enc);
 		Context.flushSession();
 		Context.clearSession();
-
-		updateSearchIndex();
 
 		enc = es.getEncounter(100);
 
@@ -293,7 +300,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// file
 		Location loc2 = new Location(2);
 		EncounterType encType2 = new EncounterType(2);
-		Date d2 = new Date();
+		Date d2 = DateUtils.addDays(origDate, 10);
 		Patient pat2 = new Patient(2);
 		
 		encounter.setLocation(loc2);
@@ -586,6 +593,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// fetch the encounter to delete from the db
 		Encounter encounterToDelete = es.getEncounter(1);
+		List<Integer> existingObsIds = new ArrayList<>();
+		List<Integer> existingOrderIds = new ArrayList<>();
+		for (Obs o : encounterToDelete.getAllObs(true)) {
+			existingObsIds.add(o.getObsId());
+		}
+		for (Order o : encounterToDelete.getOrders()) {
+			existingOrderIds.add(o.getOrderId());
+		}
 		
 		es.purgeEncounter(encounterToDelete, true);
 		
@@ -593,12 +608,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Encounter e = es.getEncounter(encounterToDelete.getEncounterId());
 		assertNull(e, "We shouldn't find the encounter after deletion");
 		
-		ObsService obsService = Context.getObsService();
-		assertNull(obsService.getObs(1));
-		assertNull(obsService.getObs(2));
-		assertNull(obsService.getObs(3));
-		
-		assertNull(Context.getOrderService().getOrder(1));
+		assertFalse(existingObsIds.isEmpty());
+		for (Integer obsId : existingObsIds) {
+			assertNull(Context.getObsService().getObs(obsId));
+		}
+
+		assertFalse(existingOrderIds.isEmpty());
+		for (Integer orderId : existingOrderIds) {
+			assertNull(Context.getOrderService().getOrder(orderId));
+		}
 	}
 	
 	/**
@@ -681,7 +699,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(obsWithDifferentDateBefore);
 		assertEquals(2, obsWithSameDateBefore.size());
 		
-		Date newDate = new Date();
+		Date newDate = DateUtils.addDays(enc.getEncounterDatetime(), 10);
 		enc.setEncounterDatetime(newDate);
 		
 		// save the encounter. The obs should pick up the encounter's date
@@ -959,7 +977,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void getEncountersByPatientIdentifier_shouldNotGetVoidedEncounters() {
 		EncounterService encounterService = Context.getEncounterService();
-		
+
+		// getEncountersByPatientIdentifier resolves the patient through the search index, so it must
+		// reflect the identifiers loaded by this class's dataset rather than the base data.
+		updateSearchIndex();
+
 		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("12345");
 		assertEquals(2, encounters.size());
 	}
@@ -1026,11 +1048,20 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// get a nonvoided encounter that has some obs
 		Encounter encounter = encounterService.getEncounter(1);
+		List<Integer> orderIds = new ArrayList<>();
+		for (Order order : encounter.getOrders()) {
+			orderIds.add(order.getOrderId());
+			assertFalse(order.getVoided());
+		}
+		assertFalse(orderIds.isEmpty());
+		
 		encounterService.voidEncounter(encounter, "Just Testing");
 		
-		Order order = Context.getOrderService().getOrder(1);
-		assertTrue(order.getVoided());
-		assertEquals("Just Testing", order.getVoidReason());
+		for (Integer orderId : orderIds) {
+			Order order = Context.getOrderService().getOrder(orderId);
+			assertTrue(order.getVoided());
+			assertEquals("Just Testing", order.getVoidReason());
+		}
 	}
 	
 	/**
@@ -1058,7 +1089,133 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Just Testing", voidedDiagnoses.getVoidReason());
 		assertTrue(encounter.getVoided());
 	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldCascadeVoidToEncounterProviders() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		Encounter encounter = encounterService.getEncounter(1);
+		assertFalse(encounter.getVoided());
+		EncounterProvider encounterProvider = encounter.getEncounterProviders().iterator().next();
+		assertFalse(encounterProvider.getVoided());
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = encounterService.getEncounter(1);
+		encounterProvider = getEncounterProvider(1, encounterProvider.getUuid());
+		assertTrue(encounterProvider.getVoided());
+		assertEquals("Just Testing", encounterProvider.getVoidReason());
+		assertNotNull(encounterProvider.getVoidedBy());
+		assertEquals(encounter.getDateVoided().getTime(), encounterProvider.getDateVoided().getTime());
+		assertTrue(encounter.getActiveEncounterProviders().isEmpty());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldNotCascadeFromEncounterProvidersToTheProvider() {
+		EncounterService encounterService = Context.getEncounterService();
+		ProviderService providerService = Context.getProviderService();
+
+		Encounter encounter = encounterService.getEncounter(1);
+		EncounterProvider encounterProvider = encounter.getEncounterProviders().iterator().next();
+		Provider provider = encounterProvider.getProvider();
+		assertFalse(provider.getRetired());
+		assertFalse(provider.getPerson().getVoided());
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		// the encounter_provider is voided...
+		assertTrue(getEncounterProvider(1, encounterProvider.getUuid()).getVoided());
+
+		// ...but the provider it links to is untouched
+		provider = providerService.getProviderByUuid(provider.getUuid());
+		assertFalse(provider.getRetired());
+		assertNull(provider.getRetireReason());
+		assertNull(provider.getRetiredBy());
+		assertNull(provider.getDateRetired());
+		assertFalse(provider.getPerson().getVoided());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter,String)
+	 */
+	@Test
+	public void voidEncounter_shouldNotChangeVoidDetailsOfAPreviouslyRemovedEncounterProvider() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		Encounter encounter = encounterService.getEncounter(1);
+		EncounterProvider removedProvider = encounter.getEncounterProviders().iterator().next();
+		Date dateRemoved = removedProvider.getDateCreated();
+		removedProvider.setVoided(true);
+		removedProvider.setVoidedBy(Context.getAuthenticatedUser());
+		removedProvider.setDateVoided(dateRemoved);
+		removedProvider.setVoidReason("removed earlier");
+		encounterService.saveEncounter(encounter);
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		removedProvider = getEncounterProvider(1, removedProvider.getUuid());
+		assertTrue(removedProvider.getVoided());
+		assertEquals("removed earlier", removedProvider.getVoidReason());
+		assertEquals(dateRemoved.getTime(), removedProvider.getDateVoided().getTime());
+	}
+
+	/**
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldCascadeUnvoidOnlyToEncounterProvidersVoidedWithTheEncounter() {
+		EncounterService encounterService = Context.getEncounterService();
+
+		// remove the existing provider and add a new one in a different role
+		Encounter encounter = encounterService.getEncounter(1);
+		EncounterProvider removedProvider = encounter.getEncounterProviders().iterator().next();
+		Date dateRemoved = removedProvider.getDateCreated();
+		removedProvider.setVoided(true);
+		removedProvider.setVoidedBy(Context.getAuthenticatedUser());
+		removedProvider.setDateVoided(dateRemoved);
+		removedProvider.setVoidReason("removed earlier");
+		EncounterRole otherRole = new EncounterRole();
+		otherRole.setName("other role");
+		otherRole = encounterService.saveEncounterRole(otherRole);
+		encounter.addProvider(otherRole, removedProvider.getProvider());
+		encounterService.saveEncounter(encounter);
+
+		encounterService.voidEncounter(encounter, "Just Testing");
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = encounterService.getEncounter(1);
+		encounterService.unvoidEncounter(encounter);
+		Context.flushSession();
+		Context.clearSession();
+
+		encounter = encounterService.getEncounter(1);
+		assertFalse(encounter.getVoided());
+		assertEquals(1, encounter.getActiveEncounterProviders().size());
+		assertEquals(otherRole, encounter.getActiveEncounterProviders().iterator().next().getEncounterRole());
+
+		removedProvider = getEncounterProvider(1, removedProvider.getUuid());
+		assertTrue(removedProvider.getVoided());
+		assertEquals("removed earlier", removedProvider.getVoidReason());
+	}
 	
+	private EncounterProvider getEncounterProvider(Integer encounterId, String uuid) {
+		return Context.getEncounterService().getEncounter(encounterId).getEncounterProviders().stream()
+		        .filter(ep -> ep.getUuid().equals(uuid)).findFirst().orElseThrow(AssertionError::new);
+	}
+
 	/**
 	 * @see OrderService#voidOrder(org.openmrs.Order, String)
 	 */
@@ -1238,9 +1395,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		        .setIncludeVoided(false).createEncounterSearchCriteria();
 		encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 		assertEquals(4, encounters.size());
-		assertEquals(3, encounters.get(0).getEncounterId().intValue());
-		assertEquals(4, encounters.get(1).getEncounterId().intValue());
-		assertEquals(5, encounters.get(2).getEncounterId().intValue());
+		assertEquals(6, encounters.get(0).getEncounterId().intValue());
+		assertEquals(3, encounters.get(1).getEncounterId().intValue());
+		assertEquals(4, encounters.get(2).getEncounterId().intValue());
+		assertEquals(5, encounters.get(3).getEncounterId().intValue());
 	}
 	
 	/**
@@ -1859,6 +2017,57 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see EncounterService#getAllEncounters(Cohort)
+	 */
+	@Test
+	public void getAllEncounters_shouldNotReturnEncountersTheUserIsNotAllowedToView() {
+		// sets a view privilege on encounter type 1; patient 7 has two encounters of that type and one of type 2
+		getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getAllEncounters(Cohort) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		Cohort cohort = new Cohort();
+		cohort.addMember(7);
+		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
+
+		assertEquals(Collections.singletonList(3),
+		    allEncounters.get(7).stream().map(Encounter::getId).collect(Collectors.toList()));
+	}
+
+	/**
+	 * @see EncounterService#getAllEncounters(Cohort)
+	 */
+	@Test
+	public void getAllEncounters_shouldNotReturnAPatientWhoseEncountersTheUserIsNotAllowedToView() {
+		// sets a view privilege on encounter type 1; every encounter of patient 3 is of that type
+		getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getAllEncounters(Cohort) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		Cohort cohort = new Cohort();
+		cohort.addMember(3);
+		Map<Integer, List<Encounter>> allEncounters = Context.getEncounterService().getAllEncounters(cohort);
+
+		assertFalse(allEncounters.containsKey(3));
+	}
+
+	/**
 	 * @see EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
 	 *      boolean)
@@ -2403,8 +2612,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, encounter.getProvidersByRoles().size());
 		
 		encounterService.voidEncounter(encounter, "reason");
-		
+
+		// the encounter_provider is voided along with the encounter, but the provider is still
+		// retrievable and is restored when the encounter is unvoided (TRUNK-3333)
 		encounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertEquals(0, encounter.getProvidersByRoles().size());
+		assertEquals(1, encounter.getProvidersByRoles(true).size());
+		assertFalse(Context.getProviderService().getProvider(provider.getId()).getRetired());
+
+		encounterService.unvoidEncounter(encounter);
 		assertEquals(1, encounter.getProvidersByRoles().size());
 	}
 	
@@ -2626,6 +2842,22 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see EncounterService#canEditEncounter(Encounter, User)
+	 */
+	@Test
+	public void canEditEncounter_shouldReturnFalseIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		// get encounter whose saved type has an edit privilege, changed in memory to a type without one
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left user as is - i.e. without required privilege
+
+		assertFalse(Context.getEncounterService().canEditEncounter(encounter, user));
+	}
+
+	/**
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
 	@Test
@@ -2643,7 +2875,36 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		assertTrue(Context.getEncounterService().canViewEncounter(encounter, user));
 	}
-	
+
+	@Test
+	public void canViewEncounter_shouldNotBeGrantedToTheAuthenticatedUserByARoleAddedInMemory() {
+		Encounter encounter = getEncounterWithViewPrivilege();
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.evictFromSession(role);
+		Context.becomeUser(Context.getUserService().getUserByUsername("test_user").getSystemId());
+		User user = Context.getAuthenticatedUser();
+		Context.evictFromSession(user);
+
+		user.addRole(role);
+
+		assertFalse(Context.getEncounterService().canViewEncounter(encounter, null));
+		assertFalse(Context.getEncounterService().canViewEncounter(encounter, user));
+	}
+
+	@Test
+	public void canViewEncounter_shouldBeGrantedToTheAuthenticatedUserByTheAuthenticatedRole() {
+		Encounter encounter = getEncounterWithViewPrivilege();
+		Role authenticated = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
+		authenticated.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.getUserService().saveRole(authenticated);
+		Context.flushSession();
+		Context.becomeUser(Context.getUserService().getUserByUsername("test_user").getSystemId());
+
+		assertTrue(Context.getEncounterService().canViewEncounter(encounter, null));
+		assertTrue(Context.getEncounterService().canViewEncounter(encounter, Context.getAuthenticatedUser()));
+	}
+
 	/**
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
@@ -2700,12 +2961,16 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		User user = Context.getUserService().getUserByUsername("test_user");
 		assertNotNull(user);
-		
-		// add required privilege to role in which this user is
+
+		// add required privilege to role in which this user is; privileges come from stored roles, so
+		// both changes are saved
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.getUserService().saveRole(role);
 		user.addRole(role);
-		
+		Context.getUserService().saveUser(user);
+		Context.flushSession();
+
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
 		
@@ -2820,7 +3085,307 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		assertThrows(APIException.class, () -> Context.getEncounterService().purgeEncounter(encounter, Boolean.TRUE));
 	}
-	
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldFailIfUserIsNotAllowedToViewEncounterByGivenUuid() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getEncounterByUuid(String) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+		String uuid = encounter.getUuid();
+
+		assertThrows(APIException.class, () -> encounterService.getEncounterByUuid(uuid));
+	}
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldReturnEncounterIfUserIsAllowedToViewIt() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// add required privilege to role in which this user is; privileges come from stored roles, so
+		// both changes are saved
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.getUserService().saveRole(role);
+		user.addRole(role);
+		Context.getUserService().saveUser(user);
+		Context.flushSession();
+
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call getEncounterByUuid(String) method
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		assertNotNull(Context.getEncounterService().getEncounterByUuid(encounter.getUuid()));
+	}
+
+	/**
+	 * @see EncounterService#getEncounterByUuid(String)
+	 */
+	@Test
+	public void getEncounterByUuid_shouldReturnEncounterOnDaemonThreadWithoutViewPrivilege() {
+		// get encounter that has type with view privilege set
+		Encounter encounter = getEncounterWithViewPrivilege();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		EncounterService encounterService = Context.getEncounterService();
+		String uuid = encounter.getUuid();
+
+		// system work such as a scheduled report runs on a daemon thread, which is granted every privilege
+		try (MockedStatic<Daemon> daemon = mockStatic(Daemon.class, Mockito.CALLS_REAL_METHODS)) {
+			daemon.when(Daemon::isDaemonThread).thenReturn(true);
+
+			assertNotNull(encounterService.getEncounterByUuid(uuid));
+		}
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call saveEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldNotChangeSavedTypeIfUserIsNotSupposedToEditEncountersOfSavedType() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+		EncounterType savedType = Context.getEncounterService().getEncounterType(1);
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call saveEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+
+		// discard the rejected change and reload the encounter from the database
+		Context.evictFromSession(encounter);
+
+		assertEquals(savedType, Context.getEncounterService().getEncounter(encounter.getId()).getEncounterType());
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfNewTypeWhenTypeIsChanged() {
+		// encounter 1 has an unrestricted type; move it to a type with an edit privilege the user lacks
+		Encounter encounter = Context.getEncounterService().getEncounter(1);
+		EncounterType restrictedType = Context.getEncounterService().getEncounterType(2);
+		restrictedType.setEditPrivilege(Context.getUserService().getPrivilege("Some Privilege For Edit Encounter Types"));
+		encounter.setEncounterType(restrictedType);
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call saveEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.saveEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#saveEncounter(Encounter)
+	 */
+	@Test
+	public void saveEncounter_shouldChangeTypeIfUserIsAllowedToEditEncountersOfBothTypes() {
+		Privilege newTypeEditPrivilege = Context.getUserService().getPrivilege("Some Privilege For View Encounter Types");
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// add edit privileges of both the saved and the new type to role in which this user is;
+		// privileges come from stored roles, so both changes are saved before the encounter is changed
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(Context.getUserService().getPrivilege("Some Privilege For Edit Encounter Types"));
+		role.addPrivilege(newTypeEditPrivilege);
+		Context.getUserService().saveRole(role);
+		user.addRole(role);
+		Context.getUserService().saveUser(user);
+		Context.flushSession();
+
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+		EncounterType newType = encounter.getEncounterType();
+		newType.setEditPrivilege(newTypeEditPrivilege);
+
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privileges in order to be able to call saveEncounter(Encounter) method
+		// and the services it saves the encounter's obs and orders through
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_LOCATIONS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_OBS);
+		Context.addProxyPrivilege(PrivilegeConstants.ADD_OBS);
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_OBS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_CONCEPTS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_PATIENTS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_PERSONS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ORDERS);
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ENCOUNTER_TYPES);
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_DIAGNOSES);
+
+		Context.getEncounterService().saveEncounter(encounter);
+		Context.flushSession();
+		Context.evictFromSession(encounter);
+
+		assertEquals(newType, Context.getEncounterService().getEncounter(encounter.getId()).getEncounterType());
+	}
+
+	/**
+	 * @see EncounterService#voidEncounter(Encounter, String)
+	 */
+	@Test
+	public void voidEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call voidEncounter(Encounter,String) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.voidEncounter(encounter, "test"));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#unvoidEncounter(Encounter)
+	 */
+	@Test
+	public void unvoidEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call unvoidEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.unvoidEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#purgeEncounter(Encounter)
+	 */
+	@Test
+	public void purgeEncounter_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call purgeEncounter(Encounter) method
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
+	/**
+	 * @see EncounterService#purgeEncounter(Encounter,Boolean)
+	 */
+	@Test
+	public void purgeEncounterCascade_shouldFailIfUserIsNotSupposedToEditEncountersOfSavedTypeWhenTypeIsChanged() {
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+
+		User user = Context.getUserService().getUserByUsername("test_user");
+		assertNotNull(user);
+
+		// left this user as is - i.e. without required privilege
+		// and authenticate under it's account
+		Context.becomeUser(user.getSystemId());
+
+		// have to add privilege in order to be able to call purgeEncounter(Encounter,Boolean) method
+		Context.addProxyPrivilege(PrivilegeConstants.PURGE_ENCOUNTERS);
+
+		EncounterService encounterService = Context.getEncounterService();
+
+		APIException e = assertThrows(APIException.class, () -> encounterService.purgeEncounter(encounter, Boolean.TRUE));
+		assertThat(e.getMessage(), containsString("Some Privilege For Edit Encounter Types"));
+	}
+
 	@Test
 	public void getActiveEncounterVisitHandler_shouldThrowIfBeanWithGivenTypeAndNameNotFound() {
 		
@@ -2874,6 +3439,20 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		return encounter;
 	}
 	
+	/**
+	 * Gets encounter whose saved type has an edit privilege, then changes its type in memory to one
+	 * without any edit privilege, as a user trying to bypass the saved type's privilege would
+	 *
+	 * @return encounter whose saved type and in-memory type differ
+	 */
+	private Encounter getEncounterWithEditPrivilegeAndChangedType() {
+		Encounter encounter = getEncounterWithEditPrivilege();
+		EncounterType unrestrictedType = Context.getEncounterService().getEncounterType(2);
+		assertNull(unrestrictedType.getEditPrivilege());
+		encounter.setEncounterType(unrestrictedType);
+		return encounter;
+	}
+
 	/**
 	 * Gets encounter and adds view privilege to it
 	 *
@@ -3107,6 +3686,50 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @see EncounterService#transferEncounter(Encounter,Patient)
 	 */
 	@Test
+	public void transferEncounter_shouldVoidEncounterProvidersOfGivenEncounterButNotTheirProviders() {
+		executeDataSet(TRANSFER_ENC_DATA_XML);
+		Patient targetPatient = Context.getPatientService().getPatient(201);
+		Encounter sourceEncounter = Context.getEncounterService().getEncounter(201);
+		// detach the visit so that voiding it (which cascades to its encounters via AOP) doesn't mask the
+		// internal voidEncounter call, which bypasses AOP
+		sourceEncounter.setVisit(null);
+		Context.getEncounterService().saveEncounter(sourceEncounter);
+		EncounterProvider sourceEncounterProvider = sourceEncounter.getEncounterProviders().iterator().next();
+		assertFalse(sourceEncounterProvider.getVoided());
+		String providerUuid = sourceEncounterProvider.getProvider().getUuid();
+
+		Encounter transferredEncounter = Context.getEncounterService().transferEncounter(sourceEncounter, targetPatient);
+		Context.flushSession();
+		Context.clearSession();
+
+		// the source encounter's encounter_provider is voided along with the encounter
+		sourceEncounter = Context.getEncounterService().getEncounter(201);
+		sourceEncounterProvider = getEncounterProvider(201, sourceEncounterProvider.getUuid());
+		assertTrue(sourceEncounter.getVoided());
+		assertTrue(sourceEncounterProvider.getVoided());
+		assertEquals(sourceEncounter.getVoidReason(), sourceEncounterProvider.getVoidReason());
+		assertNotNull(sourceEncounterProvider.getVoidedBy());
+		assertEquals(sourceEncounter.getDateVoided().getTime(), sourceEncounterProvider.getDateVoided().getTime());
+
+		// the transferred encounter has its own active copy of the encounter_provider
+		transferredEncounter = Context.getEncounterService().getEncounter(transferredEncounter.getId());
+		assertEquals(1, transferredEncounter.getActiveEncounterProviders().size());
+		assertEquals(providerUuid, transferredEncounter.getActiveEncounterProviders().iterator().next().getProvider().getUuid());
+
+		// the provider itself is untouched
+		Provider provider = Context.getProviderService().getProviderByUuid(providerUuid);
+		assertFalse(provider.getRetired());
+		assertFalse(provider.getPerson().getVoided());
+
+		// and the encounter_provider is restored if the source encounter is unvoided
+		Context.getEncounterService().unvoidEncounter(sourceEncounter);
+		assertFalse(getEncounterProvider(201, sourceEncounterProvider.getUuid()).getVoided());
+	}
+
+	/**
+	 * @see EncounterService#transferEncounter(Encounter,Patient)
+	 */
+	@Test
 	public void transferEncounter_shouldVoidGivenEncounterVisitIfGivenEncounterIsTheOnlyEncounter() {
 		executeDataSet(TRANSFER_ENC_DATA_XML);
 		Patient anyPatient = new Patient(2);
@@ -3242,6 +3865,37 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		assertEquals(2, orderGroups.size(), "Two New Order Groups Get Saved");
+	}
+
+	@Test
+	public void shouldFailToSaveEncounterIfChangesWouldResultInInvalidOrders() {
+		Date today = new  Date();
+		Date yesterday = DateUtils.addDays(today, -1);
+		executeDataSet(ORDER_SET);
+		Encounter encounter = new Encounter();
+		encounter.setPatient(Context.getPatientService().getPatient(3));
+		encounter.setEncounterType(Context.getEncounterService().getEncounterType(1));
+		encounter.setEncounterDatetime(yesterday);
+		
+		Order order = new OrderBuilder().withAction(Order.Action.NEW).withPatient(3).withConcept(1000)
+			.withCareSetting(1).withOrderer(1).withDateActivated(yesterday)
+			.withOrderType(17).withUrgency(Order.Urgency.ROUTINE).build();
+		
+		encounter.addOrder(order);
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		encounter.setEncounterDatetime(today);
+		ValidationException validationError = null;
+		try {
+			Context.getEncounterService().saveEncounter(encounter);
+		}
+		catch (ValidationException e) {
+			validationError = e;
+		}
+		assertNotNull(validationError);
+		String expectedError = "dateActivated: Date activated cannot be before that of the associated encounter";
+		assertThat(validationError.getMessage(), containsString(expectedError));
+		
 	}
 	
 	@Test

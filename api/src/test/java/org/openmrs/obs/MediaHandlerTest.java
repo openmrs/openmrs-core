@@ -65,20 +65,21 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
     }
     
 	@Test
-	public void saveObs_shouldRetrieveCorrectMimetype() throws IOException {
+	public void saveObs_shouldRetrieveCorrectMimetypeAndTitle() throws IOException {
 		
 		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR,
 		        "obs"));
 		
 		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestAudio.mp3").toFile();
+		String filename = "TestingComplexObsSaving.mp3";
 		
 		Obs complexObs1 = null;
 		Obs complexObs2 = null;
 		try (FileInputStream in1 = new FileInputStream(sourceFile);
 				 FileInputStream in2 = new FileInputStream(sourceFile)
 			) {
-			ComplexData complexData1 = new ComplexData("TestingComplexObsSaving.mp3", in1);
-			ComplexData complexData2 = new ComplexData("TestingComplexObsSaving.mp3", in2);
+			ComplexData complexData1 = new ComplexData(filename, in1);
+			ComplexData complexData2 = new ComplexData(filename, in2);
 			
 			// Construct 2 Obs to also cover the case where the filename exists already
 			Obs obs1 = new Obs();
@@ -93,7 +94,9 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 			complexObs2 = handler.getObs(obs2, "RAW_VIEW");
 			
 			assertEquals("audio/mpeg", complexObs1.getComplexData().getMimeType());
+			assertEquals(complexObs1.getComplexData().getTitle(), filename);
 			assertEquals("audio/mpeg", complexObs2.getComplexData().getMimeType());
+			assertEquals(complexObs2.getComplexData().getTitle(), filename);
 		} finally {
 			((InputStream) complexObs1.getComplexData().getData()).close();
 			((InputStream) complexObs2.getComplexData().getData()).close();

@@ -713,6 +713,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return the allergies object
 	 * <strong>Should</strong> get the allergy list and status
 	 */
+	@Authorized({ PrivilegeConstants.GET_ALLERGIES })
 	Allergies getAllergies(Patient patient);
 	
 	/**
@@ -736,6 +737,7 @@ public interface PatientService extends OpenmrsService {
 	 * <strong>Should</strong> void allergies with added reactions
      * <strong>Should</strong> set the non coded concept for non coded allergen if not specified
 	 */
+	@Authorized({ PrivilegeConstants.ADD_ALLERGIES, PrivilegeConstants.EDIT_ALLERGIES })
 	Allergies setAllergies(Patient patient, Allergies allergies);
 	
 	/**
@@ -797,7 +799,10 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Return the number of unvoided patients with names or patient identifiers or searchable person
 	 * attributes starting with or equal to the specified text
-	 * 
+	 * <p>
+	 * Note that after {@code person.searchMaxResults}, the count will be an upper bound, but not
+	 * necessarily an accurate count.
+	 *
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8

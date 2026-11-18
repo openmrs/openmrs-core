@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +36,9 @@ public class VisitVoidHandler implements VoidHandler<Visit> {
 	@Override
 	public void handle(Visit voidableObject, User voidingUser, Date voidedDate, String voidReason) {
 		List<Encounter> encountersByVisit = Context.getEncounterService().getEncountersByVisit(voidableObject, false);
+		// void the encounters in reverse order of encounterDatetime, so that
+		// encounters that require another prior encounter (ex: a discharge must happen after an admission encounter) are voided properly.
+		Collections.sort(encountersByVisit, Comparator.comparing(Encounter::getEncounterDatetime).reversed());
 		for (Encounter encounter : encountersByVisit) {
 			encounter.setDateVoided(voidedDate);
 			Context.getEncounterService().voidEncounter(encounter, voidReason);

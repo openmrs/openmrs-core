@@ -9,6 +9,7 @@
  */
 package org.openmrs.api.handler;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -33,7 +34,7 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
 		name.setTags(null);
-		handler.handle(name, null, null, null);
+		assertDoesNotThrow(() -> handler.handle(name, null, null, null));
 	}
 	
 	/**

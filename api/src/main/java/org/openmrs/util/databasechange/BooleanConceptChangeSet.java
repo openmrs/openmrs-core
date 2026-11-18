@@ -15,9 +15,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +134,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement = connection
 			        .prepareStatement("INSERT INTO concept (concept_id, short_name, description, datatype_id, class_id, retired, is_set, creator, date_created, uuid) VALUES (?, '', '', 4, 11, FALSE, FALSE, 1, NOW(), ?)");
 			updateStatement.setInt(1, conceptId);
-			updateStatement.setString(2, UUID.randomUUID().toString());
+			updateStatement.setString(2, UuidUtil.newUuidString());
 			updateStatement.executeUpdate();
 			
 			boolean preferredDoneAlready = false; // only tag one name as preferred
@@ -150,7 +150,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 					updateStatement.setInt(2, conceptId);
 					updateStatement.setString(3, locale);
 					updateStatement.setString(4, name);
-					updateStatement.setString(5, UUID.randomUUID().toString());
+					updateStatement.setString(5, UuidUtil.newUuidString());
 					updateStatement.executeUpdate();
 					updateStatement.close();
 					
@@ -251,13 +251,13 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement.setString(1, OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT);
 			updateStatement.setInt(2, trueConceptId);
 			updateStatement.setString(3, "Concept id of the concept defining the TRUE boolean concept");
-			updateStatement.setString(4, UUID.randomUUID().toString());
+			updateStatement.setString(4, UuidUtil.newUuidString());
 			updateStatement.executeUpdate();
 			
 			updateStatement.setString(1, OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT);
 			updateStatement.setInt(2, falseConceptId);
 			updateStatement.setString(3, "Concept id of the concept defining the FALSE boolean concept");
-			updateStatement.setString(4, UUID.randomUUID().toString());
+			updateStatement.setString(4, UuidUtil.newUuidString());
 			updateStatement.executeUpdate();
 		}
 		catch (DatabaseException | SQLException e) {
