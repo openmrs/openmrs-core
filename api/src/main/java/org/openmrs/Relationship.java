@@ -94,6 +94,8 @@ public class Relationship extends BaseChangeableOpenmrsData {
 		target.personA = getPersonA();
 		target.relationshipType = getRelationshipType();
 		target.personB = getPersonB();
+		target.setStartDate(getStartDate());
+		target.setEndDate(getEndDate());
 		target.setCreator(getCreator());
 		target.setDateCreated(getDateCreated());
 		target.setVoided(getVoided());
