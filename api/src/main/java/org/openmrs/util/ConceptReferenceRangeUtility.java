@@ -11,8 +11,9 @@ package org.openmrs.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +27,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.collection.spi.PersistentCollection;
-import org.joda.time.LocalTime;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openmrs.Concept;
@@ -119,9 +119,14 @@ public class ConceptReferenceRangeUtility {
 	        .forPropertyAccessors(new MapAccessor(), new RestrictedPropertyAccessor())
 	        .withMethodResolvers(new RestrictedMethodResolver()).withAssignmentDisabled().build();
 
-	private final CriteriaFunctions functions = new CriteriaFunctions();
+	private final CriteriaFunctions functions;
 
 	public ConceptReferenceRangeUtility() {
+		this(Clock.systemDefaultZone());
+	}
+
+	ConceptReferenceRangeUtility(Clock clock) {
+		this.functions = new CriteriaFunctions(clock);
 	}
 
 	/**
@@ -343,6 +348,12 @@ public class ConceptReferenceRangeUtility {
 
 		private final long NULL_DATE_RETURN_VALUE = -1;
 
+		private final Clock clock;
+
+		CriteriaFunctions(Clock clock) {
+			this.clock = clock;
+		}
+
 		/**
 		 * Gets the latest Obs by concept.
 		 *
@@ -374,7 +385,7 @@ public class ConceptReferenceRangeUtility {
 		 * @return the hour of the day in 24hr format (e.g. 14 to mean 2pm)
 		 */
 		public int getCurrentHour() {
-			return LocalTime.now().getHourOfDay();
+			return LocalTime.now(clock).getHour();
 		}
 
 		/**
@@ -588,7 +599,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getDays(Date fromDate) {
-			return getDaysBetween(fromDate, new Date());
+			return getDaysBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -599,7 +610,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getWeeks(Date fromDate) {
-			return getWeeksBetween(fromDate, new Date());
+			return getWeeksBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -610,7 +621,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getMonths(Date fromDate) {
-			return getMonthsBetween(fromDate, new Date());
+			return getMonthsBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -621,7 +632,7 @@ public class ConceptReferenceRangeUtility {
 		 * @since 2.7.0
 		 */
 		public long getYears(Date fromDate) {
-			return getYearsBetween(fromDate, new Date());
+			return getYearsBetween(fromDate, Date.from(clock.instant()));
 		}
 
 		/**
@@ -660,13 +671,14 @@ public class ConceptReferenceRangeUtility {
 			if (!(person.getIsPatient())) {
 				return false;
 			}
+			Date effectiveDate = onDate != null ? onDate : Date.from(clock.instant());
 
-			List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, onDate);
+			List<PatientProgram> patientPrograms = getPatientPrograms((Patient) person, effectiveDate);
 			List<PatientState> patientStates = new ArrayList<>();
 
 			for (PatientProgram pp : patientPrograms) {
 				for (PatientState state : pp.getStates()) {
-					if (state.getActive(onDate)) {
+					if (state.getActive(effectiveDate)) {
 						patientStates.add(state);
 					}
 				}
@@ -676,12 +688,12 @@ public class ConceptReferenceRangeUtility {
 		}
 
 		private LocalDate toLocalDate(Date date) {
-			return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			return date.toInstant().atZone(clock.getZone()).toLocalDate();
 		}
 
 		private List<PatientProgram> getPatientPrograms(Patient patient, Date onDate) {
 			if (onDate == null) {
-				onDate = new Date();
+				onDate = Date.from(clock.instant());
 			}
 			return Context.getProgramWorkflowService().getPatientPrograms(patient, null, null, onDate, onDate, null, false);
 		}
