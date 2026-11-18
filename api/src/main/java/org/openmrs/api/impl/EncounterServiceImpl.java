@@ -508,6 +508,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public void purgeEncounter(Encounter encounter) throws APIException {
+		if (encounter == null) {
+			return;
+		}
 		// if authenticated user is not supposed to edit encounter of certain type
 		Privilege missingPrivilege = getMissingEditPrivilege(encounter, null);
 		if (missingPrivilege != null) {
