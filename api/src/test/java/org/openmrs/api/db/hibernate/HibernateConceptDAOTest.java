@@ -31,6 +31,8 @@ import org.openmrs.Drug;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.GlobalPropertiesTestHelper;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,8 +58,21 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 	/** Headroom for effects that scale with the page without being per-hit loading. */
 	private static final int PAGE_GROWTH_ALLOWANCE = 8;
 
+	/** Distinct token for the count-deduplication fixture, matched by every fixture ConceptName. */
+	private static final String COUNT_DEDUP_TOKEN = "Zzcountdedupe";
+
+	/** Number of concepts in the count-deduplication fixture. */
+	private static final int COUNT_DEDUP_CONCEPTS = 3;
+
+	/**
+	 * Matching ConceptName rows per fixture concept, so the raw (non-deduplicated) hit count is known.
+	 */
+	private static final int COUNT_DEDUP_NAMES_PER_CONCEPT = 2;
+
 	@Autowired
 	private HibernateConceptDAO dao;
+
+	private GlobalPropertiesTestHelper globalPropertiesTestHelper;
 
 	/**
 	 * Restricts search-index rebuilds to the entity types concept searches actually query, instead of
@@ -73,6 +88,8 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 		executeDataSet(PROVIDERS_INITIAL_XML);
 
 		updateSearchIndex();
+
+		globalPropertiesTestHelper = new GlobalPropertiesTestHelper(Context.getAdministrationService());
 	}
 
 	/**
@@ -376,6 +393,139 @@ public class HibernateConceptDAOTest extends BaseContextSensitiveTest {
 			// Two names each, so a page has more name rows than concepts to hydrate.
 			concept.addName(new ConceptName(CONCEPT_FIXTURE_TOKEN + " " + i, Locale.ENGLISH));
 			concept.addName(new ConceptName(CONCEPT_FIXTURE_TOKEN + " synonym " + i, Locale.UK));
+			dao.saveConcept(concept);
+		}
+
+		Context.flushSession();
+		Context.clearSession();
+		updateSearchIndex();
+	}
+
+	/**
+	 * With no cap configured the duplicate ConceptName hits collapse to the exact distinct concept
+	 * count.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldReturnExactCountWhenGlobalPropertyIsNotSet() {
+		createCountDeduplicationFixture();
+		globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+	}
+
+	/**
+	 * The distinct concept count exceeds a cap of 1, so exact deduplication is abandoned and the raw
+	 * (duplicate-counting) ConceptName document count is returned as an upper bound.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldReturnBoundedCountWhenGlobalPropertyIsSet() {
+		createCountDeduplicationFixture();
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "1");
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS * COUNT_DEDUP_NAMES_PER_CONCEPT, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
+	}
+
+	/**
+	 * A malformed property value is ignored, so the count matches the unbounded (exact distinct)
+	 * behaviour of an unset property.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsInvalid() {
+		createCountDeduplicationFixture();
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "not-a-number");
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
+	}
+
+	/**
+	 * A cap of {@code 0} is non-positive and must be rejected: without the guard the count would
+	 * degrade to the raw ConceptName document count on the very first hit.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsZero() {
+		createCountDeduplicationFixture();
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "0");
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
+	}
+
+	/**
+	 * A negative cap is non-positive and must be rejected, matching the unbounded (exact distinct)
+	 * behaviour of an unset property.
+	 *
+	 * @see HibernateConceptDAO#getCountOfConcepts
+	 */
+	@Test
+	public void getCountOfConcepts_shouldFallBackToUnboundedWhenGlobalPropertyIsNegative() {
+		createCountDeduplicationFixture();
+		String oldPropertyValue = globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP,
+		    "-1");
+
+		Integer count = countConceptsForDedupToken();
+
+		assertEquals(COUNT_DEDUP_CONCEPTS, count.intValue());
+
+		restoreConceptSearchCountCap(oldPropertyValue);
+	}
+
+	private Integer countConceptsForDedupToken() {
+		return dao.getCountOfConcepts(COUNT_DEDUP_TOKEN, Collections.singletonList(Locale.ENGLISH), false,
+		    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
+	}
+
+	/**
+	 * Restores {@link OpenmrsConstants#GP_CONCEPT_SEARCH_COUNT_CAP} to its pre-test value, so the
+	 * {@link org.openmrs.util.ConfigUtil} cache is left consistent with the database for other tests.
+	 */
+	private void restoreConceptSearchCountCap(String oldPropertyValue) {
+		if (oldPropertyValue != null) {
+			globalPropertiesTestHelper.setGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP, oldPropertyValue);
+		} else {
+			globalPropertiesTestHelper.purgeGlobalProperty(OpenmrsConstants.GP_CONCEPT_SEARCH_COUNT_CAP);
+		}
+	}
+
+	/**
+	 * Creates {@link #COUNT_DEDUP_CONCEPTS} concepts, each with {@link #COUNT_DEDUP_NAMES_PER_CONCEPT}
+	 * names that all match {@link #COUNT_DEDUP_TOKEN}. The search index therefore holds more matching
+	 * ConceptName hits ({@code concepts * names}) than there are distinct concepts, which is exactly
+	 * what the deduplication cap acts on.
+	 */
+	private void createCountDeduplicationFixture() {
+		ConceptClass conceptClass = dao.getConceptClass(1);
+		ConceptDatatype datatype = dao.getConceptDatatypeByName("N/A");
+
+		for (int i = 0; i < COUNT_DEDUP_CONCEPTS; i++) {
+			Concept concept = new Concept();
+			concept.setConceptClass(conceptClass);
+			concept.setDatatype(datatype);
+			concept.addName(new ConceptName(COUNT_DEDUP_TOKEN + " " + i, Locale.ENGLISH));
+			concept.addName(new ConceptName(COUNT_DEDUP_TOKEN + " synonym " + i, Locale.UK));
 			dao.saveConcept(concept);
 		}
 

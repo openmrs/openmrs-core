@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.BooleanQuery;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
@@ -26,6 +27,10 @@ import org.hibernate.search.engine.search.query.SearchScrollResult;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
+import org.openmrs.util.ConfigUtil;
+import org.openmrs.util.OpenmrsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods for removing duplicate search results based on the given uniqueKey and combining
@@ -47,6 +52,8 @@ import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
  * @since 2.8.0
  */
 public class SearchQueryUnique<T, R> {
+
+	private static final Logger log = LoggerFactory.getLogger(SearchQueryUnique.class);
 
 	/**
 	 * Cap value for {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} that keeps the
@@ -233,14 +240,50 @@ public class SearchQueryUnique<T, R> {
 	}
 
 	/**
-	 * Runs the search calculating the exact total hit count only.
+	 * Runs the search calculating the total hit count only, with no caller-supplied deduplication cap.
+	 * <p>
+	 * The count is exact unless the {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD}
+	 * global property configures a positive default cap, in which case it behaves as
+	 * {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} with that cap. A blank, unset,
+	 * non-positive or malformed property value keeps the count exact
+	 * ({@link #UNBOUNDED_DEDUPLICATION}).
 	 *
 	 * @param searchSessionFactory SearchSessionFactory
 	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
 	 * @return the total hit count
 	 */
 	public static Long searchCount(SearchSessionFactory searchSessionFactory, SearchQueryUnique<?, ?> uniqueQuery) {
-		return searchCount(searchSessionFactory, uniqueQuery, UNBOUNDED_DEDUPLICATION);
+		return searchCount(searchSessionFactory, uniqueQuery, resolveDefaultDeduplicationCap());
+	}
+
+	/**
+	 * Resolves the default deduplication cap from the
+	 * {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD} global property, used whenever
+	 * no explicit cap is supplied. A blank, unset, non-positive or malformed value falls back to
+	 * {@link #UNBOUNDED_DEDUPLICATION} (an always exact count); a non-positive or malformed value is
+	 * also logged as a warning.
+	 *
+	 * @return the configured positive default cap, or {@link #UNBOUNDED_DEDUPLICATION} if none is
+	 *         configured
+	 */
+	private static int resolveDefaultDeduplicationCap() {
+		String gpValue = ConfigUtil.getGlobalProperty(OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD);
+		if (StringUtils.isBlank(gpValue)) {
+			return UNBOUNDED_DEDUPLICATION;
+		}
+		try {
+			int cap = Integer.parseInt(gpValue.trim());
+			if (cap <= 0) {
+				log.warn("Non-positive value for global property {}: '{}', using unbounded deduplication",
+				    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, gpValue);
+				return UNBOUNDED_DEDUPLICATION;
+			}
+			return cap;
+		} catch (NumberFormatException e) {
+			log.warn("Invalid value for global property {}: '{}', using unbounded deduplication",
+			    OpenmrsConstants.GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD, gpValue);
+			return UNBOUNDED_DEDUPLICATION;
+		}
 	}
 
 	/**
@@ -293,10 +336,12 @@ public class SearchQueryUnique<T, R> {
 	/**
 	 * Executes unique queries applying joins and mapping to the result type.
 	 * <p>
-	 * When <code>includeTotalHitCount</code> is <code>true</code> only the exact total hit count is
-	 * calculated and the returned results are empty; use
-	 * {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} to bound the count cost.
-	 * Otherwise the requested page of results is returned and the total hit count is <code>null</code>.
+	 * When <code>includeTotalHitCount</code> is <code>true</code> only the total hit count is
+	 * calculated and the returned results are empty. The count is exact unless the
+	 * {@link OpenmrsConstants#GP_SEARCH_QUERY_UNIQUE_DEFAULT_THRESHOLD} global property configures a
+	 * positive default cap; use {@link #searchCount(SearchSessionFactory, SearchQueryUnique, int)} to
+	 * bound the count cost explicitly. Otherwise the requested page of results is returned and the
+	 * total hit count is <code>null</code>.
 	 *
 	 * @param searchSessionFactory search session factory
 	 * @param uniqueQuery unique query {@link #newQuery(Class, Function, String, Function)}
@@ -312,8 +357,8 @@ public class SearchQueryUnique<T, R> {
 
 		if (Boolean.TRUE.equals(includeTotalHitCount)) {
 			// The count path only needs the total number of distinct hits, so it skips fetching and
-			// hydrating a page of results entirely.
-			long totalHitCount = searchTotalHitCount(searchSession, uniqueQuery, UNBOUNDED_DEDUPLICATION);
+			// hydrating a page of results up to the default maximum
+			long totalHitCount = searchTotalHitCount(searchSession, uniqueQuery, resolveDefaultDeduplicationCap());
 			return new SearchUniqueResults<>(new ArrayList<>(), offset, limit, totalHitCount);
 		}
 
