@@ -108,7 +108,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	@Test
 	public void getSecurityState_shouldAcceptTheProxyPrivilegeRegardlessOfCase() {
 		User admin = admin();
-		service.setSecurityState(admin, PROPERTY, "3");
+		service.saveSecurityState(admin, PROPERTY, "3");
 		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE.toUpperCase());
 

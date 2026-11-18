@@ -24,10 +24,10 @@ import jakarta.persistence.UniqueConstraint;
 
 /**
  * One entry of the per-user security state kept in the user_security_state table, and the model
- * that {@link org.openmrs.validator.UserSecurityStateValidator} validates before an entry is stored.
- * {@link org.openmrs.api.db.UserSecurityStateDAO} reads and writes the table with native queries
- * that name this entity as their synchronized query space, and never loads instances of it, so
- * that security state is never served from a cache; it fills the audit columns itself, with the
+ * that {@link org.openmrs.validator.UserSecurityStateValidator} validates before an entry is
+ * stored. {@link org.openmrs.api.db.UserSecurityStateDAO} reads and writes the table with native
+ * queries that name this entity as their synchronized query space, and never loads instances of it,
+ * so that security state is never served from a cache; it fills the audit columns itself, with the
  * authenticated user of the calling thread, which is nobody while a login attempt is being counted.
  *
  * @since 3.0.0, 2.9.0

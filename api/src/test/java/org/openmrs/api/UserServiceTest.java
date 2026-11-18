@@ -610,6 +610,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#unlockUser(User)
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
+	public void unlockUser_shouldNotNeedTheManageUserSecurityStateProxyPrivilege() {
+		User user = userService.getUser(502);
+		Context.getUserService().saveSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis()));
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+
+		assertTrue(userService.isLockedOut(user));
+		userService.unlockUser(user);
+		assertFalse(userService.isLockedOut(user));
+	}
+
+	/**
 	 * @see UserService#isLockedOut(User)
 	 */
 	@Test
