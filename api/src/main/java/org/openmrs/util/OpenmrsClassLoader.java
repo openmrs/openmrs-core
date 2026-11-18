@@ -450,36 +450,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			}
 			Class<?> clazz = refClazz.get();
 			if (clazz != null && clazz.getName().contains("openmrs")) { // only clean up openmrs classes
-				try {
-					Field[] fields = clazz.getDeclaredFields();
-					for (Field field : fields) {
-						int mods = field.getModifiers();
-						if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
-							continue;
-						}
-						if (Modifier.isStatic(mods)) {
-							try {
-								// do not clear the log field on this class yet
-								if (clazz.equals(OpenmrsClassLoader.class) && "log".equals(field.getName())) {
-									continue;
-								}
-								field.setAccessible(true);
-								if (Modifier.isFinal(mods)) {
-									if (!(field.getType().getName().startsWith("javax."))) {
-										nullInstance(field.get(null));
-									}
-								} else {
-									field.set(null, null);
-									log.debug("Set field {} to null in class {}", field.getName(), clazz.getName());
-								}
-							} catch (Exception t) {
-								log.debug("Could not set field {} to null in class {}", field.getName(), clazz.getName(), t);
-							}
-						}
-					}
-				} catch (Exception t) {
-					log.debug("Could not clean fields for class {}", clazz.getName(), t);
-				}
+				nullStaticFields(clazz);
 			}
 		}
 
@@ -487,6 +458,53 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		OpenmrsClassLoader.log = null;
 
 		getInstance().cachedClasses.clear();
+	}
+
+	/**
+	 * Nulls out the static fields of the given class. <br>
+	 * <br>
+	 * Used by {@link #clearReferences()} upon application close.
+	 * <p>
+	 * Reflecting over a class that was loaded but never linked fails with a {@link LinkageError}
+	 * instead of an exception if the class refers to a type that is not on the classpath, for instance
+	 * one that an optional dependency would have provided. Since this runs while the web application is
+	 * being destroyed, such a failure is logged and skipped rather than left to abort the rest of the
+	 * shutdown.
+	 *
+	 * @param clazz the class whose static fields need to be nulled out
+	 * @since 3.0.0
+	 */
+	protected static void nullStaticFields(Class<?> clazz) {
+		try {
+			Field[] fields = clazz.getDeclaredFields();
+			for (Field field : fields) {
+				int mods = field.getModifiers();
+				if (field.getType().isPrimitive() || (field.getName().contains("$"))) {
+					continue;
+				}
+				if (Modifier.isStatic(mods)) {
+					try {
+						// do not clear the log field on this class yet
+						if (clazz.equals(OpenmrsClassLoader.class) && "log".equals(field.getName())) {
+							continue;
+						}
+						field.setAccessible(true);
+						if (Modifier.isFinal(mods)) {
+							if (!(field.getType().getName().startsWith("javax."))) {
+								nullInstance(field.get(null));
+							}
+						} else {
+							field.set(null, null);
+							log.debug("Set field {} to null in class {}", field.getName(), clazz.getName());
+						}
+					} catch (Exception | LinkageError t) {
+						log.debug("Could not set field {} to null in class {}", field.getName(), clazz.getName(), t);
+					}
+				}
+			}
+		} catch (Exception | LinkageError t) {
+			log.debug("Could not clean fields for class {}", clazz.getName(), t);
+		}
 	}
 
 	/**
@@ -522,7 +540,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						}
 					}
 				}
-			} catch (Exception e) {
+			} catch (Exception | LinkageError e) {
 				log.debug("Could not set field {} to null in object instance of class {}", field.getName(),
 				    instance.getClass().getName(), e);
 			}
