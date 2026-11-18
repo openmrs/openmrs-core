@@ -1209,7 +1209,6 @@ public interface ConceptService extends OpenmrsService {
 	 *             permission
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
-	// TODO: DAO auth filter
 	public Iterator<Concept> conceptIterator();
 
 	/**
@@ -1544,7 +1543,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
-	// TODO: DAO auth filter
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
@@ -1631,7 +1629,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasPermission(#answersToConcept, '" + PrivilegeConstants.GET_CONCEPTS + "')")
-	// TODO: DAO auth filter
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
 	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept);
@@ -1655,7 +1652,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_CONCEPTS + "')")
-	// TODO: DAO auth filter
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired) throws APIException;
 
@@ -1682,7 +1678,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasPermission(#concept, '" + PrivilegeConstants.GET_CONCEPTS + "')")
-	// TODO: DAO auth filter
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchKeywords, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws APIException;
 
@@ -2141,7 +2136,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@PreAuthorize("hasPermission(#conceptSource, '" + PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS + "')")
-	//TODO: DAO auth filter
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(String query, ConceptSource conceptSource, Integer start,
 	        Integer length, boolean includeRetired) throws APIException;
 
@@ -2161,7 +2155,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@PreAuthorize("hasPermission(#conceptSource, '" + PrivilegeConstants.GET_CONCEPT_REFERENCE_TERMS + "')")
-	//TODO: DAO auth filter
 	public Integer getCountOfConceptReferenceTerms(String query, ConceptSource conceptSource, boolean includeRetired)
 	        throws APIException;
 
@@ -2356,7 +2349,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.10
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_CONCEPTS + "')")
-	//TODO: DAO auth filter
 	public List<ConceptSearchResult> getOrderableConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        Integer start, Integer length);
 
