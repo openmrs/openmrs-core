@@ -39,8 +39,8 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * <strong>Should</strong> return infinite low and high if called with null parameters
 	 */
 	public DoubleRange(Double low, Double high) {
-		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
-		this.high = high == null ? new Double(Double.POSITIVE_INFINITY) : high;
+		this.low = low == null ? Double.NEGATIVE_INFINITY : low;
+		this.high = high == null ? Double.POSITIVE_INFINITY : high;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @param high The high to set.
 	 */
 	public void setHigh(Double high) {
-		this.high = high == null ? new Double(Double.POSITIVE_INFINITY) : high;
+		this.high = high == null ? Double.POSITIVE_INFINITY : high;
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	 * @param low The low to set.
 	 */
 	public void setLow(Double low) {
-		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
+		this.low = low == null ? Double.NEGATIVE_INFINITY : low;
 	}
 
 	/**
@@ -164,8 +164,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 				ret.append("=");
 			}
 			ret.append(" ").append(Format.format(low));
-			if (high != null && high != Double.NEGATIVE_INFINITY) {
-				//BUG: should not append this if high is also infinite
+			if (high != null && high != Double.POSITIVE_INFINITY) {
 				ret.append(" and ");
 			}
 		}
