@@ -9,8 +9,6 @@
  */
 package org.openmrs;
 
-import java.util.List;
-
 /**
  * Classes marked with this interface are able to be special values for a PersonAttribute.
  */
@@ -30,28 +28,6 @@ public interface Attributable<E> {
 	 * @return String representing this object (Usually an identifier or primary key)
 	 */
 	public String serialize();
-
-	/**
-	 * Find all possible values of this object. For example, if this object is a Location, the database
-	 * is delved into and all Location objects should be returned
-	 *
-	 * @return List of objects that can be assigned
-	 * @deprecated Data provided by this method can be better achieved from appropriate service at point
-	 *             of use.
-	 */
-	@Deprecated
-	public List<E> getPossibleValues();
-
-	/**
-	 * Search for possible values of this object using the given search string
-	 *
-	 * @param searchText String to search on
-	 * @return List of possible objects that can be assigned
-	 * @deprecated Data provided by this method can be better achieved from appropriate service at point
-	 *             of use.
-	 */
-	@Deprecated
-	public List<E> findPossibleValues(String searchText);
 
 	/**
 	 * Gets a descriptive String used for display purposes This is meant as an alternative to using the
