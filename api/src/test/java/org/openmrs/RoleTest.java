@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -99,6 +100,26 @@ public class RoleTest {
 	public void hasPrivilege_shouldReturnFalseIfNotFound() {
 		Role role = new Role();
 		assertFalse(role.hasPrivilege("some other privilege name"), "This roles should not have the privilege");
+	}
+
+	@Test
+	public void hasPrivilege_shouldTreatTheSuperuserRoleNameCaseInsensitively() {
+		// a role differing from "System Developer" only in case still confers superuser through
+		// Context.hasPrivilege, since RolePrivilegeCache's own detection ignores case - this method
+		// has to agree with it or the two disagree about who is a superuser
+		Role superuserDifferentlyCased = new Role(RoleConstants.SUPERUSER.toUpperCase());
+
+		assertTrue(superuserDifferentlyCased.hasPrivilege("Anything At All"));
+	}
+
+	@Test
+	public void addPrivilege_shouldNotAddAPrivilegeAlreadyHeldUnderADifferentCasing() {
+		Role role = new Role();
+		role.addPrivilege(new Privilege("PrIv1"));
+
+		role.addPrivilege(new Privilege("priv1"));
+
+		assertEquals(1, role.getPrivileges().size());
 	}
 
 	@Test
@@ -209,6 +230,36 @@ public class RoleTest {
 		assertEquals(1, aunt.getAllChildRoles().size());
 		assertEquals(1, uncle.getAllChildRoles().size());
 		assertEquals(6, grandparent.getAllChildRoles().size());
+	}
+
+	@Test
+	public void setters_shouldCopyTheGivenSets() {
+		Role role = new Role("Some Role");
+		Set<Privilege> privileges = new HashSet<>();
+		Set<Role> inheritedRoles = new HashSet<>();
+		Set<Role> childRoles = new HashSet<>();
+		role.setPrivileges(privileges);
+		role.setInheritedRoles(inheritedRoles);
+		role.setChildRoles(childRoles);
+
+		privileges.add(new Privilege("Some Privilege"));
+		inheritedRoles.add(new Role("Parent"));
+		childRoles.add(new Role("Child"));
+
+		assertTrue(role.getPrivileges().isEmpty());
+		assertTrue(role.getInheritedRoles().isEmpty());
+		assertTrue(role.getChildRoles().isEmpty());
+	}
+
+	@Test
+	public void setters_shouldKeepTheSetTheRoleAlreadyHolds() {
+		Role role = new Role("Some Role");
+		role.setPrivileges(new HashSet<>());
+		Set<Privilege> privileges = role.getPrivileges();
+
+		role.setPrivileges(privileges);
+
+		assertSame(privileges, role.getPrivileges());
 	}
 
 }

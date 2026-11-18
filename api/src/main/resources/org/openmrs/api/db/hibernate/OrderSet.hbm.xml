@@ -36,7 +36,7 @@
         <many-to-one name="category" class="org.openmrs.Concept"
 			not-null="false" column="category" />
 
-        <list name="orderSetMembers" lazy="true" cascade="merge,persist" inverse="false">
+        <list name="orderSetMembers" access="field" lazy="true" cascade="merge,persist" inverse="false">
             <key column="order_set_id" not-null="true"/>
             <list-index column="sequence_number"/>
             <one-to-many class="OrderSetMember" />
@@ -67,7 +67,7 @@
                   column="date_changed" length="19" />
         <property name="uuid" type="java.lang.String"
                   column="uuid" length="38" unique="true" not-null="true"/>
-          <set name="attributes" lazy="true" inverse="true" batch-size="100"
+          <set name="attributes" access="field" lazy="true" inverse="true" batch-size="100"
             cascade="all-delete-orphan" order-by="voided asc">
             <key column="order_set_id" />
             <one-to-many class="OrderSetAttribute" />

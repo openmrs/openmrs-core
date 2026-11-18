@@ -23,6 +23,8 @@ import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceRange;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
@@ -567,5 +569,26 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(concept, errors);
 
 		assertFalse(errors.hasErrors(), "Expected no validation errors for a retired concept");
+	}
+
+	/**
+	 * @see ConceptValidator#validate(Object,Errors)
+	 */
+	@Test
+	public void validate_shouldFailIfAReferenceRangeCriteriaDoesNotParse() {
+		ConceptNumeric conceptNumeric = new ConceptNumeric();
+		conceptNumeric.addName(new ConceptName("some name", Context.getLocale()));
+		conceptNumeric.setConceptClass(new ConceptClass());
+		conceptNumeric.setDatatype(new ConceptDatatype());
+
+		ConceptReferenceRange referenceRange = new ConceptReferenceRange();
+		referenceRange.setCriteria("$patient.getAge( >");
+		referenceRange.setConceptNumeric(conceptNumeric);
+		conceptNumeric.addReferenceRange(referenceRange);
+
+		Errors numericErrors = new BindException(conceptNumeric, "concept");
+		validator.validate(conceptNumeric, numericErrors);
+
+		assertThat(numericErrors, hasFieldErrors("referenceRanges[0].criteria"));
 	}
 }

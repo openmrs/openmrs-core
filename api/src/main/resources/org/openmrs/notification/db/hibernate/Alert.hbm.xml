@@ -43,7 +43,7 @@
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 		
-		<set name="recipients" lazy="true" inverse="true" cascade="all-delete-orphan" table="notification_alert_recipients">
+		<set name="recipients" access="field" lazy="true" inverse="true" cascade="all-delete-orphan" table="notification_alert_recipients">
 			<key column="alert_id" />
 			<one-to-many class="AlertRecipient" />
 		</set>

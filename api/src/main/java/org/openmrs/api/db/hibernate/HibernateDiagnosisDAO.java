@@ -91,7 +91,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));
-		cq.orderBy(cb.desc(root.get("dateCreated")));
+		cq.orderBy(cb.desc(root.get("dateCreated")), cb.desc(root.get("diagnosisId")));
 
 		return session.createQuery(cq).getResultList();
 	}
@@ -108,7 +108,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 		if (confirmedOnly) {
 			queryString += " and d.certainty = :certainty";
 		}
-		queryString += " order by d.dateCreated desc";
+		queryString += " order by d.dateCreated desc, d.diagnosisId desc";
 
 		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class)
 		        .setParameter("encounterId", encounter.getId());
@@ -134,7 +134,7 @@ public class HibernateDiagnosisDAO implements DiagnosisDAO {
 		if (confirmedOnly) {
 			queryString += " and d.certainty = :certainty";
 		}
-		queryString += " order by d.dateCreated desc";
+		queryString += " order by d.dateCreated desc, d.diagnosisId desc";
 
 		TypedQuery<Diagnosis> query = sessionFactory.getCurrentSession().createQuery(queryString, Diagnosis.class)
 		        .setParameter("visitId", visit.getId());

@@ -45,6 +45,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.RefByUuid;
+import org.openmrs.api.cache.GlobalPropertyCache;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.customdatatype.CustomDatatype;
@@ -72,6 +73,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -90,6 +92,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 	@Autowired
 	protected AdministrationDAO dao;
+
+	@Autowired
+	private GlobalPropertyCache globalPropertyCache;
 
 	@Autowired
 	@Qualifier("openmrsEventListeners")
@@ -171,23 +176,24 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	// a cache hit needs no transaction, and a miss can read through the caller's session or one opened
+	// for the call
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGlobalProperty(String propertyName) throws APIException {
 		// This method should not have any authorization check
 		if (propertyName == null) {
 			return null;
 		}
 
-		GlobalProperty gp = dao.getGlobalPropertyObject(propertyName);
-		if (gp != null) {
-			if (canViewGlobalProperty(gp)) {
-				return gp.getPropertyValue();
-			} else {
-				throw new APIException("GlobalProperty.error.privilege.required.view",
-				        new Object[] { gp.getViewPrivilege().getPrivilege(), propertyName });
-			}
-		} else {
-			return null;
+		GlobalPropertyCache.Entry gp = globalPropertyCache.get(propertyName);
+		checkCanView(gp, propertyName);
+		return gp.getValue();
+	}
+
+	private void checkCanView(GlobalPropertyCache.Entry gp, String propertyName) {
+		if (gp.getViewPrivilege() != null && !Context.hasPrivilege(gp.getViewPrivilege(), false)) {
+			throw new APIException("GlobalProperty.error.privilege.required.view",
+			        new Object[] { gp.getViewPrivilege(), propertyName });
 		}
 	}
 
@@ -232,7 +238,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
 		String s = Context.getAdministrationService().getGlobalProperty(propertyName);
 		if (s == null) {
@@ -292,6 +298,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 		gp.setPropertyValue(propertyValue);
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 
 	/**
@@ -333,6 +340,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 		notifyGlobalPropertyDelete(globalProperty.getProperty());
 		dao.deleteGlobalProperty(globalProperty);
+		globalPropertyCache.evict(globalProperty.getProperty());
 	}
 
 	/**
@@ -396,6 +404,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 
 			CustomDatatypeUtil.saveIfDirty(gp);
 			dao.saveGlobalProperty(gp);
+			globalPropertyCache.evict(gp.getProperty());
 			notifyGlobalPropertyChange(gp);
 			return gp;
 		}
@@ -732,6 +741,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException {
 		if (defaultValue == null) {
 			throw new IllegalArgumentException("The defaultValue argument cannot be null");
@@ -1073,6 +1083,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 
 		DatabaseUpdater.executeChangelog();
+		globalPropertyCache.clear();
 
 		storeCoreVersion();
 	}
@@ -1092,6 +1103,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		String prevModuleVersion = getStoredModuleVersion(moduleId);
 
 		ModuleFactory.runLiquibaseForModule(module);
+		globalPropertyCache.clear();
 		module.getModuleActivator().setupOnVersionChange(prevCoreVersion, prevModuleVersion);
 
 		storeModuleVersion(moduleId, module.getVersion());
@@ -1110,11 +1122,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		GlobalProperty gp = new GlobalProperty(propertyName, OpenmrsConstants.OPENMRS_VERSION_SHORT,
 		        "Saved core version for future restarts");
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 
 	protected void storeModuleVersion(String moduleId, String version) {
 		String propertyName = "module." + moduleId + ".version";
 		GlobalProperty gp = new GlobalProperty(propertyName, version, "Saved module version for future restarts");
 		dao.saveGlobalProperty(gp);
+		globalPropertyCache.evict(propertyName);
 	}
 }

@@ -166,8 +166,9 @@ class OpenmrsConfigurationFactoryTest {
 		Files.createDirectories(configDir);
 		Path unreadable = configDir.resolve("log4j2.xml");
 		Files.writeString(unreadable, "<Configuration/>");
-		Assumptions.assumeTrue(unreadable.toFile().setReadable(false),
-		    "Cannot make file unreadable on this platform; skipping test");
+		unreadable.toFile().setReadable(false);
+		Assumptions.assumeFalse(unreadable.toFile().canRead(),
+		    "Cannot make file unreadable to this process (e.g., running as root); skipping test");
 
 		try {
 			openmrsUtilMock.when(OpenmrsUtil::getApplicationDataDirectoryAsFile).thenReturn(tempDir.toFile());

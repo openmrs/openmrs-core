@@ -20,6 +20,7 @@ import org.openmrs.Auditable;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * Alerts are the simplest form of communication. An Administrator (or script) sets the user or role
@@ -249,7 +250,7 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @param recipients The recipients of this alert
 	 */
 	public void setRecipients(Set<AlertRecipient> recipients) {
-		this.recipients = recipients;
+		this.recipients = CollectionUtil.setCollection(this.recipients, recipients);
 	}
 
 	/**

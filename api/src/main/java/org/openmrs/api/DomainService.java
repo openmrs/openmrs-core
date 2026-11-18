@@ -23,6 +23,8 @@ public interface DomainService extends OpenmrsService {
 	 *
 	 * @param uuid the UUID string of the domain object
 	 * @return an instance of the requested type
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
 	public <T> T fetchByUuid(Class<T> type, String uuid);
 

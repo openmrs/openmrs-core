@@ -12,9 +12,11 @@ package org.openmrs.api.db;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.annotation.Resource;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,14 +27,19 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -48,6 +55,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ContextDAOTest extends BaseContextSensitiveTest {
 
 	private ContextDAO dao = null;
+
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	@Resource(name = "testUserSessionListener")
 	TestUserSessionListener testUserSessionListener;
@@ -253,6 +263,39 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * @see ContextDAO#authenticate(String,String)
 	 */
 	@Test
+	public void authenticate_shouldAuthenticateWithCorrectPasswordAfterTheLockoutWindowExpires() {
+		lockOutAdminSixMinutesAgo();
+
+		User user = dao.authenticate("admin", "test");
+
+		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldCountFailedAttemptsFromOneAgainAfterTheLockoutWindowExpires() {
+		lockOutAdminSixMinutesAgo();
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		assertEquals("1",
+		    Context.getUserService().getUser(1).getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+	}
+
+	private void lockOutAdminSixMinutesAgo() {
+		User admin = Context.getUserService().getUser(1);
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
+		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
+		Context.flushSession();
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
 	public void authenticate_shouldAuthenticateWithCorrectHashedPassword() {
 		dao.authenticate("correct", "test");
 	}
@@ -399,5 +442,18 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		Context.logout();
 		assertThat(testUserSessionListener.logouts, contains("admin:LOGOUT:SUCCESS"));
 		assertThat(testUserSessionListener.logins, empty());
+	}
+
+	@Test
+	public void closeSession_shouldNotReleaseAnExistingSessionAfterNestedParticipation() {
+		Object boundSession = TransactionSynchronizationManager.getResource(sessionFactory);
+		assertNotNull(boundSession);
+
+		dao.openSession();
+		dao.openSession();
+		dao.closeSession();
+		dao.closeSession();
+
+		assertSame(boundSession, TransactionSynchronizationManager.getResource(sessionFactory));
 	}
 }

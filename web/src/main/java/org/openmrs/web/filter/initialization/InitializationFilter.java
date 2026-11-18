@@ -47,7 +47,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.ImplementationId;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -78,6 +77,7 @@ import org.openmrs.web.filter.util.ErrorMessageConstants;
 import org.openmrs.web.filter.util.FilterUtil;
 import org.openmrs.web.filter.util.SessionModelUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
@@ -188,9 +188,8 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * Variable set to true as soon as the installation begins and set to false when the process ends
-	 * This thread should only be accesses through the synchronized method.
 	 */
-	private static boolean isInstallationStarted = false;
+	private static volatile boolean isInstallationStarted = false;
 
 	// the actual driver loaded by the DatabaseUpdater class
 	private String loadedDriverString;
@@ -204,10 +203,10 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
-	private static boolean initializationComplete = false;
+	private static volatile boolean initializationComplete = false;
 
-	protected synchronized void setInitializationComplete(boolean initializationComplete) {
-		InitializationFilter.initializationComplete = initializationComplete;
+	protected void setInitializationComplete(boolean complete) {
+		initializationComplete = complete;
 	}
 
 	/**
@@ -835,7 +834,7 @@ public class InitializationFilter extends StartupFilter {
 								TestInstallUtil.getResourceInputStream(
 								    wizardModel.remoteUrl + RELEASE_TESTING_MODULE_PATH + "verifycredentials.htm",
 								    wizardModel.remoteUsername, wizardModel.remotePassword);
-							} catch (APIAuthenticationException e) {
+							} catch (AccessDeniedException e) {
 								log.debug("Error generated: ", e);
 								page = TESTING_REMOTE_DETAILS_SETUP;
 								errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
@@ -1097,10 +1096,15 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	@Override
 	public boolean skipFilter(HttpServletRequest httpRequest) {
-		// If progress.vm makes an ajax request even immediately after initialization has completed
-		// let the request pass in order to let progress.vm load the start page of OpenMRS
-		// (otherwise progress.vm is displayed "forever")
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !initializationRequired();
+		if (initializationRequired()) {
+			return false;
+		}
+		// Once initialization completes, only the progress page's final poll still needs this filter; without it
+		// progress.vm never leaves the wizard. Check the servlet path first so other requests aren't parsed.
+		if (!("/" + WebConstants.SETUP_PAGE_URL).equals(httpRequest.getServletPath())) {
+			return true;
+		}
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"));
 	}
 
 	/**
@@ -1115,7 +1119,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @param isInstallationStarted the value to set
 	 */
-	protected static synchronized void setInstallationStarted(boolean isInstallationStarted) {
+	protected static void setInstallationStarted(boolean isInstallationStarted) {
 		InitializationFilter.isInstallationStarted = isInstallationStarted;
 	}
 
@@ -1267,7 +1271,7 @@ public class InitializationFilter extends StartupFilter {
 	 *
 	 * @return true if this has been run already
 	 */
-	private static synchronized boolean isInitializationComplete() {
+	private static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 
@@ -1677,7 +1681,7 @@ public class InitializationFilter extends StartupFilter {
 										wizardModel.workLog.add("Added Modules");
 										addExecutedTask(WizardTask.ADD_MODULES);
 									}
-								} catch (APIAuthenticationException e) {
+								} catch (AccessDeniedException e) {
 									log.warn("Unable to authenticate as a User with the System Developer role");
 									reportError(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE,
 									    TESTING_REMOTE_DETAILS_SETUP, "");

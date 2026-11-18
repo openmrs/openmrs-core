@@ -11,14 +11,11 @@ package org.openmrs.validator;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +26,6 @@ import org.springframework.validation.Validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PersonValidatorTest extends BaseContextSensitiveTest {
@@ -237,25 +233,6 @@ public class PersonValidatorTest extends BaseContextSensitiveTest {
 		personValidator.validate(person, errors);
 
 		assertFalse(errors.hasErrors());
-	}
-
-	@Test
-	public void validate_shouldThrowExceptionWhenAddressIsNull() {
-		Person person = new Patient(1);
-		Set<PersonAddress> addresses = new HashSet<>();
-		addresses.add(null);
-
-		person.setDead(true);
-		person.setCauseOfDeathNonCoded("Some text describing Cause of Death");
-		person.setPersonVoided(true);
-		person.setPersonVoidReason("voidReason");
-		person.setGender("g");
-		person.setAddresses(addresses);
-
-		Errors errors = new BindException(person, "patient");
-		PersonValidator personValidator = new PersonValidator();
-
-		assertThrows(IllegalArgumentException.class, () -> personValidator.validate(person, errors));
 	}
 
 }

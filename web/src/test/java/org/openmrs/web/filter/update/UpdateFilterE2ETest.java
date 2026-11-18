@@ -10,7 +10,11 @@
 package org.openmrs.web.filter.update;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
@@ -19,11 +23,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -272,6 +278,19 @@ class UpdateFilterE2ETest {
 		assertEquals("{}", content);
 	}
 
+	@Test
+	void progressAjax_shouldHtmlEscapeUpdateWarnings() throws Exception {
+		MockHttpServletResponse realResponse = new MockHttpServletResponse();
+		request.setParameter("page", "updateProgress.vm.ajaxRequest");
+		reportUpdateWarning("criteria <img src=x onerror=alert(1)> & more");
+
+		filter.doPost(request, realResponse);
+
+		String content = realResponse.getContentAsString();
+		assertTrue(content.contains("&lt;img src=x onerror=alert(1)&gt; &amp; more"));
+		assertFalse(content.contains("<img"));
+	}
+
 	// ========== Full Flow: Login -> Review Changes ==========
 
 	@Test
@@ -425,14 +444,53 @@ class UpdateFilterE2ETest {
 	}
 
 	@Test
-	void skipFilter_shouldReturnFalseForAjaxProgressRequestEvenWhenNoUpdatesRequired() {
+	void skipFilter_shouldReturnFalseForProgressPollOnSetupPage() {
 		UpdateFilter.setUpdatesRequired(false);
 		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
 		req.setParameter("page", "updateProgress.vm.ajaxRequest");
 
 		boolean result = filter.skipFilter(req);
 
 		assertEquals(false, result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForProgressPollOffSetupPage() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/openmrs");
+		req.setParameter("page", "updateProgress.vm.ajaxRequest");
+
+		boolean result = filter.skipFilter(req);
+
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldReturnTrueForSetupPageRequestThatIsNotTheProgressPoll() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setServletPath("/" + WebConstants.SETUP_PAGE_URL);
+
+		boolean result = filter.skipFilter(req);
+
+		assertEquals(true, result);
+	}
+
+	@Test
+	void skipFilter_shouldNotReadRequestParametersOnceUpdatesNoLongerRequired() {
+		UpdateFilter.setUpdatesRequired(false);
+		MockHttpServletRequest req = new MockHttpServletRequest() {
+
+			@Override
+			public String getParameter(String name) {
+				throw new AssertionError("skipFilter parsed request parameters once updates are no longer required");
+			}
+		};
+		req.setServletPath("/index.htm");
+
+		assertEquals(true, filter.skipFilter(req));
 	}
 
 	// ========== Helper Methods ==========
@@ -466,6 +524,19 @@ class UpdateFilterE2ETest {
 
 	private boolean getAuthenticatedSuccessfully() {
 		return Boolean.TRUE.equals(request.getSession().getAttribute(AUTHENTICATED_SUCCESSFULLY_ATTR));
+	}
+
+	private void reportUpdateWarning(String warning) throws Exception {
+		Class<?> jobClass = Class.forName(UpdateFilter.class.getName() + "$UpdateFilterCompletion");
+		Constructor<?> constructor = jobClass.getDeclaredConstructor(UpdateFilter.class);
+		constructor.setAccessible(true);
+		Object job = constructor.newInstance(filter);
+		Method reportWarnings = jobClass.getDeclaredMethod("reportWarnings", List.class);
+		reportWarnings.setAccessible(true);
+		reportWarnings.invoke(job, Collections.singletonList(warning));
+		Field field = UpdateFilter.class.getDeclaredField("updateJob");
+		field.setAccessible(true);
+		field.set(filter, job);
 	}
 
 	private void setDatabaseUpdateInProgress(boolean value) throws Exception {

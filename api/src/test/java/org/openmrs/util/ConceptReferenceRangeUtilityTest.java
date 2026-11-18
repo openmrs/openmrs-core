@@ -9,13 +9,17 @@
  */
 package org.openmrs.util;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.LocalTime;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -29,14 +33,18 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.springframework.expression.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -182,9 +190,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-			conceptReferenceRangeUtility.evaluateCriteria("", obs);
-		});
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("", obs));
 
 		assertTrue(exception.getMessage().contains("criteria is empty"));
 	}
@@ -205,7 +212,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -215,7 +222,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -223,7 +230,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -256,8 +263,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
-		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -270,8 +277,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
-		    "($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender().equals('M')", obs));
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("($patient.getAge() > 1 && $patient.getAge() < 3) || $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -284,8 +291,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
-		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -298,8 +305,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
-		    "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", obs));
+		assertFalse(conceptReferenceRangeUtility
+		        .evaluateCriteria("$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", obs));
 	}
 
 	@Test
@@ -307,7 +314,7 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
 		    () -> conceptReferenceRangeUtility.evaluateCriteria(
-		        "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender().equals('M')", (Obs) null));
+		        "$patient.getAge() > 1 && $patient.getAge() < 10 && $patient.getGender() == 'M'", (Obs) null));
 
 		assertEquals("Failed to evaluate criteria with reason: Obs is null", thrown.getMessage());
 	}
@@ -357,13 +364,14 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 		    null, null, null, Collections.singletonList("dateCreated"), 1, null, null, null, false))
 		        .thenReturn(Collections.singletonList(obs));
 
-		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getGender().equals('F') "
-		        + "&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText().equals('PREGNANT')",
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$patient.getGender() == 'F' "
+		            + "&& $fn.getLatestObs('bac25fd5-c143-4e43-bffe-4eb1e7efb6ce', $patient).getValueText() == 'PREGNANT'",
 		    obs));
 	}
 
 	@Test
-	public void testObsValueMatch_shouldReturnTrueIfPersonAttributeMatch() {
+	public void testSupported_shouldAllowGettersThatTakeArguments() {
 		PersonAttributeType personAttributeType = new PersonAttributeType();
 		personAttributeType.setName("Race");
 		personAttributeType.setSearchable(true);
@@ -376,7 +384,6 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
-		obs.setValueText("PREGNANT");
 
 		assertTrue(
 		    conceptReferenceRangeUtility.evaluateCriteria("$patient.getAttribute('Race').getValue() == 'Maasai'", obs));
@@ -441,32 +448,98 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void testTimeOfDay_shouldReturnTrueIfTimeOfDayMatches() {
-		// Freeze time at the current system time
-		DateTimeUtils.setCurrentMillisFixed(System.currentTimeMillis());
+		Clock fixedClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 14, 30).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(fixedClock);
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertTrue(
-		    conceptReferenceRangeUtility.evaluateCriteria("$fn.getCurrentHour() == " + LocalTime.now().getHourOfDay(), obs));
-
-		// Clean up: Reset time to system time
-		DateTimeUtils.setCurrentMillisSystem();
+		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 14", obs));
 	}
 
 	@Test
 	public void testTimeOfDay_shouldReturnFalseIfTimeOfDayDoesNotMatch() {
-		// Freeze time at the current system time
-		DateTimeUtils.setCurrentMillisFixed(System.currentTimeMillis());
+		Clock fixedClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 14, 30).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(fixedClock);
 
 		Obs obs = buildObs();
 		obs.setPerson(person);
 
-		assertFalse(conceptReferenceRangeUtility
-		        .evaluateCriteria("$fn.getCurrentHour() == " + LocalTime.now().plusHours(1).getHourOfDay(), obs));
+		assertFalse(utility.evaluateCriteria("$fn.getCurrentHour() == 15", obs));
+	}
 
-		// Clean up: Reset time to system time
-		DateTimeUtils.setCurrentMillisSystem();
+	@Test
+	public void testTimeOfDay_atMidnight_shouldReturnZero() {
+		// Create a fixed clock at LOCAL midnight
+		Clock midnightClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+
+		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(midnightClock);
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 0", obs));
+	}
+
+	@Test
+	public void testTimeOfDay_atOneSecondBeforeMidnight_shouldReturnTwentyThree() {
+		// Create a fixed clock at LOCAL 23:59:59
+		Clock almostMidnightClock = Clock.fixed(
+		    LocalDateTime.of(2026, Month.AUGUST, 13, 23, 59, 59).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+
+		ConceptReferenceRangeUtility utility = new ConceptReferenceRangeUtility(almostMidnightClock);
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(utility.evaluateCriteria("$fn.getCurrentHour() == 23", obs));
+	}
+
+	@Test
+	public void getDays_shouldUseTheInjectedClockAsNow() {
+		Clock clock = Clock.fixed(LocalDateTime.of(2026, Month.AUGUST, 13, 12, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+		person.setBirthdate(
+		    Date.from(LocalDateTime.of(2026, Month.AUGUST, 3, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(new ConceptReferenceRangeUtility(clock).evaluateCriteria("$fn.getDays($patient.birthdate) == 10", obs));
+	}
+
+	@Test
+	public void isEnrolledInProgram_shouldUseTheInjectedClockWhenOnDateIsNull() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2)); // enrolled from 2008-08-01
+
+		Clock clock = Clock.fixed(LocalDateTime.of(2006, Month.JANUARY, 1, 12, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, null)", obs));
+		assertFalse(new ConceptReferenceRangeUtility(clock)
+		        .evaluateCriteria("$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, null)", obs));
+	}
+
+	@Test
+	public void isInProgramState_shouldUseTheInjectedClockWhenOnDateIsNull() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		// enrolled in the program from 2008-08-01, but not in this state until 2008-08-08
+		Clock clock = Clock.fixed(LocalDateTime.of(2008, Month.AUGUST, 5, 12, 0).atZone(ZoneId.systemDefault()).toInstant(),
+		    ZoneId.systemDefault());
+
+		assertTrue(conceptReferenceRangeUtility
+		        .evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, null)", obs));
+		assertFalse(new ConceptReferenceRangeUtility(clock)
+		        .evaluateCriteria("$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, null)", obs));
 	}
 
 	@Test
@@ -920,7 +993,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void isEnrolledInProgram_shouldReturnFalseIfPatientIsNotEnrolledInProgramOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
-		obs.setObsDatetime(new DateTime(2006, 1, 1, 1, 1).toDate());
+		ZonedDateTime specificDate = LocalDateTime.of(2006, Month.JANUARY, 1, 1, 1, 0, 0).atZone(ZoneId.systemDefault());
+		obs.setObsDatetime(Date.from(specificDate.toInstant()));
 		obs.setPerson(patient);
 		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
 		    "$fn.isEnrolledInProgram('da4a0391-ba62-4fad-ad66-1e3722d16380', $patient, $obs.obsDatetime)", obs)); // uuid of HIV program which patient 2 is enrolled in, but not until 2008
@@ -959,7 +1033,8 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 	public void isInProgramState_shouldReturnFalseIfPatientIsNotInStateOnDate() {
 		Patient patient = Context.getPatientService().getPatient(2); // from standard test dataset
 		Obs obs = buildObs();
-		obs.setObsDatetime(new DateTime(2006, 1, 1, 1, 1).toDate());
+		ZonedDateTime specificDate = LocalDateTime.of(2006, Month.JANUARY, 1, 1, 1, 0, 0).atZone(ZoneId.systemDefault());
+		obs.setObsDatetime(Date.from(specificDate.toInstant()));
 		obs.setPerson(patient);
 		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
 		    "$fn.isInProgramState('e938129e-248a-482a-acea-f85127251472', $patient, $obs.obsDatetime)", obs)); // uuid from standard test dataset, patient is in this state, but not until 2008
@@ -1049,6 +1124,341 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertThrows(APIException.class,
 		    () -> conceptReferenceRangeUtility.evaluateCriteria("$fn.evaluateCriteria('$patient.getAge() > 0', $obs)", obs));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockSetters() {
+		person.setDead(false);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.setDead(true) || true", obs));
+		assertFalse(person.getDead());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockCollectionMutation() {
+		person.addName(new PersonName("John", null, "Doe"));
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.getNames().clear() == null", obs));
+		assertEquals(1, person.getNames().size());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockRoleMutationThroughEncounterCreator() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		int roleCount = encounter.getCreator().getRoles().size();
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.getRoles().add($encounter.creator.getRoles()) || true", obs));
+		assertEquals(roleCount, encounter.getCreator().getRoles().size());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockRoleRemovalThroughObsEncounter() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		int roleCount = encounter.getCreator().getRoles().size();
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$obs.encounter.creator.roles.clear() == null", obs));
+		assertEquals(roleCount, encounter.getCreator().getRoles().size());
+	}
+
+	@Test
+	public void testSandbox_shouldBlockMapAssignment() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.userProperties['sandbox'] = 'escaped'", obs));
+		assertFalse(encounter.getCreator().getUserProperties().containsKey("sandbox"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockPropertyAssignment() {
+		person.setDead(false);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("($patient.dead = true) == true", obs));
+		assertFalse(person.getDead());
+	}
+
+	@Test
+	public void testSupported_shouldAllowGetAgeWithDateArgument() {
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		person.setBirthdate(calendar.getTime());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getAge($date) > 1", obs));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockHibernateProxyAccess() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertInstanceOf(HibernateProxy.class, encounter.getCreator());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		APIException thrown = assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.getHibernateLazyInitializer().getSession() != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockHibernateProxyAccessThroughPropertySyntax() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertInstanceOf(HibernateProxy.class, encounter.getCreator());
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		APIException thrown = assertThrows(APIException.class, () -> conceptReferenceRangeUtility
+		        .evaluateCriteria("$encounter.creator.hibernateLazyInitializer.session != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockSessionAccessThroughPersistentCollections() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		APIException thrown = assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.getSession() != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSandbox_shouldBlockSessionAccessThroughPersistentCollectionProperties() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		APIException thrown = assertThrows(APIException.class,
+		    () -> conceptReferenceRangeUtility.evaluateCriteria("$patient.names.session != null", obs));
+		assertTrue(ExceptionUtils.getRootCauseMessage(thrown).contains("Hibernate internals"));
+	}
+
+	@Test
+	public void testSupported_shouldAllowPersistentCollectionAccessors() {
+		Obs obs = buildObs();
+		obs.setPerson(Context.getPatientService().getPatient(2));
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.names.isEmpty() == false", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowIsAccessors() {
+		person.setDead(false);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.isDead() == false", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowHasAccessors() {
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$obs.hasGroupMembers() == false", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowPropertyNavigation() {
+		person.setGender("M");
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.gender == 'M'", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowChainedZeroArgumentGetters() {
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		obs.setEncounter(encounter);
+
+		assertTrue(
+		    conceptReferenceRangeUtility.evaluateCriteria("$obs.getEncounter().getCreator().getUsername() == 'admin'", obs));
+	}
+
+	@Test
+	public void testSupported_shouldAllowZeroArgumentCollectionAccessors() {
+		person.addName(new PersonName("John", null, "Doe"));
+
+		Obs obs = buildObs();
+		obs.setPerson(person);
+
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria("$patient.getNames().isEmpty() == false", obs));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReturnEmptyListForAllowedCriteria() {
+		assertTrue(
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAge() > 1 && $patient.isDead() == false "
+		            + "&& $fn.getDays($fn.getLatestObsDate('CIEL:1234', $patient)) > 3 && $obs.hasGroupMembers() == false")
+		            .isEmpty());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportSetters() {
+		assertEquals(Collections.singletonList("setDead(true)"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.setDead(true) || true"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldNotReportGettersWithArguments() {
+		assertTrue(ConceptReferenceRangeUtility
+		        .findDisallowedConstructs("$patient.getAttribute('Race') != null && $patient.getAge($date) > 1").isEmpty());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportCollectionMutatorsReachedThroughProperties() {
+		assertEquals(Collections.singletonList("clear()"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$encounter.creator.roles.clear() == null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportDisallowedCallsInsideHelperArguments() {
+		assertEquals(Collections.singletonList("add(null)"), ConceptReferenceRangeUtility
+		        .findDisallowedConstructs("$fn.getDays($encounter.creator.getRoles().add(null)) > 1"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldNotReportMethodsCalledOnTheHelper() {
+		assertTrue(ConceptReferenceRangeUtility.findDisallowedConstructs("$fn.isEnrolledInProgram('uuid', $patient, $date)")
+		        .isEmpty());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportMethodsChainedAfterAHelperCall() {
+		assertEquals(Collections.singletonList("setVoided(true)"), ConceptReferenceRangeUtility
+		        .findDisallowedConstructs("$fn.getLatestObs('CIEL:1234', $patient).setVoided(true) == null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportAssignments() {
+		assertEquals(Collections.singletonList("$patient.dead=true"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("($patient.dead = true) == true"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportIndexedAssignments() {
+		assertEquals(1,
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$encounter.creator.userProperties['x'] = 'y'").size());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportIncrementsAndDecrements() {
+		assertEquals(2,
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("$obs.valueNumeric++ > $obs.valueNumeric--").size());
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportTypeReferences() {
+		assertEquals(Collections.singletonList("T(java.lang.Runtime)"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("T(java.lang.Runtime).getRuntime() != null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportConstructorCalls() {
+		assertEquals(Collections.singletonList("new java.util.ArrayList()"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("new java.util.ArrayList().isEmpty()"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldReportBeanReferences() {
+		assertEquals(Collections.singletonList("@systemProperties"),
+		    ConceptReferenceRangeUtility.findDisallowedConstructs("@systemProperties != null"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldThrowParseExceptionForCriteriaThatDoesNotParse() {
+		assertThrows(ParseException.class,
+		    () -> ConceptReferenceRangeUtility.findDisallowedConstructs("$patient.getAge( >"));
+	}
+
+	@Test
+	public void findDisallowedConstructs_shouldThrowParseExceptionForCriteriaOverTheParserLengthLimit() {
+		String criteria = "$patient.getAge() > 1" + " && $patient.getAge() > 1".repeat(500);
+		assertThrows(ParseException.class, () -> ConceptReferenceRangeUtility.findDisallowedConstructs(criteria));
+	}
+
+	@Test
+	public void evaluateCriteria_shouldReapplyRestrictionsWhenTheSameCriteriaIsEvaluatedAgain() {
+		String criteria = "$encounter.creator.hibernateLazyInitializer != null || $encounter.creator.getUsername() != null";
+		Obs plainObs = buildObs();
+		plainObs.setPerson(person);
+		plainObs.setEncounter(new Encounter());
+		plainObs.getEncounter().setCreator(new User());
+		plainObs.getEncounter().getCreator().setUsername("plain");
+
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		assertInstanceOf(HibernateProxy.class, encounter.getCreator());
+		Obs proxiedObs = buildObs();
+		proxiedObs.setPerson(person);
+		proxiedObs.setEncounter(encounter);
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, plainObs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, proxiedObs));
+	}
+
+	@Test
+	public void evaluateCriteria_shouldRefuseHibernateInternalsOnRepeatedEvaluationOfACachedMethodCall() {
+		String criteria = "$patient.names.getSession() != null";
+		Obs plainObs = buildObs();
+		plainObs.setPerson(person);
+		Obs persistedObs = buildObs();
+		persistedObs.setPerson(Context.getPatientService().getPatient(2));
+
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, plainObs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, persistedObs));
+		assertThrows(APIException.class, () -> conceptReferenceRangeUtility.evaluateCriteria(criteria, persistedObs));
+	}
+
+	@Test
+	public void evaluateCriteria_shouldStillEvaluateAllowedCallsOnRepeatedEvaluation() {
+		calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		person.setBirthdate(calendar.getTime());
+		Obs obs = buildObs();
+		obs.setPerson(person);
+		Obs patientObs = buildObs();
+		patientObs.setPerson(Context.getPatientService().getPatient(2));
+
+		String criteria = "$patient.getAge($date) > 1";
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(criteria, patientObs));
+		assertTrue(conceptReferenceRangeUtility.evaluateCriteria(criteria, obs));
 	}
 
 	private Obs buildObs() {

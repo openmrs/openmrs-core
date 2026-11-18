@@ -38,6 +38,7 @@ import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -63,7 +64,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer locationId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_type_concept_id")
 	private Concept type;
 
@@ -133,11 +134,11 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	@Column(name = "address15")
 	private String address15;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_location")
 	private Location parentLocation;
 
-	@OneToMany(mappedBy = "parentLocation", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "parentLocation", cascade = CascadeType.ALL)
 	@BatchSize(size = 100)
 	@OrderBy("name")
 	private Set<Location> childLocations;
@@ -481,7 +482,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setChildLocations(Set<Location> childLocations) {
-		this.childLocations = childLocations;
+		this.childLocations = CollectionUtil.setCollection(this.childLocations, childLocations);
 	}
 
 	/**
@@ -573,7 +574,7 @@ public class Location extends BaseCustomizableMetadata<LocationAttribute> implem
 	 * @since 1.5
 	 */
 	public void setTags(Set<LocationTag> tags) {
-		this.tags = tags;
+		this.tags = CollectionUtil.setCollection(this.tags, tags);
 	}
 
 	/**

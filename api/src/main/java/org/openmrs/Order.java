@@ -17,6 +17,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -99,15 +100,15 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "order_id")
 	private Integer orderId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_type_id", nullable = false)
 	private OrderType orderType;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private Concept concept;
 
@@ -122,11 +123,11 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "auto_expire_date")
 	private Date autoExpireDate;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "encounter_id", nullable = false)
 	private Encounter encounter;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "orderer", nullable = false)
 	private Provider orderer;
 
@@ -135,7 +136,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "date_stopped")
 	private Date dateStopped;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_reason")
 	private Concept orderReason;
 
@@ -157,7 +158,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	@Column(name = "comment_to_fulfiller", length = 1024)
 	private String commentToFulfiller;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "care_setting", nullable = false)
 	private CareSetting careSetting;
 
@@ -180,7 +181,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked to
 	 * the original ampicillin order (the D/C gets its own order number)
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "previous_order_id")
 	private Order previousOrder;
 
@@ -197,7 +198,7 @@ public class Order extends BaseCustomizableData<OrderAttribute> implements FormR
 	/**
 	 * {@link org.openmrs.OrderGroup}
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_group_id")
 	private OrderGroup orderGroup;
 

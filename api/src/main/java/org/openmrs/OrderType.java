@@ -15,6 +15,7 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,6 +30,7 @@ import org.hibernate.envers.Audited;
 import org.openmrs.annotation.Independent;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.CollectionUtil;
 
 /**
  * OrderTypes are used to classify different types of Orders e.g to distinguish between Serology and
@@ -55,7 +57,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	@Column(name = "java_class_name", nullable = false)
 	private String javaClassName;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent")
 	private OrderType parent;
 
@@ -166,7 +168,7 @@ public class OrderType extends BaseChangeableOpenmrsMetadata {
 	 * @param conceptClasses the collection containing the {@link ConceptClass}es
 	 */
 	public void setConceptClasses(Collection<ConceptClass> conceptClasses) {
-		this.conceptClasses = (Set<ConceptClass>) conceptClasses;
+		this.conceptClasses = CollectionUtil.setCollection(this.conceptClasses, conceptClasses);
 	}
 
 	/**

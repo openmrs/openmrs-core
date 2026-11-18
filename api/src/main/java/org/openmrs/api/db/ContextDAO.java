@@ -12,6 +12,7 @@ package org.openmrs.api.db;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.openmrs.OpenmrsObject;
@@ -26,7 +27,8 @@ import org.openmrs.util.OpenmrsConstants;
 public interface ContextDAO {
 
 	/**
-	 * Authenticate user with the given username and password.
+	 * Authenticate user with the given username and password. Concurrent attempts for the same user are
+	 * serialized so that failed-attempt counting and lockout are atomic.
 	 * <p>
 	 * <strong>Should</strong> authenticate given username and password<br/>
 	 * <strong>Should</strong> authenticate given systemId and password<br/>
@@ -50,7 +52,13 @@ public interface ContextDAO {
 	 * <strong>Should</strong> pass regression test for 1580<br/>
 	 * <strong>Should</strong> throw a ContextAuthenticationException if username is an empty
 	 * string<br/>
-	 * <strong>Should</strong> throw a ContextAuthenticationException if username is white space
+	 * <strong>Should</strong> throw a ContextAuthenticationException if username is white space<br/>
+	 * <strong>Should</strong> authenticate with correct password after the lockout window expires<br/>
+	 * <strong>Should</strong> count failed attempts from one again after the lockout window
+	 * expires<br/>
+	 * <strong>Should</strong> lock out user when concurrent failed attempts exceed the limit<br/>
+	 * <strong>Should</strong> not block other users while one users row is locked<br/>
+	 * <strong>Should</strong> count every attempt when concurrent attempts stay within the limit
 	 *
 	 * @param username user's username or systemId
 	 * @param password user's password
@@ -68,6 +76,37 @@ public interface ContextDAO {
 	 * @throws ContextAuthenticationException
 	 */
 	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
+
+	/**
+	 * Gets a user given the id, without flushing the session. Privilege checks are not done here
+	 * because this is used to refresh the authenticated user.
+	 *
+	 * @param userId id of the user to fetch
+	 * @return the user, or null if there is no such user
+	 * @since 2.8.11
+	 */
+	public User getUserById(Integer userId);
+
+	/**
+	 * Reads the names of the user's roles from the database, ignoring unsaved changes to any copy of
+	 * the user loaded in the session. Privilege checks are not done here because this is used when
+	 * loading the authenticated user.
+	 *
+	 * @param userId id of the user
+	 * @return the names of the roles assigned to the user
+	 * @since 2.8.11
+	 */
+	public Set<String> getStoredRoleNames(Integer userId);
+
+	/**
+	 * Reads a role from the database, ignoring unsaved changes to any copy of it loaded in the session.
+	 * Privilege checks are not done here because this is used to resolve privileges.
+	 *
+	 * @param roleName the role's name
+	 * @return the role as stored, or null if there is no such role
+	 * @since 2.8.11
+	 */
+	public StoredRole getStoredRole(String roleName);
 
 	/**
 	 * Gets a user given the username. Privilege checks are not done here because this is used by the
@@ -101,6 +140,10 @@ public interface ContextDAO {
 
 	/**
 	 * Close session.
+	 * <p>
+	 * A call that would close a session while a Spring transaction is running on it is ignored with a
+	 * warning. The session was opened before that transaction began, so the close is unmatched, and
+	 * closing the session would break the transaction's cleanup.
 	 */
 	public void closeSession();
 

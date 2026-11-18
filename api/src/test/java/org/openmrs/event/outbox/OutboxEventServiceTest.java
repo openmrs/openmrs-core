@@ -40,6 +40,9 @@ public class OutboxEventServiceTest extends BaseContextSensitiveTest {
 	public void setUp() {
 		// We inject a tiny 1-second timeout to make testing stuck events much easier
 		service = new OutboxEventService(sessionFactory, 1, 4);
+		// Other tests in the shared context may commit outbox events (e.g. global property saves picked up by
+		// TestTransactionalEventAggregator), which would push this test's events past the 100 row query limit
+		sessionFactory.getCurrentSession().createQuery("delete from OutboxEvent").executeUpdate();
 	}
 
 	private OutboxEvent createTestEvent(OutboxEvent.Status status) {

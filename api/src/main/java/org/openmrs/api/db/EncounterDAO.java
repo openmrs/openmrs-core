@@ -98,6 +98,16 @@ public interface EncounterDAO {
 	public EncounterType getEncounterType(String name) throws DAOException;
 
 	/**
+	 * Gets the encounter type currently saved in the database for the given encounter. The type is read
+	 * from the stored row, so an unflushed type set on the given encounter object is ignored.
+	 *
+	 * @param encounter Encounter
+	 * @return the saved EncounterType, or null if the stored encounter has no type or there is no
+	 *         stored encounter
+	 */
+	EncounterType getSavedEncounterType(Encounter encounter);
+
+	/**
 	 * Get all encounter types
 	 *
 	 * @return encounter types list

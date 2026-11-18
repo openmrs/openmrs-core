@@ -37,6 +37,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -57,11 +58,11 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	@Column(name = "patient_program_id")
 	private Integer patientProgramId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "program_id")
 	private Program program;
 
@@ -75,7 +76,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	@Column(name = "date_completed")
 	private Date dateCompleted;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "outcome_concept_id")
 	private Concept outcome;
 
@@ -427,7 +428,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	}
 
 	public void setStates(Set<PatientState> states) {
-		this.states = states;
+		this.states = CollectionUtil.setCollection(this.states, states);
 	}
 
 	/**
@@ -519,7 +520,7 @@ public class PatientProgram extends BaseChangeableOpenmrsData implements Customi
 	}
 
 	public void setAttributes(Set<PatientProgramAttribute> attributes) {
-		this.attributes = attributes;
+		this.attributes = CollectionUtil.setCollection(this.attributes, attributes);
 	}
 
 	public void setAttribute(PatientProgramAttribute attribute) {

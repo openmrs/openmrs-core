@@ -64,6 +64,14 @@ public class CacheConfig {
 
 	private final static Logger log = LoggerFactory.getLogger(CacheConfig.class);
 
+	/**
+	 * The caches that are only filled on a miss, by {@code @Cacheable} or by their owning component,
+	 * and never overwritten, so that a fill on one node can leave other nodes' entries in place. See
+	 * {@link ExternalReadSpringCacheManager}.
+	 */
+	static final Set<String> EXTERNAL_READ_CACHES = Set.of("userSearchLocales", "conceptIdsByMapping",
+	    "serializerWhiteListTypes", RolePrivilegeCache.CACHE_NAME, GlobalPropertyCache.CACHE_NAME);
+
 	@Value("${cache.type:local}")
 	private String cacheType;
 
@@ -129,7 +137,7 @@ public class CacheConfig {
 		}
 
 		DefaultCacheManager cacheManager = new DefaultCacheManager(baseConfigBuilder, true);
-		return new SpringEmbeddedCacheManager(cacheManager);
+		return new ExternalReadSpringCacheManager(cacheManager, EXTERNAL_READ_CACHES);
 	}
 
 	private static InputStream buildFullConfig(Yaml yaml, URL configFile, Set<String> templateNames, String cacheType)

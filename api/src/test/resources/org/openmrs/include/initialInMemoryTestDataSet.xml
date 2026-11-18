@@ -18,4 +18,6 @@
   <users user_id="1" person_id="1" system_id="1-8" username="admin" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2005-01-01 00:00:00.0" changed_by="1" date_changed="2007-09-20 21:54:12.0" retired="false" retire_reason="" uuid="1010d442-e134-11de-babe-001e378eb67e"/>
   <users user_id="0" person_id="1" system_id="daemon" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" retire_reason="" uuid="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
   <user_role user_id="1" role="System Developer"/>
+  <privilege privilege="Get Roles" description="Able to get user roles" uuid="d05118c6-2490-4d78-a41a-390e3596a235" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <role_privilege role="Authenticated" privilege="Get Roles"/>
 </dataset>

@@ -54,6 +54,7 @@ public class EventInterceptor implements Interceptor {
 		return dbEvent.isModified();
 	}
 
+	@Override
 	public void onRemove(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		eventPublisher.publishEvent(new DeleteDbEvent<>(entity, (Serializable) id, state, propertyNames));
 	}

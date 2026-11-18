@@ -13,6 +13,7 @@ import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -47,11 +48,11 @@ public class DrugOrder extends Order {
 	@Column(name = "dose", length = 22)
 	private Double dose;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dose_units")
 	private Concept doseUnits;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "frequency")
 	private OrderFrequency frequency;
 
@@ -61,11 +62,11 @@ public class DrugOrder extends Order {
 	@Column(name = "quantity", length = 22)
 	private Double quantity;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "quantity_units")
 	private Concept quantityUnits;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "drug_inventory_id")
 	@Access(AccessType.FIELD)
 	private Drug drug;
@@ -86,11 +87,11 @@ public class DrugOrder extends Order {
 	@Column(name = "duration")
 	private Integer duration;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "duration_units")
 	private Concept durationUnits;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "route")
 	private Concept route;
 

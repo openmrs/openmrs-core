@@ -7,6 +7,21 @@
 #	Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS 
 #	graphic logo is a trademark of OpenMRS Inc.
 
+# Connection settings set explicitly, which are also applied to an existing runtime properties file
+DB_SETTINGS_FROM_ENV=()
+[[ -n "${OMRS_DB_USERNAME:-}${OMRS_CONFIG_CONNECTION_USERNAME:-}" ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_USERNAME)
+[[ -n "${OMRS_DB_PASSWORD:-}${OMRS_CONFIG_CONNECTION_PASSWORD:-}" ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_PASSWORD)
+for i in OMRS_DB OMRS_DB_URL OMRS_DB_HOSTNAME OMRS_DB_PORT OMRS_DB_NAME OMRS_DB_ARGS OMRS_DB_EXTRA_ARGS OMRS_DB_JDBC_PROTOCOL \
+  OMRS_CONFIG_DATABASE OMRS_CONFIG_CONNECTION_URL OMRS_CONFIG_CONNECTION_SERVER OMRS_CONFIG_CONNECTION_PORT \
+  OMRS_CONFIG_CONNECTION_DATABASE OMRS_CONFIG_CONNECTION_ARGS OMRS_CONFIG_CONNECTION_EXTRA_ARGS OMRS_CONFIG_JDBC_URL_PROTOCOL; do
+  if [[ -n "${!i:-}" ]]; then
+    DB_SETTINGS_FROM_ENV+=(OMRS_DB_URL)
+    break
+  fi
+done
+# The driver class goes with the URL, whose protocol depends on OMRS_DB
+[[ -n "${OMRS_DB_DRIVER_CLASS:-}" || "${DB_SETTINGS_FROM_ENV[*]-}" == *OMRS_DB_URL* ]] && DB_SETTINGS_FROM_ENV+=(OMRS_DB_DRIVER_CLASS)
+
 # ----------------------------------
 # Configurable environment variables
 OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD:-Admin123}
@@ -33,7 +48,7 @@ OMRS_HAS_CURRENT_OPENMRS_DATABASE=${OMRS_HAS_CURRENT_OPENMRS_DATABASE:-true}
 OMRS_HOME=${OMRS_HOME:-'/openmrs'}
 # When Set to 'auto' disables installation wizard
 OMRS_INSTALL_METHOD=${OMRS_INSTALL_METHOD:-'auto'}
-# JVM startup parameters
+# JVM startup parameters, read by the shell like Tomcat's JAVA_OPTS: quote special characters, e.g. -Dkey='a$b'
 OMRS_JAVA_SERVER_OPTS=${OMRS_JAVA_SERVER_OPTS:-'-Dfile.encoding=UTF-8 -server -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Djava.awt.headlesslib=true'}
 # Appended to JAVA_SERVER_OPTS
 OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS:-'-XX:NewSize=128m'}
@@ -90,6 +105,25 @@ OMRS_FRONTEND_DIR="$OMRS_DATA_DIR/frontend"
 OMRS_SERVER_PROPERTIES_FILE="$OMRS_HOME/$OMRS_WEBAPP_NAME-server.properties"
 OMRS_RUNTIME_PROPERTIES_FILE="$OMRS_DATA_DIR/$OMRS_WEBAPP_NAME-runtime.properties"
 
+# Stops startup if anything is mounted at or below a folder that is rebuilt from the distribution on every start
+fail_if_mounted() {
+  local dir
+  dir=$(realpath -m "$1")
+  if [[ $'\n'"$MOUNT_POINTS"$'\n' == *$'\n'"$dir"$'\n'* || $'\n'"$MOUNT_POINTS" == *$'\n'"$dir"/* ]]; then
+    echo "Error: $1 is, or contains, a mount point. It is rebuilt from $2 on every start, so mount into $2 instead." >&2
+    exit 1
+  fi
+}
+# allexport (-a) exports functions too; keep this one out of Tomcat's environment
+export -fn fail_if_mounted
+
+MOUNT_POINTS=$(awk '{ print $5 }' /proc/self/mountinfo)
+fail_if_mounted "$OMRS_MODULES_DIR" "$OMRS_DISTRO_MODULES"
+fail_if_mounted "$OMRS_OWA_DIR" "$OMRS_DISTRO_OWAS"
+fail_if_mounted "$OMRS_CONFIG_DIR" "$OMRS_DISTRO_CONFIG"
+fail_if_mounted "$OMRS_FRONTEND_DIR" "$OMRS_DISTRO_FRONTEND"
+unset MOUNT_POINTS
+
 echo "Deleting modules, OWAs, configuration and frontend from OpenMRS"
 
 rm -fR "${OMRS_MODULES_DIR:?}"
@@ -135,57 +169,112 @@ fi
 # Build the JDBC URL using the above properties
 OMRS_DB_URL="${OMRS_DB_URL:-jdbc:${OMRS_DB_JDBC_PROTOCOL}://${OMRS_DB_HOSTNAME}:${OMRS_DB_PORT}/${OMRS_DB_NAME}${OMRS_DB_ARGS}${OMRS_DB_EXTRA_ARGS}}"
 
+# Escapes a value for a Java properties file, so that OpenMRS reads it exactly as given: backslashes, line breaks
+# and leading whitespace would otherwise be interpreted or dropped
+escape_property() {
+  local value=$1 bs='\'
+  value=${value//"$bs"/"$bs$bs"}
+  value=${value//$'\n'/"${bs}n"}
+  value=${value//$'\r'/"${bs}r"}
+  if [[ "$value" == [[:space:]]* ]]; then
+    value="${bs}${value}"
+  fi
+  printf '%s' "$value"
+}
+# allexport (-a) exports functions too; keep this one out of Tomcat's environment
+export -fn escape_property
+
+# Prints the given properties files, leaving out entries of the last file whose key (as Java parses it) is in an earlier one
+merge_properties() {
+  awk '
+    function key(l) { sub(/^[ \t\f]+/, "", l); if (l == "" || l ~ /^[#!]/) return ""; sub(/[=: \t\f].*$/, "", l); return l }
+    cont { if (keep) print; cont = /(^|[^\\])(\\\\)*\\$/; next }
+    { k = key($0); keep = (k == "" || !(k in seen)); if (FILENAME != ARGV[ARGC - 1]) seen[k]; if (keep) print; cont = (k != "" && /(^|[^\\])(\\\\)*\\$/) }
+  ' "$@"
+}
+export -fn merge_properties
+
 echo "Writing out $OMRS_SERVER_PROPERTIES_FILE"
 
 cat > $OMRS_SERVER_PROPERTIES_FILE << EOF
-admin_user_password=${OMRS_ADMIN_USER_PASSWORD}
-admin_password_locked=${OMRS_ADMIN_PASSWORD_LOCKED}
-auto_update_database=${OMRS_AUTO_UPDATE_DATABASE}
-connection.driver_class=${OMRS_DB_DRIVER_CLASS}
-connection.username=${OMRS_DB_USERNAME}
-connection.password=${OMRS_DB_PASSWORD}
-connection.url=${OMRS_DB_URL}
-create_database_user=${OMRS_CREATE_DATABASE_USER}
-create_tables=${OMRS_CREATE_TABLES}
-has_current_openmrs_database=${OMRS_HAS_CURRENT_OPENMRS_DATABASE}
-install_method=${OMRS_INSTALL_METHOD}
-module_web_admin=${OMRS_MODULE_WEB_ADMIN}
-module.allow_web_admin=${OMRS_MODULE_WEB_ADMIN}
+admin_user_password=$(escape_property "${OMRS_ADMIN_USER_PASSWORD}")
+admin_password_locked=$(escape_property "${OMRS_ADMIN_PASSWORD_LOCKED}")
+auto_update_database=$(escape_property "${OMRS_AUTO_UPDATE_DATABASE}")
+connection.driver_class=$(escape_property "${OMRS_DB_DRIVER_CLASS}")
+connection.username=$(escape_property "${OMRS_DB_USERNAME}")
+connection.password=$(escape_property "${OMRS_DB_PASSWORD}")
+connection.url=$(escape_property "${OMRS_DB_URL}")
+create_database_user=$(escape_property "${OMRS_CREATE_DATABASE_USER}")
+create_tables=$(escape_property "${OMRS_CREATE_TABLES}")
+has_current_openmrs_database=$(escape_property "${OMRS_HAS_CURRENT_OPENMRS_DATABASE}")
+install_method=$(escape_property "${OMRS_INSTALL_METHOD}")
+module_web_admin=$(escape_property "${OMRS_MODULE_WEB_ADMIN}")
+module.allow_web_admin=$(escape_property "${OMRS_MODULE_WEB_ADMIN}")
 
-property.hibernate.search.backend.type=${OMRS_SEARCH}
-property.hibernate.search.backend.analysis.configurer=${OMRS_SEARCH_CONFIG}
-property.hibernate.search.backend.uris=${OMRS_SEARCH_ES_URIS}
+property.hibernate.search.backend.type=$(escape_property "${OMRS_SEARCH}")
+property.hibernate.search.backend.analysis.configurer=$(escape_property "${OMRS_SEARCH_CONFIG}")
+property.hibernate.search.backend.uris=$(escape_property "${OMRS_SEARCH_ES_URIS}")
 property.hibernate.search.backend.discovery.enabled=true
 
 EOF
 
 # Supports any custom env variable with the OMRS_EXTRA_ prefix, which translates to a property without the 
-# OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'.
+# OMRS_EXTRA_ prefix. The '_' is replaced with '.' and '__' with '_'. An all upper case name is lowercased,
+# while a name containing any lower case letter keeps its case, e.g. OMRS_EXTRA_mail_smtp_socketFactory_class
+# becomes mail.smtp.socketFactory.class. If several variables give the same property, the first in sorted
+# order is used and the others are ignored with a warning.
 EXTRA_VARS=(${!OMRS_EXTRA_@})
-if [[ -n "${EXTRA_VARS+x}" ]]; then 
-	EXTRA_PROPERTIES=""
+if [[ -n "${EXTRA_VARS+x}" ]]; then
+	EXTRA_PROPERTIES=()
+	declare -A EXTRA_PROPERTY_SOURCES=()
 	for i in "${EXTRA_VARS[@]}"
 	do
 	  :
-	  var=$(echo "${i#OMRS_EXTRA_}" | tr [:upper:] [:lower:])
+	  var=${i#OMRS_EXTRA_}
+	  if [[ -z "$var" ]]; then
+	    echo "Warning: $i does not name a property. Ignoring it."
+	    continue
+	  fi
+	  if [[ "$var" != *[[:lower:]]* ]]; then
+	    # tr with ASCII ranges, as ${var,,} follows the locale (e.g. I becomes ı under tr_TR)
+	    var=$(tr 'A-Z' 'a-z' <<< "$var")
+	  fi
 	  var=${var//_/.}
 	  var=${var//../_}
-	  EXTRA_PROPERTIES+="${var}=${!i}\n"
+	  if [[ -n "${EXTRA_PROPERTY_SOURCES[$var]+x}" ]]; then
+	    echo "Warning: $i and ${EXTRA_PROPERTY_SOURCES[$var]} both set property $var. Ignoring $i."
+	    continue
+	  fi
+	  EXTRA_PROPERTY_SOURCES[$var]=$i
+	  EXTRA_PROPERTIES+=("${var}=$(escape_property "${!i}")")
 	done
 	
-	echo -e "$EXTRA_PROPERTIES" >> "openmrs-extra.properties"
+	if [[ ${#EXTRA_PROPERTIES[@]} -gt 0 ]]; then
+	  printf '%s\n' "${EXTRA_PROPERTIES[@]}" >> "openmrs-extra.properties"
+	fi
 fi
 
 if [ -f "$OMRS_RUNTIME_PROPERTIES_FILE" ]; then
+  # Applied before the extra properties, so that OMRS_EXTRA_CONNECTION_* still wins as on first install
+  if [[ ${#DB_SETTINGS_FROM_ENV[@]} -gt 0 ]]; then
+    for i in "${DB_SETTINGS_FROM_ENV[@]}"; do
+      printf 'connection.%s=%s\n' "$(tr 'A-Z' 'a-z' <<< "${i#OMRS_DB_}")" "$(escape_property "${!i}")"
+    done > openmrs-connection.properties
+    echo "Updating $(cut -d= -f1 openmrs-connection.properties | paste -sd ' ') in $OMRS_RUNTIME_PROPERTIES_FILE from the environment."
+    merge_properties openmrs-connection.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
+    rm openmrs-connection.properties
+  fi
+
   if [ -f "openmrs-extra.properties" ]; then
     echo "Found existing runtime properties file at $OMRS_RUNTIME_PROPERTIES_FILE. Merging with extra properties."
-    awk -F= '!a[$1]++' "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+    merge_properties "openmrs-extra.properties" "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
     mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   fi
 
   # Ensure admin.password.locked is set in runtime properties
-  echo "admin.password.locked=${OMRS_ADMIN_PASSWORD_LOCKED}" > openmrs-admin-locked.properties
-  awk -F= '!a[$1]++' openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
+  printf 'admin.password.locked=%s\n' "$(escape_property "${OMRS_ADMIN_PASSWORD_LOCKED}")" > openmrs-admin-locked.properties
+  merge_properties openmrs-admin-locked.properties "$OMRS_RUNTIME_PROPERTIES_FILE" > openmrs-merged.properties
   mv openmrs-merged.properties "$OMRS_RUNTIME_PROPERTIES_FILE"
   rm openmrs-admin-locked.properties
 else
@@ -197,7 +286,7 @@ else
   	fi
   	
   	while IFS="" read -r line; do
-  	  [[ -n "$line" ]] && echo -e "property.$line" >> openmrs-extra.properties.tmp
+  	  [[ -n "$line" ]] && printf 'property.%s\n' "$line" >> openmrs-extra.properties.tmp
 	done < openmrs-extra.properties
 	
 	echo >> openmrs-extra.properties.tmp

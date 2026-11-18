@@ -9,6 +9,8 @@
  */
 package org.openmrs;
 
+import java.util.UUID;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
@@ -416,6 +419,20 @@ public class BaseOpenmrsObjectTest extends BaseContextSensitiveTest {
 		assertTrue(testObjsameuuid.equals(testObj));
 		assertTrue(anotherTestObjectsameUuid.equals(anotherTestObj));
 
+	}
+
+	/**
+	 * @see BaseOpenmrsObject#getUuid()
+	 */
+	@Test
+	public void getUuid_shouldGiveEveryNewlyConstructedObjectItsOwnValidUuid() {
+		BaseOpenmrsObject o = new BaseOpenmrsObjectMock();
+		BaseOpenmrsObject other = new BaseOpenmrsObjectMock();
+
+		// UUID.fromString() throws if this string is not a valid UUID
+		UUID.fromString(o.getUuid());
+
+		assertNotEquals(o.getUuid(), other.getUuid());
 	}
 
 	/**

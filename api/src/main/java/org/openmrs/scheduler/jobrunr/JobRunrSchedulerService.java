@@ -53,9 +53,12 @@ import org.openmrs.scheduler.TaskDetails;
 import org.openmrs.scheduler.TaskState;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +79,8 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	private SchedulerDAO schedulerDAO;
 
+	private JobRunrServerLifecycle jobRunrServerLifecycle;
+
 	public JobRunrSchedulerService(StorageProvider storageProvider, JobRequestScheduler jobRequestScheduler,
 	    JobScheduler jobScheduler, SchedulerDAO schedulerDAO) {
 		this.jobRequestScheduler = jobRequestScheduler;
@@ -84,8 +89,14 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 		this.schedulerDAO = schedulerDAO;
 	}
 
+	@Autowired
+	public void setJobRunrServerLifecycle(JobRunrServerLifecycle jobRunrServerLifecycle) {
+		this.jobRunrServerLifecycle = jobRunrServerLifecycle;
+	}
+
 	@Override
 	public void onStartup() {
+		jobRunrServerLifecycle.openmrsStarted();
 		for (TaskDefinition taskDefinition : schedulerDAO.getTasks()) {
 			if (Boolean.TRUE.equals(taskDefinition.getStartOnStartup())) {
 				String scheduledBy = taskDefinition.getCreator() != null ? taskDefinition.getCreator().getSystemId()
@@ -117,6 +128,12 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	}
 
 	@Override
+	public void onShutdown() {
+		// the webapp never closes its application context, so the lifecycle would not stop the server
+		jobRunrServerLifecycle.stop();
+	}
+
+	@Override
 	public String getStatus(Integer id) {
 		TaskDefinition task = getTask(id);
 		if (task != null && Boolean.TRUE.equals(task.getStarted())) {
@@ -136,7 +153,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 	}
 
 	@Override
-	public Task scheduleTask(TaskDefinition legacyTask) throws SchedulerException {
+	public Task scheduleTask(@P("task") TaskDefinition legacyTask) throws SchedulerException {
 		if (legacyTask != null) {
 			// Reload task from DB, to get a session attached version
 			final TaskDefinition task = schedulerDAO.getTask(legacyTask.getId());
@@ -154,7 +171,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 						updateRecurringJobWithName(recurringJobId, name);
 					} else {
 						Date nextExecution = SchedulerUtil.getNextExecution(task);
-						JobId jobId = jobScheduler.schedule(UUID.randomUUID(), nextExecution.toInstant(),
+						JobId jobId = jobScheduler.schedule(UuidUtil.newUuid(), nextExecution.toInstant(),
 						    (JobRunrSchedulerService service) -> service.scheduleRecurrently(task.getUuid()));
 						updateJobWithName(jobId, task.getName());
 						// Create a placeholder recurring task that will be updated by the above task to the correct interval
@@ -412,7 +429,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public TaskDetails schedule(TaskData taskData, String name) {
-		return schedule(UUID.randomUUID().toString(), taskData, name);
+		return schedule(UuidUtil.newUuidString(), taskData, name);
 	}
 
 	@Override
@@ -460,7 +477,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public TaskDetails schedule(TaskData taskData, Instant runAt, String name) {
-		return schedule(UUID.randomUUID().toString(), taskData, runAt, name);
+		return schedule(UuidUtil.newUuidString(), taskData, runAt, name);
 	}
 
 	@Override
@@ -484,7 +501,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public TaskDetails schedule(TaskData taskData, ZonedDateTime runAt, String name) {
-		return schedule(UUID.randomUUID().toString(), taskData, runAt, name);
+		return schedule(UuidUtil.newUuidString(), taskData, runAt, name);
 	}
 
 	@Override
@@ -508,7 +525,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, String name) {
-		return scheduleRecurrently(UUID.randomUUID().toString(), taskData, cron, name);
+		return scheduleRecurrently(UuidUtil.newUuidString(), taskData, cron, name);
 	}
 
 	@Override
@@ -539,7 +556,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, String cron, ZoneId zoneId, String name) {
-		return scheduleRecurrently(UUID.randomUUID().toString(), taskData, cron, zoneId, name);
+		return scheduleRecurrently(UuidUtil.newUuidString(), taskData, cron, zoneId, name);
 	}
 
 	@Override
@@ -567,7 +584,7 @@ public class JobRunrSchedulerService extends BaseOpenmrsService implements Sched
 
 	@Override
 	public RecurringTaskDetails scheduleRecurrently(TaskData taskData, Duration interval, String name) {
-		return scheduleRecurrently(UUID.randomUUID().toString(), taskData, interval, name);
+		return scheduleRecurrently(UuidUtil.newUuidString(), taskData, interval, name);
 	}
 
 	@Override

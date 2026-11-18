@@ -25,17 +25,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import org.hibernate.envers.Audited;
 import org.openmrs.Auditable;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
 /**
  * OutboxEvent persisted in DB.
+ * <p>
+ * It is not audited with Envers: the DB event published for the audit row of an outbox event would
+ * be put in the outbox as another outbox event, whose audit row would follow, and so on.
  *
  * @since 2.9.0
  */
-@Audited
 @Entity
 @Table(name = "outbox_event")
 public class OutboxEvent extends BaseOpenmrsObject implements Auditable {

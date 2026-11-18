@@ -18,6 +18,7 @@ import jakarta.persistence.Cacheable;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
+import org.openmrs.util.CollectionUtil;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @param privileges The privileges to set.
 	 */
 	public void setPrivileges(Set<Privilege> privileges) {
-		this.privileges = privileges;
+		this.privileges = CollectionUtil.setCollection(this.privileges, privileges);
 	}
 
 	@Override
@@ -101,7 +102,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 
 	private boolean containsPrivilege(Collection<Privilege> privileges, String privilegeName) {
 		for (Privilege privilege : privileges) {
-			if (privilege.getPrivilege().equals(privilegeName)) {
+			if (privilege.getPrivilege().equalsIgnoreCase(privilegeName)) {
 				return true;
 			}
 		}
@@ -155,7 +156,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 */
 	public boolean hasPrivilege(String privilegeName) {
 
-		if (RoleConstants.SUPERUSER.equals(this.role)) {
+		if (RoleConstants.SUPERUSER.equalsIgnoreCase(this.role)) {
 			return true;
 		}
 
@@ -184,7 +185,7 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	 * @param inheritedRoles The inheritedRoles to set.
 	 */
 	public void setInheritedRoles(Set<Role> inheritedRoles) {
-		this.inheritedRoles = inheritedRoles;
+		this.inheritedRoles = CollectionUtil.setCollection(this.inheritedRoles, inheritedRoles);
 	}
 
 	/**
@@ -270,11 +271,14 @@ public class Role extends BaseChangeableOpenmrsMetadata {
 	}
 
 	/**
+	 * Child roles are read-only: saving a role never writes them. To make a role inherit from this one,
+	 * add this role to that role's {@link #getInheritedRoles() inherited roles} and save that role.
+	 *
 	 * @since 1.9
 	 * @param childRoles the immediate children to set
 	 */
 	public void setChildRoles(Set<Role> childRoles) {
-		this.childRoles = childRoles;
+		this.childRoles = CollectionUtil.setCollection(this.childRoles, childRoles);
 	}
 
 	/**

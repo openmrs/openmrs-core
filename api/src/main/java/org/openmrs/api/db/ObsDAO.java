@@ -20,6 +20,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.Visit;
 import org.openmrs.api.ObsService;
+import org.openmrs.parameter.ObsSearchCriteria;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
@@ -90,6 +91,14 @@ public interface ObsDAO {
 	public Obs.Status getSavedStatus(Obs obs);
 
 	/**
+	 * @see org.openmrs.api.ObsService#getObsVersionHistory(Obs)
+	 * @param obs the Obs to retrieve version history for; must not be null and must have a non-null
+	 *            obsId
+	 * @since 2.9.0, 3.0.0
+	 */
+	List<Obs> getObsVersionHistory(Obs obs);
+
+	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
 	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
@@ -99,6 +108,25 @@ public interface ObsDAO {
 	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
 	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	        boolean includeVoidedObs, String accessionNumber) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(ObsSearchCriteria)
+	 * @since 2.8.10
+	 */
+	public List<Obs> getObservations(ObsSearchCriteria obsSearchCriteria) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean,
+	 *      java.lang.String, java.lang.Integer, java.lang.Integer)
+	 * @since 2.8.10
+	 */
+	@SuppressWarnings("squid:S107")
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	        List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sortList,
+	        List<Visit> visits, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	        boolean includeVoidedObs, String accessionNumber, Integer startIndex, Integer maxResults) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List,

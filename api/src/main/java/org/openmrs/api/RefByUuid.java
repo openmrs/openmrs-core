@@ -11,6 +11,8 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PostAuthorize;
+
 /**
  * Contract for services that can resolve domain objects by their UUID in a generic way.
  * <p>
@@ -44,7 +46,10 @@ public interface RefByUuid {
 	 * @param <T> the domain object type
 	 * @return the resolved domain object instance, or {@code null} if no matching object is found
 	 * @throws APIException if the type is not supported
+	 * @throws org.springframework.security.access.AccessDeniedException if the current user lacks
+	 *             permission
 	 */
+	@PostAuthorize("hasPermission(returnObject, '')")
 	<T> T getRefByUuid(Class<T> type, String uuid) throws APIException;
 
 	/**

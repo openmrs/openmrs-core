@@ -34,6 +34,7 @@ import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.api.handler.UnretireHandler;
 import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
+import org.openmrs.security.MaskedObject;
 import org.openmrs.util.HandlerUtil;
 import org.openmrs.util.Reflect;
 import org.openmrs.validator.ValidateUtil;
@@ -83,6 +84,10 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 
 	private static final String UNABLE_GETTER_METHOD = "unable.getter.method";
 
+	/** Method name prefixes that write, so {@link #rejectMaskedArguments} knows when to look. */
+	private static final List<String> WRITE_METHOD_PREFIXES = List.of("save", "create", "update", "void", "unvoid", "retire",
+	    "unretire", "purge", "delete", "merge");
+
 	/**
 	 * <p>
 	 * <strong>Should</strong> not fail on update method with no arguments
@@ -99,6 +104,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		if (args == null || args.length == 0) {
 			return;
 		}
+
+		rejectMaskedArguments(methodName, args);
 
 		Object mainArgument = args[0];
 
@@ -187,6 +194,39 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				recursivelyHandle(UnretireHandler.class, retireable, Context.getAuthenticatedUser(), originalDateRetired,
 				    null, (Set<OpenmrsObject>) null);
 			}
+		}
+	}
+
+	/**
+	 * Refuses a {@link MaskedObject} on its way into a write, rather than letting it reach Hibernate.
+	 * <p>
+	 * A mask carries no data: it stands in, during serialization, for an object a
+	 * {@code DomainObjectAuthorizationRule} refused (see {@code org.openmrs.security.Authorize}).
+	 * Saving one would blank the record it stands for, and being a proxy it would be read as an
+	 * unmanaged entity and inserted as new - the failure that ruled out enforcing those rules inside
+	 * the domain objects. This advice is the one place every write passes through, so it is where that
+	 * is caught.
+	 * <p>
+	 * Gated on the method name so a read handed a large collection does not pay for the scan.
+	 */
+	private static void rejectMaskedArguments(String methodName, Object[] args) {
+		if (WRITE_METHOD_PREFIXES.stream().noneMatch(methodName::startsWith)) {
+			return;
+		}
+
+		for (Object argument : args) {
+			rejectIfMasked(argument);
+			if (argument instanceof Collection<?> elements) {
+				elements.forEach(RequiredDataAdvice::rejectIfMasked);
+			}
+		}
+	}
+
+	private static void rejectIfMasked(Object argument) {
+		if (argument instanceof MaskedObject masked) {
+			throw new APIException("A masked " + masked.getMaskedType().getName() + " cannot be written: it stands in "
+			        + "for an object the current user may not read, so persisting it would blank that record. What "
+			        + "Authorize returns is for serialization only.");
 		}
 	}
 

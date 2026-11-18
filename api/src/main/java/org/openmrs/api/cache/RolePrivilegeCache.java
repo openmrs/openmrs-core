@@ -9,64 +9,75 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 
-import org.openmrs.Privilege;
+import org.infinispan.Cache;
+import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.openmrs.Role;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.db.ContextDAO;
+import org.openmrs.api.db.StoredRole;
+import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.RoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
- * Per-role cache of flattened privilege resolutions, so privilege and superuser checks need not
- * re-expand a user's role graph on every call. The cached value for a role is an immutable
- * {@link RolePrivileges} covering that role and its entire inherited closure.
+ * Per-role cache of flattened privilege resolutions, so privilege, role and superuser checks need
+ * not re-expand a user's role graph on every call. The cached value for a role is an immutable
+ * {@link RolePrivileges} covering that role and its entire inherited closure. Roles are looked up
+ * by name, exactly as given: only the name of a caller-supplied {@link Role} is used.
  * <p>
- * On a miss the closure is computed from a freshly loaded copy of the role, not the caller-supplied
- * instance: a long-lived {@code UserContext} can hold a stale, detached role graph that, cached by
- * role name, would serve out-of-date privileges to other sessions.
+ * On a miss the closure is read from the database as stored, never from a loaded {@link Role},
+ * which may hold unsaved changes or be stale. The read runs in a daemon thread, so it neither
+ * depends on the caller's privileges nor sees the caller's uncommitted changes. The caller waits
+ * for the load, and concurrent misses for the same role share one. A role absent from the database
+ * grants nothing.
  * <p>
- * The fresh role is loaded and flattened inside a daemon thread, because loading a role through the
- * secured {@code UserService} itself requires {@code Get Roles} — the very check being resolved.
- * Daemon threads skip authorization (see {@link org.openmrs.aop.AuthorizationAdvice}), breaking
- * that cycle without the security bypass of a direct DAO read and without emitting spurious
- * {@code PrivilegeListener} notifications. Concurrent misses for the same role coalesce onto a
- * single {@link Future}; the caller blocks on it, so resolution stays synchronous.
+ * If the load fails, the caller is interrupted while waiting for it, or the cache was evicted while
+ * the caller waited, so that the load may have read the role from before a change, the role is
+ * instead read once through the caller's own session, without caching it. That read sees committed
+ * data and the caller's flushed changes, but not unflushed ones. If that read fails too, the role
+ * grants nothing, so a privilege check denies rather than throws.
  * <p>
- * The component reaches into the {@code rolePrivileges} cache directly rather than exposing a
- * {@code @Cacheable} service method, so a privilege check does not re-enter the service AOP stack
- * (which performs its own privilege checks). The cache lives on {@code apiCacheManager}, so it
- * participates in clustering when {@code cache.type=cluster} (as an invalidation cache: each node
- * computes its own entries and eviction broadcasts an invalidation) and is cleared by
- * {@code @CacheEvict} on role/privilege mutations and on context refresh.
+ * The daemon only sees committed data. Evictions go through {@link CacheInvalidation}, so a load
+ * only keeps its entry if nothing was evicted, on any node, while it ran, and a miss never waits on
+ * a load that started before the latest eviction.
  * <p>
- * Eviction is not atomic with an in-flight refresh: a daemon load can read a role, a concurrent
- * {@code saveRole} evict, and the daemon's write then land after the eviction, briefly caching a
- * pre-save closure. The window is bounded by the {@code role-privileges} cache template's expiry.
+ * Within a transaction, the eviction is applied once, when the transaction completes. Until then
+ * the transaction resolves roles through its own session, without the cache, so it sees its own
+ * flushed changes while other transactions keep reading the committed ones. Once a transaction that
+ * changed a role or privilege has completed, privileges are therefore never served from before that
+ * change, except on a node that missed the eviction while cut off from the cluster.
  * <p>
- * That template carries a {@code lifespan} TTL as a safety net against role changes made outside
- * the API (eviction only fires on API mutations); it is configured declaratively in {@code
- * infinispan-api.xml}/{@code infinispan-api-local.xml} rather than per entry here.
+ * {@link org.openmrs.api.UserService} clears the cache when it saves or purges a role or privilege,
+ * and {@link org.openmrs.api.db.hibernate.RolePrivilegeCacheInterceptor} clears it whenever
+ * Hibernate flushes a change to one; such a change is first vetted by
+ * {@link org.openmrs.api.db.hibernate.RoleWriteGuardListener}. Changes to the tables made outside
+ * Hibernate, for example with SQL, are not detected, but the {@code role-privileges} cache
+ * template's lifespan limits how long they can be served stale.
  *
- * @since 3.0.0, 2.9.0, 2.8.9
+ * @since 2.8.9
  */
 @Component("rolePrivilegeCache")
-public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedEvent> {
+public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
 	private static final Logger log = LoggerFactory.getLogger(RolePrivilegeCache.class);
 
@@ -78,17 +89,40 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	 */
 	private static volatile Daemon.CallerKey daemonCallerKey;
 
-	private final CacheManager cacheManager;
+	private final SpringEmbeddedCacheManager cacheManager;
+
+	private final UserDAO dao;
 
 	/**
-	 * In-flight refreshes keyed by normalized role name, so concurrent misses for the same role share a
-	 * single daemon computation instead of each launching their own.
+	 * Runs a load on another thread, returning a future for the thread's task, or null if there is
+	 * none. The task may fail without running the load, for example if a daemon cannot open a session.
 	 */
-	private final ConcurrentMap<String, Future<RolePrivileges>> inFlight = new ConcurrentHashMap<>();
+	private final Function<Runnable, Future<?>> backgroundRunner;
+
+	/** Reads a role by name on the background thread, seeing only committed data. */
+	private final Function<String, StoredRole> committedRoleLoader;
+
+	/** Loads in progress, by role name, so concurrent misses share a single load. */
+	private final ConcurrentMap<String, Load> loads = new ConcurrentHashMap<>();
+
+	private final CacheInvalidation invalidation;
 
 	@Autowired
-	public RolePrivilegeCache(@Qualifier("apiCacheManager") CacheManager cacheManager) {
+	public RolePrivilegeCache(@Qualifier("apiCacheManager") SpringEmbeddedCacheManager cacheManager, UserDAO dao,
+	    ContextDAO contextDAO) {
+		// the daemon thread has no transaction of its own, so it reads through the transactional ContextDAO
+		this(cacheManager, dao, task -> Daemon.runNewDaemonTask(task, daemonCallerKey()), contextDAO::getStoredRole);
+	}
+
+	RolePrivilegeCache(SpringEmbeddedCacheManager cacheManager, UserDAO dao, Function<Runnable, Future<?>> backgroundRunner,
+	    Function<String, StoredRole> committedRoleLoader) {
 		this.cacheManager = cacheManager;
+		this.dao = dao;
+		this.backgroundRunner = backgroundRunner;
+		this.committedRoleLoader = committedRoleLoader;
+
+		this.invalidation = new CacheInvalidation("the role privilege cache", this::getCache,
+		        cacheManager.getNativeCacheManager());
 	}
 
 	/**
@@ -112,162 +146,75 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	}
 
 	/**
-	 * Returns the flattened privileges for the given role, computing and caching the result on a miss.
-	 * Never returns {@code null}.
+	 * Returns the flattened privileges for the given role, loading and caching them on a miss. Never
+	 * returns {@code null} and never throws; a role that cannot be loaded grants nothing.
 	 *
 	 * @param role the directly assigned role to resolve
 	 * @return the flattened privilege closure for the role
 	 */
 	public RolePrivileges getRolePrivileges(Role role) {
-		if (role == null || role.getRole() == null) {
+		return getRolePrivileges(role == null ? null : role.getRole());
+	}
+
+	/**
+	 * Returns the flattened privileges for the named role, loading and caching them on a miss. Never
+	 * returns {@code null} and never throws; a role that cannot be loaded grants nothing.
+	 *
+	 * @param roleName the name of the directly assigned role to resolve
+	 * @return the flattened privilege closure for the role
+	 * @since 2.8.11
+	 */
+	public RolePrivileges getRolePrivileges(String roleName) {
+		if (roleName == null) {
 			return new RolePrivileges(new HashSet<>(), false);
 		}
 
-		Cache cache = getCache();
-		String key = RolePrivileges.normalize(role.getRole());
+		if (invalidation.isWrittenInCurrentTransaction(null)) {
+			return resolveInCurrentSession(roleName, null);
+		}
+
+		Cache<Object, Object> cache = getCache();
+		// not normalized: on a case-sensitive database, names differing only in case are different roles
+		String key = roleName;
 		if (cache != null) {
-			RolePrivileges cached = cache.get(key, RolePrivileges.class);
-			if (cached != null) {
-				return cached;
+			Object cached = cache.get(key);
+			if (cached instanceof RolePrivileges) {
+				return (RolePrivileges) cached;
 			}
 		}
 
-		return refresh(key, role, cache);
-	}
-
-	/**
-	 * Loads and flattens a current copy of the role in a daemon thread, caches it, and returns it
-	 * synchronously; concurrent misses for the same role coalesce onto one {@link Future}.
-	 * <p>
-	 * If the refresh cannot be scheduled, fails (for example a transient database error), or is
-	 * interrupted, it falls back to flattening the caller-supplied instance <em>without caching it</em>
-	 * — a deliberate fail-open, since denying every privilege during a database hiccup would brick the
-	 * application, and not caching keeps a transient failure from poisoning other sessions. A role that
-	 * loads but is absent from the database instead fails closed (see {@link #loadAndCache}).
-	 *
-	 * @param key the normalized role name used as the cache and in-flight key
-	 * @param role the role supplied by the caller (used for its name, and as a fail-open fallback)
-	 * @param cache the target cache, or <code>null</code> if unavailable
-	 * @return the flattened privilege closure
-	 */
-	private RolePrivileges refresh(String key, Role role, Cache cache) {
-		Future<RolePrivileges> future;
+		Load load = startOrJoinLoad(key, roleName, cache);
+		RolePrivileges loaded;
 		try {
-			future = inFlight.computeIfAbsent(key, k -> Daemon.runNewDaemonTask((Callable<RolePrivileges>) () -> {
-				try {
-					return loadAndCache(k, role, cache);
-				} finally {
-					// Clear on the daemon thread when the load finishes, not on the waiter's path: an
-					// interrupted waiter does not cancel this task, so removing there could drop a
-					// still-running refresh and let a concurrent miss schedule a duplicate.
-					inFlight.remove(k);
-				}
-			}, daemonCallerKey()));
-		} catch (RuntimeException e) {
-			log.warn("Could not schedule a daemon refresh for role '{}'; resolving against the supplied instance", key, e);
-			return computeRolePrivileges(role);
+			loaded = await(key, load);
+		} catch (APIException e) {
+			// the daemon may have failed for want of a connection the caller already holds, or the caller
+			// may have been interrupted
+			log.warn("Could not load the privileges of role {}; reading it through the caller's session", key, e);
+			return resolveInCurrentSession(roleName, e);
 		}
 
-		try {
-			return future.get();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			log.debug("Interrupted while refreshing role '{}'; resolving against the supplied instance", key, e);
-			return computeRolePrivileges(role);
-		} catch (ExecutionException e) {
-			log.warn("Daemon refresh for role '{}' failed; resolving against the supplied instance", key, e.getCause());
-			return computeRolePrivileges(role);
+		if (cache != null && !CacheInvalidation.isCurrent(cache, load.generation)) {
+			return resolveInCurrentSession(roleName, null);
 		}
+		return loaded;
 	}
 
 	/**
-	 * Runs inside a daemon thread: loads a fresh copy of the role through the {@code UserService}
-	 * (authorization skipped for daemon threads), flattens it, and caches it.
+	 * Evicts every role. Must be called whenever a role or privilege is saved or purged; closures span
+	 * inherited roles, so a change to one role can affect any entry.
 	 * <p>
-	 * A role absent from the database grants nothing. The caller-supplied instance is deliberately not
-	 * used as a fallback: it may be stale or purged, and caching it by name would serve out-of-date
-	 * privileges to every session holding that role name. Failing closed keeps a purge or out-of-API
-	 * deletion from being silently over-granted.
-	 *
-	 * @param key the normalized role name
-	 * @param role the caller-supplied role, used for its name
-	 * @param cache the target cache, or <code>null</code> if unavailable
-	 * @return the flattened closure, or an empty closure if the role no longer exists
-	 */
-	private RolePrivileges loadAndCache(String key, Role role, Cache cache) {
-		Role fresh = Context.getUserService().getRole(role.getRole());
-		RolePrivileges computed = (fresh != null) ? computeRolePrivileges(fresh)
-		        : new RolePrivileges(new HashSet<>(), false);
-		if (cache != null) {
-			// The lifespan TTL comes from the cache template (see the class-level note), so a plain put
-			// carries it; no per-entry expiry handling is needed here.
-			cache.put(key, computed);
-		}
-		return computed;
-	}
-
-	/**
-	 * Flattens a role and its transitively inherited roles into an immutable {@link RolePrivileges},
-	 * with a visited set guarding against inheritance cycles.
-	 * <p>
-	 * Resolves against the passed-in instance with <em>no freshness guarantee</em>, so it must not
-	 * drive a security decision on a possibly stale role; the cache uses it only on a freshly loaded
-	 * role or as a fail-open fallback.
-	 *
-	 * @param role the role to flatten
-	 * @return the flattened privilege closure
-	 */
-	public static RolePrivileges computeRolePrivileges(Role role) {
-		Set<String> privileges = new HashSet<>();
-		Set<String> visited = new HashSet<>();
-		boolean grantsSuperuser = collect(role, privileges, visited);
-		return new RolePrivileges(privileges, grantsSuperuser);
-	}
-
-	/**
-	 * Depth-first walk over a role and its inherited roles, collecting normalized privilege names.
-	 *
-	 * @param role the role currently being visited
-	 * @param privileges accumulates normalized privilege names
-	 * @param visited role names already visited, to break inheritance cycles
-	 * @return true if this role or any role reachable from it confers superuser status
-	 */
-	private static boolean collect(Role role, Set<String> privileges, Set<String> visited) {
-		if (role == null || role.getRole() == null || !visited.add(RolePrivileges.normalize(role.getRole()))) {
-			return false;
-		}
-
-		// Superuser status can be inherited, so a superuser role anywhere in the closure grants it.
-		boolean grantsSuperuser = RoleConstants.SUPERUSER.equalsIgnoreCase(role.getRole());
-
-		if (role.getPrivileges() != null) {
-			for (Privilege privilege : role.getPrivileges()) {
-				if (privilege != null && privilege.getPrivilege() != null) {
-					// RolePrivileges normalizes names on construction, so raw names are fine here.
-					privileges.add(privilege.getPrivilege());
-				}
-			}
-		}
-
-		for (Role inherited : role.getInheritedRoles()) {
-			grantsSuperuser |= collect(inherited, privileges, visited);
-		}
-
-		return grantsSuperuser;
-	}
-
-	/**
-	 * Clears the entire cache. Invoked on context refresh via {@link #onApplicationEvent}.
+	 * Within a transaction the cache is cleared once, when the transaction completes, whether it
+	 * commits or rolls back, and until then the transaction resolves roles without the cache. Outside
+	 * one it is cleared immediately.
 	 */
 	public void clear() {
-		Cache cache = getCache();
-		if (cache != null) {
-			cache.clear();
-		}
+		invalidation.invalidate(CacheInvalidation.ALL);
 	}
 
-	private Cache getCache() {
-		return cacheManager == null ? null : cacheManager.getCache(CACHE_NAME);
+	@Override
+	public void destroy() {
+		invalidation.close();
 	}
 
 	/**
@@ -277,5 +224,186 @@ public class RolePrivilegeCache implements ApplicationListener<ContextRefreshedE
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		clear();
+	}
+
+	/**
+	 * Flattens a role and its inherited roles as read through {@code reader}, tolerating inheritance
+	 * cycles. Superuser status is judged from the names as stored, so a name the database matches
+	 * loosely, for example with different case or trailing spaces, can't hide a superuser role. A role
+	 * absent from the database grants nothing.
+	 *
+	 * @param roleName the name of the role to flatten
+	 * @param reader reads a role as stored, returning null if there is no such role
+	 * @return the flattened privilege closure
+	 * @since 2.8.11
+	 */
+	public static RolePrivileges resolve(String roleName, Function<String, StoredRole> reader) {
+		Set<String> privileges = new HashSet<>();
+		// names as stored, which also marks a role as visited however it was named when reached
+		Set<String> roleNames = new HashSet<>();
+		Set<String> requested = new HashSet<>();
+		Deque<String> pending = new ArrayDeque<>();
+		pending.push(roleName);
+		boolean grantsSuperuser = false;
+		while (!pending.isEmpty()) {
+			String name = pending.pop();
+			if (!requested.add(name)) {
+				continue;
+			}
+			StoredRole stored = reader.apply(name);
+			if (stored != null && roleNames.add(stored.getName())) {
+				grantsSuperuser |= RoleConstants.SUPERUSER.equalsIgnoreCase(stored.getName());
+				privileges.addAll(stored.getPrivileges());
+				stored.getParentRoles().forEach(pending::push);
+			}
+		}
+		return new RolePrivileges(privileges, grantsSuperuser, roleNames);
+	}
+
+	/**
+	 * Waits for the loads in progress to finish. A load writes or discards its cache entry before
+	 * handing over its result, so this is only needed to wait for loads the caller is not itself
+	 * waiting on, for example in tests.
+	 */
+	void awaitLoads() {
+		loads.forEach((key, load) -> {
+			try {
+				await(key, load);
+			} catch (APIException e) {
+				// the load's failure is its caller's to handle
+			}
+		});
+	}
+
+	/**
+	 * Evicts every role immediately, even within a transaction, which still resolves roles without the
+	 * cache until it completes. Only for tests that load data behind the API.
+	 */
+	void clearNow() {
+		invalidation.clearNow();
+	}
+
+	/**
+	 * Lets the current transaction read through the cache again and not evict it when it completes.
+	 * Only for tests that load data behind the API but still need to observe cache hits.
+	 */
+	void forgetWritesInCurrentTransaction() {
+		invalidation.forgetWritesInCurrentTransaction();
+	}
+
+	/**
+	 * Returns the load in progress for the role if it started after the latest eviction, and otherwise
+	 * starts a new one. A load that started before the latest eviction may have read the role before
+	 * the change that caused it, so it is replaced rather than joined.
+	 */
+	private Load startOrJoinLoad(String key, String roleName, Cache<Object, Object> cache) {
+		Load fresh = new Load(cache == null ? null : CacheInvalidation.currentGeneration(cache));
+		Load current = loads.compute(key,
+		    (k, existing) -> existing != null && Objects.equals(existing.generation, fresh.generation) ? existing : fresh);
+		if (current != fresh) {
+			return current;
+		}
+
+		Future<?> task = null;
+		try {
+			task = backgroundRunner.apply(() -> {
+				try {
+					fresh.result.complete(load(key, roleName, cache, fresh.generation));
+				} catch (Throwable e) {
+					fresh.result.completeExceptionally(e);
+				} finally {
+					loads.remove(key, fresh);
+				}
+			});
+		} catch (RuntimeException e) {
+			fresh.result.completeExceptionally(e);
+			loads.remove(key, fresh);
+		} finally {
+			fresh.task.complete(task);
+		}
+		return fresh;
+	}
+
+	/**
+	 * Runs on the background thread: reads the role as stored, flattens it, and caches it unless the
+	 * generation token has changed since <code>generation</code> was read. A role absent from the
+	 * database grants nothing.
+	 */
+	private RolePrivileges load(String key, String roleName, Cache<Object, Object> cache, Object generation) {
+		RolePrivileges loaded = resolve(roleName, committedRoleLoader);
+		if (cache != null) {
+			CacheInvalidation.putIfCurrent(cache, key, loaded, generation);
+		}
+		return loaded;
+	}
+
+	/**
+	 * Flattens the role as stored, read through the caller's own session, without caching the result.
+	 * If the read fails, the role grants nothing.
+	 *
+	 * @param loadFailure why the load failed, if it did, which is recorded on any failure of this read
+	 */
+	private RolePrivileges resolveInCurrentSession(String roleName, Exception loadFailure) {
+		try {
+			return resolve(roleName, dao::getStoredRole);
+		} catch (RuntimeException e) {
+			if (loadFailure != null) {
+				e.addSuppressed(loadFailure);
+			}
+			log.error("Could not load the privileges of role {}; it grants nothing", roleName, e);
+			return new RolePrivileges(new HashSet<>(), false);
+		}
+	}
+
+	/**
+	 * Waits for the load. The thread's task is waited for first, since it can end without running the
+	 * load, which would then never complete.
+	 */
+	private RolePrivileges await(String key, Load load) {
+		try {
+			Future<?> task = load.task.join();
+			if (task != null) {
+				try {
+					task.get();
+				} catch (ExecutionException e) {
+					load.result.completeExceptionally(e.getCause());
+					loads.remove(key, load);
+				}
+			}
+			return load.result.get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new APIException("Interrupted while loading the privileges of role " + key, e);
+		} catch (ExecutionException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof APIException) {
+				throw (APIException) cause;
+			}
+			if (cause instanceof Error) {
+				throw (Error) cause;
+			}
+			throw new APIException("Could not load the privileges of role " + key, cause);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Cache<Object, Object> getCache() {
+		org.springframework.cache.Cache cache = cacheManager.getCache(CACHE_NAME);
+		return cache == null ? null : (Cache<Object, Object>) cache.getNativeCache();
+	}
+
+	/** A load in progress, with the generation token read before it started. */
+	private static final class Load {
+
+		private final Object generation;
+
+		private final CompletableFuture<RolePrivileges> result = new CompletableFuture<>();
+
+		/** The thread's task running the load, completed as soon as it has been started. */
+		private final CompletableFuture<Future<?>> task = new CompletableFuture<>();
+
+		private Load(Object generation) {
+			this.generation = generation;
+		}
 	}
 }

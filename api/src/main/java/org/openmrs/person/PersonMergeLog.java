@@ -11,6 +11,7 @@ package org.openmrs.person;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,14 +54,14 @@ public class PersonMergeLog extends BaseChangeableOpenmrsData {
 	/**
 	 * The object representing the preferred person of the merge
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "winner_person_id", nullable = false)
 	private Person winner;
 
 	/**
 	 * The object representing the non-preferred person of the merge
 	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "loser_person_id", nullable = false)
 	private Person loser;
 

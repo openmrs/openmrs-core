@@ -11,6 +11,8 @@ package org.openmrs.module.web;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,15 +32,21 @@ import jakarta.servlet.http.HttpServlet;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.web.DispatcherServlet;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,7 +56,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+import static org.openmrs.util.XmlUtils.createDocumentBuilder;
 
 /**
  *
@@ -170,6 +182,23 @@ public class WebModuleUtilTest {
 			scanner.close();
 
 		assertTrue(found);
+	}
+
+	/**
+	 * @see WebModuleUtil#createDwrModulesXml(String)
+	 */
+	@Test
+	public void createDwrModulesXml_shouldDeclareTheDwrDocumentType(@TempDir File realPath)
+	        throws IOException, SAXException {
+		File webInf = new File(realPath, "WEB-INF");
+		webInf.mkdir();
+
+		WebModuleUtil.createDwrModulesXml(realPath.getAbsolutePath());
+
+		DocumentType doctype = createDocumentBuilder().parse(new File(webInf, "dwr-modules.xml")).getDoctype();
+		assertNotNull(doctype);
+		assertEquals("-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN", doctype.getPublicId());
+		assertEquals("http://directwebremoting.org/schema/dwr20.dtd", doctype.getSystemId());
 	}
 
 	@Test
@@ -367,6 +396,83 @@ public class WebModuleUtilTest {
 		String actualPath = WebModuleUtil.getModuleWebFolder(moduleId);
 
 		assertEquals(expectedPath, actualPath);
+	}
+
+	/**
+	 * @see WebModuleUtil#startModule(Module, ServletContext, boolean)
+	 */
+	@Test
+	public void startModule_shouldFailIfAWebFileResolvesOutsideTheModuleWebFolder(@TempDir File realPath) throws Exception {
+		File omod = new File(realPath, "basicmodule.omod");
+		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(omod))) {
+			jar.putNextEntry(new JarEntry("web/module/"));
+			jar.putNextEntry(new JarEntry("web/module/../othermodule/page.jsp"));
+			jar.closeEntry();
+		}
+		Module module = newModule("basicmodule");
+		module.setFile(omod);
+		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
+
+		assertThrows(ModuleException.class, () -> WebModuleUtil.startModule(module, newServletContext(realPath), true));
+		assertFalse(new File(realPath, "WEB-INF/view/module/othermodule/page.jsp".replace("/", File.separator)).exists());
+	}
+
+	/**
+	 * @see WebModuleUtil#stopModule(Module, ServletContext, boolean)
+	 */
+	@Test
+	public void stopModule_shouldDeleteTheModuleWebFolder(@TempDir File realPath) throws Exception {
+		File moduleWebFolder = new File(realPath, "WEB-INF/view/module/basicmodule".replace("/", File.separator));
+		moduleWebFolder.mkdirs();
+		assertTrue(new File(moduleWebFolder, "page.jsp").createNewFile());
+		File sibling = new File(realPath, "WEB-INF/view/module/othermodule".replace("/", File.separator));
+		sibling.mkdirs();
+
+		try (MockedStatic<Context> context = mockStatic(Context.class)) {
+			context.when(Context::getSchedulerService).thenReturn(mock(SchedulerService.class));
+
+			WebModuleUtil.stopModule(newModule("basicmodule"), newServletContext(realPath), true);
+		}
+
+		assertFalse(moduleWebFolder.exists());
+		assertTrue(sibling.exists());
+	}
+
+	/**
+	 * @see WebModuleUtil#stopModule(Module, ServletContext, boolean)
+	 */
+	@Test
+	public void stopModule_shouldNotDeleteOutsideTheModuleWebFolder(@TempDir File realPath) throws Exception {
+		File moduleFolder = new File(realPath, "WEB-INF/view/module".replace("/", File.separator));
+		moduleFolder.mkdirs();
+		File marker = new File(realPath, "WEB-INF" + File.separator + "web.xml");
+		assertTrue(marker.createNewFile());
+		ServletContext servletContext = newServletContext(realPath);
+		Module module = newModule("../..");
+
+		try (MockedStatic<Context> context = mockStatic(Context.class)) {
+			context.when(Context::getSchedulerService).thenReturn(mock(SchedulerService.class));
+
+			assertThrows(ModuleException.class, () -> WebModuleUtil.stopModule(module, servletContext, true));
+		}
+
+		assertTrue(marker.exists());
+		assertTrue(moduleFolder.exists());
+	}
+
+	private static Module newModule(String moduleId) {
+		Module module = new Module("Basic Module", moduleId, "org.openmrs.module.basicmodule", "author", "description",
+		        "1.0", "1.0");
+		Document config = createDocumentBuilder().newDocument();
+		config.appendChild(config.createElement("module"));
+		module.setConfig(config);
+		return module;
+	}
+
+	private static ServletContext newServletContext(File realPath) {
+		ServletContext servletContext = mock(ServletContext.class);
+		when(servletContext.getRealPath("")).thenReturn(realPath.getAbsolutePath());
+		return servletContext;
 	}
 
 	private static void setupMocks(boolean includeTrailingSlash) {

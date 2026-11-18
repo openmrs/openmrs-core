@@ -1212,8 +1212,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public OrderGroupAttributeType getOrderGroupAttributeType(Integer id) throws APIException {
-		return dao.getOrderGroupAttributeType(id);
+	public OrderGroupAttributeType getOrderGroupAttributeType(Integer orderGroupAttributeTypeId) throws APIException {
+		return dao.getOrderGroupAttributeType(orderGroupAttributeTypeId);
 	}
 
 	/**
@@ -1292,8 +1292,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public OrderAttributeType getOrderAttributeTypeById(Integer id) throws APIException {
-		return dao.getOrderAttributeTypeById(id);
+	public OrderAttributeType getOrderAttributeTypeById(Integer orderAttributeTypeId) throws APIException {
+		return dao.getOrderAttributeTypeById(orderAttributeTypeId);
 	}
 
 	/**
