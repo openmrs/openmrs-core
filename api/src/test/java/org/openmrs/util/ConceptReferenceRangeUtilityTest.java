@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptReferenceRangeContext;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -45,6 +46,7 @@ import org.springframework.expression.ParseException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -577,6 +579,18 @@ class ConceptReferenceRangeUtilityTest extends BaseContextSensitiveTest {
 
 		assertTrue(conceptReferenceRangeUtility
 		        .evaluateCriteria("$fn.getCurrentObs('test-concept-ref', $obs).getValueNumeric() == 42.0", obs));
+	}
+
+	@Test
+	public void getCurrentObs_shouldReturnNullIfCurrentObsIsNull() {
+		assertNull(new ConceptReferenceRangeUtility.CriteriaFunctions().getCurrentObs("test-concept-ref", null));
+	}
+
+	@Test
+	public void testRelevantObs_shouldReturnFalseIfEvaluatedWithoutAnObs() {
+		assertFalse(conceptReferenceRangeUtility.evaluateCriteria(
+		    "$fn.getCurrentObs('test-concept-ref', $obs).getValueNumeric() >= 20",
+		    new ConceptReferenceRangeContext(person, new Concept(5089), new Date())));
 	}
 
 	@Test

@@ -1091,6 +1091,31 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
 	 */
 	@Test
+	public void getConceptReferenceRange_shouldIgnoreCurrentObsCriteriaWhenContextHasNoObs() {
+		Person person = new Person();
+		person.setBirthdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).minusYears(6).toInstant()));
+
+		// besides its two age-based ranges, give concept 4090 a range that depends on the current obs
+		Concept concept = conceptService.getConcept(4090);
+		ConceptReferenceRange currentObsRange = new ConceptReferenceRange();
+		currentObsRange.setConceptNumeric(conceptService.getConceptNumeric(4090));
+		currentObsRange.setCriteria("$fn.getCurrentObs('" + concept.getUuid() + "', $obs).getValueNumeric() > 100");
+		currentObsRange.setHiAbsolute(100.0);
+		conceptService.saveConceptReferenceRange(currentObsRange);
+
+		ConceptReferenceRangeContext context = new ConceptReferenceRangeContext(person, concept, new Date());
+
+		ConceptReferenceRange range = conceptService.getConceptReferenceRange(context);
+
+		assertNotNull(range);
+		assertEquals(140.0, range.getHiAbsolute());
+		assertEquals(70.0, range.getLowAbsolute());
+	}
+
+	/**
+	 * @see ConceptServiceImpl#getConceptReferenceRange(ConceptReferenceRangeContext)
+	 */
+	@Test
 	public void getConceptReferenceRange_shouldFallBackToConceptNumericWhenNoCriteriaMatch() {
 		Person person = new Person();
 		// Very old person — no criteria will match
