@@ -95,7 +95,6 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role"))
 	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@Cascade({ CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH })
 	private Set<Role> roles;
 
 	@ElementCollection
