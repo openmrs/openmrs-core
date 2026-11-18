@@ -26,7 +26,7 @@ import org.springframework.validation.ValidationUtils;
 @Handler(supports = { Patient.class }, order = 25)
 public class PatientValidator extends PersonValidator {
 
-	private static final Logger log = LoggerFactory.getLogger(PersonNameValidator.class);
+	private static final Logger log = LoggerFactory.getLogger(PatientValidator.class);
 
 	@Autowired
 	private PatientIdentifierValidator patientIdentifierValidator;
