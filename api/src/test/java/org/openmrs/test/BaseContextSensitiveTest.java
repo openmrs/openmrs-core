@@ -607,9 +607,36 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		 */
 		List<String> tables = Collections.singletonList("concept");
 		for (String table : tables) {
-			getConnection().prepareStatement("ALTER TABLE " + table + " ALTER COLUMN " + table + "_id INT AUTO_INCREMENT")
-					.execute();
+			String column = table + "_id";
+			if (isAutoIncrementColumn(table, column)) {
+				continue;
+			}
+			try (PreparedStatement ps = getConnection().prepareStatement(
+			        "ALTER TABLE " + table + " ALTER COLUMN " + column + " INT AUTO_INCREMENT")) {
+				ps.execute();
+			}
+			catch (SQLException e) {
+				String message = e.getMessage();
+				if (message == null || !message.toLowerCase().contains("already exists")) {
+					throw e;
+				}
+			}
 		}
+	}
+
+	private boolean isAutoIncrementColumn(String table, String column) throws SQLException {
+		java.sql.DatabaseMetaData metaData = getConnection().getMetaData();
+		try (ResultSet rs = metaData.getColumns(null, null, table.toUpperCase(), column.toUpperCase())) {
+			if (rs.next()) {
+				return "YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"));
+			}
+		}
+		try (ResultSet rs = metaData.getColumns(null, null, table.toLowerCase(), column.toLowerCase())) {
+			if (rs.next()) {
+				return "YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"));
+			}
+		}
+		return false;
 	}
 
 	/**
