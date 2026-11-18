@@ -20,7 +20,8 @@ import jakarta.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.openmrs.Auditable;
+import org.openmrs.Changeable;
+import org.openmrs.Creatable;
 import org.openmrs.OpenmrsData;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.OpenmrsObject;
@@ -205,19 +206,21 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializer = getSerializer(serializedObject);
 		}
 
-		if (object instanceof Auditable) {
-			Auditable auditableObj = (Auditable) object;
-			if (auditableObj.getCreator() == null) {
-				auditableObj.setCreator(Context.getAuthenticatedUser());
+		if (object instanceof Creatable creatableObj) {
+			if (creatableObj.getCreator() == null) {
+				creatableObj.setCreator(Context.getAuthenticatedUser());
 			}
-			serializedObject.setCreator(auditableObj.getCreator());
+			serializedObject.setCreator(creatableObj.getCreator());
 
-			if (auditableObj.getDateCreated() == null) {
-				auditableObj.setDateCreated(new Date());
+			if (creatableObj.getDateCreated() == null) {
+				creatableObj.setDateCreated(new Date());
 			}
-			serializedObject.setDateCreated(auditableObj.getDateCreated());
-			serializedObject.setChangedBy(auditableObj.getChangedBy());
-			serializedObject.setDateChanged(auditableObj.getDateChanged());
+			serializedObject.setDateCreated(creatableObj.getDateCreated());
+		}
+
+		if (object instanceof Changeable changeableObj) {
+			serializedObject.setChangedBy(changeableObj.getChangedBy());
+			serializedObject.setDateChanged(changeableObj.getDateChanged());
 		}
 
 		String data;
