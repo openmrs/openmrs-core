@@ -20,7 +20,9 @@ import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class VelocityMessagePreparator implements MessagePreparator {
 
 	/**
