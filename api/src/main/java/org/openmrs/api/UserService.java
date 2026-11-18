@@ -827,6 +827,7 @@ public interface UserService extends OpenmrsService {
 	 *         entry <strong>Should</strong> read the callers own entry under a proxy privilege
 	 *         <strong>Should</strong> fail without the manage user security state proxy privilege
 	 *         <strong>Should</strong> fail for a superuser without the proxy privilege
+	 *         <strong>Should</strong> accept the proxy privilege regardless of case
 	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
 	 *         user
 	 * @throws APIException if the user is null or has no id
@@ -851,7 +852,7 @@ public interface UserService extends OpenmrsService {
 	 * @since 3.0.0, 2.9.0
 	 */
 	@Logging(ignoredArgumentIndexes = { 2 })
-	void setSecurityState(User user, String property, String value);
+	void saveSecurityState(User user, String property, String value);
 
 	/**
 	 * Replaces a security state entry's value only if its current value is exactly
@@ -872,7 +873,7 @@ public interface UserService extends OpenmrsService {
 	 * @since 3.0.0, 2.9.0
 	 */
 	@Logging(ignoredArgumentIndexes = { 2, 3 })
-	boolean compareAndSetSecurityState(User user, String property, String expectedValue, String newValue);
+	boolean saveSecurityStateIfValueMatches(User user, String property, String expectedValue, String newValue);
 
 	/**
 	 * Removes a security state entry only if its current value is exactly {@code expectedValue}. The

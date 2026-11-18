@@ -311,7 +311,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void authenticate_shouldFailNormallyWhenTheLoginAttemptsEntryDoesNotHoldANumber() {
-		Context.getUserService().setSecurityState(Context.getUserService().getUser(1),
+		Context.getUserService().saveSecurityState(Context.getUserService().getUser(1),
 		    OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
 
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
@@ -323,7 +323,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldResetTheLoginAttemptsEntryWhenItDoesNotHoldANumber() {
 		User admin = Context.getUserService().getUser(1);
-		Context.getUserService().setSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
 
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
 
@@ -337,7 +337,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void authenticate_shouldRemoveTheLockoutTimestampEntryWhenItDoesNotHoldANumber() {
 		User admin = Context.getUserService().getUser(1);
-		Context.getUserService().setSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP, "junk");
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP, "junk");
 
 		dao.authenticate("admin", "test");
 
@@ -346,8 +346,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 	private void lockOutAdminSixMinutesAgo() {
 		User admin = Context.getUserService().getUser(1);
-		Context.getUserService().setSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "7");
-		Context.getUserService().setSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "7");
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
 	}
 

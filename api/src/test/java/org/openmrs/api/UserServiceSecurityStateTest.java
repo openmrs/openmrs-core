@@ -103,27 +103,40 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#getSecurityState(User, String)
+	 */
+	@Test
+	public void getSecurityState_shouldAcceptTheProxyPrivilegeRegardlessOfCase() {
+		User admin = admin();
+		service.setSecurityState(admin, PROPERTY, "3");
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE.toUpperCase());
+
+		assertEquals("3", service.getSecurityState(admin, PROPERTY));
+	}
+
+	/**
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
 		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
-		    () -> service.setSecurityState(self, PROPERTY, "value"));
+		    () -> service.saveSecurityState(self, PROPERTY, "value"));
 
 		assertEquals(DENIAL, denial.getMessage());
 	}
 
 	/**
-	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Test
 	public void compareAndSetSecurityState_shouldFailWithoutTheManageUserSecurityStateProxyPrivilege() {
 		User self = authenticateAsTestUser();
 
 		AccessDeniedException denial = assertThrows(AccessDeniedException.class,
-		    () -> service.compareAndSetSecurityState(self, PROPERTY, null, "value"));
+		    () -> service.saveSecurityStateIfValueMatches(self, PROPERTY, null, "value"));
 
 		assertEquals(DENIAL, denial.getMessage());
 	}
@@ -172,7 +185,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getSecurityState_shouldReadTheValueFromTheDatabase() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 		Context.clearSession();
 
 		assertEquals("value", service.getSecurityState(admin(), PROPERTY));
@@ -208,7 +221,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	@Test
 	public void getSecurityState_shouldReadTheCallersOwnEntryUnderAProxyPrivilege() {
 		User testUser = Context.getUserService().getUserByUsername(TEST_USERNAME);
-		service.setSecurityState(testUser, PROPERTY, "value");
+		service.saveSecurityState(testUser, PROPERTY, "value");
 		User self = authenticateAsTestUser();
 
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
@@ -217,29 +230,29 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldCreateTheEntryWhenItDoesNotExist() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
 		assertEquals("value", service.getSecurityState(admin(), PROPERTY));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldReplaceTheValueOfAnExistingEntry() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
-		service.setSecurityState(admin(), PROPERTY, "other");
+		service.saveSecurityState(admin(), PROPERTY, "other");
 
 		assertEquals("other", service.getSecurityState(admin(), PROPERTY));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldRecordTheCallerAsTheCreatorOfANewEntry() {
@@ -247,32 +260,32 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 		User caller = authenticateAsTestUser();
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 
-		service.setSecurityState(admin, PROPERTY, "value");
+		service.saveSecurityState(admin, PROPERTY, "value");
 
 		assertEquals(Arrays.asList(caller.getUserId(), null), auditOf(PROPERTY));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldRecordTheCallerAsTheUserWhoChangedAnExistingEntry() {
 		User admin = admin();
-		service.setSecurityState(admin, PROPERTY, "value");
+		service.saveSecurityState(admin, PROPERTY, "value");
 		User caller = authenticateAsTestUser();
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 
-		service.setSecurityState(admin, PROPERTY, "other");
+		service.saveSecurityState(admin, PROPERTY, "other");
 
 		assertEquals(List.of(ADMIN_USER_ID, caller.getUserId()), auditOf(PROPERTY));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldNotStoreTheEntryAsAUserProperty() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 		Context.flushSession();
 		Context.clearSession();
 
@@ -280,79 +293,79 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldFailForABlankValue() {
-		assertThrows(ValidationException.class, () -> service.setSecurityState(admin(), PROPERTY, " "));
+		assertThrows(ValidationException.class, () -> service.saveSecurityState(admin(), PROPERTY, " "));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldStoreAValueLongerThan4000Characters() {
 		String value = "x".repeat(5000);
 
-		service.setSecurityState(admin(), PROPERTY, value);
+		service.saveSecurityState(admin(), PROPERTY, value);
 
 		assertEquals(value, service.getSecurityState(admin(), PROPERTY));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldFailForABlankProperty() {
-		assertThrows(ValidationException.class, () -> service.setSecurityState(admin(), " ", "value"));
+		assertThrows(ValidationException.class, () -> service.saveSecurityState(admin(), " ", "value"));
 	}
 
 	/**
-	 * @see UserService#setSecurityState(User, String, String)
+	 * @see UserService#saveSecurityState(User, String, String)
 	 */
 	@Test
 	public void setSecurityState_shouldFailForAnUnsavedUser() {
-		assertThrows(ValidationException.class, () -> service.setSecurityState(new User(), PROPERTY, "value"));
+		assertThrows(ValidationException.class, () -> service.saveSecurityState(new User(), PROPERTY, "value"));
 	}
 
 	/**
-	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Test
 	public void compareAndSetSecurityState_shouldCreateTheEntryWhenExpectedValueIsNullAndTheEntryDoesNotExist() {
-		assertTrue(service.compareAndSetSecurityState(admin(), PROPERTY, null, "value"));
+		assertTrue(service.saveSecurityStateIfValueMatches(admin(), PROPERTY, null, "value"));
 	}
 
 	/**
-	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Test
 	public void compareAndSetSecurityState_shouldNotCreateTheEntryWhenExpectedValueIsNullAndTheEntryExists() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
-		assertFalse(service.compareAndSetSecurityState(admin(), PROPERTY, null, "other"));
+		assertFalse(service.saveSecurityStateIfValueMatches(admin(), PROPERTY, null, "other"));
 	}
 
 	/**
-	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Test
 	public void compareAndSetSecurityState_shouldReplaceTheValueWhenTheCurrentValueMatches() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
-		service.compareAndSetSecurityState(admin(), PROPERTY, "value", "other");
+		service.saveSecurityStateIfValueMatches(admin(), PROPERTY, "value", "other");
 
 		assertEquals("other", service.getSecurityState(admin(), PROPERTY));
 	}
 
 	/**
-	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Test
 	public void compareAndSetSecurityState_shouldNotReplaceTheValueWhenTheCurrentValueDoesNotMatch() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
-		assertFalse(service.compareAndSetSecurityState(admin(), PROPERTY, "stale", "other"));
+		assertFalse(service.saveSecurityStateIfValueMatches(admin(), PROPERTY, "stale", "other"));
 	}
 
 	/**
@@ -360,7 +373,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void deleteSecurityStateIfValueMatches_shouldRemoveTheEntryWhenTheCurrentValueMatches() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
 		service.deleteSecurityStateIfValueMatches(admin(), PROPERTY, "value");
 
@@ -372,7 +385,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void deleteSecurityStateIfValueMatches_shouldNotRemoveTheEntryWhenTheCurrentValueDoesNotMatch() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
 		assertFalse(service.deleteSecurityStateIfValueMatches(admin(), PROPERTY, "stale"));
 	}
@@ -390,7 +403,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void deleteSecurityState_shouldRemoveTheEntry() {
-		service.setSecurityState(admin(), PROPERTY, "value");
+		service.saveSecurityState(admin(), PROPERTY, "value");
 
 		service.deleteSecurityState(admin(), PROPERTY);
 
@@ -434,7 +447,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void incrementSecurityState_shouldAddOneToTheCurrentValue() {
-		service.setSecurityState(admin(), PROPERTY, "41");
+		service.saveSecurityState(admin(), PROPERTY, "41");
 
 		assertEquals(42, service.incrementSecurityState(admin(), PROPERTY));
 	}
@@ -444,7 +457,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void incrementSecurityState_shouldFailWhenTheCurrentValueIsNotANumber() {
-		service.setSecurityState(admin(), PROPERTY, "not a number");
+		service.saveSecurityState(admin(), PROPERTY, "not a number");
 
 		assertThrows(DAOException.class, () -> service.incrementSecurityState(admin(), PROPERTY));
 	}
@@ -454,7 +467,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void incrementSecurityState_shouldFailWhenTheCurrentValueIsTheLargestLong() {
-		service.setSecurityState(admin(), PROPERTY, String.valueOf(Long.MAX_VALUE));
+		service.saveSecurityState(admin(), PROPERTY, String.valueOf(Long.MAX_VALUE));
 
 		assertThrows(DAOException.class, () -> service.incrementSecurityState(admin(), PROPERTY));
 	}

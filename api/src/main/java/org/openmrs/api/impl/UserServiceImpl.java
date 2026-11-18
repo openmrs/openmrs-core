@@ -1005,22 +1005,22 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#setSecurityState(User, String, String)
+	 * @see org.openmrs.api.UserService#saveSecurityState(User, String, String)
 	 */
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public void setSecurityState(User user, String property, String value) {
+	public void saveSecurityState(User user, String property, String value) {
 		requireSecurityStateAccess();
 		UserSecurityState entry = validatedSecurityState(user, property, value);
 		userSecurityStateDao.setValue(entry.getUserId(), entry.getProperty(), entry.getValue());
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see org.openmrs.api.UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public boolean compareAndSetSecurityState(User user, String property, String expectedValue, String newValue) {
+	public boolean saveSecurityStateIfValueMatches(User user, String property, String expectedValue, String newValue) {
 		requireSecurityStateAccess();
 		UserSecurityState entry = validatedSecurityState(user, property, newValue);
 		return userSecurityStateDao.compareAndSet(entry.getUserId(), entry.getProperty(), expectedValue, entry.getValue());
@@ -1062,8 +1062,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	}
 
 	private static void requireSecurityStateAccess() {
-		if (!Daemon.isDaemonThread()
-		        && !Context.getUserContext().getProxyPrivileges().contains(PrivilegeConstants.MANAGE_USER_SECURITY_STATE)) {
+		if (!Daemon.isDaemonThread() && Context.getUserContext().getProxyPrivileges().stream()
+		        .noneMatch(PrivilegeConstants.MANAGE_USER_SECURITY_STATE::equalsIgnoreCase)) {
 			throw new AccessDeniedException("Security state may be accessed only from a daemon thread or under the "
 			        + PrivilegeConstants.MANAGE_USER_SECURITY_STATE + " proxy privilege");
 		}

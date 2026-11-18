@@ -111,7 +111,7 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 	 */
 	@Test
 	void deleteSecurityStateIfValueMatches_shouldSucceedForExactlyOneOfConcurrentCalls() throws Exception {
-		Context.getUserService().setSecurityState(user(), PROPERTY, TOKEN);
+		Context.getUserService().saveSecurityState(user(), PROPERTY, TOKEN);
 
 		List<Boolean> outcomes = runConcurrently(
 		    () -> Context.getUserService().deleteSecurityStateIfValueMatches(user(), PROPERTY, TOKEN));
@@ -120,12 +120,12 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 	}
 
 	/**
-	 * @see UserService#compareAndSetSecurityState(User, String, String, String)
+	 * @see UserService#saveSecurityStateIfValueMatches(User, String, String, String)
 	 */
 	@Test
 	void compareAndSetSecurityState_shouldSucceedForExactlyOneOfConcurrentCallsCreatingTheEntry() throws Exception {
 		List<Boolean> outcomes = runConcurrently(
-		    () -> Context.getUserService().compareAndSetSecurityState(user(), PROPERTY, null, TOKEN));
+		    () -> Context.getUserService().saveSecurityStateIfValueMatches(user(), PROPERTY, null, TOKEN));
 
 		assertEquals(1, outcomes.stream().filter(Boolean::booleanValue).count(), outcomes.toString());
 	}
