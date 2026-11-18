@@ -17,7 +17,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -40,8 +39,7 @@ public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransact
 
 	@Test
 	public void fullyCachedConceptGraph_shouldLoadWithoutIssuingSql() {
-		// 5089 has names, descriptions, mappings and reference ranges; 21 has answers; 23 has set
-		// members.
+		// 5089 has names, descriptions and mappings; 21 has answers; 23 has set members.
 		loadGraph(5089);
 		loadGraph(21);
 		loadGraph(23);
@@ -89,9 +87,5 @@ public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransact
 		}
 
 		concept.getAttributes().size();
-
-		if (concept instanceof ConceptNumeric) {
-			((ConceptNumeric) concept).getReferenceRanges().forEach(range -> range.getCriteria());
-		}
 	}
 }

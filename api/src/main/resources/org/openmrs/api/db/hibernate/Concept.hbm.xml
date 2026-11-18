@@ -133,7 +133,6 @@
 			<property name="allowDecimal" type="java.lang.Boolean" column="allow_decimal" length="1" not-null="true"/>
 			<property name="displayPrecision" type="java.lang.Integer" column="display_precision" not-null="false"/>
 			<set name="referenceRanges" access="field" inverse="true" cascade="all,delete-orphan" order-by="concept_reference_range_id asc">
-				<cache usage="read-write"/>
 				<key column="concept_id" not-null="true" />
 				<one-to-many class="ConceptReferenceRange" />
 			</set>

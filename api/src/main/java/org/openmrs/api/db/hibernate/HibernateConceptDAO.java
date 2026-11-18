@@ -108,8 +108,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 
 	private static final String HL7_CODE = "hl7Code";
 
-	private static final String REFERENCE_RANGES_COLLECTION_ROLE = ConceptNumeric.class.getName() + ".referenceRanges";
-
 	private final SessionFactory sessionFactory;
 
 	private final SearchSessionFactory searchSessionFactory;
@@ -2486,9 +2484,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public ConceptReferenceRange saveConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
-		ConceptReferenceRange saved = HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceRange);
-		evictReferenceRangesCollection(saved);
-		return saved;
+		return HibernateUtil.saveOrUpdate(sessionFactory.getCurrentSession(), conceptReferenceRange);
 	}
 
 	/**
@@ -2527,14 +2523,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@Override
 	public void purgeConceptReferenceRange(ConceptReferenceRange conceptReferenceRange) {
 		sessionFactory.getCurrentSession().remove(conceptReferenceRange);
-		evictReferenceRangesCollection(conceptReferenceRange);
-	}
-
-	private void evictReferenceRangesCollection(ConceptReferenceRange conceptReferenceRange) {
-		ConceptNumeric conceptNumeric = conceptReferenceRange.getConceptNumeric();
-		if (conceptNumeric != null && conceptNumeric.getConceptId() != null) {
-			sessionFactory.getCache().evictCollectionData(REFERENCE_RANGES_COLLECTION_ROLE, conceptNumeric.getConceptId());
-		}
 	}
 
 	/**

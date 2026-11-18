@@ -74,7 +74,6 @@ public class HibernateCacheIntegrationTest extends BaseContextSensitiveTest {
 		assertCacheConfiguration("org.openmrs.Concept.conceptSets", 100000);
 		assertCacheConfiguration("org.openmrs.Concept.conceptMappings", 100000);
 		assertCacheConfiguration("org.openmrs.Concept.attributes", 100000);
-		assertCacheConfiguration("org.openmrs.ConceptNumeric.referenceRanges", 100000);
 		assertCacheConfiguration("org.openmrs.ConceptName.tags", 200000);
 		assertCacheConfiguration("org.openmrs.ConceptReferenceTerm.conceptReferenceTermMaps", 200000);
 		assertCacheConfiguration("org.openmrs.ConceptReferenceTermMap", 200000);
