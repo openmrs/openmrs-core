@@ -71,4 +71,18 @@
 	   <cve>CVE-2026-54399</cve>
 	   <cve>CVE-2026-54428</cve>
 	</suppress>
+	<suppress>
+	   <notes><![CDATA[
+	   False positive. CVE-2018-1258 is an authorization bypass in Spring Framework
+	   5.0.5.RELEASE when used together with Spring Security; NVD's configuration
+	   requires spring_framework 5.0.5 AND spring_security (any version).
+	   Dependency-Check flags spring-security-* jars through the spring_security CPE
+	   alone, without checking the Spring Framework version. openmrs-core uses Spring
+	   Framework 7.x (springVersion in bom/pom.xml), so the affected combination is
+	   not present. Scoped to Spring Security 6.x/7.x so an old 5.x jar would still be
+	   reported.
+	   ]]></notes>
+	   <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-.*@[67]\..*$</packageUrl>
+	   <cve>CVE-2018-1258</cve>
+	</suppress>
 </suppressions>
