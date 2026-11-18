@@ -308,6 +308,23 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void authenticate_shouldEndTheBackoffWhenTheFailedAttemptsAreReset() {
+		User user = getAdmin();
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "2");
+		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1)));
+		Context.getUserService().saveUser(user);
+
+		// the emrapi and authenticationui unlocks remove the failed attempts
+		user.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS);
+		Context.getUserService().saveUser(user);
+
+		// a typo after the unlock must not bring the old back-off back
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+		assertEquals("admin", dao.authenticate("admin", "test").getUsername());
+	}
+
+	@Test
 	public void authenticate_shouldIgnoreStoredBackoffWhenBackoffIsDisabled() {
 		User user = getAdmin();
 		String backoffTimestamp = String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));

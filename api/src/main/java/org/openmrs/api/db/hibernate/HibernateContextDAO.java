@@ -207,7 +207,10 @@ public class HibernateContextDAO implements ContextDAO {
 			// would lock out a user who retries faster than the back-off, and a refusal can never be an
 			// extra password guess.
 			long backoffTime = getLoginBackoffTimestamp(candidateUser);
-			if (backoffTime > System.currentTimeMillis() && getMaxFailedLoginBackoffSeconds() > 0) {
+			// an unlock resets the failed attempts, so it ends the back-off too
+			if (getUsersLoginAttempts(candidateUser) <= 0) {
+				candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_BACKOFF_TIMESTAMP);
+			} else if (backoffTime > System.currentTimeMillis() && getMaxFailedLoginBackoffSeconds() > 0) {
 				log.info("Rejected login attempt for {} because the failed-login back-off has not elapsed yet", login);
 				throw new ContextAuthenticationException(errorMsg);
 			}
@@ -441,7 +444,7 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 		catch (Exception ex) {
 			log.error("Unable to read the {} global property. Using the default of {} seconds.",
-			    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS, ex);
+			    OpenmrsConstants.GP_MAX_FAILED_LOGIN_BACKOFF_TIME, DEFAULT_MAX_FAILED_LOGIN_BACKOFF_SECONDS);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
