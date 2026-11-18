@@ -11,6 +11,8 @@ package org.openmrs.validator;
 
 import org.openmrs.Role;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -40,6 +42,7 @@ public class RoleValidator implements Validator {
 	 * <strong>Should</strong> fail validation if role is empty or whitespace<br/>
 	 * <strong>Should</strong> pass validation if description is null or empty or whitespace<br/>
 	 * <strong>Should</strong> fail validation if role has leading or trailing space<br/>
+	 * <strong>Should</strong> fail validation if another role's name differs only in case<br/>
 	 * <strong>Should</strong> pass validation if all required fields have proper values<br/>
 	 * <strong>Should</strong> pass validation if field lengths are correct<br/>
 	 * <strong>Should</strong> fail validation if field lengths are not correct
@@ -59,11 +62,27 @@ public class RoleValidator implements Validator {
 			if (!role.getRole().equals(role.getRole().trim())) {
 				errors.rejectValue("role", "error.trailingSpaces");
 			}
+
+			// Names differing only in case are one role on some databases and two on others, and privilege
+			// checks treat superuser role names case-insensitively, so each role needs a distinct name.
+			if (hasNameDifferingOnlyInCase(role)) {
+				errors.rejectValue("role", "Role.duplicateName");
+			}
 		}
 		if (obj == null) {
 			throw new IllegalArgumentException("validated role object should not be null");
 		} else {
 			ValidateUtil.validateFieldLengths(errors, obj.getClass(), "role", "description");
+		}
+	}
+
+	private static boolean hasNameDifferingOnlyInCase(Role role) {
+		Context.addProxyPrivilege(PrivilegeConstants.GET_ROLES);
+		try {
+			return Context.getUserService().getAllRoles().stream().map(Role::getRole)
+			        .anyMatch(name -> !name.equals(role.getRole()) && name.trim().equalsIgnoreCase(role.getRole()));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_ROLES);
 		}
 	}
 

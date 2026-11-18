@@ -12,7 +12,6 @@ package org.openmrs.module;
 import java.io.File;
 import java.net.URL;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
@@ -37,45 +36,6 @@ public class ModuleUtilIT extends BaseContextSensitiveTest {
 	@Test
 	public void getURLStream_shouldReturnAValidInputStreamForOldModuleUrls() throws Exception {
 		ModuleUtil.getURLStream(new URL("https://dev.openmrs.org/modules/download/formentry/update.rdf"));
-	}
-
-	/**
-	 * This test requires a connection to the internet to pass
-	 *
-	 * @see ModuleUtil#getURL(URL)
-	 */
-	@Test
-	@Disabled
-	public void getURL_shouldReturnAnUpdateRdfPageForOldHttpsDevUrls() throws Exception {
-		String url = "https://dev.openmrs.org/modules/download/formentry/update.rdf";
-		String updateRdf = ModuleUtil.getURL(new URL(url));
-		assertTrue(updateRdf.contains("<updates"), "Unable to fetch module update url: " + url);
-	}
-
-	/**
-	 * This test requires a connection to the internet to pass
-	 *
-	 * @see ModuleUtil#getURL(URL)
-	 */
-	@Test
-	@Disabled
-	public void getURL_shouldReturnAnUpdateRdfPageForOldHttpsModuleUrls() throws Exception {
-		String url = "https://modules.openmrs.org/modules/download/formentry/update.rdf";
-		String updateRdf = ModuleUtil.getURL(new URL(url));
-		assertTrue(updateRdf.contains("<updates"), "Unable to fetch module update url: " + url);
-	}
-
-	/**
-	 * This test requires a connection to the internet to pass
-	 *
-	 * @see ModuleUtil#getURL(URL)
-	 */
-	@Test
-	@Disabled
-	public void getURL_shouldReturnAnUpdateRdfPageForModuleUrls() throws Exception {
-		String url = "http://modules.openmrs.org/modules/download/formentry/update.rdf";
-		String updateRdf = ModuleUtil.getURL(new URL(url));
-		assertTrue(updateRdf.contains("<updates"), "Unable to fetch module update url: " + url);
 	}
 
 	/**

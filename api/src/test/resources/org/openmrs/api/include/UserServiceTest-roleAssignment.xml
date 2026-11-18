@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<dataset>
+  <privilege privilege="Restricted Privilege" description="A privilege no test caller holds" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a41" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Restricted Privilege" />
+  <privilege privilege="Another Restricted Privilege" description="A privilege no test caller holds" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a42" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Another Restricted Privilege" />
+  <role role="Restricted Role" description="Grants a privilege no test caller holds" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a43"/>
+  <role role="Doubly Restricted Role" description="Grants two privileges no test caller holds" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a44"/>
+  <role role="Inherits Restricted Role" description="Grants nothing directly, but inherits a restricted role" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a45"/>
+  <role role="Revocable Role" description="Held by the test user so it can be revoked" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a46"/>
+  <role_privilege role="Restricted Role" privilege="Restricted Privilege" />
+  <role_privilege role="Doubly Restricted Role" privilege="Restricted Privilege" />
+  <role_privilege role="Doubly Restricted Role" privilege="Another Restricted Privilege" />
+  <privilege privilege="Revocable Privilege" description="Granted by the revocable role" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a47" creator="1" retired="false" date_created="2005-01-01 00:00:00.0" name="Revocable Privilege" />
+  <role_privilege role="Revocable Role" privilege="Revocable Privilege" />
+  <role_role parent_role="Restricted Role" child_role="Inherits Restricted Role" />
+  <person_name person_name_id="5511" preferred="true" person_id="5511" given_name="Test" family_name="User" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5c0e7b3a-6f0c-4d4e-9a3b-0f8c1d2e3a48"/>
+  <user_role user_id="5511" role="Revocable Role" />
+</dataset>

@@ -31,8 +31,9 @@ import org.springframework.cache.interceptor.SimpleKey;
  * expression naming the caller works too, and may refer to arguments by name, since the build
  * compiles with {@code -parameters}.
  * <p>
- * The identity is the user's id, falling back to the uuid, then to a constant when unauthenticated.
- * It covers who is asking, not what they have been lent: privileges from
+ * The identity is the user's id as loaded (see {@link Context#getAuthenticatedUserId()}), falling
+ * back to the uuid for a user that isn't stored, then to a constant when unauthenticated. It covers
+ * who is asking, not what they have been lent: privileges from
  * {@link Context#addProxyPrivilege(String)} are not part of the key, so a {@code @PostFilter} whose
  * outcome depends on one is not safe to cache at all.
  *
@@ -65,6 +66,7 @@ public class UserKeyGenerator implements KeyGenerator {
 			return ANONYMOUS;
 		}
 
-		return user.getUserId() != null ? user.getUserId() : user.getUuid();
+		Integer userId = Context.getAuthenticatedUserId();
+		return userId != null ? userId : user.getUuid();
 	}
 }

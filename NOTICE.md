@@ -37,7 +37,6 @@ The following dependencies are licensed under the [Apache License, Version 2.0](
 - Jakarta Validation API (`jakarta.validation:jakarta.validation-api`)
 - Java UUID Generator (`com.fasterxml.uuid:java-uuid-generator`)
 - JBoss Logging (`org.jboss.logging:jboss-logging`)
-- Joda-Time (`joda-time:joda-time`)
 - Liquibase (`org.liquibase:liquibase-core`)
 - S3Mock (`com.adobe.testing:s3mock-testcontainers`)
 - Spring Framework (`org.springframework:spring-core`, `spring-beans`, `spring-context`, `spring-context-support`, `spring-aop`, `spring-orm`, `spring-tx`, `spring-jdbc`, `spring-web`, `spring-webmvc`, `spring-oxm`, `spring-test`)
@@ -119,4 +118,3 @@ The following are internal OpenMRS components licensed under the [Mozilla Public
 - OpenMRS Tools (`org.openmrs.tools:openmrs-tools`)
 - OpenMRS Web (`org.openmrs.web:openmrs-web`)
 - OpenMRS Webapp (`org.openmrs.web:openmrs-webapp`)
-- OpenMRS Liquibase Extensions (`org.openmrs.liquibase.ext:type-converter`)
