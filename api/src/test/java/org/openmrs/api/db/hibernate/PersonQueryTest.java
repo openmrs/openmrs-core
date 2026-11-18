@@ -9,6 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,34 +20,50 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class PersonQueryTest {
 
 	@Test
-	public void prefixSingleCharacterTerms_shouldMatchSingleCharacterTermsExactlyOrAsPrefixes() {
-		assertEquals("joshua (j | j*)", PersonQuery.prefixSingleCharacterTerms("joshua j"));
-		assertEquals("(j | j*) johnson", PersonQuery.prefixSingleCharacterTerms("j johnson"));
-		assertEquals("(j | j*) (d | d*) smith", PersonQuery.prefixSingleCharacterTerms("j d smith"));
+	public void singleCharacterTerms_shouldReturnSingleCharacterTermsBesideALongerTerm() {
+		assertEquals(Collections.singletonList("j"), PersonQuery.singleCharacterTerms("joshua j"));
+		assertEquals(Collections.singletonList("J"), PersonQuery.singleCharacterTerms("J Johnson"));
+		assertEquals(Arrays.asList("j", "d"), PersonQuery.singleCharacterTerms("  j  d   smith "));
 	}
 
 	@Test
-	public void prefixSingleCharacterTerms_shouldLeaveLongerTermsAndQuerySyntaxUnchanged() {
-		assertEquals("joshua johnson", PersonQuery.prefixSingleCharacterTerms("joshua johnson"));
-		assertEquals("joshua jo", PersonQuery.prefixSingleCharacterTerms("joshua jo"));
-		assertEquals("joshua j*", PersonQuery.prefixSingleCharacterTerms("joshua j*"));
-		assertEquals("joshua -", PersonQuery.prefixSingleCharacterTerms("joshua -"));
+	public void singleCharacterTerms_shouldReturnNullWhenNoTermHasASingleCharacter() {
+		assertNull(PersonQuery.singleCharacterTerms("joshua johnson"));
+		assertNull(PersonQuery.singleCharacterTerms("joshua jo"));
 	}
 
 	@Test
-	public void prefixSingleCharacterTerms_shouldLeaveTermsInsideQuotedPhrasesUnchanged() {
-		assertEquals("\"John D Smith\"", PersonQuery.prefixSingleCharacterTerms("\"John D Smith\""));
-		assertEquals("\"John D\" (s | s*)", PersonQuery.prefixSingleCharacterTerms("\"John D\" s"));
-		assertEquals("(j | j*) \"D Smith\"", PersonQuery.prefixSingleCharacterTerms("j \"D Smith\""));
+	public void singleCharacterTerms_shouldReturnEveryTermWhenAllHaveASingleCharacter() {
+		assertEquals(Collections.singletonList("j"), PersonQuery.singleCharacterTerms("j"));
+		assertEquals(Arrays.asList("j", "d"), PersonQuery.singleCharacterTerms("j d"));
 	}
 
 	@Test
-	public void prefixSingleCharacterTerms_shouldCollapseSurroundingAndRepeatedWhitespace() {
-		assertEquals("joshua (j | j*)", PersonQuery.prefixSingleCharacterTerms("  joshua   j "));
+	public void singleCharacterTerms_shouldReturnInitialsFollowedByADotWithoutTheDot() {
+		assertEquals(Collections.singletonList("J"), PersonQuery.singleCharacterTerms("J. Doe"));
+		assertEquals(Arrays.asList("j", "d"), PersonQuery.singleCharacterTerms("j. d."));
+		assertNull(PersonQuery.singleCharacterTerms("j.d. smith"));
 	}
 
 	@Test
-	public void prefixSingleCharacterTerms_shouldReturnNullForNullQuery() {
-		assertNull(PersonQuery.prefixSingleCharacterTerms(null));
+	public void singleCharacterTerms_shouldReturnSingleCharacterTermsBesideHyphenatedNames() {
+		assertEquals(Collections.singletonList("d"), PersonQuery.singleCharacterTerms("jean-claude d"));
+		assertEquals(Collections.singletonList("j"), PersonQuery.singleCharacterTerms("j smith-jones"));
+	}
+
+	@Test
+	public void singleCharacterTerms_shouldReturnNullForQueriesUsingQuerySyntax() {
+		assertNull(PersonQuery.singleCharacterTerms("\"John D Smith\""));
+		assertNull(PersonQuery.singleCharacterTerms("joshua j*"));
+		assertNull(PersonQuery.singleCharacterTerms("joshua | j"));
+		assertNull(PersonQuery.singleCharacterTerms("joshua +j"));
+		assertNull(PersonQuery.singleCharacterTerms("joshua -j"));
+		assertNull(PersonQuery.singleCharacterTerms("(joshua j)"));
+		assertNull(PersonQuery.singleCharacterTerms("joshua~ j"));
+	}
+
+	@Test
+	public void singleCharacterTerms_shouldReturnNullForNullQuery() {
+		assertNull(PersonQuery.singleCharacterTerms(null));
 	}
 }

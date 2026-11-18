@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateOptionsCollector;
@@ -181,39 +180,72 @@ public class PersonQuery {
 				        .fields("middleNameAnywhere", "familyName2Anywhere").boost(1f);
 			}
 
-			String nameQuery = orQueryParser ? query : prefixSingleCharacterTerms(query);
-			b.must(names.matching(nameQuery).defaultOperator(operator));
+			if (orQueryParser || singleCharacterTerms(query) == null) {
+				b.must(names.matching(query).defaultOperator(operator));
+			} else {
+				List<String> otherTerms = new ArrayList<>();
+				for (String term : query.trim().split("\\s+")) {
+					String initial = initialOf(term);
+					if (initial == null) {
+						otherTerms.add(term);
+						continue;
+					}
+					// the exact match ranks an actual initial above the longer names the prefix also matches
+					b.must(predicateFactory.bool().with(i -> {
+						i.should(predicateFactory.match().field("givenNameExact").boost(8f).field("familyNameExact")
+						        .boost(8f).field("middleNameExact").boost(4f).field("familyName2Exact").boost(4f)
+						        .matching(initial));
+						i.should(predicateFactory.wildcard()
+						        .fields("givenNameExact", "familyNameExact", "middleNameExact", "familyName2Exact")
+						        .matching(initial.toLowerCase() + "*"));
+					}));
+				}
+				if (!otherTerms.isEmpty()) {
+					b.must(names.matching(String.join(" ", otherTerms)).defaultOperator(operator));
+				}
+			}
 			applyPersonFilters(predicateFactory, b, includeVoided, patientsOnly, dead, null, null);
 		}).toPredicate();
 	}
 
 	/**
-	 * Lets every single-character term of the query also match as a prefix, e.g. "joshua j" becomes
-	 * "joshua (j | j*)". The *Start name fields are indexed with edge n-grams of at least two
-	 * characters, so a single character never matches them, and since every term must match, the whole
-	 * search would otherwise return nothing. The exact term is kept beside the prefix because a prefix
-	 * query is constant-score: on its own it would rank a name that is exactly the initial, such as a
-	 * middle name "J", no higher than any longer name starting with it. Terms inside quoted phrases are
-	 * left unchanged, since a * there is not a prefix operator.
+	 * Returns the initials of a plain AND name query, i.e. its terms made of a single letter or digit,
+	 * optionally followed by a dot ("j" or "j."), without the dot. Returns null when the query has no
+	 * initials or uses simple query string syntax, in which case it is matched unchanged.
+	 * <p>
+	 * The *Start name fields are indexed with edge n-grams of at least two characters, so an initial
+	 * never matches them and, since every term must match, would make the whole search return nothing.
+	 * Each returned initial is instead matched as the start of a whole name in the *Exact fields.
+	 * Hyphenated names such as "jean-claude" are not treated as syntax, since a "-" only negates a term
+	 * when it starts one.
 	 *
 	 * @param query the name search query
-	 * @return the query with single-character terms also matching as prefixes
+	 * @return the initials, or null to match the query unchanged
 	 */
-	static String prefixSingleCharacterTerms(String query) {
-		if (query == null) {
+	static List<String> singleCharacterTerms(String query) {
+		if (query == null || query.matches(".*[\"+|*()~].*")) {
 			return null;
 		}
-		String[] terms = query.trim().split("\\s+");
-		boolean inPhrase = false;
-		for (int i = 0; i < terms.length; i++) {
-			if (!inPhrase && terms[i].length() == 1 && Character.isLetterOrDigit(terms[i].charAt(0))) {
-				terms[i] = "(" + terms[i] + " | " + terms[i] + "*)";
+		List<String> initials = new ArrayList<>();
+		for (String term : query.trim().split("\\s+")) {
+			if (term.startsWith("-")) {
+				return null;
 			}
-			if (StringUtils.countMatches(terms[i], '"') % 2 == 1) {
-				inPhrase = !inPhrase;
+			String initial = initialOf(term);
+			if (initial != null) {
+				initials.add(initial);
 			}
 		}
-		return String.join(" ", terms);
+		return initials.isEmpty() ? null : initials;
+	}
+
+	/**
+	 * Returns the letter or digit of an initial such as "j" or "j.", or null if the term is not one.
+	 */
+	private static String initialOf(String term) {
+		boolean initial = (term.length() == 1 || term.length() == 2 && term.charAt(1) == '.')
+		        && Character.isLetterOrDigit(term.charAt(0));
+		return initial ? term.substring(0, 1) : null;
 	}
 
 	private SearchPredicate newSoundexPersonNameSearchQuery(SearchPredicateFactory predicateFactory, String query,

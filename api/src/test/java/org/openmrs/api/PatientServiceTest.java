@@ -2051,6 +2051,119 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getPatients_shouldRankAnExactInitialAboveAnotherNameStartingWithIt() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		// patient 2 is John F Doe; make patient 7 Frank Doe
+		Patient patient = patientService.getPatient(7);
+		patient.getPersonName().setGivenName("Frank");
+		patient.getPersonName().setMiddleName(null);
+		patient.getPersonName().setFamilyName("Doe");
+		Context.flushSession();
+		updateSearchIndex();
+
+		List<Patient> patients = patientService.getPatients("F Doe", null, null, false);
+		assertTrue(patients.contains(patient));
+		assertEquals(patientService.getPatient(2), patients.get(0));
+	}
+
+	@Test
+	public void getPatients_shouldStillMatchFullNamesAndLongerPrefixes() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		assertEquals(patientService.getPatient(2), patientService.getPatients("John Doe", null, null, false).get(0));
+		assertTrue(patientService.getPatients("Jo Do", null, null, false).contains(patientService.getPatient(2)));
+	}
+
+	@Test
+	public void getPatients_shouldNotMatchSingleCharacterTermsInsideNamesWhenMatchingAnywhere() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		Context.getAdministrationService()
+		        .saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+		                OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE));
+		updateSearchIndex();
+
+		// John F Doe and John Ho Claudio both contain an "o", but no name starts with one
+		assertTrue(patientService.getPatients("John O", null, null, false).isEmpty());
+	}
+
+	@Test
+	public void getPatients_shouldMatchQueriesMadeOnlyOfSingleCharacterTerms() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		List<Patient> patients = patientService.getPatients("J D", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertTrue(patients.contains(patientService.getPatient(4)));
+		assertFalse(patients.contains(patientService.getPatient(5)));
+		assertFalse(patients.contains(patientService.getPatient(7)));
+	}
+
+	@Test
+	public void getPatients_shouldMatchInitialsFollowedByADot() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		List<Patient> patients = patientService.getPatients("J. Doe", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertTrue(patients.contains(patientService.getPatient(4)));
+		assertFalse(patients.contains(patientService.getPatient(5)));
+
+		assertEquals(patientService.getPatient(2), patientService.getPatients("John F. Doe", null, null, false).get(0));
+		assertTrue(patientService.getPatients("John D.", null, null, false).contains(patientService.getPatient(2)));
+	}
+
+	@Test
+	public void getPatients_shouldMatchSingleCharacterTermsBesideHyphenatedNames() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		Patient patient = patientService.getPatient(6);
+		patient.getPersonName().setGivenName("Jean-Claude");
+		patient.getPersonName().setFamilyName("Doe");
+		Context.flushSession();
+		updateSearchIndex();
+
+		assertTrue(patientService.getPatients("Jean-Claude D", null, null, false).contains(patient));
+	}
+
+	@Test
+	public void getPatients_shouldMatchSeveralSingleCharacterTermsIncludingMiddleInitials() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		// patient 2 is John F Doe, patient 4 Jean Claude Doe with no middle name
+		List<Patient> patients = patientService.getPatients("J F Doe", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertFalse(patients.contains(patientService.getPatient(4)));
+	}
+
+	@Test
+	public void getPatients_shouldMatchSingleCharacterTermsAfterAPartialName() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		List<Patient> patients = patientService.getPatients("Joh D", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertFalse(patients.contains(patientService.getPatient(7)));
+
+		patients = patientService.getPatients("Doe J", null, null, false);
+		assertTrue(patients.contains(patientService.getPatient(2)));
+		assertTrue(patients.contains(patientService.getPatient(4)));
+	}
+
+	@Test
+	public void getCountOfPatients_shouldCountPatientsMatchedBySingleCharacterTerms() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		// John F Doe, Jean Claude Doe, and Jeannette Claudent through her other name Johnny Test Doe
+		List<Patient> patients = patientService.getPatients("J Doe", null, null, false);
+		assertEquals(3, patients.size());
+		assertEquals(3, patientService.getCountOfPatients("J Doe"));
+		assertEquals(3, patientService.getCountOfPatients("J. Doe"));
+		assertEquals(3, patientService.getCountOfPatients("J D"));
+	}
+
+	@Test
 	public void getPatients_shouldIgnoreAccentsWhenMatchingName() throws Exception {
 		executeDataSet(FIND_PATIENTS_ACCENTS_XML);
 		updateSearchIndex();
