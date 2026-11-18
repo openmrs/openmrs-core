@@ -20,13 +20,17 @@ import jakarta.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for {@link org.openmrs.api.db.hibernate.HibernateObsDAO}
@@ -99,5 +103,34 @@ public class HibernateObsDAOTest extends BaseContextSensitiveTest {
 		obsListActual = dao.getObservations(null, null, null, null, null, null, Arrays.asList("personId asc", "obsId asc"),
 		    null, null, null, null, false, null);
 		assertArrayEquals(obsListExpected.toArray(), obsListActual.toArray());
+	}
+
+	@Test
+	public void getObsVersionHistory_shouldLoadTheWholeChainInTwoQueries() {
+		Obs latest = buildVersionChain(40);
+		sessionFactory.getCurrentSession().flush();
+		sessionFactory.getCurrentSession().clear();
+		Statistics stats = sessionFactory.getStatistics();
+		stats.clear();
+
+		List<Obs> versions = dao.getObsVersionHistory(latest);
+
+		assertEquals(40, versions.size());
+		// the recursive CTE that walks previous_version, then the IN-clause load, whatever the chain's length
+		assertEquals(2, stats.getPrepareStatementCount());
+	}
+
+	/**
+	 * Saves a copy of obs 7 from the standard test dataset and revises it until the chain has the given
+	 * number of obs.
+	 */
+	private Obs buildVersionChain(int length) {
+		ObsService obsService = Context.getObsService();
+		Obs latest = obsService.saveObs(Obs.newInstance(obsService.getObs(7)), null);
+		for (int i = 1; i < length; i++) {
+			latest.setValueNumeric(50.0 + i);
+			latest = obsService.saveObs(latest, "revision " + i);
+		}
+		return latest;
 	}
 }

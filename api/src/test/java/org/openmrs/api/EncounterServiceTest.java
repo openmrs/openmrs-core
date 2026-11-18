@@ -77,6 +77,7 @@ import org.openmrs.util.DateUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -2877,6 +2878,35 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertTrue(Context.getEncounterService().canViewEncounter(encounter, user));
 	}
 
+	@Test
+	public void canViewEncounter_shouldNotBeGrantedToTheAuthenticatedUserByARoleAddedInMemory() {
+		Encounter encounter = getEncounterWithViewPrivilege();
+		Role role = Context.getUserService().getRole("Provider");
+		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.evictFromSession(role);
+		Context.becomeUser(Context.getUserService().getUserByUsername("test_user").getSystemId());
+		User user = Context.getAuthenticatedUser();
+		Context.evictFromSession(user);
+
+		user.addRole(role);
+
+		assertFalse(Context.getEncounterService().canViewEncounter(encounter, null));
+		assertFalse(Context.getEncounterService().canViewEncounter(encounter, user));
+	}
+
+	@Test
+	public void canViewEncounter_shouldBeGrantedToTheAuthenticatedUserByTheAuthenticatedRole() {
+		Encounter encounter = getEncounterWithViewPrivilege();
+		Role authenticated = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
+		authenticated.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.getUserService().saveRole(authenticated);
+		Context.flushSession();
+		Context.becomeUser(Context.getUserService().getUserByUsername("test_user").getSystemId());
+
+		assertTrue(Context.getEncounterService().canViewEncounter(encounter, null));
+		assertTrue(Context.getEncounterService().canViewEncounter(encounter, Context.getAuthenticatedUser()));
+	}
+
 	/**
 	 * @see EncounterService#canViewEncounter(Encounter, User)
 	 */
@@ -2934,10 +2964,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		User user = Context.getUserService().getUserByUsername("test_user");
 		assertNotNull(user);
 
-		// add required privilege to role in which this user is
+		// add required privilege to role in which this user is; privileges come from stored roles, so
+		// both changes are saved
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.getUserService().saveRole(role);
 		user.addRole(role);
+		Context.getUserService().saveUser(user);
+		Context.flushSession();
 
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
@@ -3088,10 +3122,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		User user = Context.getUserService().getUserByUsername("test_user");
 		assertNotNull(user);
 
-		// add required privilege to role in which this user is
+		// add required privilege to role in which this user is; privileges come from stored roles, so
+		// both changes are saved
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(encounter.getEncounterType().getViewPrivilege());
+		Context.getUserService().saveRole(role);
 		user.addRole(role);
+		Context.getUserService().saveUser(user);
+		Context.flushSession();
 
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
@@ -3211,19 +3249,24 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveEncounter_shouldChangeTypeIfUserIsAllowedToEditEncountersOfBothTypes() {
-		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
-		EncounterType newType = encounter.getEncounterType();
 		Privilege newTypeEditPrivilege = Context.getUserService().getPrivilege("Some Privilege For View Encounter Types");
-		newType.setEditPrivilege(newTypeEditPrivilege);
 
 		User user = Context.getUserService().getUserByUsername("test_user");
 		assertNotNull(user);
 
-		// add edit privileges of both the saved and the new type to role in which this user is
+		// add edit privileges of both the saved and the new type to role in which this user is;
+		// privileges come from stored roles, so both changes are saved before the encounter is changed
 		Role role = Context.getUserService().getRole("Provider");
 		role.addPrivilege(Context.getUserService().getPrivilege("Some Privilege For Edit Encounter Types"));
 		role.addPrivilege(newTypeEditPrivilege);
+		Context.getUserService().saveRole(role);
 		user.addRole(role);
+		Context.getUserService().saveUser(user);
+		Context.flushSession();
+
+		Encounter encounter = getEncounterWithEditPrivilegeAndChangedType();
+		EncounterType newType = encounter.getEncounterType();
+		newType.setEditPrivilege(newTypeEditPrivilege);
 
 		// and authenticate under it's account
 		Context.becomeUser(user.getSystemId());
