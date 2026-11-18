@@ -383,7 +383,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		Visit nextVisit = dao.getNextVisit(null, visitTypesToStop, maximumStartDate);
 		while (nextVisit != null) {
 			nextVisit.setStopDatetime(stopDate);
-			dao.saveVisit(nextVisit);
+			Context.getVisitService().saveVisit(nextVisit);
 			if (counter++ > 50) {
 				//ensure changes are persisted to DB before reclaiming memory
 				Context.flushSession();
