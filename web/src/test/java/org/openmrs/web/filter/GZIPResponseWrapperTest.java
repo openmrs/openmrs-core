@@ -78,6 +78,12 @@ class GZIPResponseWrapperTest {
 	}
 	
 	@Test
+	void shouldNotSendTheUncompressedLengthWhenItIsSetWithAddIntHeaderForALargeResponse() throws Exception {
+		assertLargeResponseDoesNotCarryUncompressedLength(
+		    (wrapper, length) -> wrapper.addIntHeader("Content-Length", (int) length));
+	}
+
+	@Test
 	void shouldUseTheCompressedLengthForABufferedCompressedResponse() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -263,6 +269,19 @@ class GZIPResponseWrapperTest {
 		request.setDispatcherType(DispatcherType.REQUEST);
 		wrapper.finishResponse();
 
+		assertThat(gunzip(response.getContentAsByteArray()), equalTo(MEDIUM_BODY));
+	}
+
+	@Test
+	void shouldKeepThePageWhenAnIncludedResourceSendsAnErrorWithAMessage() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		GZIPResponseWrapper wrapper = new GZIPResponseWrapper(request, response);
+		wrapper.getOutputStream().write(MEDIUM_BODY);
+		request.setDispatcherType(DispatcherType.INCLUDE);
+		wrapper.sendError(HttpServletResponse.SC_NOT_FOUND, "missing");
+		request.setDispatcherType(DispatcherType.REQUEST);
+		wrapper.finishResponse();
 		assertThat(gunzip(response.getContentAsByteArray()), equalTo(MEDIUM_BODY));
 	}
 

@@ -174,10 +174,6 @@ public class GZIPResponseStream extends ServletOutputStream {
 			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
 			if ((baos.size() + 1) > bufferSize) {
 				switchToStreaming();
-			} else {
-				// write the byte to the temporary output
-				bufferedOutput.write(b);
-				return;
 			}
 		}
 		
@@ -205,10 +201,6 @@ public class GZIPResponseStream extends ServletOutputStream {
 			ByteArrayOutputStream baos = (ByteArrayOutputStream) bufferedOutput;
 			if ((baos.size() + len) > bufferSize) {
 				switchToStreaming();
-			} else {
-				// write the content to the buffer
-				bufferedOutput.write(b, off, len);
-				return;
 			}
 		}
 		

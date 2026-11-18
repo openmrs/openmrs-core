@@ -337,7 +337,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 			pendingContentLength = Long.parseLong(value.trim());
 		}
 		catch (NumberFormatException e) {
-			// an invalid length is left for the container to reject when it is applied
+			// an invalid length is dropped here rather than passed on to the container
 			pendingContentLength = null;
 		}
 	}
