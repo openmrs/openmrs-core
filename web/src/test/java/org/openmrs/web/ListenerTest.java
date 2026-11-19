@@ -9,57 +9,53 @@
  */
 package org.openmrs.web;
 
-import java.util.Properties;
-
 import jakarta.servlet.http.HttpSessionEvent;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.mock.web.MockHttpSession;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ListenerTest {
 
-	private static final int DEFAULT_INTERVAL = 1800;
+	static final int DEFAULT_INTERVAL = 1800;
 
 	@AfterEach
-	public void resetSessionTimeout() {
-		Listener.loadSessionTimeout(null);
+	public void reset() {
+		Listener.setSessionTimeout(null);
 	}
 
-	private int createSessionWithTimeout(String timeoutValue) {
-		Properties props = new Properties();
-		if (timeoutValue != null) {
-			props.setProperty(OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY, timeoutValue);
-		}
-		Listener.loadSessionTimeout(props);
-
+	static int createSession() {
 		MockHttpSession session = new MockHttpSession();
 		session.setMaxInactiveInterval(DEFAULT_INTERVAL);
 		new Listener().sessionCreated(new HttpSessionEvent(session));
 		return session.getMaxInactiveInterval();
 	}
 
+	private int createSessionWithTimeout(String value) {
+		Listener.setSessionTimeout(value);
+		return createSession();
+	}
+
 	@Test
-	public void sessionCreated_shouldApplyTheSessionTimeoutRuntimeProperty() {
+	public void sessionCreated_shouldApplyTheSessionTimeout() {
 		assertEquals(90 * 60, createSessionWithTimeout("90"));
 	}
 
 	@Test
-	public void sessionCreated_shouldTrimTheSessionTimeoutRuntimeProperty() {
+	public void sessionCreated_shouldTrimTheSessionTimeout() {
 		assertEquals(45 * 60, createSessionWithTimeout(" 45 "));
 	}
 
 	@Test
-	public void sessionCreated_shouldKeepTheContainerDefaultWhenThePropertyIsNotSet() {
+	public void sessionCreated_shouldKeepTheContainerDefaultWhenTheTimeoutIsNotSet() {
 		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout(null));
 		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout(""));
 	}
 
 	@Test
-	public void sessionCreated_shouldKeepTheContainerDefaultWhenThePropertyIsInvalid() {
+	public void sessionCreated_shouldKeepTheContainerDefaultWhenTheTimeoutIsInvalid() {
 		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout("ninety"));
 		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout("0"));
 		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout("-15"));
@@ -67,13 +63,8 @@ public class ListenerTest {
 	}
 
 	@Test
-	public void sessionCreated_shouldKeepTheContainerDefaultWhenThereAreNoRuntimeProperties() {
-		createSessionWithTimeout("90");
-		Listener.loadSessionTimeout(null);
-
-		MockHttpSession session = new MockHttpSession();
-		session.setMaxInactiveInterval(DEFAULT_INTERVAL);
-		new Listener().sessionCreated(new HttpSessionEvent(session));
-		assertEquals(DEFAULT_INTERVAL, session.getMaxInactiveInterval());
+	public void sessionCreated_shouldRevertToTheContainerDefaultWhenTheTimeoutIsCleared() {
+		assertEquals(90 * 60, createSessionWithTimeout("90"));
+		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout(null));
 	}
 }

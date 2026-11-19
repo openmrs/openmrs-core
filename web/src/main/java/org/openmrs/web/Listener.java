@@ -47,6 +47,7 @@ import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.web.OpenmrsJspServlet;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.jobrunr.JobRunrServerLifecycle;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -273,16 +274,26 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 
 	/**
-	 * Reads the session timeout runtime property, in minutes, to apply to each new session. Missing or
-	 * invalid values leave the servlet container's default in place.
+	 * Reads the session timeout from the system, runtime, or global properties. Never fails startup.
 	 *
-	 * @param runtimeProperties the runtime properties, may be null
-	 * @see OpenmrsConstants#SESSION_TIMEOUT_RUNTIME_PROPERTY
+	 * @see OpenmrsConstants#SESSION_TIMEOUT_PROPERTY
 	 */
-	static void loadSessionTimeout(Properties runtimeProperties) {
+	static void initSessionTimeout() {
+		try {
+			setSessionTimeout(ConfigUtil.getProperty(OpenmrsConstants.SESSION_TIMEOUT_PROPERTY));
+		} catch (Exception e) {
+			log.warn("Unable to load the {} property", OpenmrsConstants.SESSION_TIMEOUT_PROPERTY, e);
+		}
+	}
+
+	/**
+	 * Sets the timeout, in minutes, applied to each new session. Blank or invalid values leave the
+	 * servlet container's default in place.
+	 *
+	 * @param value the timeout in minutes, may be null
+	 */
+	static void setSessionTimeout(String value) {
 		sessionTimeoutInMinutes = null;
-		String value = runtimeProperties == null ? null
-		        : runtimeProperties.getProperty(OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY);
 		if (!StringUtils.hasText(value)) {
 			return;
 		}
@@ -293,13 +304,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			minutes = -1;
 		}
 		if (minutes <= 0 || minutes > Integer.MAX_VALUE / 60) {
-			log.warn("Ignoring invalid {} runtime property value '{}'; it must be a positive number of minutes",
-			    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY, value);
+			log.warn("Ignoring invalid {} property value '{}'; it must be a positive number of minutes",
+			    OpenmrsConstants.SESSION_TIMEOUT_PROPERTY, value);
 			return;
 		}
 		sessionTimeoutInMinutes = minutes;
-		log.info("Using a session timeout of {} minute(s) from the {} runtime property", minutes,
-		    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY);
+		log.info("Using a session timeout of {} minute(s) from the {} property", minutes,
+		    OpenmrsConstants.SESSION_TIMEOUT_PROPERTY);
 	}
 
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
@@ -379,9 +390,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.debug("Loading bundled modules");
 			Listener.loadBundledModules(servletContext);
 
-			Properties runtimeProperties = getRuntimeProperties();
-			loadSessionTimeout(runtimeProperties);
-			Context.startup(runtimeProperties);
+			Context.startup(getRuntimeProperties());
 		} catch (DatabaseUpdateException | InputRequiredException updateEx) {
 			throw new ServletException("Should not be here because updates were run previously", updateEx);
 		} catch (MandatoryModuleException mandatoryModEx) {
@@ -391,6 +400,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 
 		try {
+			initSessionTimeout();
+
 			log.debug("Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);

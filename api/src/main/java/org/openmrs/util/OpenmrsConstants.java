@@ -176,12 +176,13 @@ public final class OpenmrsConstants {
 	public static final String AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY = "auto_update_database";
 
 	/**
-	 * The name of the runtime property that sets the session timeout, in minutes, for new web sessions.
-	 * When not set, the servlet container's default session timeout applies.
+	 * The session timeout, in minutes, for new web sessions. Read with {@link ConfigUtil}, so it can be
+	 * set as a system, runtime, or global property. When not set, the servlet container's default
+	 * session timeout applies. Read at startup; changes require a restart.
 	 *
 	 * @since 2.8.11
 	 */
-	public static final String SESSION_TIMEOUT_RUNTIME_PROPERTY = "session.timeout";
+	public static final String SESSION_TIMEOUT_PROPERTY = "session.timeout";
 
 	/**
 	 * These words are ignored in concept and patient searches
