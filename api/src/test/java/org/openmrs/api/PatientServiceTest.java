@@ -2164,6 +2164,50 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
+	public void getCountOfPatients_shouldReturnZeroForQueriesShorterThanTheMinimumSearchCharacters() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		updateSearchIndex();
+
+		// "J" starts several names, but queries shorter than the minimum are not searched
+		assertTrue(patientService.getPatients("J").isEmpty());
+		assertEquals(0, patientService.getCountOfPatients("J"));
+	}
+
+	@Test
+	public void getPatients_shouldRankAStoredInitialWithADotAboveOtherNamesStartingWithIt() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		// patient 7 is Carl B. Smith; patient 6 Ben Bob Brown, whose names all start with B
+		Patient initial = patientService.getPatient(7);
+		initial.getPersonName().setGivenName("Carl");
+		initial.getPersonName().setMiddleName("B.");
+		initial.getPersonName().setFamilyName("Smith");
+		Patient other = patientService.getPatient(6);
+		other.getPersonName().setGivenName("Ben");
+		other.getPersonName().setMiddleName("Bob");
+		other.getPersonName().setFamilyName("Brown");
+		Context.flushSession();
+		updateSearchIndex();
+
+		assertEquals(initial, patientService.getPatients("B.", null, null, false).get(0));
+		assertEquals(initial, patientService.getPatients("Carl B", null, null, false).get(0));
+	}
+
+	@Test
+	public void getPatients_shouldMatchInitialsThatFoldToAscii() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		Patient patient = patientService.getPatient(7);
+		patient.getPersonName().setGivenName("Émile");
+		patient.getPersonName().setMiddleName("Ægir İlker");
+		patient.getPersonName().setFamilyName("Zola");
+		Context.flushSession();
+		updateSearchIndex();
+
+		assertTrue(patientService.getPatients("É Zola", null, null, false).contains(patient));
+		assertTrue(patientService.getPatients("Æ Zola", null, null, false).contains(patient));
+		assertTrue(patientService.getPatients("İ Zola", null, null, false).contains(patient));
+	}
+
+	@Test
 	public void getPatients_shouldIgnoreAccentsWhenMatchingName() throws Exception {
 		executeDataSet(FIND_PATIENTS_ACCENTS_XML);
 		updateSearchIndex();

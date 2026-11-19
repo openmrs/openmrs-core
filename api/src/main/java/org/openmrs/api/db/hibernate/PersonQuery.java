@@ -190,14 +190,17 @@ public class PersonQuery {
 						otherTerms.add(term);
 						continue;
 					}
-					// the exact match ranks an actual initial above the longer names the prefix also matches
+					// the exact match ranks an actual initial, stored with or without a dot, above the longer
+					// names the prefix also matches
 					b.must(predicateFactory.bool().with(i -> {
 						i.should(predicateFactory.match().field("givenNameExact").boost(8f).field("familyNameExact")
 						        .boost(8f).field("middleNameExact").boost(4f).field("familyName2Exact").boost(4f)
-						        .matching(initial));
-						i.should(predicateFactory.wildcard()
+						        .matching(initial + " " + initial + "."));
+						// a simple query string prefix, unlike a wildcard predicate, is lowercased and folded to
+						// ASCII by the field's analyzer on both the Lucene and Elasticsearch backends
+						i.should(predicateFactory.simpleQueryString()
 						        .fields("givenNameExact", "familyNameExact", "middleNameExact", "familyName2Exact")
-						        .matching(initial.toLowerCase() + "*"));
+						        .matching(initial + "*"));
 					}));
 				}
 				if (!otherTerms.isEmpty()) {
