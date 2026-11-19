@@ -88,6 +88,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 
 	private static boolean openmrsStarted = false;
 
+	private static volatile Integer sessionTimeoutInMinutes = null;
+
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not. If
 	 * there is not, then the {@link InitializationFilter} takes over any openmrs url and redirects to
@@ -152,6 +154,10 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
+		Integer timeout = sessionTimeoutInMinutes;
+		if (timeout != null) {
+			se.getSession().setMaxInactiveInterval(timeout * 60);
+		}
 		for (HttpSessionListener listener : getHttpSessionListeners()) {
 			listener.sessionCreated(se);
 		}
@@ -266,6 +272,36 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 	}
 
+	/**
+	 * Reads the session timeout runtime property, in minutes, to apply to each new session. Missing or
+	 * invalid values leave the servlet container's default in place.
+	 *
+	 * @param runtimeProperties the runtime properties, may be null
+	 * @see OpenmrsConstants#SESSION_TIMEOUT_RUNTIME_PROPERTY
+	 */
+	static void loadSessionTimeout(Properties runtimeProperties) {
+		sessionTimeoutInMinutes = null;
+		String value = runtimeProperties == null ? null
+		        : runtimeProperties.getProperty(OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY);
+		if (!StringUtils.hasText(value)) {
+			return;
+		}
+		int minutes;
+		try {
+			minutes = Integer.parseInt(value.trim());
+		} catch (NumberFormatException e) {
+			minutes = -1;
+		}
+		if (minutes <= 0 || minutes > Integer.MAX_VALUE / 60) {
+			log.warn("Ignoring invalid {} runtime property value '{}'; it must be a positive number of minutes",
+			    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY, value);
+			return;
+		}
+		sessionTimeoutInMinutes = minutes;
+		log.info("Using a session timeout of {} minute(s) from the {} runtime property", minutes,
+		    OpenmrsConstants.SESSION_TIMEOUT_RUNTIME_PROPERTY);
+	}
+
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		Properties csrfGuardProperties = new Properties();
@@ -343,7 +379,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			log.debug("Loading bundled modules");
 			Listener.loadBundledModules(servletContext);
 
-			Context.startup(getRuntimeProperties());
+			Properties runtimeProperties = getRuntimeProperties();
+			loadSessionTimeout(runtimeProperties);
+			Context.startup(runtimeProperties);
 		} catch (DatabaseUpdateException | InputRequiredException updateEx) {
 			throw new ServletException("Should not be here because updates were run previously", updateEx);
 		} catch (MandatoryModuleException mandatoryModEx) {
