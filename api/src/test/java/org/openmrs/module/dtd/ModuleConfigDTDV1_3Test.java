@@ -27,7 +27,7 @@ import static org.openmrs.module.dtd.ConfigXmlBuilder.withMinimalTags;
 import static org.openmrs.module.dtd.ConfigXmlBuilder.writeToInputStream;
 import static org.openmrs.module.dtd.DtdTestValidator.isValidConfigXml;
 
-public class ModuleConfigDTDTest_V1_3 {
+public class ModuleConfigDTDV1_3Test {
 
 	private static final String[] compatibleVersions = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "2.0" };
 

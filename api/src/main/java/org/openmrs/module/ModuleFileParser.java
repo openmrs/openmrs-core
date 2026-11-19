@@ -728,7 +728,8 @@ public class ModuleFileParser {
 					NodeList modulesNode = resourceElement.getChildNodes();
 					for (int k = 0; k < modulesNode.getLength(); k++) {
 						Node moduleNode = modulesNode.item(k);
-						if ("module".equals(moduleNode.getNodeName())) {
+						if ("module".equals(moduleNode.getNodeName())
+						        || "conditionalModule".equals(moduleNode.getNodeName())) {
 							NodeList moduleElements = moduleNode.getChildNodes();
 
 							ModuleConditionalResource.ModuleAndVersion module = new ModuleConditionalResource.ModuleAndVersion();
