@@ -41,6 +41,11 @@ public class SessionTimeoutHttpSessionListener implements HttpSessionListener {
 		}
 	}
 
+	// explicit no-op: Servlet 3.1 containers (Tomcat 8.5, Jetty 9.4) have no default implementation
+	@Override
+	public void sessionDestroyed(HttpSessionEvent se) {
+	}
+
 	/**
 	 * Reads the session timeout from the system, runtime, or global properties. Never throws, so it
 	 * cannot fail startup.
