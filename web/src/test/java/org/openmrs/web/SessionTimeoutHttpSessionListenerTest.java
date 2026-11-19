@@ -17,24 +17,24 @@ import org.springframework.mock.web.MockHttpSession;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ListenerTest {
+public class SessionTimeoutHttpSessionListenerTest {
 
 	static final int DEFAULT_INTERVAL = 1800;
 
 	@AfterEach
 	public void reset() {
-		Listener.setSessionTimeout(null);
+		SessionTimeoutHttpSessionListener.setSessionTimeout(null);
 	}
 
 	static int createSession() {
 		MockHttpSession session = new MockHttpSession();
 		session.setMaxInactiveInterval(DEFAULT_INTERVAL);
-		new Listener().sessionCreated(new HttpSessionEvent(session));
+		new SessionTimeoutHttpSessionListener().sessionCreated(new HttpSessionEvent(session));
 		return session.getMaxInactiveInterval();
 	}
 
 	private int createSessionWithTimeout(String value) {
-		Listener.setSessionTimeout(value);
+		SessionTimeoutHttpSessionListener.setSessionTimeout(value);
 		return createSession();
 	}
 

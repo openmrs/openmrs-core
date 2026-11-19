@@ -47,7 +47,6 @@ import org.openmrs.module.ModuleMustStartException;
 import org.openmrs.module.web.OpenmrsJspServlet;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.jobrunr.JobRunrServerLifecycle;
-import org.openmrs.util.ConfigUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -88,8 +87,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	private static boolean setupNeeded = false;
 
 	private static boolean openmrsStarted = false;
-
-	private static volatile Integer sessionTimeoutInMinutes = null;
 
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not. If
@@ -148,18 +145,13 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 
 	/**
-	 * Applies the configured session timeout, if any, then passes the HttpSession event to all Spring
-	 * components that implement HttpSessionListener
+	 * This gets all Spring components that implement HttpSessionListener and passes the HttpSession
+	 * event to them whenever an HttpSession is created
 	 *
 	 * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
-	 * @see OpenmrsConstants#SESSION_TIMEOUT_PROPERTY
 	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
-		Integer timeout = sessionTimeoutInMinutes;
-		if (timeout != null) {
-			se.getSession().setMaxInactiveInterval(timeout * 60);
-		}
 		for (HttpSessionListener listener : getHttpSessionListeners()) {
 			listener.sessionCreated(se);
 		}
@@ -274,47 +266,6 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		}
 	}
 
-	/**
-	 * Reads the session timeout from the system, runtime, or global properties. Never fails startup.
-	 *
-	 * @see OpenmrsConstants#SESSION_TIMEOUT_PROPERTY
-	 */
-	static void initSessionTimeout() {
-		try {
-			setSessionTimeout(ConfigUtil.getProperty(OpenmrsConstants.SESSION_TIMEOUT_PROPERTY));
-		} catch (Exception e) {
-			log.warn("Unable to load the {} property", OpenmrsConstants.SESSION_TIMEOUT_PROPERTY, e);
-		}
-	}
-
-	/**
-	 * Sets the timeout, in minutes, applied to each new session. Blank or invalid values leave the
-	 * servlet container's default in place.
-	 *
-	 * @param value the timeout in minutes, may be null
-	 */
-	static void setSessionTimeout(String value) {
-		if (!StringUtils.hasText(value)) {
-			sessionTimeoutInMinutes = null;
-			return;
-		}
-		int minutes;
-		try {
-			minutes = Integer.parseInt(value.trim());
-		} catch (NumberFormatException e) {
-			minutes = -1;
-		}
-		if (minutes <= 0 || minutes > Integer.MAX_VALUE / 60) {
-			sessionTimeoutInMinutes = null;
-			log.warn("Ignoring invalid {} property value '{}'; it must be a positive number of minutes",
-			    OpenmrsConstants.SESSION_TIMEOUT_PROPERTY, value);
-			return;
-		}
-		sessionTimeoutInMinutes = minutes;
-		log.info("Using a session timeout of {} minute(s) from the {} property", minutes,
-		    OpenmrsConstants.SESSION_TIMEOUT_PROPERTY);
-	}
-
 	private void loadCsrfGuardProperties(ServletContext servletContext) throws IOException {
 		File csrfGuardFile = new File(OpenmrsUtil.getApplicationDataDirectory(), "csrfguard.properties");
 		Properties csrfGuardProperties = new Properties();
@@ -409,7 +360,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			Context.getSchedulerService().onStartup();
 
 			// after module start, so global properties set by module activators are read
-			initSessionTimeout();
+			SessionTimeoutHttpSessionListener.loadSessionTimeout();
 		} catch (Exception t) {
 			try {
 				Context.shutdown();

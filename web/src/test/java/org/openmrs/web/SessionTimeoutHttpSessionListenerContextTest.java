@@ -11,6 +11,8 @@ package org.openmrs.web;
 
 import java.util.Properties;
 
+import jakarta.servlet.http.HttpSessionListener;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +22,9 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ListenerSessionTimeoutTest extends BaseWebContextSensitiveTest {
+public class SessionTimeoutHttpSessionListenerContextTest extends BaseWebContextSensitiveTest {
 
 	private static final String PROPERTY = OpenmrsConstants.SESSION_TIMEOUT_PROPERTY;
 
@@ -37,7 +40,7 @@ public class ListenerSessionTimeoutTest extends BaseWebContextSensitiveTest {
 
 	@AfterEach
 	public void tearDown() {
-		Listener.setSessionTimeout(null);
+		SessionTimeoutHttpSessionListener.setSessionTimeout(null);
 		if (originalSystemProperty == null) {
 			System.clearProperty(PROPERTY);
 		} else {
@@ -53,40 +56,47 @@ public class ListenerSessionTimeoutTest extends BaseWebContextSensitiveTest {
 	}
 
 	@Test
-	public void initSessionTimeout_shouldReadTheGlobalProperty() {
+	public void loadSessionTimeout_shouldReadTheGlobalProperty() {
 		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(PROPERTY, "75"));
 
-		Listener.initSessionTimeout();
+		SessionTimeoutHttpSessionListener.loadSessionTimeout();
 
-		assertEquals(75 * 60, ListenerTest.createSession());
+		assertEquals(75 * 60, SessionTimeoutHttpSessionListenerTest.createSession());
 	}
 
 	@Test
-	public void initSessionTimeout_shouldPreferARuntimePropertyOverTheGlobalProperty() {
+	public void loadSessionTimeout_shouldPreferARuntimePropertyOverTheGlobalProperty() {
 		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(PROPERTY, "75"));
 		setRuntimeProperty("60");
 
-		Listener.initSessionTimeout();
+		SessionTimeoutHttpSessionListener.loadSessionTimeout();
 
-		assertEquals(60 * 60, ListenerTest.createSession());
+		assertEquals(60 * 60, SessionTimeoutHttpSessionListenerTest.createSession());
 	}
 
 	@Test
-	public void initSessionTimeout_shouldPreferASystemPropertyOverTheRuntimeProperty() {
+	public void loadSessionTimeout_shouldPreferASystemPropertyOverTheRuntimeProperty() {
 		setRuntimeProperty("60");
 		System.setProperty(PROPERTY, "30");
 
-		Listener.initSessionTimeout();
+		SessionTimeoutHttpSessionListener.loadSessionTimeout();
 
-		assertEquals(30 * 60, ListenerTest.createSession());
+		assertEquals(30 * 60, SessionTimeoutHttpSessionListenerTest.createSession());
 	}
 
 	@Test
-	public void initSessionTimeout_shouldKeepTheContainerDefaultWhenNotSet() {
-		Listener.setSessionTimeout("90");
+	public void loadSessionTimeout_shouldKeepTheContainerDefaultWhenNotSet() {
+		SessionTimeoutHttpSessionListener.setSessionTimeout("90");
 
-		Listener.initSessionTimeout();
+		SessionTimeoutHttpSessionListener.loadSessionTimeout();
 
-		assertEquals(ListenerTest.DEFAULT_INTERVAL, ListenerTest.createSession());
+		assertEquals(SessionTimeoutHttpSessionListenerTest.DEFAULT_INTERVAL,
+		    SessionTimeoutHttpSessionListenerTest.createSession());
+	}
+
+	@Test
+	public void shouldBeRegisteredAsAnHttpSessionListener() {
+		assertTrue(Context.getRegisteredComponents(HttpSessionListener.class).stream()
+		        .anyMatch(l -> l instanceof SessionTimeoutHttpSessionListener));
 	}
 }
