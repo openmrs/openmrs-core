@@ -89,6 +89,10 @@ public class SimpleXStreamSerializer implements OpenmrsSerializer {
 
 	/**
 	 * Setups XStream security using AdministrationService.getSerializerWhitelistTypes()
+	 * <p>
+	 * The list is expected to have been produced by the AdministrationService, which applies the module
+	 * scoping rules to serializer type configuration; {@code hierarchyOf:} entries are resolved with
+	 * {@link Class#forName(String)} and never come from configuration.
 	 *
 	 * @since 2.7.0, 2.6.2, 2.5.13
 	 * @param newXStream

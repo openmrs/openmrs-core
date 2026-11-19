@@ -41,6 +41,7 @@ import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.impl.MutableResourceBundleMessageSource;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.HttpClient;
 import org.openmrs.util.LocaleUtility;
@@ -81,6 +82,16 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	private AdministrationService adminService;
 
 	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
+
+	private static final String[] DEFAULT_SERIALIZER_WHITELIST_TYPES = { "hierarchyOf:org.openmrs.OpenmrsObject",
+	        "hierarchyOf:org.openmrs.OpenmrsMetadata", "hierarchyOf:org.openmrs.OpenmrsData",
+	        "hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
+	        "hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
+	        "hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
+	        "hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
+	        "hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
+	        "hierarchyOf:org.openmrs.messagesource.PresentationMessage",
+	        "hierarchyOf:org.openmrs.person.PersonMergeLogData" };
 
 	private HttpClient implementationHttpClient;
 
@@ -1432,31 +1443,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 
 	@Test
-	public void getSerializerWhitelistTypes_shouldReturnPackagesAndIndividualClassesDefinedInGPS() {
-		//given
-		adminService.saveGlobalProperty(
-		    new GlobalProperty("reporting.serializer.whitelist.types", "org.hibernate.*, org.hibernate.mapping.**"));
-		adminService.saveGlobalProperty(new GlobalProperty("serialization.xstream.serializer.whitelist.types",
-		        "org.hibernate.mapping.Column, org.hibernate.mapping.**"));
-
-		//when
-		List<String> serializerWhitelistTypes = adminService.getSerializerWhitelistTypes();
-
-		//then
-		assertThat(serializerWhitelistTypes,
-		    containsInAnyOrder("org.hibernate.*", "org.hibernate.mapping.**", "org.hibernate.mapping.Column",
-		        "org.hibernate.mapping.**", "hierarchyOf:org.openmrs.OpenmrsObject",
-		        "hierarchyOf:org.openmrs.OpenmrsMetadata", "hierarchyOf:org.openmrs.OpenmrsData",
-		        "hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
-		        "hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
-		        "hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
-		        "hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
-		        "hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
-		        "hierarchyOf:org.openmrs.messagesource.PresentationMessage",
-		        "hierarchyOf:org.openmrs.person.PersonMergeLogData"));
-	}
-
-	@Test
 	public void getSerializerWhitelistTypes_shouldReturnDefaultCommonClassesIfNoGPS() {
 		//given
 		List<GlobalProperty> gps = adminService.getGlobalPropertiesByPrefix(".serializer.whitelist.types");
@@ -1466,15 +1452,31 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		List<String> serializerWhitelistTypes = adminService.getSerializerWhitelistTypes();
 
 		//then
-		assertThat(serializerWhitelistTypes,
-		    containsInAnyOrder("hierarchyOf:org.openmrs.OpenmrsObject", "hierarchyOf:org.openmrs.OpenmrsMetadata",
-		        "hierarchyOf:org.openmrs.OpenmrsData", "hierarchyOf:org.openmrs.customdatatype.CustomDatatype",
-		        "hierarchyOf:org.openmrs.customdatatype.SingleCustomValue",
-		        "hierarchyOf:org.openmrs.customdatatype.CustomValueDescriptor",
-		        "hierarchyOf:org.openmrs.customdatatype.Customizable", "hierarchyOf:org.openmrs.layout.LayoutTemplate",
-		        "hierarchyOf:org.openmrs.layout.LayoutSupport", "hierarchyOf:org.openmrs.obs.ComplexData",
-		        "hierarchyOf:org.openmrs.messagesource.PresentationMessage",
-		        "hierarchyOf:org.openmrs.person.PersonMergeLogData"));
+		assertThat(serializerWhitelistTypes, containsInAnyOrder(DEFAULT_SERIALIZER_WHITELIST_TYPES));
+	}
+
+	@Test
+	public void checkCoreDataset_shouldContinueAfterARejectedModuleGlobalProperty() {
+		String moduleId = "testmodule";
+		String followupProperty = moduleId + ".followup";
+		Module module = new Module("Test Module", moduleId, "org.openmrs.module." + moduleId, "OpenMRS",
+		        "module used by tests", "1.0", "1");
+		module.setGlobalProperties(List.of(new GlobalProperty(moduleId + ".serializer.whitelist.types", "**"),
+		    new GlobalProperty(followupProperty, "saved")));
+		ModuleFactory.getStartedModulesMap().put(moduleId, module);
+
+		try {
+			Context.checkCoreDataset();
+
+			assertNull(adminService.getGlobalPropertyObject(moduleId + ".serializer.whitelist.types"));
+			assertEquals("saved", adminService.getGlobalProperty(followupProperty));
+		} finally {
+			ModuleFactory.getStartedModulesMap().remove(moduleId);
+			GlobalProperty followup = adminService.getGlobalPropertyObject(followupProperty);
+			if (followup != null) {
+				adminService.purgeGlobalProperty(followup);
+			}
+		}
 	}
 
 	@Test

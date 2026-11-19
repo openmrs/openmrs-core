@@ -1311,28 +1311,32 @@ public class Context {
 			}
 
 			for (GlobalProperty coreProp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
-				String corePropName = coreProp.getProperty().toUpperCase();
-				// if the prop doesn't exist, save it
-				if (!currentPropNames.contains(corePropName)) {
-					Context.getAdministrationService().saveGlobalProperty(coreProp);
-					currentPropNames.add(corePropName); // add to list in case
-					// of duplicates
-				} else {
-					// if the prop is missing its description, update it
-					GlobalProperty propToUpdate = propsMissingDescription.get(corePropName);
-					if (propToUpdate != null) {
-						propToUpdate.setDescription(coreProp.getDescription());
-						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
+				try {
+					String corePropName = coreProp.getProperty().toUpperCase();
+					// if the prop doesn't exist, save it
+					if (!currentPropNames.contains(corePropName)) {
+						Context.getAdministrationService().saveGlobalProperty(coreProp);
+						currentPropNames.add(corePropName); // add to list in case
+						// of duplicates
+					} else {
+						// if the prop is missing its description, update it
+						GlobalProperty propToUpdate = propsMissingDescription.get(corePropName);
+						if (propToUpdate != null) {
+							propToUpdate.setDescription(coreProp.getDescription());
+							Context.getAdministrationService().saveGlobalProperty(propToUpdate);
+						}
+						// set missing datatypes
+						propToUpdate = propsMissingDatatype.get(corePropName);
+						if (propToUpdate != null && coreProp.getDatatypeClassname() != null) {
+							propToUpdate.setDatatypeClassname(coreProp.getDatatypeClassname());
+							propToUpdate.setDatatypeConfig(coreProp.getDatatypeConfig());
+							propToUpdate.setPreferredHandlerClassname(coreProp.getPreferredHandlerClassname());
+							propToUpdate.setHandlerConfig(coreProp.getHandlerConfig());
+							Context.getAdministrationService().saveGlobalProperty(propToUpdate);
+						}
 					}
-					// set missing datatypes
-					propToUpdate = propsMissingDatatype.get(corePropName);
-					if (propToUpdate != null && coreProp.getDatatypeClassname() != null) {
-						propToUpdate.setDatatypeClassname(coreProp.getDatatypeClassname());
-						propToUpdate.setDatatypeConfig(coreProp.getDatatypeConfig());
-						propToUpdate.setPreferredHandlerClassname(coreProp.getPreferredHandlerClassname());
-						propToUpdate.setHandlerConfig(coreProp.getHandlerConfig());
-						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
-					}
+				} catch (Exception e) {
+					log.warn("Error while setting core global property '{}'", coreProp.getProperty(), e);
 				}
 			}
 		} catch (Exception e) {

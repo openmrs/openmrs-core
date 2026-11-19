@@ -70,7 +70,7 @@ public class CacheConfig {
 	 * {@link ExternalReadSpringCacheManager}.
 	 */
 	static final Set<String> EXTERNAL_READ_CACHES = Set.of("userSearchLocales", "conceptIdsByMapping",
-	    "serializerWhiteListTypes", RolePrivilegeCache.CACHE_NAME, GlobalPropertyCache.CACHE_NAME);
+	    RolePrivilegeCache.CACHE_NAME, GlobalPropertyCache.CACHE_NAME);
 
 	@Value("${cache.type:local}")
 	private String cacheType;
