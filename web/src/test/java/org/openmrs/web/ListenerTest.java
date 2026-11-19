@@ -63,6 +63,19 @@ public class ListenerTest {
 	}
 
 	@Test
+	public void sessionCreated_shouldAcceptTheLargestTimeoutThatFitsInSeconds() {
+		int max = Integer.MAX_VALUE / 60;
+		assertEquals(max * 60, createSessionWithTimeout(String.valueOf(max)));
+		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout(String.valueOf(max + 1)));
+	}
+
+	@Test
+	public void sessionCreated_shouldReplaceAValidTimeoutWithTheDefaultWhenGivenAnInvalidOne() {
+		assertEquals(90 * 60, createSessionWithTimeout("90"));
+		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout("ninety"));
+	}
+
+	@Test
 	public void sessionCreated_shouldRevertToTheContainerDefaultWhenTheTimeoutIsCleared() {
 		assertEquals(90 * 60, createSessionWithTimeout("90"));
 		assertEquals(DEFAULT_INTERVAL, createSessionWithTimeout(null));

@@ -27,15 +27,22 @@ public class ListenerSessionTimeoutTest extends BaseWebContextSensitiveTest {
 
 	private Properties originalRuntimeProperties;
 
+	private String originalSystemProperty;
+
 	@BeforeEach
 	public void setUp() {
 		originalRuntimeProperties = Context.getRuntimeProperties();
+		originalSystemProperty = System.clearProperty(PROPERTY);
 	}
 
 	@AfterEach
 	public void tearDown() {
 		Listener.setSessionTimeout(null);
-		System.clearProperty(PROPERTY);
+		if (originalSystemProperty == null) {
+			System.clearProperty(PROPERTY);
+		} else {
+			System.setProperty(PROPERTY, originalSystemProperty);
+		}
 		Context.setRuntimeProperties(originalRuntimeProperties);
 	}
 

@@ -148,10 +148,11 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	}
 
 	/**
-	 * This gets all Spring components that implement HttpSessionListener and passes the HttpSession
-	 * event to them whenever an HttpSession is created
+	 * Applies the configured session timeout, if any, then passes the HttpSession event to all Spring
+	 * components that implement HttpSessionListener
 	 *
 	 * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
+	 * @see OpenmrsConstants#SESSION_TIMEOUT_PROPERTY
 	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
@@ -293,8 +294,8 @@ public final class Listener extends ContextLoader implements ServletContextListe
 	 * @param value the timeout in minutes, may be null
 	 */
 	static void setSessionTimeout(String value) {
-		sessionTimeoutInMinutes = null;
 		if (!StringUtils.hasText(value)) {
+			sessionTimeoutInMinutes = null;
 			return;
 		}
 		int minutes;
@@ -304,6 +305,7 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			minutes = -1;
 		}
 		if (minutes <= 0 || minutes > Integer.MAX_VALUE / 60) {
+			sessionTimeoutInMinutes = null;
 			log.warn("Ignoring invalid {} property value '{}'; it must be a positive number of minutes",
 			    OpenmrsConstants.SESSION_TIMEOUT_PROPERTY, value);
 			return;
@@ -400,13 +402,14 @@ public final class Listener extends ContextLoader implements ServletContextListe
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 
 		try {
-			initSessionTimeout();
-
 			log.debug("Performing start of modules");
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
 
 			Context.getSchedulerService().onStartup();
+
+			// after module start, so global properties set by module activators are read
+			initSessionTimeout();
 		} catch (Exception t) {
 			try {
 				Context.shutdown();
