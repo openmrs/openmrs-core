@@ -2,7 +2,7 @@
 
 ## Resources for Getting Started
 
-Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read both our [OpenMRS Developers Guide](http://om.rs/newdev) and our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) wiki page.
+Before you get started contributing to OpenMRS, we encourage you to read our [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/x/nr_EAQ) wiki page.
 
 ## Reporting Bugs
 
@@ -120,7 +120,7 @@ Regardless of whether you're reporting the bug to the OpenMRS core team or to a 
 
 * If you haven't already, get an [OpenMRS ID](https://id.openmrs.org)
 * Make sure you have a [GitHub account](https://github.com/signup/free)
-* Submit or select a [JIRA issue](https://issues.openmrs.org) or choose from the introductory issues on our [Getting Started as a Developer](https://wiki.openmrs.org/x/MQAJ) page.
+* Submit or select a [JIRA issue](https://issues.openmrs.org) or choose from the introductory issues on our [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/x/nr_EAQ) page.
 * Fork [openmrs-core](https://github.com/openmrs/openmrs-core/) or the repository for the module you are working on
 
 ### Interact with the community
