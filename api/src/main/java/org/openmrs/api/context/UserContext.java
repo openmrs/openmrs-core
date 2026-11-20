@@ -390,6 +390,16 @@ public class UserContext implements Serializable {
 	}
 	
 	/**
+	 * @return a snapshot of the privilege names currently added via
+	 *         {@link #addProxyPrivilege(String...)} on this context - a defensive copy, since
+	 *         {@link #proxies} may be mutated concurrently by the thread that owns this context
+	 * @since 3.0.0, 2.9.0
+	 */
+	public List<String> getProxyPrivileges() {
+		return new ArrayList<>(proxies);
+	}
+	
+	/**
 	 * @param locale new locale for this context
 	 */
 	public void setLocale(Locale locale) {
