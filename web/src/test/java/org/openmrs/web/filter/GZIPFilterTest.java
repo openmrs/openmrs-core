@@ -12,6 +12,7 @@ package org.openmrs.web.filter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -19,11 +20,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +36,7 @@ import org.mockito.Mockito;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.GlobalPropertiesTestHelper;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.test.jupiter.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -94,6 +98,35 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 
 	}
 
+	/**
+	 * Regression test for TRUNK-5978: a response larger than the stream's in-memory buffer, whose
+	 * length is set with {@code setContentLengthLong} (as Tomcat's DefaultServlet does), must be
+	 * delivered as a valid gzip response rather than advertising its uncompressed length.
+	 */
+	@Test
+	public void doFilterInternal_shouldNotSendTheUncompressedLengthForALargeCompressedResponse() throws Exception {
+		globalProperties.setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "true");
+
+		byte[] original = new byte[120_000];
+		for (int i = 0; i < original.length; i++) {
+			original[i] = (byte) ('a' + (i % 26));
+		}
+
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.addHeader("accept-encoding", "gzip");
+		MockHttpServletResponse resp = new MockHttpServletResponse();
+
+		GZIPFilter gzipFilter = new GZIPFilter();
+		gzipFilter.doFilterInternal(req, resp, (request, response) -> {
+			response.setContentLengthLong(original.length);
+			response.getOutputStream().write(original);
+		});
+
+		assertThat(resp.getHeader("Content-Encoding"), is("gzip"));
+		assertThat(resp.getHeader("Content-Length"), nullValue());
+		assertThat(gunzip(resp.getContentAsByteArray()), is(original));
+	}
+
 	@Test
 	public void performGZIPRequest_shouldRejectACompressedRequestForAPathThatIsNotAccepted() throws Exception {
 		globalProperties.setGlobalProperty(ACCEPT_PATHS, "/openmrs/ws/rest/.*");
@@ -119,6 +152,18 @@ public class GZIPFilterTest extends BaseWebContextSensitiveTest {
 
 		assertThat(gzipFilter.performGZIPRequest(compressedRequestFor("/openmrs/index.htm")),
 		    instanceOf(GZIPRequestWrapper.class));
+	}
+
+	private static byte[] gunzip(byte[] bytes) throws IOException {
+		ByteArrayOutputStream decompressed = new ByteArrayOutputStream();
+		try (GZIPInputStream gzipStream = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
+			byte[] buffer = new byte[8192];
+			int read;
+			while ((read = gzipStream.read(buffer)) != -1) {
+				decompressed.write(buffer, 0, read);
+			}
+		}
+		return decompressed.toByteArray();
 	}
 
 	private static MockHttpServletRequest compressedRequestFor(String requestURI) throws IOException {
