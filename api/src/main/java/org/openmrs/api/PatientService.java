@@ -641,6 +641,11 @@ public interface PatientService extends OpenmrsService {
 	 * patient<br/>
 	 * <strong>Should</strong> merge other non voided observations from non preferred to preferred
 	 * patient<br/>
+	 * <strong>Should</strong> move voided obs that have no encounter<br/>
+	 * <strong>Should</strong> move voided encounters with their obs and orders<br/>
+	 * <strong>Should</strong> move a voided group member without its own encounter<br/>
+	 * <strong>Should</strong> move a voided group with its voided member that has no encounter<br/>
+	 * <strong>Should</strong> not let obs move in place after the merge<br/>
 	 * <strong>Should</strong> merge other non voided orders from non preferred to preferred
 	 * patient<br/>
 	 * <strong>Should</strong> merge non preferred death date when preferred death date is not null or
