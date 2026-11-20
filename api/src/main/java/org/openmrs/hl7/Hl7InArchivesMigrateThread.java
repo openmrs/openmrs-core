@@ -140,6 +140,7 @@ public class Hl7InArchivesMigrateThread extends Thread {
 					Thread.sleep(HL7Constants.THREAD_SLEEP_PERIOD);
 				} catch (InterruptedException e) {
 					log.warn("Hl7 in archive migration thread has been abnormally interrupted", e);
+					Thread.currentThread().interrupt();
 				}
 
 			} catch (Exception e) {
