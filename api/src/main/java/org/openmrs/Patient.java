@@ -93,7 +93,7 @@ public class Patient extends Person {
 		this.allergyStatus = patient.getAllergyStatus();
 		Set<PatientIdentifier> newIdentifiers = new TreeSet<>();
 		for (PatientIdentifier pid : patient.getIdentifiers()) {
-			PatientIdentifier identifierClone = (PatientIdentifier) pid.clone();
+			PatientIdentifier identifierClone = new PatientIdentifier(pid);
 			identifierClone.setPatient(this);
 			newIdentifiers.add(identifierClone);
 		}
