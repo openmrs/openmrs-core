@@ -180,9 +180,75 @@ public class PersonQuery {
 				        .fields("middleNameAnywhere", "familyName2Anywhere").boost(1f);
 			}
 
-			b.must(names.matching(query).defaultOperator(operator));
+			if (orQueryParser || singleCharacterTerms(query) == null) {
+				b.must(names.matching(query).defaultOperator(operator));
+			} else {
+				List<String> otherTerms = new ArrayList<>();
+				for (String term : query.trim().split("\\s+")) {
+					String initial = initialOf(term);
+					if (initial == null) {
+						otherTerms.add(term);
+						continue;
+					}
+					// the exact match ranks an actual initial, stored with or without a dot, above the longer
+					// names the prefix also matches
+					b.must(predicateFactory.bool().with(i -> {
+						i.should(predicateFactory.match().field("givenNameExact").boost(8f).field("familyNameExact")
+						        .boost(8f).field("middleNameExact").boost(4f).field("familyName2Exact").boost(4f)
+						        .matching(initial + " " + initial + "."));
+						// a simple query string prefix, unlike a wildcard predicate, is lowercased and folded to
+						// ASCII by the field's analyzer on both the Lucene and Elasticsearch backends
+						i.should(predicateFactory.simpleQueryString()
+						        .fields("givenNameExact", "familyNameExact", "middleNameExact", "familyName2Exact")
+						        .matching(initial + "*"));
+					}));
+				}
+				if (!otherTerms.isEmpty()) {
+					b.must(names.matching(String.join(" ", otherTerms)).defaultOperator(operator));
+				}
+			}
 			applyPersonFilters(predicateFactory, b, includeVoided, patientsOnly, dead, null, null);
 		}).toPredicate();
+	}
+
+	/**
+	 * Returns the initials of a plain AND name query, i.e. its terms made of a single letter or digit,
+	 * optionally followed by a dot ("j" or "j."), without the dot. Returns null when the query has no
+	 * initials or uses simple query string syntax, in which case it is matched unchanged.
+	 * <p>
+	 * The *Start name fields are indexed with edge n-grams of at least two characters, so an initial
+	 * never matches them and, since every term must match, would make the whole search return nothing.
+	 * Each returned initial is instead matched as the start of a whole name in the *Exact fields.
+	 * Hyphenated names such as "jean-claude" are not treated as syntax, since a "-" only negates a term
+	 * when it starts one.
+	 *
+	 * @param query the name search query
+	 * @return the initials, or null to match the query unchanged
+	 */
+	static List<String> singleCharacterTerms(String query) {
+		if (query == null || query.matches(".*[\"+|*()~].*")) {
+			return null;
+		}
+		List<String> initials = new ArrayList<>();
+		for (String term : query.trim().split("\\s+")) {
+			if (term.startsWith("-")) {
+				return null;
+			}
+			String initial = initialOf(term);
+			if (initial != null) {
+				initials.add(initial);
+			}
+		}
+		return initials.isEmpty() ? null : initials;
+	}
+
+	/**
+	 * Returns the letter or digit of an initial such as "j" or "j.", or null if the term is not one.
+	 */
+	private static String initialOf(String term) {
+		boolean initial = (term.length() == 1 || term.length() == 2 && term.charAt(1) == '.')
+		        && Character.isLetterOrDigit(term.charAt(0));
+		return initial ? term.substring(0, 1) : null;
 	}
 
 	private SearchPredicate newSoundexPersonNameSearchQuery(SearchPredicateFactory predicateFactory, String query,
