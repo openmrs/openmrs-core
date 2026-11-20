@@ -52,6 +52,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -124,9 +125,10 @@ public class OpenmrsUtil {
 
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(OpenmrsUtil.class);
 
-	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<>();
+	// these are read and filled by concurrent requests; the cached formats are never handed out, only clones of them
+	private static final Map<Locale, SimpleDateFormat> dateFormatCache = new ConcurrentHashMap<>();
 
-	private static Map<Locale, SimpleDateFormat> timeFormatCache = new HashMap<>();
+	private static final Map<Locale, SimpleDateFormat> timeFormatCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Compares origList to newList returning map of differences
@@ -1268,10 +1270,10 @@ public class OpenmrsUtil {
 	 * @since 1.5
 	 */
 	public static SimpleDateFormat getDateFormat(Locale locale) {
-		if (dateFormatCache.containsKey(locale)) {
-			return (SimpleDateFormat) dateFormatCache.get(locale).clone();
-		}
+		return (SimpleDateFormat) dateFormatCache.computeIfAbsent(locale, OpenmrsUtil::createDateFormat).clone();
+	}
 
+	private static SimpleDateFormat createDateFormat(Locale locale) {
 		// note that we are using the custom OpenmrsDateFormat class here which prevents erroneous parsing of 2-digit years
 		SimpleDateFormat sdf = new OpenmrsDateFormat((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale),
 		        locale);
@@ -1298,9 +1300,7 @@ public class OpenmrsUtil {
 			sdf.applyPattern(pattern);
 		}
 
-		dateFormatCache.put(locale, sdf);
-
-		return (SimpleDateFormat) sdf.clone();
+		return sdf;
 	}
 
 	/**
@@ -1313,10 +1313,10 @@ public class OpenmrsUtil {
 	 * @since 1.9
 	 */
 	public static SimpleDateFormat getTimeFormat(Locale locale) {
-		if (timeFormatCache.containsKey(locale)) {
-			return (SimpleDateFormat) timeFormatCache.get(locale).clone();
-		}
+		return (SimpleDateFormat) timeFormatCache.computeIfAbsent(locale, OpenmrsUtil::createTimeFormat).clone();
+	}
 
+	private static SimpleDateFormat createTimeFormat(Locale locale) {
 		SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT, locale);
 		String pattern = sdf.toPattern();
 
@@ -1326,9 +1326,7 @@ public class OpenmrsUtil {
 			sdf.applyPattern(pattern);
 		}
 
-		timeFormatCache.put(locale, sdf);
-
-		return (SimpleDateFormat) sdf.clone();
+		return sdf;
 	}
 
 	/**
