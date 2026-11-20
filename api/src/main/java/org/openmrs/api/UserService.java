@@ -9,6 +9,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -153,6 +154,33 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	User saveUser(User user) throws APIException;
+	
+	/**
+	 * Gets the time at which the given user's account lockout ends.
+	 *
+	 * @param user the user to check
+	 * @return the time the lockout ends, or null if the user does not have an active lockout
+	 * @since 2.9.0
+	 * <strong>Should</strong> return null if the user is not locked out
+	 * <strong>Should</strong> return the configured end time for an initial lockout
+	 * <strong>Should</strong> account for repeated lockouts and the maximum duration
+	 */
+	@Authorized( { PrivilegeConstants.GET_USERS })
+	Date getAccountLockoutEndTime(User user);
+	
+	/**
+	 * Unlocks the given user's account, clearing the failed login attempts and the lockout history
+	 * so that the next lockout starts at the initial duration again.
+	 *
+	 * @param user the user to unlock
+	 * @return the unlocked user
+	 * @throws APIException
+	 * @since 2.9.0
+	 * <strong>Should</strong> clear the lockout timestamp and failed login attempts
+	 * <strong>Should</strong> clear the lockout history
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
+	User unlockUser(User user) throws APIException;
 	
 	/**
 	 * Deactivate a user account so that it can no longer log in.

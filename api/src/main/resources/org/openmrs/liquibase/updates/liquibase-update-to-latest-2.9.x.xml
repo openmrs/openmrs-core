@@ -118,6 +118,20 @@
 		<customChange class="org.openmrs.util.databasechange.CheckConceptReferenceRangeCriteriaChangeSet"/>
 	</changeSet>
 
+	<changeSet id="TRUNK-6845-2026-10-30" author="jwnasambu">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				SELECT count(*) FROM global_property WHERE property = 'security.unlockAccountWaitingTime' AND property_value = '5'
+			</sqlCheck>
+		</preConditions>
+		<comment>Raise the default initial account lockout duration from 5 to 10 minutes</comment>
+		<update tableName="global_property">
+			<column name="property_value" value="10"/>
+			<column name="description" value="Initial time in minutes an account is locked after too many failed login attempts. The duration doubles for each consecutive lockout."/>
+			<where>property = 'security.unlockAccountWaitingTime'</where>
+		</update>
+	</changeSet>
+
 	<changeSet id="20261021-add-index-users-username" author="Wikum Weerakutti">
 		<preConditions onFail="MARK_RAN">
 			<not>
