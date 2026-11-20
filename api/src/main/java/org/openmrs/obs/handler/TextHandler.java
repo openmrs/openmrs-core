@@ -18,10 +18,12 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -61,40 +63,62 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 
 		log.debug("value complex: {}", obs.getValueComplex());
 		log.debug("file path: {}", key);
-		ComplexData complexData = null;
 
+		ComplexData complexData;
 		if (ComplexObsHandler.TEXT_VIEW.equals(view) || ComplexObsHandler.RAW_VIEW.equals(view)) {
-			String filename = parseFilename(obs, "file");
-
-			try (InputStream is = storageService.getData(key)) {
-				complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, IOUtils.toByteArray(is))
-				        : new ComplexData(filename, IOUtils.toString(is, StandardCharsets.UTF_8));
-			} catch (IOException e) {
-				log.error("Trying to read file: {}", key, e);
-			}
+			complexData = getTextOrRawViewData(obs, key, view);
 		} else if (ComplexObsHandler.URI_VIEW.equals(view)) {
-			complexData = new ComplexData(parseDataTitle(obs), key);
+			complexData = getUriViewData(obs, key);
 		} else {
 			// No other view supported
 			// NOTE: if adding support for another view, don't forget to update supportedViews list above
 			return null;
 		}
-		Assert.notNull(complexData, "Complex data must not be null");
 
-		// Get the Mime Type and set it
+		Assert.notNull(complexData, "Complex data must not be null");
+		obs.setComplexData(complexData);
+		return obs;
+	}
+
+	private ComplexData getTextOrRawViewData(Obs obs, String key, String view) {
+		String filename = parseFilename(obs, "file");
+
+		ComplexData complexData = null;
+		try (DataWithMetadata dwm = storageService.getDataWithMetadata(key)) {
+			InputStream is = dwm.data();
+			complexData = ComplexObsHandler.RAW_VIEW.equals(view) ? new ComplexData(filename, IOUtils.toByteArray(is))
+			        : new ComplexData(filename, IOUtils.toString(is, StandardCharsets.UTF_8));
+			setContentMetadata(complexData, dwm.metadata());
+		} catch (NoSuchFileException e) {
+			log.error("Trying to read file: {}", key, e);
+		} catch (IOException e) {
+			log.error("Trying to read file: {}", key, e);
+			throw new APIException("Obs.error.while.trying.get.complex", null, e);
+		}
+
+		return complexData;
+	}
+
+	private ComplexData getUriViewData(Obs obs, String key) {
+		ComplexData complexData = new ComplexData(parseDataTitle(obs), key);
 		ObjectMetadata metadata;
 		try {
 			metadata = storageService.getMetadata(key);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		String mimeType = metadata.getMimeType();
-		mimeType = !(mimeType.equals("application/octet-stream")) ? mimeType : "text/plain";
-		complexData.setMimeType(mimeType);
-		complexData.setLength(metadata.getLength());
-		obs.setComplexData(complexData);
+		setContentMetadata(complexData, metadata);
+		return complexData;
+	}
 
-		return obs;
+	private void setContentMetadata(ComplexData complexData, ObjectMetadata metadata) {
+		if (complexData != null && metadata != null) {
+			// Get the Mime Type and set it
+			String mimeType = metadata.getMimeType();
+			mimeType = !(mimeType.equals("application/octet-stream")) ? mimeType : "text/plain";
+			complexData.setMimeType(mimeType);
+			complexData.setLength(metadata.getLength());
+		}
 	}
 
 	/**

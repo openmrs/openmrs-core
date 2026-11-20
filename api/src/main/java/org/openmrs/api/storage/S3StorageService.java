@@ -16,6 +16,7 @@ import java.io.InterruptedIOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -126,10 +127,37 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 	}
 
 	public InputStream getData(String key) throws IOException {
-		CompletableFuture<ResponseInputStream<GetObjectResponse>> object = s3AsyncClient.getObject(
+		return getDataWithMetadata(key).data();
+	}
+
+	@Override
+	public DataWithMetadata getDataWithMetadata(String key) throws IOException {
+		CompletableFuture<ResponseInputStream<GetObjectResponse>> future = s3AsyncClient.getObject(
 		    GetObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build(),
 		    AsyncResponseTransformer.toBlockingInputStream());
-		return waitForResponse(object);
+		ResponseInputStream<GetObjectResponse> response;
+		try {
+			response = waitForResponse(future);
+		} catch (IOException e) {
+			throw translateNotFound(key, e);
+		}
+		GetObjectResponse getResponse = response.response();
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setMimeType(getResponse.contentType());
+		metadata.setLength(getObjectLength(getResponse));
+		return new DataWithMetadata(response, metadata);
+	}
+
+	/**
+	 * With multipart enabled the client downloads in parts and hands back the first part's response, so
+	 * Content-Length is that part's size, while Content-Range ends with the size of the object.
+	 *
+	 * @param response the response to read the length from
+	 * @return the total object length
+	 */
+	static Long getObjectLength(GetObjectResponse response) {
+		String total = StringUtils.substringAfterLast(response.contentRange(), "/");
+		return StringUtils.isNumeric(total) ? Long.valueOf(total) : response.contentLength();
 	}
 
 	private <T> T waitForResponse(CompletableFuture<T> object) throws IOException {
@@ -144,10 +172,28 @@ public class S3StorageService extends BaseStorageService implements StorageServi
 		return result;
 	}
 
+	private IOException translateNotFound(String key, IOException e) {
+		Throwable cause = e;
+		while (cause != null) {
+			if (cause instanceof S3Exception s3Exception && s3Exception.statusCode() == 404) {
+				NoSuchFileException notFound = new NoSuchFileException(key);
+				notFound.initCause(e);
+				return notFound;
+			}
+			cause = cause.getCause();
+		}
+		return e;
+	}
+
 	public ObjectMetadata getMetadata(String key) throws IOException {
 		HeadObjectRequest request = HeadObjectRequest.builder().bucket(bucketName).key(encodeKey(key)).build();
 		CompletableFuture<HeadObjectResponse> headRequest = s3AsyncClient.headObject(request);
-		HeadObjectResponse awsMetadata = waitForResponse(headRequest);
+		HeadObjectResponse awsMetadata;
+		try {
+			awsMetadata = waitForResponse(headRequest);
+		} catch (IOException e) {
+			throw translateNotFound(key, e);
+		}
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setMimeType(awsMetadata.contentType());
 		metadata.setLength(awsMetadata.contentLength());

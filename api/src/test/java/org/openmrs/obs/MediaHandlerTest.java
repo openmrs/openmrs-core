@@ -19,14 +19,17 @@ import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.StorageService;
 import org.openmrs.obs.handler.MediaHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MediaHandlerTest extends BaseContextSensitiveTest {
@@ -36,6 +39,9 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 
 	@Autowired
 	MediaHandler handler;
+
+	@Autowired
+	private StorageService storageService;
 
 	@Test
 	public void shouldReturnSupportedViews() {
@@ -95,5 +101,34 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 			((InputStream) complexObs1.getComplexData().getData()).close();
 			((InputStream) complexObs2.getComplexData().getData()).close();
 		}
+	}
+
+	@Test
+	public void getObs_shouldReadDataAndMetadataInASingleStorageCall() throws IOException {
+		adminService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "obs"));
+
+		File sourceFile = Paths.get("src", "test", "resources", "ComplexObsTestAudio.mp3").toFile();
+
+		CountingStorageService counting = new CountingStorageService(storageService);
+		MediaHandler countingHandler = new MediaHandler();
+		ReflectionTestUtils.setField(countingHandler, "adminService", adminService);
+		ReflectionTestUtils.setField(countingHandler, "storageService", counting);
+
+		Obs obs = new Obs();
+		try (FileInputStream in = new FileInputStream(sourceFile)) {
+			obs.setComplexData(new ComplexData("TestingComplexObsSaving.mp3", in));
+			countingHandler.saveObs(obs);
+		}
+
+		counting.reset();
+
+		Obs fetched = countingHandler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+		try (InputStream data = (InputStream) fetched.getComplexData().getData()) {
+			assertNotNull(data);
+		}
+
+		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
+		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
+		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
 	}
 }
