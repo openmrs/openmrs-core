@@ -233,7 +233,7 @@ public class OrderSetServiceImpl extends BaseOpenmrsService implements OrderSetS
 		if (OrderSet.class.equals(type)) {
 			return (T) getOrderSetByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override

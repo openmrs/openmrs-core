@@ -246,7 +246,7 @@ public class DatatypeServiceImpl extends BaseOpenmrsService implements DatatypeS
 		if (ClobDatatypeStorage.class.equals(type)) {
 			return (T) getClobDatatypeStorageByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override

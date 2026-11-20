@@ -298,7 +298,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		if (Cohort.class.equals(type)) {
 			return (T) getCohortByUuid(uuid);
 		}
-		throw new APIException("Unsupported type for getRefByUuid: " + type != null ? type.getName() : "null");
+		throw new APIException("Unsupported type for getRefByUuid: " + (type != null ? type.getName() : "null"));
 	}
 
 	@Override
