@@ -44,7 +44,7 @@ public class DatabaseIT implements LiquibaseProvider {
 	protected static final String PASSWORD = "test";
 	
 	@BeforeEach
-	public void setup() throws SQLException, ClassNotFoundException {
+	public void setup() throws Exception {
 		this.initializeDatabase();
 	}
 	
