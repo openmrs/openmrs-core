@@ -1336,7 +1336,8 @@ public class OpenmrsUtil {
 	 * user's locale.
 	 * <p>
 	 * <strong>Should</strong> return a pattern with four y characters and two h characters in it<br/>
-	 * <strong>Should</strong> not allow the returned SimpleDateFormat to be modified
+	 * <strong>Should</strong> not allow the returned SimpleDateFormat to be modified<br/>
+	 * <strong>Should</strong> reject invalid dates and times and years before 1000
 	 *
 	 * @return a simple date format
 	 * @since 1.9
@@ -1349,9 +1350,8 @@ public class OpenmrsUtil {
 		timeFormat = getTimeFormat(locale);
 
 		String pattern = dateFormat.toPattern() + " " + timeFormat.toPattern();
-		SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf.applyPattern(pattern);
-		return sdf;
+		// note that we are using the custom OpenmrsDateTimeFormat class here which is non-lenient and prevents erroneous parsing of 2-digit years
+		return new OpenmrsDateTimeFormat(pattern);
 	}
 
 	/**
