@@ -82,6 +82,7 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -1965,6 +1966,105 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// there are 1 voided and 4 nonvoided patients in
 		// standardTestDataset.xml
 		assertEquals(6, allPatients.size());
+	}
+
+	/**
+	 * setupCauseOfDeathGlobalProperties sets the global properties used by the cause of death flow on
+	 * the standard test dataset: concept 21 is the cause of death concept that the flow looks for,
+	 * concept 22 is the "patient died" exit reason, and concept 4 doubles as the "other" non-coded
+	 * concept.
+	 */
+	private void setupCauseOfDeathGlobalProperties() throws Exception {
+		adminService.saveGlobalProperty(new GlobalProperty("concept.causeOfDeath", "21"));
+		adminService.saveGlobalProperty(new GlobalProperty("concept.patientDied", "22"));
+		adminService.saveGlobalProperty(new GlobalProperty("concept.otherNonCoded", "4"));
+		adminService.saveGlobalProperty(new GlobalProperty("concept.reasonExitedCare", "4"));
+	}
+
+	/**
+	 * Patient 7 has a saved cause of death obs (obs 15 in the standard test dataset); processing the
+	 * death again with a different date must save the change as a new version of the obs and not fail
+	 * on the immutable-obs guard. TRUNK-6867
+	 *
+	 * @see PatientService#processDeath(Patient, Date, Concept, String)
+	 */
+	@Test
+	public void processDeath_shouldSaveChangedDeathDateAsNewVersionOfExistingCauseOfDeathObs() throws Exception {
+		setupCauseOfDeathGlobalProperties();
+
+		Patient patient = patientService.getPatient(7);
+		Concept causeOfDeath = Context.getConceptService().getConcept(21);
+		Date dateDied = TestUtil.createDateTime("2008-09-02");
+
+		patientService.processDeath(patient, dateDied, Context.getConceptService().getConcept(22), null);
+
+		assertTrue(Context.getObsService().getObs(15).isVoided());
+		List<Obs> causeOfDeathObs = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
+		assertEquals(1, causeOfDeathObs.size());
+		// the replacement must be a new version of obs 15, not an in-place edit of it
+		assertNotEquals(15, causeOfDeathObs.get(0).getObsId().intValue());
+		assertEquals(15, causeOfDeathObs.get(0).getPreviousVersion().getId().intValue());
+		assertEquals(dateDied, causeOfDeathObs.get(0).getObsDatetime());
+	}
+
+	/**
+	 * Patient 7 has a saved cause of death obs (obs 15 in the standard test dataset); processing the
+	 * death again with a different cause must save the change as a new version of the obs and not fail
+	 * on the immutable-obs guard. TRUNK-6867
+	 *
+	 * @see PatientService#processDeath(Patient, Date, Concept, String)
+	 */
+	@Test
+	public void processDeath_shouldSaveChangedCauseAsNewVersionOfExistingCauseOfDeathObs() throws Exception {
+		setupCauseOfDeathGlobalProperties();
+
+		Patient patient = patientService.getPatient(7);
+		Concept newCause = Context.getConceptService().getConcept(4);
+		Date dateDied = TestUtil.createDateTime("2008-08-15");
+
+		patientService.processDeath(patient, dateDied, newCause, null);
+
+		assertTrue(Context.getObsService().getObs(15).isVoided());
+		List<Obs> causeOfDeathObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
+		    Context.getConceptService().getConcept(21));
+		assertEquals(1, causeOfDeathObs.size());
+		// the replacement must be a new version of obs 15, not an in-place edit of it
+		assertNotEquals(15, causeOfDeathObs.get(0).getObsId().intValue());
+		assertEquals(15, causeOfDeathObs.get(0).getPreviousVersion().getId().intValue());
+		assertEquals(newCause, causeOfDeathObs.get(0).getValueCoded());
+	}
+
+	/**
+	 * Patient 6 has no cause of death obs in the standard test dataset; the first call must create one,
+	 * and a repeat call with a new date must edit the created obs again — by saving a new version —
+	 * without failing on the immutable-obs guard. TRUNK-6867
+	 *
+	 * @see PatientService#processDeath(Patient, Date, Concept, String)
+	 */
+	@Test
+	public void processDeath_shouldCreateAndThenEditCauseOfDeathObsForPatientWithoutOne() throws Exception {
+		setupCauseOfDeathGlobalProperties();
+
+		Patient patient = patientService.getPatient(6);
+		Concept causeOfDeath = Context.getConceptService().getConcept(21);
+		Concept patientDied = Context.getConceptService().getConcept(22);
+
+		patientService.processDeath(patient, TestUtil.createDateTime("2008-09-02"), patientDied, null);
+
+		List<Obs> causeOfDeathObs = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
+		assertEquals(1, causeOfDeathObs.size());
+		Integer firstObsId = causeOfDeathObs.get(0).getObsId();
+
+		Date newDateDied = TestUtil.createDateTime("2008-09-05");
+		patientService.processDeath(patient, newDateDied, patientDied, null);
+
+		// the repeat call must edit the created obs by saving a new version of it, not in place
+		assertTrue(Context.getObsService().getObs(firstObsId).isVoided());
+		List<Obs> updatedCauseOfDeathObs = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
+		assertEquals(1, updatedCauseOfDeathObs.size());
+		assertNotEquals(firstObsId.intValue(), updatedCauseOfDeathObs.get(0).getObsId().intValue());
+		assertEquals(firstObsId, updatedCauseOfDeathObs.get(0).getPreviousVersion().getId());
+		assertEquals(newDateDied, updatedCauseOfDeathObs.get(0).getObsDatetime());
 	}
 
 	@Test
