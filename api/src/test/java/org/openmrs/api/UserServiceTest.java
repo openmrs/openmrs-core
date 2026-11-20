@@ -653,6 +653,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see UserService#isLockedOut(User)
 	 */
 	@Test
+	public void isLockedOut_shouldUseTheConfiguredWaitingTime() {
+		User user = userService.getUser(502);
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME, "10");
+		Context.getUserService().saveSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
+
+		assertTrue(userService.isLockedOut(user));
+
+		Context.getUserService().saveSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(11)));
+
+		assertFalse(userService.isLockedOut(user));
+	}
+
+	/**
+	 * @see UserService#isLockedOut(User)
+	 */
+	@Test
 	public void isLockedOut_shouldReturnFalseWhenTheUserHasNoLockout() {
 		assertFalse(userService.isLockedOut(userService.getUser(502)));
 	}
