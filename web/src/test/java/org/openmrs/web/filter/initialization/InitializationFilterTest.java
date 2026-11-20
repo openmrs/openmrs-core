@@ -35,13 +35,15 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 
 	private InitializationFilter filter;
 
+	private InitializationWizardModel model;
+
 	@Value("${hibernate.connection.url}")
 	private String connectionUrl;
 
 	@BeforeEach
 	public void setup() {
 		filter = new InitializationFilter();
-		filter.wizardModel = new InitializationWizardModel();
+		model = new InitializationWizardModel();
 	}
 
 	@Test
@@ -69,9 +71,9 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 
 		System.setProperty("connection.url", "jdbc:mysql://system:3306/openmrs");
 
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-		assertEquals("jdbc:mysql://system:3306/openmrs", spyFilter.wizardModel.databaseConnection);
+		assertEquals("jdbc:mysql://system:3306/openmrs", model.databaseConnection);
 	}
 
 	@Test
@@ -82,9 +84,9 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-		assertEquals("jdbc:mysql://env-var:3306/openmrs", spyFilter.wizardModel.databaseConnection);
+		assertEquals("jdbc:mysql://env-var:3306/openmrs", model.databaseConnection);
 	}
 
 	/**
@@ -98,9 +100,9 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-		assertEquals("env_auto", spyFilter.wizardModel.installMethod);
+		assertEquals("env_auto", model.installMethod);
 	}
 
 	@Test
@@ -112,9 +114,9 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		installScriptProps.setProperty("database_name", "openmrs_file");
 		doReturn(installScriptProps).when(spyFilter).getInstallationScript();
 
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-		assertEquals("openmrs_file", spyFilter.wizardModel.databaseName);
+		assertEquals("openmrs_file", model.databaseName);
 	}
 
 	@Test
@@ -123,9 +125,9 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		doReturn(new HashMap<String, String>()).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-		assertNull(spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("non_existing_key"));
+		assertNull(model.additionalPropertiesFromInstallationScript.getProperty("non_existing_key"));
 	}
 
 	@Test
@@ -148,11 +150,11 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 
 			System.setProperty("OPENMRS_INSTALLATION_SCRIPT", tempScript.getAbsolutePath());
 
-			spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+			spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-			assertEquals("jdbc:mysql://system:3306/openmrs", spyFilter.wizardModel.databaseConnection);
-			assertEquals("env_auto", spyFilter.wizardModel.installMethod);
-			assertEquals("openmrs_script", spyFilter.wizardModel.databaseName);
+			assertEquals("jdbc:mysql://system:3306/openmrs", model.databaseConnection);
+			assertEquals("env_auto", model.installMethod);
+			assertEquals("openmrs_script", model.databaseName);
 		} finally {
 			if (!tempScript.delete()) {
 				tempScript.deleteOnExit();
@@ -184,25 +186,25 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		doReturn(fakeEnv).when(spyFilter).getEnvironmentVariables();
 		doReturn(new Properties()).when(spyFilter).getInstallationScript();
 
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-		assertEquals("db_user", spyFilter.wizardModel.createDatabaseUsername);
-		assertEquals("db_pass", spyFilter.wizardModel.createDatabasePassword);
-		assertEquals("user_user", spyFilter.wizardModel.createUserUsername);
-		assertEquals("user_pass", spyFilter.wizardModel.createUserPassword);
-		assertEquals("com.mysql.cj.jdbc.Driver", spyFilter.wizardModel.databaseDriver);
-		assertEquals("openmrs_env", spyFilter.wizardModel.databaseName);
-		assertEquals("env_auto", spyFilter.wizardModel.installMethod);
-		assertTrue(spyFilter.wizardModel.createTables);
-		assertFalse(spyFilter.wizardModel.moduleWebAdmin);
-		assertTrue(spyFilter.wizardModel.autoUpdateDatabase);
-		assertEquals("EnvPass123", spyFilter.wizardModel.adminUserPassword);
-		assertEquals("true", spyFilter.wizardModel.additionalPropertiesFromInstallationScript
-		        .getProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY));
-		assertTrue(spyFilter.wizardModel.importTestData);
-		assertEquals("http://remote:8080/openmrs", spyFilter.wizardModel.remoteUrl);
-		assertEquals("remote_user", spyFilter.wizardModel.remoteUsername);
-		assertEquals("remote_pass", spyFilter.wizardModel.remotePassword);
+		assertEquals("db_user", model.createDatabaseUsername);
+		assertEquals("db_pass", model.createDatabasePassword);
+		assertEquals("user_user", model.createUserUsername);
+		assertEquals("user_pass", model.createUserPassword);
+		assertEquals("com.mysql.cj.jdbc.Driver", model.databaseDriver);
+		assertEquals("openmrs_env", model.databaseName);
+		assertEquals("env_auto", model.installMethod);
+		assertTrue(model.createTables);
+		assertFalse(model.moduleWebAdmin);
+		assertTrue(model.autoUpdateDatabase);
+		assertEquals("EnvPass123", model.adminUserPassword);
+		assertEquals("true",
+		    model.additionalPropertiesFromInstallationScript.getProperty(UserService.ADMIN_PASSWORD_LOCKED_PROPERTY));
+		assertTrue(model.importTestData);
+		assertEquals("http://remote:8080/openmrs", model.remoteUrl);
+		assertEquals("remote_user", model.remoteUsername);
+		assertEquals("remote_pass", model.remotePassword);
 	}
 
 	@Test
@@ -221,16 +223,14 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		System.setProperty("connection_driver_class", "org.postgresql.Driver");
 
 		try {
-			spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
+			spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
-			assertTrue(spyFilter.wizardModel.importTestData, "ADD_DEMO_DATA env var should set importTestData");
+			assertTrue(model.importTestData, "ADD_DEMO_DATA env var should set importTestData");
 			assertEquals("custom_value",
-			    spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("custom.runtime.prop"));
-			assertEquals("another_value",
-			    spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("another.prop"));
-			assertEquals("true",
-			    spyFilter.wizardModel.additionalPropertiesFromInstallationScript.getProperty("admin.password.locked"));
-			assertEquals("org.postgresql.Driver", spyFilter.wizardModel.databaseDriver);
+			    model.additionalPropertiesFromInstallationScript.getProperty("custom.runtime.prop"));
+			assertEquals("another_value", model.additionalPropertiesFromInstallationScript.getProperty("another.prop"));
+			assertEquals("true", model.additionalPropertiesFromInstallationScript.getProperty("admin.password.locked"));
+			assertEquals("org.postgresql.Driver", model.databaseDriver);
 		} finally {
 			System.clearProperty("admin.password.locked");
 			System.clearProperty("connection_driver_class");
@@ -242,8 +242,7 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		Properties installScript = getInstallScript();
 		InitializationFilter spyFilter = spy(filter);
 		doReturn(installScript).when(spyFilter).getInstallationScript();
-		spyFilter.initializeWizardFromResolvedPropertiesIfPresent();
-		InitializationWizardModel model = spyFilter.wizardModel;
+		spyFilter.initializeWizardFromResolvedPropertiesIfPresent(model);
 
 		assertEquals("auto", model.installMethod);
 		assertEquals("jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1",

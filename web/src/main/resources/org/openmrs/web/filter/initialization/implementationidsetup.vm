@@ -41,7 +41,6 @@
                         <input type="text" 
                                name="pass_phrase" 
                                class="form-input" 
-                               value="${implementationIdPassPhrase}" 
                                onKeyPress="return submitenter(this,event);" />
                         <span class="input-hint">$l10n.get("install.advanced.implid.passphrase")</span>
                     </div>

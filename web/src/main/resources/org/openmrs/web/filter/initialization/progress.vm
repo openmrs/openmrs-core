@@ -11,6 +11,7 @@
             <div class="progress-message">$l10n.get("install.testing.inprogress")</div>
         #end
 
+        #if($isInstallationStarted == true)
         <div class="tasks-container">
             <h2 class="tasks-header">$l10n.get("install.progress.tasks")</h2>
             
@@ -51,6 +52,7 @@
                 </div>
             </div>
         </div>
+        #end
     </div>
 </div>
 
@@ -352,7 +354,9 @@
         
     jQuery(document).ready(
         function(){
+            #if($isInstallationStarted == true)
             showProgress();
+            #end
 
             jQuery("#output").click(
                 function () {

@@ -464,9 +464,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 
 				@Override
 				public void execute(Connection con) throws SQLException {
-					Statement stmt = con.createStatement();
-					stmt.addBatch(postgresSequences);
-					stmt.executeBatch();
+					try (Statement stmt = con.createStatement()) {
+						// one statement per entry: pgjdbc 42.7.13 and later refuse an entry holding several
+						for (String sql : postgresSequences.split(";")) {
+							stmt.addBatch(sql);
+						}
+						stmt.executeBatch();
+					}
 				}
 			});
 		}
