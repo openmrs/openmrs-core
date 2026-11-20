@@ -105,24 +105,11 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		// unless they hold the Get Alerts privilege and may therefore read every user's alerts.
 		// Return null - the same as for an unknown id - rather than throwing, so this lookup cannot be
 		// used to probe which alert ids exist (an existence oracle over sequential identifiers).
-		if (alert != null && !canViewAllAlerts() && !isAddressedTo(alert, Context.getAuthenticatedUserId())) {
+		if (alert != null && !canViewAllAlerts() && alert.getRecipient(Context.getAuthenticatedUserId()) == null) {
 			return null;
 		}
 
 		return alert;
-	}
-
-	private boolean isAddressedTo(Alert alert, Integer userId) {
-		if (userId == null || alert.getRecipients() == null) {
-			return false;
-		}
-		for (AlertRecipient alertRecipient : alert.getRecipients()) {
-			User recipient = alertRecipient.getRecipient();
-			if (recipient != null && userId.equals(recipient.getUserId())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

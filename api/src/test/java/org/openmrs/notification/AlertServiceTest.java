@@ -291,6 +291,23 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 
+	@Test
+	public void markAlertRead_shouldMarkTheCallersOwnCopyReadWhenTheAuthenticatedUsersUuidIsTampered() {
+		AlertService as = Context.getAlertService();
+		User superUser = Context.getAuthenticatedUser();
+		User butch = Context.getUserService().getUserByUsername("butch");
+		Alert alert = new Alert("shared alert", butch);
+		alert.addRecipient(superUser);
+		Integer alertId = as.saveAlert(alert).getAlertId();
+
+		becomeButchWithADetachedUserObject();
+		Context.getAuthenticatedUser().setUuid(superUser.getUuid());
+
+		Alert read = as.getAlert(alertId).markAlertRead();
+		assertTrue(read.getRecipient(butch.getUserId()).getAlertRead());
+		assertFalse(read.getRecipient(superUser.getUserId()).getAlertRead());
+	}
+
 	/**
 	 * Becomes butch and detaches his User object from the session, as it would be on any request after
 	 * the one that logged him in, so that changes made to it do not leak into freshly loaded recipients
