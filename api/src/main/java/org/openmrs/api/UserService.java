@@ -55,6 +55,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * that may store an entry throw {@link ValidationException} for a user without an id, a blank or
  * over-long key, or a blank value; {@link #getSecurityState} and {@link #deleteSecurityState} throw
  * {@link APIException} for a user without an id and find no entry for any other such arguments.
+ * Call the methods that may store an entry outside any transaction of your own, or from a READ
+ * COMMITTED one: in a REPEATABLE READ transaction, the default on MySQL and MariaDB, first entries
+ * written for different users at the same time can deadlock.
  *
  * @see org.openmrs.api.context.Context
  */
