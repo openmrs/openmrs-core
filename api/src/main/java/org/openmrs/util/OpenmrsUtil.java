@@ -218,15 +218,16 @@ public class OpenmrsUtil {
 	 */
 	public static String getFileAsString(File file) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-		char[] buf = new char[1024];
-		int numRead;
-		while ((numRead = reader.read(buf)) != -1) {
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
+		try (BufferedReader reader = new BufferedReader(
+		        new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+			char[] buf = new char[1024];
+			int numRead;
+			while ((numRead = reader.read(buf)) != -1) {
+				String readData = String.valueOf(buf, 0, numRead);
+				fileData.append(readData);
+				buf = new char[1024];
+			}
 		}
-		reader.close();
 		return fileData.toString();
 	}
 
@@ -1115,9 +1116,7 @@ public class OpenmrsUtil {
 	 * @param outFile file pointer to the location the xml file is to be saved to
 	 */
 	public static void saveDocument(Document doc, File outFile) {
-		OutputStream outStream = null;
-		try {
-			outStream = new FileOutputStream(outFile);
+		try (OutputStream outStream = new FileOutputStream(outFile)) {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -1135,14 +1134,8 @@ public class OpenmrsUtil {
 			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
 		} catch (FileNotFoundException e) {
 			throw new ModuleException(outFile.getAbsolutePath() + " file doesn't exist.", e);
-		} finally {
-			try {
-				if (outStream != null) {
-					outStream.close();
-				}
-			} catch (Exception e) {
-				log.warn("Unable to close outstream", e);
-			}
+		} catch (IOException e) {
+			log.warn("Unable to close outstream", e);
 		}
 	}
 
@@ -1563,20 +1556,10 @@ public class OpenmrsUtil {
 	 * @param comment
 	 */
 	public static void storeProperties(Properties properties, File file, String comment) {
-		OutputStream outStream = null;
-		try {
-			outStream = new FileOutputStream(file, true);
+		try (OutputStream outStream = new FileOutputStream(file, true)) {
 			storeProperties(properties, outStream, comment);
 		} catch (IOException ex) {
 			log.error("Unable to create file " + file.getAbsolutePath() + " in storeProperties routine.");
-		} finally {
-			try {
-				if (outStream != null) {
-					outStream.close();
-				}
-			} catch (IOException ioe) {
-				// pass
-			}
 		}
 	}
 
@@ -1614,9 +1597,7 @@ public class OpenmrsUtil {
 	 * @param inputStream the input stream to read from
 	 */
 	public static void loadProperties(Properties props, InputStream inputStream) {
-		InputStreamReader reader = null;
-		try {
-			reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 			props.load(reader);
 		} catch (FileNotFoundException fnfe) {
 			log.error("Unable to find properties file" + fnfe);
@@ -1624,14 +1605,6 @@ public class OpenmrsUtil {
 			log.error("Unsupported encoding used in properties file" + uee);
 		} catch (IOException ioe) {
 			log.error("Unable to read properties from properties file" + ioe);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException ioe) {
-				log.error("Unable to close properties file " + ioe);
-			}
 		}
 	}
 
