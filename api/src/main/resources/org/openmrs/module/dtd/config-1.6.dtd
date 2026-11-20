@@ -3,6 +3,7 @@
 	Top level configuration element.
 	-->
 	<!ELEMENT module (
+		(
 		(id),
 		(name),
 		(version),
@@ -30,6 +31,10 @@
 		(mappingFiles?),
 		(packagesWithMappedClasses?),
 		(conditionalResources?)
+		) | (
+		(moduleId),
+		(version)
+		)
 		)>
 	<!ATTLIST module configVersion CDATA #FIXED "1.6">
 
@@ -119,5 +124,4 @@
 	<!ELEMENT path (#PCDATA)>
 	<!ELEMENT openmrsVersion (#PCDATA)>
 	<!ELEMENT modules (module+)>
-	<!ELEMENT module (moduleId, version)>
 	<!ELEMENT moduleId (#PCDATA)>

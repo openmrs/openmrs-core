@@ -971,6 +971,41 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 	}
 
 	@Test
+	public void parse_shouldParseConditionalResourcesWithConditionalModuleAndModuleElementsOnV2_0Config()
+	        throws IOException {
+
+		HashMap<String, String> conditionalModules = new HashMap<>();
+		conditionalModules.put("metadatamapping", "1.0");
+		HashMap<String, String> legacyModules = new HashMap<>();
+		legacyModules.put("reporting", "2.0");
+
+		Document config = buildOnValidConfigXml("2.0")
+		        .withConditionalResource("/lib/metadatasharing-api-1.9*", "1.9", conditionalModules, "conditionalModule")
+		        .withConditionalResource("/lib/reporting-api-2.0*", "2.0", legacyModules, "module").build();
+
+		Module module = parser.parse(writeConfigXmlToFile(config));
+
+		ModuleConditionalResource metadatasharing = new ModuleConditionalResource();
+		metadatasharing.setPath("/lib/metadatasharing-api-1.9*");
+		metadatasharing.setOpenmrsPlatformVersion("1.9");
+		ModuleConditionalResource.ModuleAndVersion metadatamapping = new ModuleConditionalResource.ModuleAndVersion();
+		metadatamapping.setModuleId("metadatamapping");
+		metadatamapping.setVersion("1.0");
+		metadatasharing.setModules(Collections.singletonList(metadatamapping));
+
+		ModuleConditionalResource reportingResource = new ModuleConditionalResource();
+		reportingResource.setPath("/lib/reporting-api-2.0*");
+		reportingResource.setOpenmrsPlatformVersion("2.0");
+		ModuleConditionalResource.ModuleAndVersion reporting = new ModuleConditionalResource.ModuleAndVersion();
+		reporting.setModuleId("reporting");
+		reporting.setVersion("2.0");
+		reportingResource.setModules(Collections.singletonList(reporting));
+
+		assertThat(module.getConditionalResources().size(), is(2));
+		assertThat(module.getConditionalResources(), contains(metadatasharing, reportingResource));
+	}
+
+	@Test
 	public void parse_shouldParseConditionalResourcesWithWhitespace() throws IOException {
 
 		Document config = buildOnValidConfigXml("1.2").withTextNode("conditionalResources", "        	")
@@ -1319,6 +1354,11 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 
 		public ModuleConfigXmlBuilder withConditionalResource(String path, String openmrsVersion,
 		        Map<String, String> modules) {
+			return withConditionalResource(path, openmrsVersion, modules, "module");
+		}
+
+		public ModuleConfigXmlBuilder withConditionalResource(String path, String openmrsVersion,
+		        Map<String, String> modules, String moduleTagName) {
 			Map<String, String> children = new HashMap<>();
 			if (path != null) {
 				children.put("path", path);
@@ -1331,7 +1371,7 @@ public class ModuleFileParserUnitTest extends BaseContextMockTest {
 			if (modules != null) {
 				Element modulesElement = configXml.createElement("modules");
 				for (Map.Entry<String, String> entries : modules.entrySet()) {
-					Element module = configXml.createElement("module");
+					Element module = configXml.createElement(moduleTagName);
 					module.appendChild(createElement("moduleId", entries.getKey()));
 					module.appendChild(createElement("version", entries.getValue()));
 					modulesElement.appendChild(module);

@@ -147,9 +147,9 @@ public class ConfigXmlBuilder {
 
 	private static final String TAG_OPENMRS_VERSION = "openmrsVersion";
 
-	private static final String TAG_LOAD_MODULES_IF_PRESENT = "loadIfModulesPresent";
+	private static final String TAG_MODULES = "modules";
 
-	private static final String TAG_OPENMRS_MODULE = "openmrsModule";
+	private static final String TAG_CONDITIONAL_MODULE = "conditionalModule";
 
 	private static final String TAG_MODULE_ID = "moduleId";
 
@@ -607,6 +607,11 @@ public class ConfigXmlBuilder {
 	}
 
 	public ConfigXmlBuilder withConditionalResources(List<ConditionalResource> conditionalResources) {
+		String moduleTagName = "2.0".equals(dtdVersion) ? TAG_CONDITIONAL_MODULE : MODULE_NAME;
+		return withConditionalResources(conditionalResources, moduleTagName);
+	}
+
+	public ConfigXmlBuilder withConditionalResources(List<ConditionalResource> conditionalResources, String moduleTagName) {
 		Element conditionalResourcesElement = configXml.createElement(TAG_CONDITIONAL_RESOURCES);
 
 		for (ConditionalResource conditionalResource : conditionalResources) {
@@ -619,12 +624,12 @@ public class ConfigXmlBuilder {
 			    openmrsVersion -> createElementWithText(conditionalResourceElement, TAG_OPENMRS_VERSION, openmrsVersion));
 
 			if (conditionalResource.getLoadIfModulesPresent().size() > 0) {
-				Element loadIfModulesPresentElement = configXml.createElement(TAG_LOAD_MODULES_IF_PRESENT);
+				Element loadIfModulesPresentElement = configXml.createElement(TAG_MODULES);
 				conditionalResourceElement.appendChild(loadIfModulesPresentElement);
 
 				for (OpenMRSModule openMRSModule : conditionalResource.getLoadIfModulesPresent()) {
 
-					Element openMRSModuleElement = configXml.createElement(TAG_OPENMRS_MODULE);
+					Element openMRSModuleElement = configXml.createElement(moduleTagName);
 
 					openMRSModule.getModuleId()
 					        .ifPresent(moduleId -> createElementWithText(openMRSModuleElement, TAG_MODULE_ID, moduleId));
