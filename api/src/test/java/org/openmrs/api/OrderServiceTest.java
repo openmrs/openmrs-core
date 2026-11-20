@@ -1788,6 +1788,52 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see OrderService#saveOrder(Order, OrderContext)
+	 */
+	@Test
+	public void saveOrder_shouldFailIfAnOpenEndedDrugOrderStartsBeforeAScheduledDrugOrderForTheSameDrug() {
+		final Patient patient = patientService.getPatient(2);
+		final Concept aspirin = conceptService.getConcept(88);
+		Date now = new Date();
+		DrugOrder scheduledOrder = new DrugOrder();
+		scheduledOrder.setPatient(patient);
+		scheduledOrder.setConcept(aspirin);
+		scheduledOrder.setEncounter(encounterService.getEncounter(6));
+		scheduledOrder.setOrderer(providerService.getProvider(1));
+		scheduledOrder.setCareSetting(orderService.getCareSetting(2));
+		scheduledOrder.setDrug(conceptService.getDrug(3));
+		scheduledOrder.setDateActivated(now);
+		scheduledOrder.setScheduledDate(DateUtils.addDays(now, 5));
+		scheduledOrder.setUrgency(Order.Urgency.ON_SCHEDULED_DATE);
+		scheduledOrder.setAutoExpireDate(DateUtils.addDays(now, 10));
+		scheduledOrder.setDosingType(FreeTextDosingInstructions.class);
+		scheduledOrder.setDosingInstructions("2 for 5 days");
+		scheduledOrder.setQuantity(10.0);
+		scheduledOrder.setQuantityUnits(conceptService.getConcept(51));
+		scheduledOrder.setNumRefills(0);
+		orderService.saveOrder(scheduledOrder, null);
+
+		//New order for the same drug that starts now and has no stop date, so it overlaps the scheduled order
+		DrugOrder openEndedOrder = new DrugOrder();
+		openEndedOrder.setPatient(patient);
+		openEndedOrder.setConcept(aspirin);
+		openEndedOrder.setEncounter(encounterService.getEncounter(6));
+		openEndedOrder.setOrderer(providerService.getProvider(1));
+		openEndedOrder.setCareSetting(scheduledOrder.getCareSetting());
+		openEndedOrder.setDrug(scheduledOrder.getDrug());
+		openEndedOrder.setDateActivated(now);
+		openEndedOrder.setDosingType(FreeTextDosingInstructions.class);
+		openEndedOrder.setDosingInstructions("2 every day");
+		openEndedOrder.setQuantity(10.0);
+		openEndedOrder.setQuantityUnits(conceptService.getConcept(51));
+		openEndedOrder.setNumRefills(0);
+
+		AmbiguousOrderException exception = assertThrows(AmbiguousOrderException.class,
+		    () -> orderService.saveOrder(openEndedOrder, null));
+		assertThat(exception.getMessage(), is("Order.cannot.have.more.than.one"));
+	}
+
+	/**
 	 * settings exists
 	 *
 	 * @see OrderService#saveOrder(Order, OrderContext)
