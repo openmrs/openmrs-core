@@ -554,7 +554,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		es.saveEncounter(encounter);
 
 		String sql = "SELECT voided FROM orders WHERE order_id=7";
-		Boolean voided = (Boolean) Context.getAdministrationService().executeSQL(sql, true).get(0).get(0);
+		Boolean voided = (Boolean) Context.getAdministrationService().executeSQL(sql, false).get(0).get(0);
 		assertFalse(voided);
 	}
 

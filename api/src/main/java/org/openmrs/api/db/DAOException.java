@@ -33,4 +33,27 @@ public class DAOException extends APIException {
 		super(cause);
 	}
 
+	/**
+	 * Constructor to give the end user a helpful message resolved from the given message code, e.g. a
+	 * key from the messages properties file.
+	 *
+	 * @param messageKey message code to retrieve
+	 * @param messageParameters message parameters
+	 */
+	public DAOException(String messageKey, Object[] messageParameters) {
+		super(messageKey, messageParameters);
+	}
+
+	/**
+	 * Constructor to give the end user a helpful message resolved from the given message code and to
+	 * also propagate the parent error exception.
+	 *
+	 * @param messageKey message code to retrieve
+	 * @param messageParameters message parameters
+	 * @param cause the parent exception cause that this exception is wrapping around
+	 */
+	public DAOException(String messageKey, Object[] messageParameters, Throwable cause) {
+		super(messageKey, messageParameters, cause);
+	}
+
 }
