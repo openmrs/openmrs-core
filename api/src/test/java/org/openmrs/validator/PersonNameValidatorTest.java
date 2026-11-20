@@ -26,7 +26,12 @@ import org.springframework.validation.MapBindingResult;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.openmrs.test.matchers.HasFieldErrors.hasFieldErrors;
 import static org.openmrs.test.matchers.HasGlobalErrors.hasGlobalErrors;
 
@@ -68,6 +73,34 @@ public class PersonNameValidatorTest extends BaseContextSensitiveTest {
 		validator.validate(null, errors);
 
 		assertThat(errors, hasGlobalErrors("error.name"));
+	}
+
+	/**
+	 * @see PersonNameValidator#validate(Object, Errors)
+	 */
+	@Test
+	public void validate_shouldNotThrowExceptionWhenPersonNameVoidedIsNull() {
+		personName.setGivenName("John");
+		personName.setFamilyName("Doe");
+		personName.setVoided(null);
+
+		validator.validate(personName, errors);
+
+		assertFalse(errors.hasErrors());
+	}
+
+	/**
+	 * @see PersonNameValidator#validate(Object, Errors)
+	 */
+	@Test
+	public void validate_shouldRecordErrorGeneralWithoutPropagatingExceptionWhenValidatePersonNameThrows() {
+		PersonNameValidator spiedValidator = spy(validator);
+		doThrow(new RuntimeException("Simulated unexpected exception")).when(spiedValidator)
+		        .validatePersonName(any(PersonName.class), any(Errors.class), anyBoolean(), anyBoolean());
+
+		assertDoesNotThrow(() -> spiedValidator.validate(personName, errors));
+
+		assertThat(errors, hasGlobalErrors("error.general"));
 	}
 
 	/**
