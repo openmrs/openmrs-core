@@ -364,6 +364,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			
 			// start the scheduled tasks
 			SchedulerUtil.startup(getRuntimeProperties());
+			
+			// after module start, so global properties set by module activators are read
+			SessionTimeoutHttpSessionListener.loadSessionTimeout();
 		}
 		catch (Exception t) {
 			try {
