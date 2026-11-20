@@ -45,7 +45,9 @@ public class JobRunrConfig {
 																				@Value("${jobrunr.dashboard.username:admin}") String user,
 																				@Value("${jobrunr.dashboard.password:}") String password,
 																				@Value("${jobrunr.dashboard.port:9000}") int port,
-																				@Value("${jobrunr.dashboard.enabled:false}") boolean dashboardEnabled) {
+																				@Value("${jobrunr.dashboard.enabled:false}") boolean dashboardEnabled,
+																				@Value("${jobrunr.background_job_server.worker_count:0}") int workerCount,
+																				@Value("${jobrunr.background_job_server.poll_interval_seconds:15}") int pollIntervalSeconds) {
 		if (dashboardEnabled && StringUtils.isBlank(password)) {
 			throw new IllegalArgumentException("jobrunr.dashboard.password must not be blank");
 		}
@@ -55,12 +57,27 @@ public class JobRunrConfig {
 			.useStorageProvider(storageProvider)
 			.useJobActivator(applicationContext::getBean)
 			.withJobFilter(new RetryFilter(3))
-			.useBackgroundJobServer(BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration(), false);
+			.useBackgroundJobServer(backgroundJobServerConfiguration(workerCount, pollIntervalSeconds), false);
 		if (dashboardEnabled) {
 			config.useDashboard(JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration()
 				.andPort(port).andBasicAuthentication(user, password));
 		}
 		return config.initialize();
+	}
+	
+	/**
+	 * JobRunr defaults to 8 workers per CPU. On a 4 vCPU pod that is 32 tasks able to run concurrently per
+	 * replica, each holding a Hibernate connection, against a default Hibernate pool of 50 and a single RDS
+	 * instance shared by every replica. Set {@code jobrunr.background_job_server.worker_count} to bound it.
+	 */
+	static BackgroundJobServerConfiguration backgroundJobServerConfiguration(int workerCount, int pollIntervalSeconds) {
+		BackgroundJobServerConfiguration configuration = BackgroundJobServerConfiguration
+			.usingStandardBackgroundJobServerConfiguration()
+			.andPollIntervalInSeconds(Math.max(5, pollIntervalSeconds));
+		if (workerCount > 0) {
+			configuration = configuration.andWorkerCount(workerCount);
+		}
+		return configuration;
 	}
 	
 	/**

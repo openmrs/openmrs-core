@@ -31,7 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests how {@link HibernateContextDAO#closeSession()} behaves when a transaction runs on the
+ * Tests how {@link HibernateContextDAO#closeSession()} and
+ * {@link HibernateContextDAO#releaseThreadSession()} behave when a transaction runs on the
  * session {@link HibernateContextDAO#openSession()} bound. The session must be bound before any
  * transaction starts, so the tests cannot run in one.
  */
@@ -108,6 +109,40 @@ public class HibernateContextDAOTransactionTest extends BaseContextSensitiveTest
 
 		assertNull(TransactionSynchronizationManager.getResource(sessionFactory));
 		assertFalse(holder.getSession().isOpen());
+		transaction.executeWithoutResult(
+		    status -> sessionFactory.getCurrentSession().createNativeQuery("select 1").uniqueResult());
+	}
+
+	@Test
+	public void releaseThreadSession_shouldNotReleaseASessionInUseByASpringTransaction() {
+		contextDAO.openSession();
+		SessionHolder holder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
+		try {
+			transaction.executeWithoutResult(status -> assertFalse(contextDAO.releaseThreadSession()));
+
+			assertSessionStillUsable(holder);
+		} finally {
+			contextDAO.closeSession();
+		}
+
+		assertNull(TransactionSynchronizationManager.getResource(sessionFactory));
+	}
+
+	@Test
+	public void releaseThreadSession_shouldRollBackAndCloseALeakedSession() {
+		// two opens and one close: the session a task leaves behind when it throws before its own close
+		contextDAO.openSession();
+		contextDAO.openSession();
+		contextDAO.closeSession();
+		SessionHolder holder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
+		holder.getSession().beginTransaction();
+		holder.getSession().createNativeQuery("select 1").uniqueResult();
+
+		assertTrue(contextDAO.releaseThreadSession());
+
+		assertNull(TransactionSynchronizationManager.getResource(sessionFactory));
+		assertFalse(holder.getSession().isOpen());
+		// the next unit of work on this thread gets a working session of its own
 		transaction.executeWithoutResult(
 		    status -> sessionFactory.getCurrentSession().createNativeQuery("select 1").uniqueResult());
 	}
