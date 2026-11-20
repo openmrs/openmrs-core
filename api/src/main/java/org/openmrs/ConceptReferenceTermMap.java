@@ -9,6 +9,7 @@
  */
 package org.openmrs;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +20,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
@@ -31,6 +34,8 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(name = "concept_reference_term_map")
 @Audited
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ConceptReferenceTermMap extends BaseConceptMap {
 
 	private static final long serialVersionUID = 1L;
