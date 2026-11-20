@@ -165,6 +165,25 @@ public class AllergyValidatorTest extends BaseContextMockTest {
 	}
 
 	@Test
+	public void validate_shouldRejectADuplicateNonCodedAllergenWhenCodedAllergenIsNull() {
+
+		Allergies allergies = new Allergies();
+		final String freeText = "some text";
+		Allergen allergen1 = new Allergen(AllergenType.DRUG, null, freeText);
+		allergies.add(new Allergy(null, allergen1, null, null, null));
+		when(patientService.getAllergies(any(Patient.class))).thenReturn(allergies);
+
+		Allergen duplicateAllergen = new Allergen(AllergenType.FOOD, null, freeText);
+		Allergy allergy = new Allergy(mock(Patient.class), duplicateAllergen, null, null, null);
+		Errors errors = new BindException(allergy, "allergy");
+
+		validator.validate(allergy, errors);
+
+		assertTrue(errors.hasFieldErrors("allergen"));
+		assertThat(errors.getFieldError("allergen").getCode(), is("allergyapi.message.duplicateAllergen"));
+	}
+
+	@Test
 	public void validate_shouldPassForAValidAllergy() {
 
 		Allergies allergies = new Allergies();
