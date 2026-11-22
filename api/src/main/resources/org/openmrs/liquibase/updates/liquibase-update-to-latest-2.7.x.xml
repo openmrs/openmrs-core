@@ -93,6 +93,11 @@
     </changeSet>
     
     <changeSet id="20200715-uuid_ossp_extension" author="aman" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM pg_proc WHERE proname = 'uuid' AND pronargs = 0 AND pronamespace = CAST(current_schema() AS regnamespace)
+            </sqlCheck>
+        </preConditions>
         <comment> Extension to use UUID functions with PostgreSQL and creating an alias similar to MySQL</comment>
         <sql>
         	CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
