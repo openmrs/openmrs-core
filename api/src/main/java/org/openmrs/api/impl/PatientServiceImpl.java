@@ -351,6 +351,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public void purgePatient(Patient patient) throws APIException {
+		if (patient == null) {
+			return;
+		}
 		dao.deletePatient(patient);
 	}
 
