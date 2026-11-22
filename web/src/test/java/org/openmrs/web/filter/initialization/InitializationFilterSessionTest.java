@@ -688,9 +688,45 @@ class InitializationFilterSessionTest {
 	}
 
 	@Test
-	void shouldLogOnlyOnceThatNoInstallStartsUntilOpenmrsRestarts() throws Exception {
+	void shouldShowWhyAnAutomaticInstallFailedSettingUpOnAPageThatStopsPollingUntilOpenmrsRestarts() throws Exception {
+		filter.runInstalls = true;
+		String database = configureAutomaticInstallThatCannotConnect();
+		get(new MockHttpSession(), null);
+		filter.initJob.waitForCompletion();
+		// what an automatic install leaves behind once a step failed after it started the web application context,
+		// which it then closed again
+		filter.automaticSetupFailed = true;
+
+		String page = get(new MockHttpSession(), null);
+
+		assertEquals(1, filter.installsStarted.size());
+		assertThat(page, containsString("Restart OpenMRS before you install again"));
+		assertThat(page, containsString(database));
+		assertThat(page, not(containsString("showProgress();")));
+	}
+
+	@Test
+	void shouldStartAnInstallFromTheWizardPagesThoughAnAutomaticInstallFailedSettingUp() throws Exception {
+		MockHttpSession session = startSession();
+		walkAdvancedWizardToConfirmation(session, "openmrs", "jdbc:mysql://localhost:3306/@DBNAME@");
+		// what an automatic install leaves behind once a step failed after it started the web application context,
+		// which it then closed again; the wizard pages can install with other values
+		filter.automaticSetupFailed = true;
+
+		post(session, "wizardcomplete.vm");
+
+		assertEquals(1, filter.installsStarted.size());
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { false, true })
+	void shouldLogOnlyOnceThatNoInstallStartsUntilOpenmrsRestarts(boolean setupFailed) throws Exception {
 		configureAutomaticInstallThatCannotConnect();
-		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+		if (setupFailed) {
+			filter.automaticSetupFailed = true;
+		} else {
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+		}
 		// a name of its own, since memory appenders of the same name share their lines
 		MemoryAppender appender = MemoryAppender.newBuilder().setName("restartRequired-" + UUID.randomUUID())
 		        .setLayout(PatternLayout.newBuilder().withPattern("%m").build()).build();

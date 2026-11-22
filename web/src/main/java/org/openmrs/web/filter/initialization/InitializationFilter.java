@@ -245,6 +245,16 @@ public class InitializationFilter extends StartupFilter {
 	private final AtomicBoolean restartRequiredLogged = new AtomicBoolean();
 
 	/**
+	 * Set once an automatic install has failed in the steps between starting the web application
+	 * context and starting OpenMRS, after which it closes the context again. No automatic install
+	 * starts after that until OpenMRS restarts: in Docker, the health check would start one every few
+	 * seconds, each starting the web application context again, which keeps some memory every time. An
+	 * install from the wizard pages is not refused, since a person starts it, and can change what
+	 * failed.
+	 */
+	volatile boolean automaticSetupFailed;
+
+	/**
 	 * Variable set to true as soon as the installation begins and set to false when the process ends
 	 */
 	private static volatile boolean isInstallationStarted = false;
@@ -1332,7 +1342,7 @@ public class InitializationFilter extends StartupFilter {
 			    DATABASE_NAME_MAX_LENGTH);
 			return false;
 		}
-		if (isRootWebApplicationContextSet()) {
+		if (isRootWebApplicationContextSet() || automaticSetupFailed) {
 			wizardModel.errors.put(ErrorMessageConstants.ERROR_RESTART_REQUIRED, null);
 			// once, because every request for an automatic install is refused until the restart, and in Docker the
 			// health check sends one every few seconds, which would bury the error the failed install logged
@@ -2272,9 +2282,10 @@ public class InitializationFilter extends StartupFilter {
 						setMessage("Starting OpenMRS");
 
 						// start spring
-						// if setting up fails after this point, the web application context is closed again; if starting
-						// it or OpenMRS fails, it or its failure stays on the servlet context, and a later install is
-						// refused until a restart
+						// if setting up fails after this point, the web application context is closed again, and once an
+						// automatic install fails so, no automatic install starts until a restart; if starting it or
+						// OpenMRS fails, it or its failure stays on the servlet context, and a later install is refused
+						// until a restart
 						// logic copied from org.springframework.web.context.ContextLoaderListener
 						log.debug("Initializing WAC");
 						ContextLoader contextLoader = new ContextLoader();
@@ -2378,12 +2389,31 @@ public class InitializationFilter extends StartupFilter {
 		 * the caller opened, unless an earlier step of the install has reported an error. The runtime
 		 * properties file, which marks OpenMRS as installed, is written last, so a step that fails before
 		 * it, or writing it, leaves the file as it was, and the file that marks the install incomplete, if
-		 * the install wrote one, is deleted only once the runtime properties file is written.
+		 * the install wrote one, is deleted only once the runtime properties file is written. When a step
+		 * fails, the caller closes the web application context again, so an automatic install that fails
+		 * here refuses the automatic installs after it until OpenMRS restarts, see
+		 * {@link InitializationFilter#automaticSetupFailed}.
 		 *
 		 * @param runtimeProperties the runtime properties of the install, holding its database connection
 		 * @return true if every step succeeded, false once a step has reported an error
 		 */
 		boolean completeSetup(Properties runtimeProperties) {
+			if (runSetupSteps(runtimeProperties)) {
+				return true;
+			}
+			if (automatic) {
+				automaticSetupFailed = true;
+			}
+			return false;
+		}
+
+		/**
+		 * The steps of {@link #completeSetup(Properties)}
+		 *
+		 * @param runtimeProperties the runtime properties of the install, holding its database connection
+		 * @return true if every step succeeded, false once a step has reported an error
+		 */
+		private boolean runSetupSteps(Properties runtimeProperties) {
 			if (hasErrors() || !replaceSeededAdminPassword() || !setImplementationId()) {
 				return false;
 			}

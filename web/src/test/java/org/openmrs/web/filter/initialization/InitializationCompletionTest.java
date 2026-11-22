@@ -437,6 +437,51 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 	}
 
 	@Test
+	void completeSetup_shouldRefuseTheAutomaticInstallsAfterAnAutomaticInstallItFailsUntilARestart() throws Exception {
+		// stricter than the default the configured password was checked against, as a database's own policy can be
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "50");
+		// an automatic install into an existing database, whose admin user still has the seeded password
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, false, true);
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+
+		assertTrue(filter.automaticSetupFailed);
+	}
+
+	@Test
+	void completeSetup_shouldRefuseTheAutomaticInstallsAfterAnAutomaticInstallWhoseLastStepFailsUntilARestart()
+	        throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, false, true);
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(failingPartWayThroughWriting(runtimeProperties())));
+
+		assertTrue(filter.automaticSetupFailed);
+	}
+
+	@Test
+	void completeSetup_shouldNotRefuseTheAutomaticInstallsAfterAnInstallFromTheWizardPagesItFails() throws Exception {
+		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "50");
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, false);
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+
+		assertFalse(filter.automaticSetupFailed);
+	}
+
+	@Test
+	void completeSetup_shouldNotRefuseTheAutomaticInstallsAfterAnAutomaticInstallItCompletes() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, false, true);
+		useAnonymousUserContext();
+
+		assertTrue(job.completeSetup(runtimeProperties()));
+
+		assertFalse(filter.automaticSetupFailed);
+	}
+
+	@Test
 	void writeRuntimeProperties_shouldWriteTheFileALinkToTheRuntimePropertiesFileLeadsTo() throws Exception {
 		Path linkedFile = Files.createDirectory(applicationDataDirectory.resolve("elsewhere")).resolve("runtime.properties");
 		Files.write(linkedFile, "existing=yes\n".getBytes(StandardCharsets.UTF_8));
@@ -676,12 +721,17 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 	}
 
 	private InitializationFilter.InitializationCompletion job(String adminUserPassword, boolean createTables) {
+		return job(adminUserPassword, createTables, false);
+	}
+
+	private InitializationFilter.InitializationCompletion job(String adminUserPassword, boolean createTables,
+	        boolean automatic) {
 		InitializationWizardModel model = new InitializationWizardModel();
 		model.adminUserPassword = adminUserPassword;
 		model.createTables = createTables;
 		return filter.new InitializationCompletion(
 		                                           model,
-		                                           false);
+		                                           automatic);
 	}
 
 	/**
