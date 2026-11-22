@@ -2,7 +2,7 @@
 
 ## Resources for Getting Started
 
-Before you get started contributing to OpenMRS, we encourage you to read our [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/x/nr_EAQ) wiki page.
+Your contributions are what make OpenMRS an awesome Health IT system in developing countries. We want to make it as easy and fun as possible for you to contribute to the project and interact with the community. Before you get started contributing to OpenMRS, we encourage you to read our [Getting Started as a Developer](https://openmrs.atlassian.net/wiki/x/nr_EAQ) wiki page.
 
 ## Reporting Bugs
 
