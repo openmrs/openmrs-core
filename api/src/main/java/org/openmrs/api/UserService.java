@@ -677,7 +677,6 @@ public interface UserService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
-	//TODO: DAO auth filter
 	List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
 
@@ -694,7 +693,6 @@ public interface UserService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_USERS + "')")
-	//TODO: DAO auth filter
 	Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 
 	/**

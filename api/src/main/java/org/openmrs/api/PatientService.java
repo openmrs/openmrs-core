@@ -548,7 +548,6 @@ public interface PatientService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
-	//TODO: DAO auth filter
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
 
 	/**
@@ -563,7 +562,6 @@ public interface PatientService extends OpenmrsService {
 	 * @since 1.11
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
-	//TODO: DAO auth filter
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
 
 	/**
@@ -1043,7 +1041,6 @@ public interface PatientService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
-	//TODO: DAO auth filter
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
 
