@@ -216,7 +216,10 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 
 	/**
 	 * This is an equivalent to a copy constructor. Creates a new copy of the given
-	 * <code>obsToCopy</code> with a null obs id
+	 * <code>obsToCopy</code> with a null obs id. Its saved group members are copied too, and the copy
+	 * of a live member has that member as its previous version.
+	 * <p>
+	 * <strong>Should</strong> copy a voided group member without a previous version
 	 *
 	 * @param obsToCopy The Obs that is going to be copied
 	 * @return a new Obs object with all the same attributes as the given obs
@@ -271,7 +274,10 @@ public class Obs extends BaseFormRecordableOpenmrsData {
 					newObs.addGroupMember(member);
 				} else {
 					Obs newMember = Obs.newInstance(member);
-					newMember.setPreviousVersion(member);
+					// the copy of a voided member replaces nothing, and the member may already have a successor
+					if (!member.getVoided()) {
+						newMember.setPreviousVersion(member);
+					}
 					newObs.addGroupMember(newMember);
 				}
 			}

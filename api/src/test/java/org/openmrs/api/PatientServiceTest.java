@@ -2637,6 +2637,41 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	public void mergePatients_shouldMoveAGroupWithAnEditedMember() throws Exception {
+		ObsService obsService = Context.getObsService();
+		Encounter encounter = Context.getEncounterService().getEncounter(3);
+		Obs group = new Obs(encounter.getPatient(), Context.getConceptService().getConcept(23),
+		        encounter.getEncounterDatetime(), encounter.getLocation());
+		group.setEncounter(encounter);
+		Obs member = new Obs(encounter.getPatient(), Context.getConceptService().getConcept(5089),
+		        encounter.getEncounterDatetime(), encounter.getLocation());
+		member.setEncounter(encounter);
+		member.setValueNumeric(70.0);
+		group.addGroupMember(member);
+		obsService.saveObs(group, null);
+		Context.flushSession();
+		Context.clearSession();
+		// the edit voids the member and leaves it in its group beside its new version
+		Obs edited = obsService.getObs(member.getObsId());
+		edited.setValueNumeric(75.0);
+		Obs newVersion = obsService.saveObs(edited, "edited");
+		Context.flushSession();
+		Context.clearSession();
+
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		// the merge saves a new version of the group, which copies the voided member too
+		patientService.mergePatients(patientService.getPatient(999), notPreferred);
+		Context.flushSession();
+		Context.clearSession();
+
+		assertEquals(newVersion.getObsId(), obsService.getRevisionObs(obsService.getObs(member.getObsId())).getObsId());
+	}
+
+	/**
 	 * A voided group moves to the preferred patient with its encounter even when one of its voided
 	 * members has no encounter of its own, since the merge moves that member too.
 	 *
