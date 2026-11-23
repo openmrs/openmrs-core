@@ -206,6 +206,15 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to change the passwords of users in OpenMRS")
 	public static final String EDIT_USER_PASSWORDS = "Edit User Passwords";
 
+	/**
+	 * Proxy privilege under which code may call the security state methods of
+	 * {@link org.openmrs.api.UserService}; not created at startup, and of no effect when held through a
+	 * role
+	 *
+	 * @since 3.0.0, 2.9.0
+	 */
+	public static final String MANAGE_USER_SECURITY_STATE = "Manage User Security State";
+
 	@AddOnStartup(description = "Able to add patient encounters")
 	public static final String ADD_ENCOUNTERS = "Add Encounters";
 

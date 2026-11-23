@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.springframework.orm.jpa.hibernate.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -40,7 +41,8 @@ public class HibernateContextDAOSessionTest {
 	@BeforeEach
 	public void setUp() {
 		sessionFactory = mock(SessionFactory.class);
-		dao = new HibernateContextDAO(sessionFactory, mock(SearchSessionFactory.class), mock(UserDAO.class));
+		dao = new HibernateContextDAO(sessionFactory, mock(SearchSessionFactory.class), mock(UserDAO.class),
+		        mock(UserSecurityStateDAO.class));
 	}
 
 	@AfterEach
