@@ -165,52 +165,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		assertThat(wasRun.get(), is(true));
 	}
 
-	@Test
-	public void runNewDaemonTask_shouldRunTheTaskAndTheTasksItStartsWithTheThreadContextOfItsCaller() throws Exception {
-		Map<String, String> seen = new ConcurrentHashMap<>();
-		ThreadContext.put("daemonTest", "caller");
-		try {
-			Daemon.runNewDaemonTask(() -> {
-				seen.put("task", String.valueOf(ThreadContext.get("daemonTest")));
-				try {
-					// as the start of OpenMRS starts modules and services
-					Daemon.runNewDaemonTask(() -> seen.put("runnable", String.valueOf(ThreadContext.get("daemonTest"))))
-					        .get();
-					seen.put("callable",
-					    String.valueOf(Daemon.runInNewDaemonThread(() -> ThreadContext.get("daemonTest")).get()));
-				} catch (InterruptedException | ExecutionException e) {
-					throw new IllegalStateException(e);
-				}
-			}, Daemon.callerKey()).get();
-		} finally {
-			ThreadContext.remove("daemonTest");
-		}
-
-		assertThat(seen.get("task"), is("caller"));
-		assertThat(seen.get("runnable"), is("caller"));
-		assertThat(seen.get("callable"), is("caller"));
-		// and leaves it behind: the pool gives the next task to the thread that last became idle
-		Daemon.runNewDaemonTask(() -> seen.put("after", String.valueOf(ThreadContext.get("daemonTest"))), Daemon.callerKey())
-		        .get();
-		assertThat(seen.get("after"), is("null"));
-	}
-
-	@Test
-	public void runNewDaemonTask_shouldRunACallableWithTheThreadContextOfItsCaller() throws Exception {
-		ThreadContext.put("daemonTest", "caller");
-		String seen;
-		try {
-			seen = Daemon.runNewDaemonTask(() -> ThreadContext.get("daemonTest"), Daemon.callerKey()).get();
-		} finally {
-			ThreadContext.remove("daemonTest");
-		}
-
-		assertThat(seen, is("caller"));
-		// and leaves it behind: the pool gives the next task to the thread that last became idle
-		assertThat(Daemon.runNewDaemonTask(() -> ThreadContext.get("daemonTest"), Daemon.callerKey()).get(),
-		    is(nullValue()));
-	}
-
 	/**
 	 * Small task that just marks itself when it gets run
 	 */
@@ -269,5 +223,51 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		User user = new User();
 		user.setUuid("any other value");
 		assertThat(Daemon.isDaemonUser(user), is(false));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunTheTaskAndTheTasksItStartsWithTheThreadContextOfItsCaller() throws Exception {
+		Map<String, String> seen = new ConcurrentHashMap<>();
+		ThreadContext.put("daemonTest", "caller");
+		try {
+			Daemon.runNewDaemonTask(() -> {
+				seen.put("task", String.valueOf(ThreadContext.get("daemonTest")));
+				try {
+					// as the start of OpenMRS starts modules and services
+					Daemon.runNewDaemonTask(() -> seen.put("runnable", String.valueOf(ThreadContext.get("daemonTest"))))
+					        .get();
+					seen.put("callable",
+					    String.valueOf(Daemon.runInNewDaemonThread(() -> ThreadContext.get("daemonTest")).get()));
+				} catch (InterruptedException | ExecutionException e) {
+					throw new IllegalStateException(e);
+				}
+			}, Daemon.callerKey()).get();
+		} finally {
+			ThreadContext.remove("daemonTest");
+		}
+
+		assertThat(seen.get("task"), is("caller"));
+		assertThat(seen.get("runnable"), is("caller"));
+		assertThat(seen.get("callable"), is("caller"));
+		// and leaves it behind: the pool gives the next task to the thread that last became idle
+		Daemon.runNewDaemonTask(() -> seen.put("after", String.valueOf(ThreadContext.get("daemonTest"))), Daemon.callerKey())
+		        .get();
+		assertThat(seen.get("after"), is("null"));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunACallableWithTheThreadContextOfItsCaller() throws Exception {
+		ThreadContext.put("daemonTest", "caller");
+		String seen;
+		try {
+			seen = Daemon.runNewDaemonTask(() -> ThreadContext.get("daemonTest"), Daemon.callerKey()).get();
+		} finally {
+			ThreadContext.remove("daemonTest");
+		}
+
+		assertThat(seen, is("caller"));
+		// and leaves it behind: the pool gives the next task to the thread that last became idle
+		assertThat(Daemon.runNewDaemonTask(() -> ThreadContext.get("daemonTest"), Daemon.callerKey()).get(),
+		    is(nullValue()));
 	}
 }
