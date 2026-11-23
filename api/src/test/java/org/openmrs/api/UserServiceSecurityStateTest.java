@@ -12,6 +12,7 @@ package org.openmrs.api;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -278,7 +279,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 
 		service.saveSecurityState(admin, PROPERTY, "other");
 
-		assertEquals(List.of(ADMIN_USER_ID, caller.getUserId()), auditOf(PROPERTY));
+		assertEquals(Arrays.asList(ADMIN_USER_ID, caller.getUserId()), auditOf(PROPERTY));
 	}
 
 	/**
@@ -306,7 +307,7 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setSecurityState_shouldStoreAValueLongerThan4000Characters() {
-		String value = "x".repeat(5000);
+		String value = StringUtils.repeat("x", 5000);
 
 		service.saveSecurityState(admin(), PROPERTY, value);
 

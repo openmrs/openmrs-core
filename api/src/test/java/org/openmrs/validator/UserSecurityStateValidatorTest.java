@@ -9,6 +9,7 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.UserSecurityState;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -62,7 +63,7 @@ public class UserSecurityStateValidatorTest extends BaseContextSensitiveTest {
 	@Test
 	public void validate_shouldFailValidationIfPropertyIsLongerThan255Characters() {
 		UserSecurityState entry = entry();
-		entry.setProperty("x".repeat(256));
+		entry.setProperty(StringUtils.repeat("x", 256));
 
 		assertTrue(validate(entry).hasFieldErrors("property"));
 	}
@@ -100,8 +101,8 @@ public class UserSecurityStateValidatorTest extends BaseContextSensitiveTest {
 	private static UserSecurityState entry() {
 		UserSecurityState entry = new UserSecurityState();
 		entry.setUserId(1);
-		entry.setProperty("x".repeat(255));
-		entry.setValue("x".repeat(5000));
+		entry.setProperty(StringUtils.repeat("x", 255));
+		entry.setValue(StringUtils.repeat("x", 5000));
 		return entry;
 	}
 

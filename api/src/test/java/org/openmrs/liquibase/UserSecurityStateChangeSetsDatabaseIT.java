@@ -15,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -54,7 +56,7 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_2_9_X);
 
-		assertEquals(List.of("user_security_state_id", "uuid", "user_id", "property", "property_value", "creator",
+		assertEquals(Arrays.asList("user_security_state_id", "uuid", "user_id", "property", "property_value", "creator",
 		    "date_created", "changed_by", "date_changed"), columnsOfUserSecurityState());
 	}
 
@@ -68,7 +70,7 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_2_9_X);
 
-		assertEquals(List.of(), userSecurityState());
+		assertEquals(Collections.emptyList(), userSecurityState());
 	}
 
 	@Test
@@ -80,7 +82,7 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_2_9_X);
 
-		assertEquals(List.of(ADMIN_USER_ID + ":core.lockoutTimestamp=1700000000000", ADMIN_USER_ID + ":core.loginAttempts=3",
+		assertEquals(Arrays.asList(ADMIN_USER_ID + ":core.lockoutTimestamp=1700000000000", ADMIN_USER_ID + ":core.loginAttempts=3",
 		    DAEMON_USER_ID + ":core.loginAttempts=2"), userSecurityState());
 	}
 
@@ -92,7 +94,7 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_2_9_X);
 
-		assertEquals(List.of(), lockoutUserProperties());
+		assertEquals(Collections.emptyList(), lockoutUserProperties());
 	}
 
 	@Test
@@ -103,7 +105,7 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_2_9_X);
 
-		assertEquals(List.of(ADMIN_USER_ID + ":core.loginAttempts=3"), userSecurityState());
+		assertEquals(Collections.singletonList(ADMIN_USER_ID + ":core.loginAttempts=3"), userSecurityState());
 	}
 
 	@Test
@@ -114,7 +116,7 @@ public class UserSecurityStateChangeSetsDatabaseIT extends DatabaseIT {
 
 		updateDatabase(UPDATE_TO_LATEST_2_9_X);
 
-		assertEquals(List.of(CREATE_TABLE_CHANGE_SET_ID + ":MARK_RAN", MIGRATE_CHANGE_SET_ID + ":MARK_RAN"),
+		assertEquals(Arrays.asList(CREATE_TABLE_CHANGE_SET_ID + ":MARK_RAN", MIGRATE_CHANGE_SET_ID + ":MARK_RAN"),
 		    executionTypesInFile(UPDATE_TO_LATEST_2_9_X));
 	}
 

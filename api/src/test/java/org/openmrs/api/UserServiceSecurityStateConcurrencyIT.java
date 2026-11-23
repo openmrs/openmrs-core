@@ -12,6 +12,7 @@ package org.openmrs.api;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -161,7 +162,7 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 			}
 		}
 
-		assertEquals(List.of("user_security_state_id", "uuid", "user_id", "property", "property_value", "creator",
+		assertEquals(Arrays.asList("user_security_state_id", "uuid", "user_id", "property", "property_value", "creator",
 		    "date_created", "changed_by", "date_changed"), columns);
 	}
 
