@@ -80,6 +80,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -1281,6 +1282,28 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#purgePrivilege(Privilege)
+	 */
+	@Test
+	public void purgePrivilege_shouldThrowErrorWhenPrivilegeMatchesCorePrivilegeCaseInsensitively() {
+		assertThrows(APIException.class,
+		    () -> userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS.toLowerCase())));
+		assertThrows(APIException.class,
+		    () -> userService.purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS.toUpperCase())));
+	}
+
+	/**
+	 * @see UserService#purgePrivilege(Privilege)
+	 */
+	@Test
+	public void purgePrivilege_shouldReturnIfPrivilegeIsNull() {
+		assertDoesNotThrow(() -> {
+			userService.purgePrivilege(null);
+			userService.purgePrivilege(new Privilege());
+		});
+	}
+
+	/**
 	 * @see UserService#purgeRole(Role)
 	 */
 	@Test
@@ -1307,6 +1330,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = new Role(RoleConstants.ANONYMOUS);
 
 		assertThrows(APIException.class, () -> userService.purgeRole(role));
+	}
+
+	/**
+	 * @see UserService#purgeRole(Role)
+	 */
+	@Test
+	public void purgeRole_shouldThrowErrorWhenRoleMatchesACoreRoleCaseInsensitively() {
+		Role roleLower = new Role(RoleConstants.ANONYMOUS.toLowerCase());
+		assertThrows(APIException.class, () -> userService.purgeRole(roleLower));
+
+		Role roleUpper = new Role(RoleConstants.ANONYMOUS.toUpperCase());
+		assertThrows(APIException.class, () -> userService.purgeRole(roleUpper));
 	}
 
 	/**
