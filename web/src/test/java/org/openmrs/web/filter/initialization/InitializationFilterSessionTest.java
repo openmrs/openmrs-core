@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -46,6 +49,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.api.context.Context;
 import org.openmrs.logging.MemoryAppender;
@@ -63,6 +67,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpServer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -139,6 +144,21 @@ class InitializationFilterSessionTest {
 		 * can
 		 */
 		Runnable beforeStart;
+
+		/**
+		 * The server log lines to report rather than the memory appender's, which the test logging
+		 * configuration does not have, or null for the appender's
+		 */
+		List<String> serverLogLines;
+
+		@Override
+		protected void addLogLinesToResponse(Map<String, Object> result) {
+			if (serverLogLines == null) {
+				super.addLogLinesToResponse(result);
+			} else {
+				result.put("logLines", serverLogLines);
+			}
+		}
 
 		@Override
 		protected void startInstallation(InitializationWizardModel model, boolean automatic) {
@@ -560,6 +580,150 @@ class InitializationFilterSessionTest {
 
 		assertThat(poll(starter), hasKey("logLines"));
 		assertThat(poll(new MockHttpSession()), not(hasKey("logLines")));
+	}
+
+	@ParameterizedTest
+	@CsvSource(delimiter = '|', value = {
+	        // a driver that names the whole URL when it cannot parse it
+	        "org.postgresql.Driver|jdbc:postgresql://localhost:5432x/openmrs?user=openmrs&password=UrlSecret1",
+	        // one that names the part after the user name when it cannot parse the port
+	        "org.mariadb.jdbc.Driver|jdbc:mariadb://openmrs:UrlSecret1@localhost:1/openmrs" })
+	void shouldShowEverySessionNoDetailOfWhyAnAutomaticInstallFailedWhoseConnectionUrlMayCarryCredentials(String driver,
+	        String connectionUrl) throws Exception {
+		filter.runInstalls = true;
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty("connection.driver_class", driver);
+		filter.installationScript.setProperty("connection.url", connectionUrl);
+		get(new MockHttpSession(), null);
+		filter.initJob.waitForCompletion();
+
+		String page = get(new MockHttpSession(), null);
+
+		assertThat(page, containsString("does not work"));
+		assertThat(page, not(containsString("UrlSecret1")));
+	}
+
+	@Test
+	void shouldNotShowTheSessionThatStartedAnInstallThePasswordItsConnectionUrlCarriesWhenTheInstallFails()
+	        throws Exception {
+		filter.runInstalls = true;
+		MockHttpSession session = startSession();
+		walkAdvancedWizardToConfirmation(session, "openmrs",
+		    "jdbc:postgresql://localhost:5432x/openmrs?password=UrlSecret1");
+		post(session, "wizardcomplete.vm");
+		filter.initJob.waitForCompletion();
+		// the progress page's poll that finds the install failed, then the page it loads
+		poll(session);
+
+		String page = get(session, null);
+
+		assertThat(page, containsString("does not work"));
+		assertThat(page, not(containsString("UrlSecret1")));
+	}
+
+	@Test
+	void shouldGiveNoSessionServerLogLinesOnceAnInstallRanWithAUrlThatMayCarryCredentials() throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		String connectionUrl = filter.installationScript.getProperty("connection.url") + ";PASSWORD=UrlSecret1";
+		filter.installationScript.setProperty("connection.url", connectionUrl);
+		// as a driver writes a URL it cannot parse to the server log
+		filter.serverLogLines = List.of("Unable to parse URL " + connectionUrl);
+		MockHttpSession starter = new MockHttpSession();
+		get(starter, null);
+		Map<String, Object> starterProgress = poll(starter);
+		// then the configuration no longer has the password, while the server log still holds what the first install
+		// wrote
+		configureAutomaticInstallThatCannotConnect();
+		InitializationFilter.setInstallationStarted(false);
+		MockHttpSession nextStarter = new MockHttpSession();
+		get(nextStarter, null);
+
+		assertEquals(2, filter.installsStarted.size());
+		assertThat((List<?>) starterProgress.get("logLines"), empty());
+		assertThat((List<?>) poll(nextStarter).get("logLines"), empty());
+	}
+
+	@Test
+	void shouldGiveTheSessionThatStartedAnInstallServerLogLinesWhileNoUrlAnInstallRanWithMayCarryCredentials()
+	        throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		filter.serverLogLines = List.of("a server log line");
+		MockHttpSession starter = new MockHttpSession();
+		get(starter, null);
+
+		assertEquals(List.of("a server log line"), poll(starter).get("logLines"));
+	}
+
+	@Test
+	void shouldGiveAnInstallErrorsWithoutTheirDetailsWhenItsRemoteSystemUrlMayCarryCredentials() {
+		InitializationWizardModel model = new InitializationWizardModel();
+		model.remoteUrl = "https://admin:RemoteSecret1@remote.example/openmrs";
+		InitializationFilter.InitializationCompletion install = filter.new InitializationCompletion(
+		                                                                                            model,
+		                                                                                            false);
+
+		// as an error fetching the test data names the URL it fetched
+		install.reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, "chooselang.vm",
+		    "Server returned HTTP response code: 401 for URL: " + model.remoteUrl);
+
+		assertThat(String.valueOf(install.getErrors().get(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA)[0]),
+		    not(containsString("RemoteSecret1")));
+		assertTrue(filter.installedWithUrlThatMayCarryCredentials);
+	}
+
+	@Test
+	void shouldGiveAnInstallErrorsWithTheirDetailsWhileNoUrlItUsesMayCarryCredentials() {
+		InitializationFilter.InitializationCompletion install = filter.new InitializationCompletion(
+		                                                                                            new InitializationWizardModel(),
+		                                                                                            false);
+
+		install.reportError(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA, "chooselang.vm", "Connection refused");
+
+		assertArrayEquals(new Object[] { "Connection refused" },
+		    install.getErrors().get(ErrorMessageConstants.ERROR_DB_IMPORT_TEST_DATA));
+		assertFalse(filter.installedWithUrlThatMayCarryCredentials);
+	}
+
+	@ParameterizedTest
+	@CsvSource({
+	        // a runtime property the installation script adds, which takes the place of the URL the install checked
+	        "true, connection.url",
+	        // one OpenMRS already has, which the database updater connects with
+	        "false, hibernate.connection.url" })
+	void shouldHideWhatAnInstallReportsWhenARuntimePropertyUrlItUsesMayCarryCredentials(boolean fromInstallationScript,
+	        String property) throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		String url = "jdbc:postgresql://localhost:5432x/openmrs?user=openmrs&password=UrlSecret1";
+		if (fromInstallationScript) {
+			filter.installationScript.setProperty("property." + property, url);
+		} else {
+			Properties runtimeProperties = new Properties();
+			runtimeProperties.setProperty(property, url);
+			Context.setRuntimeProperties(runtimeProperties);
+		}
+		// as a driver writes a URL it cannot parse to the server log, and into an error
+		filter.serverLogLines = List.of("Unable to parse URL " + url);
+		MockHttpSession starter = new MockHttpSession();
+		get(starter, null);
+		filter.initJob.reportError(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA, "chooselang.vm",
+		    "Unable to parse URL " + url);
+
+		assertThat((List<?>) poll(starter).get("logLines"), empty());
+		assertThat(
+		    String.valueOf(filter.initJob.getErrors().get(ErrorMessageConstants.ERROR_DB_CREATE_TABLES_OR_ADD_DEMO_DATA)[0]),
+		    not(containsString("UrlSecret1")));
+	}
+
+	@Test
+	void shouldGiveTheSessionThatStartedAnInstallServerLogLinesThoughARuntimePropertyThatIsNoUrlHoldsAnAt()
+	        throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty("property.mail.from", "openmrs@clinic.example");
+		filter.serverLogLines = List.of("a server log line");
+		MockHttpSession starter = new MockHttpSession();
+		get(starter, null);
+
+		assertEquals(List.of("a server log line"), poll(starter).get("logLines"));
 	}
 
 	@Test
@@ -1325,16 +1489,81 @@ class InitializationFilterSessionTest {
 	        "jdbc:h2:mem:openmrs;USER=openmrs;PASSWORD=Secret1",
 	        "jdbc:mysql://address=(host=localhost)(user=openmrs)(password=Secret1)/openmrs",
 	        "jdbc:mysql://localhost:3306/@DBNAME@?trustCertificateKeyStorePassword=Secret1",
-	        "jdbc:postgresql://localhost:5432/openmrs?sslpassword=Secret1" })
+	        "jdbc:postgresql://localhost:5432/openmrs?sslpassword=Secret1",
+	        // MySQL Connector/J decodes the names of its parameters
+	        "jdbc:mysql://localhost:3306/openmrs?user=openmrs&p%61ssword=Secret1",
+	        // and compares them ignoring case, which takes the long s for an s
+	        "jdbc:mysql://localhost:3306/openmrs?user=openmrs&pa%C5%BFsword=Secret1" })
 	void shouldNotShowAConnectionUrlThatNamesAPasswordOrHoldsUserInfo(String connectionUrl) {
 		assertTrue(InitializationFilter.mayCarryCredentials(connectionUrl));
 	}
 
+	@Test
+	void shouldNotShowAConnectionUrlWhosePercentEncodingCannotBeDecoded() {
+		assertTrue(InitializationFilter.mayCarryCredentials("jdbc:mysql://localhost:3306/openmrs?user=openmrs&%zz=Secret1"));
+	}
+
 	@ParameterizedTest
+	@NullSource
 	@ValueSource(strings = { InitializationWizardModel.DEFAULT_MYSQL_CONNECTION,
 	        InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, "jdbc:mysql://localhost:3306/openmrs?user=openmrs" })
 	void shouldShowAConnectionUrlWithoutCredentials(String connectionUrl) {
 		assertFalse(InitializationFilter.mayCarryCredentials(connectionUrl));
+	}
+
+	@Test
+	void shouldNotShowARemoteUrlThatMayCarryCredentials() throws Exception {
+		filter.installationScript.setProperty("remote_url", "https://admin:RemoteSecret1@remote.example/openmrs");
+		MockHttpSession session = startSession();
+
+		String remoteDetailsPage = post(session, "installmethod.vm", "install_method", "testing");
+		// a remote system that cannot be reached, which the error names
+		String unreachablePage = post(session, "remotedetails.vm", "remoteUrl",
+		    "https://admin:RemoteSecret1@localhost:1/openmrs");
+		// as the remote system's checks leave the session before its confirmation page
+		InitializationWizardModel model = filter.getWizardModel(session);
+		model.remoteUrl = "https://admin:RemoteSecret1@remote.example/openmrs";
+		model.hasCurrentOpenmrsDatabase = true;
+		model.pagesShown.add(TABLES_AND_USER_PAGE);
+		String confirmation = post(session, TABLES_AND_USER_PAGE, "current_database_user", "yes",
+		    "current_database_username", "openmrs", "current_database_password", "openmrs");
+
+		assertThat(remoteDetailsPage, containsString("name=\"remoteUrl\""));
+		assertThat(remoteDetailsPage, not(containsString("RemoteSecret1")));
+		assertThat(unreachablePage, containsString("Failed to establish a connection to"));
+		assertThat(unreachablePage, not(containsString("RemoteSecret1")));
+		assertThat(confirmation, containsString("value=\"wizardcomplete.vm\""));
+		// the summary of a testing install's settings, which names the remote system's URL
+		assertThat(confirmation, containsString("URL to remote system"));
+		assertThat(confirmation, not(containsString("RemoteSecret1")));
+	}
+
+	@Test
+	void shouldNotShowARemoteUrlThatMayCarryCredentialsWhenTheRemoteSystemRefusesTheCredentialsCheck() throws Exception {
+		// a remote system that serves its pages and refuses the post that checks the credentials, which the client
+		// reports with an exception that names the URL
+		HttpServer remote = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+		remote.createContext("/", exchange -> {
+			byte[] body = "ok".getBytes(StandardCharsets.UTF_8);
+			exchange.getResponseHeaders().add("Content-Type", "text/plain");
+			exchange.sendResponseHeaders("POST".equals(exchange.getRequestMethod()) ? 403 : 200, body.length);
+			exchange.getResponseBody().write(body);
+			exchange.close();
+		});
+		remote.start();
+		try {
+			MockHttpSession session = startSession();
+			post(session, "installmethod.vm", "install_method", "testing");
+
+			String page = post(session, "remotedetails.vm", "remoteUrl",
+			    "http://admin:RemoteSecret1@127.0.0.1:" + remote.getAddress().getPort() + "/openmrs", "username", "admin",
+			    "password", "RemoteUserSecret1");
+
+			assertThat(page, containsString("Failed to establish a connection to"));
+			assertThat(page, not(containsString("RemoteSecret1")));
+		} finally {
+			remote.stop(0);
+		}
 	}
 
 	/**

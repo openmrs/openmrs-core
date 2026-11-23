@@ -14,7 +14,7 @@
                         <input type="text" 
                                name="remoteUrl" 
                                class="form-input" 
-                               value="${remoteUrl}" 
+                               value="${displayedRemoteUrl}" 
                                onKeyPress="return submitenter(this,event);" />
                         <span class="input-hint">$l10n.get("install.testing.remoteUrl.example")</span>
                     </div>

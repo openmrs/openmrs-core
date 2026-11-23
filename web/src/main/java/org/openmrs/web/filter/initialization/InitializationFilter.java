@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -255,6 +257,18 @@ public class InitializationFilter extends StartupFilter {
 	volatile boolean automaticSetupFailed;
 
 	/**
+	 * Set once an install has run with a connection URL or remote system URL that may carry
+	 * credentials. A driver can name such a URL, or a part of it, in an exception, which the server log
+	 * records, so no session gets server log lines from then on until OpenMRS restarts.
+	 */
+	volatile boolean installedWithUrlThatMayCarryCredentials;
+
+	/**
+	 * What a page shows in place of a URL that may carry credentials, or of an error's details
+	 */
+	private static final String HIDDEN = "********";
+
+	/**
 	 * Variable set to true as soon as the installation begins and set to false when the process ends
 	 */
 	private static volatile boolean isInstallationStarted = false;
@@ -459,7 +473,11 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		if (startedBySession) {
-			addLogLinesToResponse(result);
+			if (installedWithUrlThatMayCarryCredentials) {
+				result.put("logLines", Collections.emptyList());
+			} else {
+				addLogLinesToResponse(result);
+			}
 		}
 		return result;
 	}
@@ -586,7 +604,8 @@ public class InitializationFilter extends StartupFilter {
 	 * Renders the template with the given session model and its errors and messages. Rendering the page
 	 * that asks to confirm the install records that on the model, which an install from the wizard
 	 * requires, and every page rendered is recorded as one the session may post. Pages show the
-	 * connection URL as displayedDatabaseConnection, which is empty when the URL may carry credentials.
+	 * connection URL as displayedDatabaseConnection and the remote system's URL as displayedRemoteUrl,
+	 * each empty when the URL may carry credentials.
 	 */
 	private void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
 	        InitializationWizardModel wizardModel) throws IOException {
@@ -597,6 +616,8 @@ public class InitializationFilter extends StartupFilter {
 		String databaseConnection = wizardModel.databaseConnection;
 		referenceMap.put("displayedDatabaseConnection",
 		    databaseConnection == null || mayCarryCredentials(databaseConnection) ? "" : databaseConnection);
+		String remoteUrl = wizardModel.remoteUrl;
+		referenceMap.put("displayedRemoteUrl", remoteUrl == null || mayCarryCredentials(remoteUrl) ? "" : remoteUrl);
 		renderTemplate(templateName, referenceMap, httpResponse, wizardModel, wizardModel.errors, wizardModel.msgs);
 	}
 
@@ -1209,6 +1230,14 @@ public class InitializationFilter extends StartupFilter {
 								wizardModel.errors.put(ErrorMessageConstants.UPDATE_ERROR_UNABLE_AUTHENTICATE, null);
 								renderTemplate(page, referenceMap, httpResponse, wizardModel);
 								return;
+							} catch (IOException e) {
+								// its message names the URL, which may carry credentials
+								log.debug("Error generated: ", e);
+								page = TESTING_REMOTE_DETAILS_SETUP;
+								wizardModel.errors.put("install.testing.invalidProductionUrl",
+								    new Object[] { shownUrl(wizardModel.remoteUrl) });
+								renderTemplate(page, referenceMap, httpResponse, wizardModel);
+								return;
 							}
 
 							//If we have a runtime properties file, get the database setup details from it
@@ -1239,7 +1268,8 @@ public class InitializationFilter extends StartupFilter {
 						wizardModel.errors.put("install.testing.noTestingModule", null);
 					}
 				} else {
-					wizardModel.errors.put("install.testing.invalidProductionUrl", new Object[] { wizardModel.remoteUrl });
+					wizardModel.errors.put("install.testing.invalidProductionUrl",
+					    new Object[] { shownUrl(wizardModel.remoteUrl) });
 				}
 			}
 
@@ -1770,12 +1800,50 @@ public class InitializationFilter extends StartupFilter {
 	 * user info before an @, so rather than parse them out, the wizard shows no URL that names a
 	 * password or holds an @ other than the one in its @DBNAME@ placeholder.
 	 *
-	 * @param connectionUrl a connection URL
-	 * @return true if the URL contains "pass", ignoring case, or an @ outside @DBNAME@
+	 * @param connectionUrl a connection URL or the remote system's URL, or null
+	 * @return true if the URL contains "pass", ignoring case, or an @ outside @DBNAME@, once its
+	 *         percent encoding is decoded, or if it cannot be decoded. MySQL Connector/J decodes the
+	 *         names of its parameters and compares them ignoring case, which takes the long s for an s,
+	 *         so the URL is compared in upper case.
 	 */
 	static boolean mayCarryCredentials(String connectionUrl) {
-		String url = connectionUrl.replace("@DBNAME@", "");
-		return url.toLowerCase(Locale.ROOT).contains("pass") || url.contains("@");
+		if (connectionUrl == null) {
+			return false;
+		}
+		String url;
+		try {
+			url = URLDecoder.decode(connectionUrl.replace("@DBNAME@", ""), StandardCharsets.UTF_8);
+		} catch (IllegalArgumentException e) {
+			return true;
+		}
+		return url.toUpperCase(Locale.ROOT).contains("PASS") || url.contains("@");
+	}
+
+	/**
+	 * @param url a connection URL or the remote system's URL
+	 * @return the URL, or what a page shows in its place when it may carry credentials
+	 */
+	private static String shownUrl(String url) {
+		return mayCarryCredentials(url) ? HIDDEN : url;
+	}
+
+	/**
+	 * Whether an install with this model uses a URL that may carry credentials: its connection URL, the
+	 * remote system's URL, or a runtime property named like a URL that it adds to the ones OpenMRS has,
+	 * such as property.connection.url in an installation script, or keeps from them. A driver parses
+	 * such a property when the install connects with it.
+	 *
+	 * @param wizardModel the wizard model of the install
+	 * @return true if one of those URLs may carry credentials
+	 */
+	private static boolean usesUrlThatMayCarryCredentials(InitializationWizardModel wizardModel) {
+		Properties runtimeProperties = new Properties();
+		runtimeProperties.putAll(Context.getRuntimeProperties());
+		runtimeProperties.putAll(wizardModel.additionalPropertiesFromInstallationScript);
+		return mayCarryCredentials(wizardModel.databaseConnection) || mayCarryCredentials(wizardModel.remoteUrl)
+		        || runtimeProperties.stringPropertyNames().stream()
+		                .anyMatch(name -> name.toLowerCase(Locale.ROOT).endsWith("url")
+		                        && mayCarryCredentials(runtimeProperties.getProperty(name)));
 	}
 
 	/**
@@ -1828,7 +1896,19 @@ public class InitializationFilter extends StartupFilter {
 		 */
 		private final File installIncompleteFile;
 
+		/**
+		 * Whether a URL this install uses may carry credentials. A driver can name such a URL, or a part of
+		 * it, in the message of an exception an error is filled in with, so the install's errors are shown
+		 * without their details.
+		 */
+		private final boolean urlMayCarryCredentials;
+
 		public synchronized void reportError(String error, String errorPage, Object... params) {
+			if (urlMayCarryCredentials && params != null) {
+				Object[] hidden = new Object[params.length];
+				Arrays.fill(hidden, HIDDEN);
+				params = hidden;
+			}
 			errors.put(error, params);
 			this.errorPage = errorPage;
 			erroneous = true;
@@ -1938,6 +2018,10 @@ public class InitializationFilter extends StartupFilter {
 		InitializationCompletion(InitializationWizardModel wizardModel, boolean automatic) {
 			this.wizardModel = wizardModel;
 			this.automatic = automatic;
+			urlMayCarryCredentials = usesUrlThatMayCarryCredentials(wizardModel);
+			if (urlMayCarryCredentials) {
+				installedWithUrlThatMayCarryCredentials = true;
+			}
 			installIncompleteFile = getInstallIncompleteFile();
 			installation = new Runnable() {
 
