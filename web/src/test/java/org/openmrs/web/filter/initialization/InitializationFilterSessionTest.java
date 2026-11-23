@@ -1691,14 +1691,15 @@ class InitializationFilterSessionTest {
 	}
 
 	@Test
-	void shouldStartAnAutomaticInstallWhoseDatabaseNameItPutsIntoNoSqlWhateverThatNameIs() throws Exception {
-		// the name is not one the rule accepts, but this install reuses an existing database and user and its
-		// url already names that database, so the name is never put into the sql the wizard runs
+	void shouldStartAnAutomaticInstallWhoseDatabaseNameItPutsIntoNoSqlThoughTheNameRuleRefusesIt() throws Exception {
+		// the rule refuses a name that ends in a hyphen, as an OpenMRS SDK server id can, but this install reuses an
+		// existing database and user and its url already names that database, so the name is never put into the sql
+		// the wizard runs
 		filter.installationScript.setProperty("install_method", "auto");
 		filter.installationScript.setProperty("connection.url",
 		    "jdbc:h2:mem:reuse_" + UUID.randomUUID().toString().replace("-", "") + ";DB_CLOSE_DELAY=-1");
 		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
-		filter.installationScript.setProperty("database_name", "my--clinic");
+		filter.installationScript.setProperty("database_name", "clinic-");
 		filter.installationScript.setProperty("has_current_openmrs_database", "true");
 		filter.installationScript.setProperty("create_database_user", "false");
 		filter.installationScript.setProperty("admin_user_password", "Admin123");
@@ -1707,7 +1708,7 @@ class InitializationFilterSessionTest {
 		get(session, null);
 
 		assertEquals(1, filter.installsStarted.size());
-		assertEquals("my--clinic", filter.installsStarted.get(0).databaseName);
+		assertEquals("clinic-", filter.installsStarted.get(0).databaseName);
 		assertThat(filter.getWizardModel(session).errors, not(hasKey(ErrorMessageConstants.ERROR_DB_NAME_INVALID)));
 	}
 
@@ -1717,7 +1718,7 @@ class InitializationFilterSessionTest {
 		filter.installationScript.setProperty("install_method", "auto");
 		filter.installationScript.setProperty("connection.url", "jdbc:h2:mem:@DBNAME@;DB_CLOSE_DELAY=-1");
 		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
-		filter.installationScript.setProperty("database_name", "my--clinic");
+		filter.installationScript.setProperty("database_name", "clinic-");
 		filter.installationScript.setProperty("has_current_openmrs_database", "true");
 		filter.installationScript.setProperty("create_database_user", "false");
 		filter.installationScript.setProperty("admin_user_password", "Admin123");
@@ -1739,11 +1740,27 @@ class InitializationFilterSessionTest {
 		filter.installationScript.setProperty("connection.url",
 		    "jdbc:h2:mem:reuse_" + UUID.randomUUID().toString().replace("-", "") + ";DB_CLOSE_DELAY=-1");
 		filter.installationScript.setProperty("connection.driver_class", "org.h2.Driver");
-		filter.installationScript.setProperty("database_name", "my--clinic");
+		filter.installationScript.setProperty("database_name", "clinic-");
 		filter.installationScript.setProperty("has_current_openmrs_database", String.valueOf(hasCurrentOpenmrsDatabase));
 		filter.installationScript.setProperty("create_database_user", String.valueOf(createDatabaseUser));
 		filter.installationScript.setProperty("import_test_data", String.valueOf(importTestData));
 		filter.installationScript.setProperty("admin_user_password", "Admin123");
+
+		MockHttpSession session = new MockHttpSession();
+		get(session, null);
+
+		assertThat(filter.installsStarted, empty());
+		assertThat(filter.getWizardModel(session).errors, hasKey(ErrorMessageConstants.ERROR_DB_NAME_INVALID));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "open`mrs", "open'mrs", "open\"mrs", "openmrs--x", "openmrs#x", "openmrs//x", "openmrs/*x",
+	        "openmrs*/x", "open$mrs", "open\\mrs" })
+	void shouldNotStartAnAutomaticInstallWhoseDatabaseNameHoldsSqlSyntaxThoughItPutsTheNameIntoNoSql(String databaseName)
+	        throws Exception {
+		// this install reuses an existing database and user, and its url already names that database
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty("database_name", databaseName);
 
 		MockHttpSession session = new MockHttpSession();
 		get(session, null);
