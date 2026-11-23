@@ -557,8 +557,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @param user user that has privileges
 	 */
 	private void checkPrivileges(User user) {
-		List<String> requiredPrivs = new ArrayList<>(
-		        RoleAssignments.missingPrivileges(roleNames(user.getRoles()), dao::getStoredRole));
+		checkPrivileges(roleNames(user.getRoles()));
+	}
+
+	/**
+	 * Checks that the authenticated user may hand out the named roles (see {@link RoleAssignments}).
+	 *
+	 * @param roleNames names of roles
+	 */
+	private void checkPrivileges(Collection<String> roleNames) {
+		List<String> requiredPrivs = new ArrayList<>(RoleAssignments.missingPrivileges(roleNames, dao::getStoredRole));
 		if (requiredPrivs.size() == 1) {
 			throw new APIException("User.you.must.have.privilege", new Object[] { requiredPrivs.get(0) });
 		} else if (requiredPrivs.size() > 1) {
@@ -977,7 +985,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public void unlockUser(User user) {
 		User account = user.getUserId() == null ? null : dao.getUser(user.getUserId());
 		if (account != null) {
-			checkPrivileges(account);
+			checkPrivileges(dao.getStoredRoleNames(account.getUserId()));
 			dao.unlockUser(account);
 		}
 	}
