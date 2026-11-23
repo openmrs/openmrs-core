@@ -221,6 +221,11 @@ public class InitializationFilter extends StartupFilter {
 	private static final int DATABASE_NAME_MAX_LENGTH = 64;
 
 	/**
+	 * The longest name MySQL takes for a user; MariaDB and PostgreSQL take longer ones
+	 */
+	private static final int DATABASE_USER_NAME_MAX_LENGTH = 32;
+
+	/**
 	 * The key of the value in an install's thread context that tags the server log lines it logs
 	 */
 	static final String INSTALL_THREAD_CONTEXT_KEY = "openmrsInstall";
@@ -1848,6 +1853,26 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	/**
+	 * Returns the name of the user an install creates for a database: the database name followed by
+	 * _user, or for a database name too long for that, its start, _user and part of a hash of the whole
+	 * name. The install first drops any user of that name, so two databases must not get the same one:
+	 * the hash keeps two long names apart, and since it ends the user name, a long name never gets the
+	 * user of a shorter one, which ends with _user.
+	 *
+	 * @param databaseName the name of the database
+	 * @return a user name no longer than MySQL takes
+	 */
+	static String databaseUserName(String databaseName) {
+		String userName = databaseName + "_user";
+		if (userName.length() <= DATABASE_USER_NAME_MAX_LENGTH) {
+			return userName;
+		}
+		String hash = UUID.nameUUIDFromBytes(databaseName.getBytes(StandardCharsets.UTF_8)).toString().replace("-", "")
+		        .substring(0, 12);
+		return databaseName.substring(0, DATABASE_USER_NAME_MAX_LENGTH - 18) + "_user_" + hash;
+	}
+
+	/**
 	 * Whether an install with this model puts the database name into the SQL it builds (creating the
 	 * database or its user), into the connection URL in place of &#64;DBNAME&#64;, or hands it to the
 	 * test data import. When none of these hold, the name only selects an existing database through a
@@ -2171,10 +2196,7 @@ public class InitializationFilter extends StartupFilter {
 							setExecutingTask(WizardTask.CREATE_DB_USER);
 							// the database name was checked before the install started, and the user name built from it
 							// passes the same check
-							connectionUsername = wizardModel.databaseName + "_user";
-							if (connectionUsername.length() > 16) {
-								connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
-							}
+							connectionUsername = databaseUserName(wizardModel.databaseName);
 
 							connectionPassword.append("");
 							// generate random password from this subset of alphabet

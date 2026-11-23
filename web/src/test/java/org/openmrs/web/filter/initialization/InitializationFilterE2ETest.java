@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +45,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -1243,6 +1246,54 @@ class InitializationFilterE2ETest {
 
 		assertTrue(getErrors().isEmpty());
 		assertEquals("databasetablesanduser.vm", filter.lastRenderedTemplate);
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "openmrs, openmrs_user", "openmrs-server, openmrs-server_user",
+	        "openmrs-refapp-2.13, openmrs-refapp-2.13_user",
+	        "openmrs_clinic_east_regions, openmrs_clinic_east_regions_user" })
+	void databaseUserName_shouldBeTheDatabaseNameFollowedByUser(String databaseName, String userName) {
+		assertEquals(userName, InitializationFilter.databaseUserName(databaseName));
+	}
+
+	@Test
+	void databaseUserName_shouldGiveDatabasesWhoseNamesStartTheSameDifferentUsers() {
+		assertNotEquals(InitializationFilter.databaseUserName("openmrs_clinicA"),
+		    InitializationFilter.databaseUserName("openmrs_clinicB"));
+		assertNotEquals(InitializationFilter.databaseUserName("openmrs_clinic_north_region_1"),
+		    InitializationFilter.databaseUserName("openmrs_clinic_north_region_2"));
+	}
+
+	@Test
+	void databaseUserName_shouldBeNoLongerThanMysqlTakes() {
+		// MySQL takes user names of up to 32 characters, MariaDB and PostgreSQL longer ones
+		assertEquals(32, InitializationFilter.databaseUserName("openmrs_clinic_north_region_1").length());
+		assertTrue(InitializationFilter.databaseUserName("a".repeat(64)).length() <= 32);
+	}
+
+	@Test
+	void databaseUserName_shouldGiveManyDatabasesWhoseNamesDifferOnlyAtTheEndDifferentUsers() {
+		Set<String> userNames = new HashSet<>();
+		for (int i = 0; i < 100000; i++) {
+			userNames.add(InitializationFilter.databaseUserName("openmrs_clinic_north_site_" + i));
+		}
+
+		assertEquals(100000, userNames.size());
+	}
+
+	@Test
+	void databaseUserName_shouldNeverGiveALongDatabaseNameTheUserOfAShorterOne() {
+		String userName = InitializationFilter.databaseUserName("openmrs_clinic_north_region_1");
+		// the one shorter name whose user, the name followed by _user, could be that user name
+		String shorterName = userName.substring(0, userName.length() - "_user".length());
+
+		assertNotEquals(userName, InitializationFilter.databaseUserName(shorterName));
+	}
+
+	@Test
+	void databaseUserName_shouldGiveADatabaseTheSameUserEachTime() {
+		assertEquals(InitializationFilter.databaseUserName("openmrs_clinic_north_region_1"),
+		    InitializationFilter.databaseUserName("openmrs_clinic_north_region_1"));
 	}
 
 	static Stream<String> validDatabaseNames() {
