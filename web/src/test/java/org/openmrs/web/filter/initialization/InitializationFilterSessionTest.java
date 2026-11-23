@@ -40,7 +40,9 @@ import jakarta.servlet.ServletException;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.config.AbstractConfiguration;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
@@ -54,6 +56,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.openmrs.api.context.Context;
 import org.openmrs.logging.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsThreadPoolHolder;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.openmrs.web.WebConstants;
@@ -152,9 +155,9 @@ class InitializationFilterSessionTest {
 		List<String> serverLogLines;
 
 		@Override
-		protected void addLogLinesToResponse(Map<String, Object> result) {
+		protected void addLogLinesToResponse(Map<String, Object> result, InitializationCompletion job) {
 			if (serverLogLines == null) {
-				super.addLogLinesToResponse(result);
+				super.addLogLinesToResponse(result, job);
 			} else {
 				result.put("logLines", serverLogLines);
 			}
@@ -552,7 +555,8 @@ class InitializationFilterSessionTest {
 		String page = post(session, "wizardcomplete.vm");
 
 		assertThat(filter.installsStarted, empty());
-		assertThat(page, containsString("value=\"wizardcomplete.vm\""));
+		// only that OpenMRS has to restart, rather than the confirmation page again
+		assertThat(page, not(containsString("value=\"wizardcomplete.vm\"")));
 		assertThat(page, containsString("Restart OpenMRS before you install again"));
 	}
 
@@ -1314,7 +1318,7 @@ class InitializationFilterSessionTest {
 	}
 
 	@Test
-	void shouldShowAnotherSessionTheTasksOfTheRunningInstall() throws Exception {
+	void shouldShowAnotherSessionNothingOfTheRunningInstallFromTheWizardPages() throws Exception {
 		MockHttpSession first = startSession();
 		walkAdvancedWizardToConfirmation(first, "first_session_db", "jdbc:mysql://localhost:3306/@DBNAME@");
 		post(first, "wizardcomplete.vm");
@@ -1324,11 +1328,19 @@ class InitializationFilterSessionTest {
 
 		MockHttpSession second = startSession();
 		String page = get(second, null);
+		Map<String, Object> progress = poll(second);
 
-		assertThat(page, containsString("UPDATE_TO_LATEST_task_loading"));
-		assertThat(page, containsString("CREATE_TABLES_task_loading"));
+		// it is told that an install runs, and waits for it, but not which steps the first session chose
+		assertThat(page, containsString("showProgress();"));
+		assertThat(page, not(containsString("CREATE_TABLES_task_loading")));
 		assertThat(page, not(containsString("first_session_db")));
-		assertThat(get(first, null), containsString("first_session_db"));
+		assertThat(progress, not(hasKey("executingTask")));
+		assertThat(progress, not(hasKey("executedTasks")));
+		assertThat(progress, not(hasKey("message")));
+		String firstPage = get(first, null);
+		assertThat(firstPage, containsString("CREATE_TABLES_task_loading"));
+		assertThat(firstPage, containsString("first_session_db"));
+		assertThat(poll(first), hasKey("executedTasks"));
 	}
 
 	@Test
@@ -1767,5 +1779,131 @@ class InitializationFilterSessionTest {
 
 		assertThat(filter.installsStarted, empty());
 		assertThat(filter.getWizardModel(session).errors, hasKey(ErrorMessageConstants.ERROR_DB_NAME_INVALID));
+	}
+
+	@Test
+	void shouldGiveTheSessionThatStartedAnInstallNoServerLogLinesOfAnEarlierInstall() throws Exception {
+		// the memory appender the wizard reads server log lines from, which the test logging configuration does not have
+		AbstractConfiguration configuration = (AbstractConfiguration) ((Logger) LogManager.getRootLogger()).getContext()
+		        .getConfiguration();
+		MemoryAppender appender = MemoryAppender.newBuilder().setName(OpenmrsConstants.MEMORY_APPENDER_NAME)
+		        .setLayout(PatternLayout.newBuilder().withPattern("%m%n").build()).build();
+		appender.start();
+		configuration.addAppender(appender);
+		Logger logger = (Logger) LogManager.getLogger(InitializationFilter.class);
+		Level level = logger.getLevel();
+		// the test logging configuration turns logging off
+		Configurator.setLevel(logger.getName(), Level.WARN);
+		logger.addAppender(appender);
+		try {
+			filter.runInstalls = true;
+			MockHttpSession first = startSession();
+			walkAdvancedWizardToConfirmation(first, "first_db", "jdbc:h2:mem:firstsessionhost;IFEXISTS=TRUE");
+			post(first, "wizardcomplete.vm");
+			filter.initJob.waitForCompletion();
+			// the first install logged why it failed, which names its database
+			assertThat(String.valueOf(poll(first).get("logLines")), containsString("firstsessionhost"));
+
+			filter.runInstalls = false;
+			MockHttpSession second = startSession();
+			walkAdvancedWizardToConfirmation(second, "second_db", "jdbc:h2:mem:secondsessionhost;IFEXISTS=TRUE");
+			post(second, "wizardcomplete.vm");
+			// as a request logs, with no install's tag
+			logger.warn("a line a request logged");
+
+			String secondLines = String.valueOf(poll(second).get("logLines"));
+			assertThat(secondLines, not(containsString("firstsessionhost")));
+			assertThat(secondLines, not(containsString("a line a request logged")));
+		} finally {
+			logger.removeAppender(appender);
+			Configurator.setLevel(logger.getName(), level);
+			configuration.removeAppender(appender.getName());
+			appender.stop();
+		}
+	}
+
+	@Test
+	void shouldLeaveTheThreadAnInstallRanOnWithoutItsTag() throws Exception {
+		filter.runInstalls = true;
+		MockHttpSession session = startSession();
+		walkAdvancedWizardToConfirmation(session, "openmrs", "jdbc:h2:mem:tagged;IFEXISTS=TRUE");
+		post(session, "wizardcomplete.vm");
+		filter.initJob.waitForCompletion();
+
+		// the pool gives a task to the thread that last became idle, the one the install ran on, which would otherwise
+		// tag the lines of that task as the install's
+		String tag = OpenmrsThreadPoolHolder.threadExecutor
+		        .submit(() -> ThreadContext.get(InitializationFilter.INSTALL_THREAD_CONTEXT_KEY)).get();
+
+		assertNull(tag);
+	}
+
+	@Test
+	void shouldShowEverySessionTheTasksOfAnAutomaticInstall() throws Exception {
+		configureAutomaticInstallThatCannotConnect();
+		filter.installationScript.setProperty("create_tables", "true");
+		get(new MockHttpSession(), null);
+
+		MockHttpSession other = new MockHttpSession();
+
+		assertEquals(1, filter.installsStarted.size());
+		assertThat(get(other, null), containsString("Create OpenMRS tables"));
+		assertThat(poll(other), hasKey("executedTasks"));
+	}
+
+	@Test
+	void shouldShowOnlyThatOpenmrsHasToRestartOnTheWizardPagesOnceAnInstallFailedWhileStartingIt() throws Exception {
+		// what an install leaves once it has written the runtime properties file and starting OpenMRS failed
+		Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+		    List.of("connection.url=jdbc:mysql://first-session-host:3306/first_session_db",
+		        "connection.username=first_session_user", "connection.password=FirstSessionPassword1"));
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+		// a remote system the testing install accepts, which then takes the database from the runtime properties
+		HttpServer remote = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+		remote.createContext("/", exchange -> {
+			byte[] body = "ok".getBytes(StandardCharsets.UTF_8);
+			exchange.getResponseHeaders().add("Content-Type", "text/plain");
+			exchange.sendResponseHeaders(200, body.length);
+			exchange.getResponseBody().write(body);
+			exchange.close();
+		});
+		remote.start();
+		try {
+			MockHttpSession session = startSession();
+			post(session, "installmethod.vm", "install_method", "testing");
+
+			String page = post(session, "remotedetails.vm", "remoteUrl",
+			    "http://127.0.0.1:" + remote.getAddress().getPort() + "/openmrs", "username", "admin", "password",
+			    "RemoteUserSecret1");
+
+			assertThat(filter.installsStarted, empty());
+			assertThat(page, containsString("Restart OpenMRS before you install again"));
+			assertThat(page, not(containsString("first-session-host")));
+		} finally {
+			remote.stop(0);
+		}
+	}
+
+	@Test
+	void shouldShowOnlyTheSessionThatStartedAnInstallWhyItFailedOnceOpenmrsHasToRestart() throws Exception {
+		filter.runInstalls = true;
+		MockHttpSession session = startSession();
+		walkAdvancedWizardToConfirmation(session, "openmrs", "jdbc:h2:mem:failedstart;IFEXISTS=TRUE");
+		post(session, "wizardcomplete.vm");
+		filter.initJob.waitForCompletion();
+		// as if the install had failed while starting OpenMRS
+		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+
+		String page = get(session, null);
+		String otherPage = get(new MockHttpSession(), null);
+
+		assertThat(page, containsString("Restart OpenMRS before you install again"));
+		// the database's own reason
+		assertThat(page, containsString("not found"));
+		assertThat(otherPage, containsString("Restart OpenMRS before you install again"));
+		assertThat(otherPage, not(containsString("failedstart")));
+		// polling would find the failed install's errors and load the page again, over and over
+		assertThat(page, not(containsString("showProgress();")));
+		assertThat(otherPage, not(containsString("showProgress();")));
 	}
 }

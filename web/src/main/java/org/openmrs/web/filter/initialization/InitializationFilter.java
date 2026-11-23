@@ -46,6 +46,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,6 +63,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.ThreadContext;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
@@ -69,6 +71,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.liquibase.ChangeLogDetective;
 import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.liquibase.ChangeSetExecutorCallback;
+import org.openmrs.logging.MemoryAppender;
+import org.openmrs.logging.OpenmrsLoggingUtil;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.DatabaseUpdateException;
@@ -217,6 +221,11 @@ public class InitializationFilter extends StartupFilter {
 	private static final int DATABASE_NAME_MAX_LENGTH = 64;
 
 	/**
+	 * The key of the value in an install's thread context that tags the server log lines it logs
+	 */
+	static final String INSTALL_THREAD_CONTEXT_KEY = "openmrsInstall";
+
+	/**
 	 * What a database name must not hold, even one the wizard puts into no SQL: backticks and quotes,
 	 * the comment sequences of MySQL, MariaDB, PostgreSQL and H2, $ and \
 	 */
@@ -351,10 +360,37 @@ public class InitializationFilter extends StartupFilter {
 			}
 			if (automatic) {
 				handleAutomaticInstall(httpRequest, httpResponse, configuredModel, referenceMap);
+			} else if (isRootWebApplicationContextSet()) {
+				renderRestartRequired(httpRequest.getSession(), referenceMap, httpResponse);
 			} else {
 				handleGet(httpRequest, httpResponse, getWizardModel(httpRequest.getSession()), referenceMap, page);
 			}
 		}
+	}
+
+	/**
+	 * Renders the page saying that OpenMRS has to restart before it installs again, for any request but
+	 * one for an automatic install once an install started OpenMRS and starting it failed. No wizard
+	 * page is shown then: the runtime properties that install wrote hold the values its session
+	 * entered, and the wizard pages would show them to any session. Only the session that started that
+	 * install is also shown why it failed.
+	 *
+	 * @param session the session of the request
+	 * @param referenceMap
+	 * @param httpResponse
+	 */
+	private void renderRestartRequired(HttpSession session, Map<String, Object> referenceMap,
+	        HttpServletResponse httpResponse) throws IOException {
+		InitializationWizardModel page = new InitializationWizardModel();
+		InitializationCompletion lastInstall = initJob;
+		if (lastInstall != null && lastInstall.wizardModel == getExistingWizardModel(session)) {
+			page.errors.putAll(lastInstall.getErrors());
+		}
+		page.errors.put(ErrorMessageConstants.ERROR_RESTART_REQUIRED, null);
+		// the page does not poll, since nothing changes until OpenMRS restarts
+		referenceMap.put("isInstallationStarted", false);
+		httpResponse.setContentType("text/html");
+		renderTemplate(PROGRESS_VM, referenceMap, httpResponse, page);
 	}
 
 	/**
@@ -460,6 +496,8 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		boolean startedBySession = job.wizardModel == getExistingWizardModel(session);
+		// the steps of an install from the wizard pages show what the session that started it chose
+		boolean showsSteps = startedBySession || job.automatic;
 		result.put("hasErrors", job.hasErrors());
 		if (job.hasErrors() && startedBySession) {
 			result.put("errorPage", job.getErrorPage());
@@ -467,12 +505,16 @@ public class InitializationFilter extends StartupFilter {
 		}
 
 		result.put("initializationComplete", isInitializationComplete());
-		result.put("message", job.getMessage());
-		result.put("actionCounter", job.getStepsComplete());
+		if (showsSteps) {
+			result.put("message", job.getMessage());
+			result.put("actionCounter", job.getStepsComplete());
+		}
 		if (!isInitializationComplete()) {
-			result.put("executingTask", job.getExecutingTask());
-			result.put("executedTasks", job.getExecutedTasks());
-			result.put("completedPercentage", job.getCompletedPercentage());
+			if (showsSteps) {
+				result.put("executingTask", job.getExecutingTask());
+				result.put("executedTasks", job.getExecutedTasks());
+				result.put("completedPercentage", job.getCompletedPercentage());
+			}
 		} else {
 			// the wizard is done, so the session no longer needs the values it entered
 			session.removeAttribute(WIZARD_MODEL_ATTRIBUTE);
@@ -482,10 +524,29 @@ public class InitializationFilter extends StartupFilter {
 			if (installedWithUrlThatMayCarryCredentials) {
 				result.put("logLines", Collections.emptyList());
 			} else {
-				addLogLinesToResponse(result);
+				addLogLinesToResponse(result, job);
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Adds the last server log lines the given install logged to a progress response, leaving out every
+	 * line an earlier install or a request logged
+	 *
+	 * @param result the progress response
+	 * @param job the install
+	 */
+	protected void addLogLinesToResponse(Map<String, Object> result, InitializationCompletion job) {
+		MemoryAppender appender = OpenmrsLoggingUtil.getMemoryAppender();
+		List<String> logLines = appender == null ? Collections.emptyList()
+		        : appender.getLogLines(
+		            event -> job.logTag.equals(event.getContextData().getValue(INSTALL_THREAD_CONTEXT_KEY)));
+		// the last five, as the other startup filters send
+		if (logLines.size() > 5) {
+			logLines = logLines.subList(logLines.size() - 5, logLines.size());
+		}
+		result.put("logLines", logLines);
 	}
 
 	/**
@@ -517,7 +578,9 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * Renders the page shown while an install runs. The session that started the install sees it with
-	 * its own model, any other session with a model holding only the install's method and tasks.
+	 * its own model. Any other session sees it with a model holding only the method and tasks of an
+	 * automatic install, which runs with the configuration alone, and nothing of an install from the
+	 * wizard pages, whose method and tasks show what the session that started it chose.
 	 *
 	 * @param session the session of the request
 	 * @param referenceMap
@@ -529,7 +592,7 @@ public class InitializationFilter extends StartupFilter {
 		InitializationWizardModel wizardModel = getExistingWizardModel(session);
 		if (job == null || job.wizardModel != wizardModel) {
 			wizardModel = new InitializationWizardModel();
-			if (job != null) {
+			if (job != null && job.automatic) {
 				wizardModel.installMethod = job.wizardModel.installMethod;
 				wizardModel.tasksToExecute = job.wizardModel.tasksToExecute;
 			}
@@ -762,6 +825,10 @@ public class InitializationFilter extends StartupFilter {
 		synchronized (getWizardLock(httpRequest.getSession())) {
 			if (isInstallationStarted()) {
 				renderInstallationInProgress(httpRequest.getSession(), referenceMap, httpResponse);
+				return;
+			}
+			if (isRootWebApplicationContextSet()) {
+				renderRestartRequired(httpRequest.getSession(), referenceMap, httpResponse);
 				return;
 			}
 			InitializationWizardModel wizardModel = getExistingWizardModel(httpRequest.getSession());
@@ -1876,6 +1943,12 @@ public class InitializationFilter extends StartupFilter {
 		final boolean automatic;
 
 		/**
+		 * The value of {@link #INSTALL_THREAD_CONTEXT_KEY} in the thread context of this install while it
+		 * runs, which the server log lines it logs carry
+		 */
+		final String logTag = UUID.randomUUID().toString();
+
+		/**
 		 * The work of the install, which {@link #start()} submits
 		 */
 		private final Runnable installation;
@@ -1946,7 +2019,13 @@ public class InitializationFilter extends StartupFilter {
 			setStepsComplete(0);
 			setInitializationComplete(false);
 			future = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> {
-				installation.run();
+				// tags the server log lines this install logs, the only ones the session that started it is sent
+				ThreadContext.put(INSTALL_THREAD_CONTEXT_KEY, logTag);
+				try {
+					installation.run();
+				} finally {
+					ThreadContext.remove(INSTALL_THREAD_CONTEXT_KEY);
+				}
 				return null;
 			});
 		}
