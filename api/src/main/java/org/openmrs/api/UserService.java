@@ -763,7 +763,7 @@ public interface UserService extends OpenmrsService {
 	 *         <strong>Should</strong> return false when the user has no such entry
 	 *         <strong>Should</strong> fail without the manage user security state proxy privilege
 	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
-	 *         user
+	 *         user <strong>Should</strong> fail for an unknown user
 	 * @throws APIException if the user is null or has no id
 	 * @since 3.0.0, 2.9.0
 	 */

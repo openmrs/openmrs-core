@@ -26,11 +26,13 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Hibernate implementation of {@link UserSecurityStateDAO}. Entries are read and written with
- * native SQL, so they never pass through the session or second-level cache. Every conditional write
- * first locks the user's row in the users table, then compares the current value in Java (so the
- * comparison is exact on every database, whatever the column's collation), which serializes the
- * writes for one user (including the login attempt counting in
- * {@link HibernateContextDAO#authenticate(String, String)}) without blocking other users.
+ * native SQL, so they never pass through the session or second-level cache. Every write, deletes
+ * included, first locks the user's row in the users table, so that a caller which goes on to write
+ * that row, like a purge or a password change, cannot deadlock with the login attempt counting in
+ * {@link HibernateContextDAO#authenticate(String, String)}, which locks the user's row first. A
+ * conditional write then compares the current value in Java (so the comparison is exact on every
+ * database, whatever the column's collation), which serializes the writes for one user without
+ * blocking other users.
  *
  * @since 3.0.0, 2.9.0
  */
@@ -96,7 +98,7 @@ public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
 		if (!expectedValue.equals(getValueForUpdate(userId, property))) {
 			return false;
 		}
-		return delete(userId, property);
+		return deleteEntry(userId, property);
 	}
 
 	/**
@@ -104,8 +106,8 @@ public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
 	 */
 	@Override
 	public boolean delete(Integer userId, String property) {
-		return mutation("delete from user_security_state where user_id = ?1 and property = ?2").setParameter(1, userId)
-		        .setParameter(2, property).executeUpdate() > 0;
+		lockUser(userId);
+		return deleteEntry(userId, property);
 	}
 
 	/**
@@ -135,6 +137,7 @@ public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
 	 */
 	@Override
 	public void deleteAll(Integer userId) {
+		lockUser(userId);
 		mutation("delete from user_security_state where user_id = ?1").setParameter(1, userId).executeUpdate();
 	}
 
@@ -168,17 +171,23 @@ public class HibernateUserSecurityStateDAO implements UserSecurityStateDAO {
 		    userId, property);
 	}
 
+	private boolean deleteEntry(Integer userId, String property) {
+		return mutation("delete from user_security_state where user_id = ?1 and property = ?2").setParameter(1, userId)
+		        .setParameter(2, property).executeUpdate() > 0;
+	}
+
 	private void insert(Integer userId, String property, String value) {
 		mutation("insert into user_security_state (uuid, user_id, property, property_value, creator, date_created) "
 		        + "values (?1, ?2, ?3, ?4, ?5, ?6)").setParameter(1, UuidUtil.newUuidString()).setParameter(2, userId)
-		        .setParameter(3, property).setParameter(4, value).setParameter(5, actorUserId()).setParameter(6, now())
-		        .executeUpdate();
+		        .setParameter(3, property).setParameter(4, value)
+		        .setParameter(5, actorUserId(), StandardBasicTypes.INTEGER).setParameter(6, now()).executeUpdate();
 	}
 
 	private void update(Integer userId, String property, String value) {
 		mutation("update user_security_state set property_value = ?1, changed_by = ?2, date_changed = ?3 "
-		        + "where user_id = ?4 and property = ?5").setParameter(1, value).setParameter(2, actorUserId())
-		        .setParameter(3, now()).setParameter(4, userId).setParameter(5, property).executeUpdate();
+		        + "where user_id = ?4 and property = ?5").setParameter(1, value)
+		        .setParameter(2, actorUserId(), StandardBasicTypes.INTEGER).setParameter(3, now()).setParameter(4, userId)
+		        .setParameter(5, property).executeUpdate();
 	}
 
 	private Integer actorUserId() {
