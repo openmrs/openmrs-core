@@ -60,4 +60,6 @@
 		  factory-method="sessionFactory"/>
 	<bean id="searchSessionFactory" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
 		  factory-method="searchSessionFactory"/>
+	<bean id="userSecurityStateDAO" class="org.openmrs.api.cache.RolePrivilegeCacheContextDAOProxyTest"
+		  factory-method="userSecurityStateDAO"/>
 </beans>
