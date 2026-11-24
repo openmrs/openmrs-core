@@ -274,7 +274,7 @@ class InitializationFilterSessionTest {
 	}
 
 	@Test
-	void shouldNotStartAnInstallForASessionThatWasNotShownTheConfirmationPage() throws Exception {
+	void shouldStartTheInstallOnlyForTheSessionThatWasShownTheConfirmationPage() throws Exception {
 		MockHttpSession first = startSession();
 		walkAdvancedWizardToConfirmation(first, "first_session_db", "jdbc:mysql://localhost:3306/@DBNAME@");
 
@@ -283,6 +283,12 @@ class InitializationFilterSessionTest {
 
 		assertThat(filter.installsStarted, empty());
 		assertFalse(InitializationFilter.isInstallationStarted());
+		// what the other session posted leaves the confirmation of the first session as it was
+		post(first, "wizardcomplete.vm");
+		assertEquals(1, filter.installsStarted.size());
+		InitializationWizardModel installed = filter.installsStarted.get(0);
+		assertSame(filter.getWizardModel(first), installed);
+		assertEquals("first_session_db", installed.databaseName);
 	}
 
 	@Test
