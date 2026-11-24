@@ -358,6 +358,9 @@ public final class Listener extends ContextLoader implements ServletContextListe
 			Listener.performWebStartOfModules(servletContext);
 
 			Context.getSchedulerService().onStartup();
+
+			// after module start, so global properties set by module activators are read
+			SessionTimeoutHttpSessionListener.loadSessionTimeout();
 		} catch (Exception t) {
 			try {
 				Context.shutdown();
