@@ -395,6 +395,23 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldMatchMajorOnlyVersionRanges() {
+		assertTrue(ModuleUtil.matchRequiredVersions("15.0", "10 - 20"));
+	}
+
+	/**
+	 * @see ModuleUtil#matchRequiredVersions(String,String)
+	 */
+	@Test
+	public void matchRequiredVersions_shouldHandleLongVersionBoundsWithoutStackOverflow() {
+		String prefix = "1" + ".1".repeat(10000);
+		assertTrue(ModuleUtil.matchRequiredVersions(prefix + ".5", prefix + ".*"));
+	}
+
+	/**
 	 * @see org.openmrs.module.ModuleUtil#getPathForResource(org.openmrs.module.Module,String)
 	 */
 	@Test
