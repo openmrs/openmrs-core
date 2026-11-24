@@ -352,8 +352,8 @@ public class ModuleUtil {
 					// only preserve part of the string that match the following format:
 					// - xx.yy.*
 					// - xx.yy.zz*
-					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+(\\.[0-9*]+)*", ""));
-					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+(\\.[0-9*]+)*", ""));
+					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+(\\.[0-9*]+)+", ""));
+					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+(\\.[0-9*]+)+", ""));
 
 					// if the lower contains "*" then change it to zero
 					if (lowerBound.indexOf("*") > 0) {
