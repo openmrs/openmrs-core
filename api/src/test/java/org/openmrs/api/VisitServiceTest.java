@@ -874,14 +874,16 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 
 		String openVisitsQuery = "SELECT visit_id FROM visit WHERE voided = false AND date_stopped IS NULL AND visit_type_id IN (SELECT visit_type_id FROM visit_type WHERE NAME IN ('"
 		        + StringUtils.join(visitTypeNames, "','") + "'))";
-		int activeVisitCount = Context.getAdministrationService().executeSQL(openVisitsQuery, true).size();
+		// the read back runs through the caller's own session, so the counts see this test's own
+		// pending stop visits; the select only console path runs in its own read-only transaction
+		int activeVisitCount = Context.getAdministrationService().executeSQL(openVisitsQuery, false).size();
 		//sanity check
 		assertTrue(activeVisitCount > 0, "There should be some active visits for this test to be valid");
 
 		//close any unvoided open visits
 		visitService.stopVisits(null);
 
-		activeVisitCount = Context.getAdministrationService().executeSQL(openVisitsQuery, true).size();
+		activeVisitCount = Context.getAdministrationService().executeSQL(openVisitsQuery, false).size();
 
 		//all active unvoided visits should have been closed
 		assertTrue(activeVisitCount == 0, "Not all active unvoided vists were closed");
