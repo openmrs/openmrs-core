@@ -1505,7 +1505,12 @@ class InitializationFilterSessionTest {
 	        // MySQL Connector/J decodes the names of its parameters
 	        "jdbc:mysql://localhost:3306/openmrs?user=openmrs&p%61ssword=Secret1",
 	        // and compares them ignoring case, which takes the long s for an s
-	        "jdbc:mysql://localhost:3306/openmrs?user=openmrs&pa%C5%BFsword=Secret1" })
+	        "jdbc:mysql://localhost:3306/openmrs?user=openmrs&pa%C5%BFsword=Secret1",
+	        // an @ in the authority, where user info goes, though it starts a placeholder
+	        "jdbc:mysql://openmrs:Secret1@APPLICATIONDATADIR@/openmrs", "jdbc:mysql://openmrs:Secret1@DBNAME@/openmrs",
+	        "jdbc:mysql://openmrs:Secret1:@DBNAME@/openmrs", "jdbc:mysql://openmrs:Se;cret1@DBNAME@/openmrs",
+	        "jdbc:mysql://openmrs:Sjdbc:h2:@APPLICATIONDATADIR@/openmrs",
+	        "http://admin:Xjdbc:h2:@APPLICATIONDATADIR@example.org/openmrs" })
 	void shouldNotShowAConnectionUrlThatNamesAPasswordOrHoldsUserInfo(String connectionUrl) {
 		assertTrue(InitializationFilter.mayCarryCredentials(connectionUrl));
 	}
@@ -1518,7 +1523,12 @@ class InitializationFilterSessionTest {
 	@ParameterizedTest
 	@NullSource
 	@ValueSource(strings = { InitializationWizardModel.DEFAULT_MYSQL_CONNECTION,
-	        InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, "jdbc:mysql://localhost:3306/openmrs?user=openmrs" })
+	        InitializationWizardModel.DEFAULT_POSTGRESQL_CONNECTION, "jdbc:mysql://localhost:3306/openmrs?user=openmrs",
+	        // the URL of core's own H2 installation script
+	        "jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE",
+	        "jdbc:h2:mem:@DBNAME@;DB_CLOSE_DELAY=-1",
+	        // placeholders after the authority
+	        "jdbc:h2:tcp://localhost/@APPLICATIONDATADIR@/database/@DBNAME@" })
 	void shouldShowAConnectionUrlWithoutCredentials(String connectionUrl) {
 		assertFalse(InitializationFilter.mayCarryCredentials(connectionUrl));
 	}

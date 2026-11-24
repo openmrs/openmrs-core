@@ -50,6 +50,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
@@ -224,6 +225,16 @@ public class InitializationFilter extends StartupFilter {
 	 * The longest name MySQL takes for a user; MariaDB and PostgreSQL take longer ones
 	 */
 	private static final int DATABASE_USER_NAME_MAX_LENGTH = 32;
+
+	/**
+	 * The authority of a URL, where it holds user info: from its first // to the next /, ? or #
+	 */
+	private static final Pattern URL_AUTHORITY = Pattern.compile("//[^/?#]*");
+
+	/**
+	 * The placeholders the install fills in a connection URL, each with an @ of its own
+	 */
+	private static final Pattern URL_PLACEHOLDERS = Pattern.compile("@(DBNAME|APPLICATIONDATADIR)@");
 
 	/**
 	 * The key of the value in an install's thread context that tags the server log lines it logs
@@ -1903,13 +1914,15 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Drivers take credentials in a connection URL in several forms, such as a password parameter or
 	 * user info before an @, so rather than parse them out, the wizard shows no URL that names a
-	 * password or holds an @ other than the one in its @DBNAME@ placeholder.
+	 * password or holds an @ in its authority, from its first // to the next /, ? or #, where user info
+	 * goes, or an @ after it other than those of the placeholders &#64;DBNAME&#64; and
+	 * &#64;APPLICATIONDATADIR&#64;, which the install fills in.
 	 *
 	 * @param connectionUrl a connection URL or the remote system's URL, or null
-	 * @return true if the URL contains "pass", ignoring case, or an @ outside @DBNAME@, once its
-	 *         percent encoding is decoded, or if it cannot be decoded. MySQL Connector/J decodes the
-	 *         names of its parameters and compares them ignoring case, which takes the long s for an s,
-	 *         so the URL is compared in upper case.
+	 * @return true if the URL contains "pass", ignoring case, or an @ in its authority or outside those
+	 *         placeholders, once its percent encoding is decoded, or if it cannot be decoded. MySQL
+	 *         Connector/J decodes the names of its parameters and compares them ignoring case, which
+	 *         takes the long s for an s, so the URL is compared in upper case.
 	 */
 	static boolean mayCarryCredentials(String connectionUrl) {
 		if (connectionUrl == null) {
@@ -1917,7 +1930,12 @@ public class InitializationFilter extends StartupFilter {
 		}
 		String url;
 		try {
-			url = URLDecoder.decode(connectionUrl.replace("@DBNAME@", ""), StandardCharsets.UTF_8);
+			Matcher authority = URL_AUTHORITY.matcher(connectionUrl);
+			int authorityEnd = authority.find() ? authority.end() : 0;
+			url = URLDecoder.decode(
+			    connectionUrl.substring(0, authorityEnd)
+			            + URL_PLACEHOLDERS.matcher(connectionUrl.substring(authorityEnd)).replaceAll(""),
+			    StandardCharsets.UTF_8);
 		} catch (IllegalArgumentException e) {
 			return true;
 		}
