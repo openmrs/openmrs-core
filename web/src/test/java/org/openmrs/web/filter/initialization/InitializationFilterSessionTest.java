@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -123,6 +126,8 @@ class InitializationFilterSessionTest {
 
 	private Properties originalRuntimeProperties;
 
+	private String originalWebappName;
+
 	private RecordingInitializationFilter filter;
 
 	private MockServletContext servletContext;
@@ -196,6 +201,9 @@ class InitializationFilterSessionTest {
 		OpenmrsUtil.setApplicationDataDirectory(applicationDataDirectory.toString());
 		originalRuntimeProperties = Context.getRuntimeProperties();
 		Context.setRuntimeProperties(new Properties());
+		// which names the runtime properties file, and other tests change
+		originalWebappName = WebConstants.WEBAPP_NAME;
+		WebConstants.WEBAPP_NAME = "openmrs";
 
 		servletContext = new MockServletContext();
 		filter.init(new MockFilterConfig(servletContext));
@@ -213,6 +221,7 @@ class InitializationFilterSessionTest {
 		filter.setInitializationComplete(false);
 		Context.setRuntimeProperties(originalRuntimeProperties);
 		OpenmrsUtil.setApplicationDataDirectory(originalApplicationDataDirectory);
+		WebConstants.WEBAPP_NAME = originalWebappName;
 	}
 
 	@Test
@@ -1892,6 +1901,222 @@ class InitializationFilterSessionTest {
 		} finally {
 			remote.stop(0);
 		}
+	}
+
+	@Test
+	void shouldNotGiveATestingInstallThatWaitedOnItsRemoteSystemTheDatabaseAnotherInstallWrote() throws Exception {
+		CountDownLatch reached = new CountDownLatch(1);
+		CountDownLatch release = new CountDownLatch(1);
+		// a remote system that answers the first check only once the other install has ended
+		HttpServer remote = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+		remote.createContext("/", exchange -> {
+			if ("/openmrs".equals(exchange.getRequestURI().getPath())) {
+				reached.countDown();
+				try {
+					release.await(30, TimeUnit.SECONDS);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+			byte[] body = "ok".getBytes(StandardCharsets.UTF_8);
+			exchange.getResponseHeaders().add("Content-Type", "text/plain");
+			exchange.sendResponseHeaders(200, body.length);
+			exchange.getResponseBody().write(body);
+			exchange.close();
+		});
+		remote.start();
+		ExecutorService browser = Executors.newSingleThreadExecutor();
+		try {
+			MockHttpSession second = startSession();
+			post(second, "installmethod.vm", "install_method", "testing");
+			Future<String> secondPage = browser.submit(() -> post(second, "remotedetails.vm", "remoteUrl",
+			    "http://127.0.0.1:" + remote.getAddress().getPort() + "/openmrs", "username", "admin", "password",
+			    "RemoteUserSecret1"));
+			assertTrue(reached.await(30, TimeUnit.SECONDS));
+
+			// meanwhile another session's install runs, writes the runtime properties file with what that session
+			// entered, and fails starting OpenMRS
+			MockHttpSession first = startSession();
+			walkAdvancedWizardToConfirmation(first, "first_session_db", "jdbc:mysql://first-session-host:3306/@DBNAME@");
+			post(first, "wizardcomplete.vm");
+			Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+			    List.of("connection.url=jdbc:mysql://first-session-host:3306/first_session_db",
+			        "connection.username=first_session_user", "connection.password=FirstSessionPassword1"));
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, new Object());
+			InitializationFilter.setInstallationStarted(false);
+			release.countDown();
+
+			String page = secondPage.get(30, TimeUnit.SECONDS);
+			assertThat(page, not(containsString("first-session-host")));
+			// asked for its database instead
+			assertThat(page, containsString("value=\"databasesetup.vm\""));
+		} finally {
+			release.countDown();
+			browser.shutdownNow();
+			remote.stop(0);
+		}
+	}
+
+	@Test
+	void shouldInstallATestingInstallWithTheDatabaseItWasShownThoughAnotherInstallRanSince() throws Exception {
+		HttpServer remote = startRemoteSystem();
+		try {
+			MockHttpSession testing = walkTestingInstallOfTheConfiguredDatabaseToConfirmationThenRunAnotherInstall(remote);
+
+			post(testing, "wizardcomplete.vm");
+
+			assertEquals(2, filter.installsStarted.size());
+			InitializationWizardModel installed = filter.installsStarted.get(1);
+			assertEquals("jdbc:mysql://localhost:3306/configured_db", installed.databaseConnection);
+			assertFalse(installed.hasCurrentOpenmrsDatabase);
+			assertFalse(installed.createDatabaseUser);
+			assertEquals("configured_user", installed.currentDatabaseUsername);
+			assertEquals("configured_user", installed.createDatabaseUsername);
+			assertEquals("ConfiguredPassword1", installed.currentDatabasePassword);
+			assertEquals("ConfiguredPassword1", installed.createDatabasePassword);
+		} finally {
+			remote.stop(0);
+		}
+	}
+
+	@Test
+	void shouldTakeATestingInstallBackToItsRemoteSystemPageThoughAnotherInstallRanSince() throws Exception {
+		HttpServer remote = startRemoteSystem();
+		try {
+			MockHttpSession testing = walkTestingInstallOfTheConfiguredDatabaseToConfirmationThenRunAnotherInstall(remote);
+
+			String page = post(testing, "wizardcomplete.vm", "back", "Back");
+
+			assertThat(page, containsString("value=\"remotedetails.vm\""));
+		} finally {
+			remote.stop(0);
+		}
+	}
+
+	@Test
+	void shouldCountTheStepsOfATestingInstallThatAsksForItsDatabaseOnceAnotherInstallRan() throws Exception {
+		HttpServer remote = startRemoteSystem();
+		try {
+			// a runtime properties file there before any install
+			Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+			    List.of("connection.url=jdbc:mysql://localhost:3306/configured_db", "connection.username=configured_user",
+			        "connection.password=ConfiguredPassword1"));
+			MockHttpSession other = startSession();
+			walkAdvancedWizardToConfirmation(other, "other_db", "jdbc:mysql://localhost:3306/@DBNAME@");
+			post(other, "wizardcomplete.vm");
+			InitializationFilter.setInstallationStarted(false);
+			// as that install writes it
+			Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+			    List.of("connection.url=jdbc:mysql://other-host:3306/other_db", "connection.username=other_user",
+			        "connection.password=OtherPassword1"));
+			MockHttpSession testing = startSession();
+			String remoteSystemPage = post(testing, "installmethod.vm", "install_method", "testing");
+
+			String page = post(testing, "remotedetails.vm", "remoteUrl",
+			    "http://127.0.0.1:" + remote.getAddress().getPort() + "/openmrs", "username", "admin", "password",
+			    "RemoteUserSecret1");
+
+			assertThat(remoteSystemPage + page, not(containsString("other-host")));
+			assertThat(remoteSystemPage, containsString("Step 1 of 3"));
+			assertThat(page, containsString("value=\"databasesetup.vm\""));
+			assertThat(page, containsString("Step 2 of 3"));
+		} finally {
+			remote.stop(0);
+		}
+	}
+
+	@Test
+	void shouldKeepATestingInstallToWhatItsRemoteSystemPageCountedThoughAnotherInstallRanBeforeItWasPosted()
+	        throws Exception {
+		HttpServer remote = startRemoteSystem();
+		try {
+			Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+			    List.of("connection.url=jdbc:mysql://localhost:3306/configured_db", "connection.username=configured_user",
+			        "connection.password=ConfiguredPassword1"));
+			MockHttpSession testing = startSession();
+			assertThat(post(testing, "installmethod.vm", "install_method", "testing"), containsString("Step 1 of 1"));
+			MockHttpSession other = startSession();
+			walkAdvancedWizardToConfirmation(other, "other_db", "jdbc:mysql://localhost:3306/@DBNAME@");
+			post(other, "wizardcomplete.vm");
+			InitializationFilter.setInstallationStarted(false);
+			Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+			    List.of("connection.url=jdbc:mysql://other-host:3306/other_db", "connection.username=other_user",
+			        "connection.password=OtherPassword1"));
+
+			String page = post(testing, "remotedetails.vm", "remoteUrl",
+			    "http://127.0.0.1:" + remote.getAddress().getPort() + "/openmrs", "username", "admin", "password",
+			    "RemoteUserSecret1");
+
+			assertThat(page, containsString("value=\"wizardcomplete.vm\""));
+			assertThat(page, containsString("configured_db"));
+			assertThat(page, not(containsString("other_db")));
+		} finally {
+			remote.stop(0);
+		}
+	}
+
+	@Test
+	void shouldCountTheStepsATestingInstallWouldTakeNowWhenItsRemoteSystemPageIsShownAgain() throws Exception {
+		// a runtime properties file there before any install
+		Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+		    List.of("connection.url=jdbc:mysql://localhost:3306/configured_db", "connection.username=configured_user",
+		        "connection.password=ConfiguredPassword1"));
+		MockHttpSession testing = startSession();
+		assertThat(post(testing, "installmethod.vm", "install_method", "testing"), containsString("Step 1 of 1"));
+		MockHttpSession other = startSession();
+		walkAdvancedWizardToConfirmation(other, "other_db", "jdbc:mysql://localhost:3306/@DBNAME@");
+		post(other, "wizardcomplete.vm");
+		InitializationFilter.setInstallationStarted(false);
+
+		String page = post(testing, "remotedetails.vm", "remoteUrl", "");
+
+		assertThat(page, containsString("value=\"remotedetails.vm\""));
+		assertThat(page, containsString("Step 1 of 3"));
+	}
+
+	/**
+	 * Walks a testing install to its confirmation page while a runtime properties file there before any
+	 * install names its database, then has another session's install start and fail
+	 *
+	 * @param remote the remote system of the testing install
+	 * @return the session of the testing install
+	 */
+	private MockHttpSession walkTestingInstallOfTheConfiguredDatabaseToConfirmationThenRunAnotherInstall(HttpServer remote)
+	        throws Exception {
+		Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+		    List.of("connection.url=jdbc:mysql://localhost:3306/configured_db", "connection.username=configured_user",
+		        "connection.password=ConfiguredPassword1"));
+		MockHttpSession testing = startSession();
+		post(testing, "installmethod.vm", "install_method", "testing");
+		String confirmation = post(testing, "remotedetails.vm", "remoteUrl",
+		    "http://127.0.0.1:" + remote.getAddress().getPort() + "/openmrs", "username", "admin", "password",
+		    "RemoteUserSecret1");
+		assertThat(confirmation, containsString("configured_db"));
+		MockHttpSession other = startSession();
+		walkAdvancedWizardToConfirmation(other, "other_db", "jdbc:mysql://localhost:3306/@DBNAME@");
+		post(other, "wizardcomplete.vm");
+		InitializationFilter.setInstallationStarted(false);
+		// and the file changes after the testing install was shown it
+		Files.write(applicationDataDirectory.resolve("openmrs-runtime.properties"),
+		    List.of("connection.url=jdbc:mysql://other-host:3306/other_db", "connection.username=other_user",
+		        "connection.password=OtherPassword1"));
+		return testing;
+	}
+
+	/**
+	 * @return a remote system that answers every request, as one with the testing module does
+	 */
+	private static HttpServer startRemoteSystem() throws IOException {
+		HttpServer remote = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+		remote.createContext("/", exchange -> {
+			byte[] body = "ok".getBytes(StandardCharsets.UTF_8);
+			exchange.getResponseHeaders().add("Content-Type", "text/plain");
+			exchange.sendResponseHeaders(200, body.length);
+			exchange.getResponseBody().write(body);
+			exchange.close();
+		});
+		remote.start();
+		return remote;
 	}
 
 	@Test

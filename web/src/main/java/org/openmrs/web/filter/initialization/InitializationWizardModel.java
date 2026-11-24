@@ -251,6 +251,12 @@ public class InitializationWizardModel {
 	public String remotePassword = "";
 
 	/**
+	 * Whether the testing install takes its database from the runtime properties file, as its remote
+	 * system page decided, and read the file, when it was last rendered
+	 */
+	public boolean databaseFromRuntimeProperties = false;
+
+	/**
 	 * The current step. e.g Step 1 of ...
 	 */
 	public int currentStepNumber = 1;

@@ -688,14 +688,27 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Renders the template with the given session model and its errors and messages. Rendering the page
 	 * that asks to confirm the install records that on the model, which an install from the wizard
-	 * requires, and every page rendered is recorded as one the session may post. Pages show the
-	 * connection URL as displayedDatabaseConnection and the remote system's URL as displayedRemoteUrl,
-	 * each empty when the URL may carry credentials.
+	 * requires, and every page rendered is recorded as one the session may post. Each time the testing
+	 * install's remote system page is rendered, it decides whether the install takes its database from
+	 * the runtime properties file, reading the file then if it does, and counts the install's steps by
+	 * that decision, which posting the page keeps to. Pages show the connection URL as
+	 * displayedDatabaseConnection and the remote system's URL as displayedRemoteUrl, each empty when
+	 * the URL may carry credentials.
 	 */
 	private void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
 	        InitializationWizardModel wizardModel) throws IOException {
 		if (WIZARD_COMPLETE.equals(templateName)) {
 			wizardModel.wizardCompletePageShown = true;
+		}
+		if (TESTING_REMOTE_DETAILS_SETUP.equals(templateName)) {
+			Properties props = runtimePropertiesWithDatabase();
+			wizardModel.databaseFromRuntimeProperties = props != null;
+			wizardModel.numberOfSteps = wizardModel.databaseFromRuntimeProperties ? 1 : 3;
+			if (wizardModel.databaseFromRuntimeProperties) {
+				wizardModel.databaseConnection = props.getProperty("connection.url");
+				wizardModel.currentDatabaseUsername = props.getProperty("connection.username");
+				wizardModel.currentDatabasePassword = props.getProperty("connection.password");
+			}
 		}
 		wizardModel.pagesShown.add(templateName);
 		String databaseConnection = wizardModel.databaseConnection;
@@ -959,7 +972,6 @@ public class InitializationFilter extends StartupFilter {
 			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				page = TESTING_REMOTE_DETAILS_SETUP;
 				wizardModel.currentStepNumber = 1;
-				wizardModel.numberOfSteps = skipDatabaseSetupPage() ? 1 : 3;
 			} else {
 				page = DATABASE_SETUP;
 				wizardModel.currentStepNumber = 1;
@@ -1224,7 +1236,7 @@ public class InitializationFilter extends StartupFilter {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
 				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					if (skipDatabaseSetupPage()) {
+					if (wizardModel.databaseFromRuntimeProperties) {
 						page = TESTING_REMOTE_DETAILS_SETUP;
 					} else {
 						page = DATABASE_TABLES_AND_USER;
@@ -1263,14 +1275,11 @@ public class InitializationFilter extends StartupFilter {
 				// there is no admin password page in this install, so it sets no admin password: neither
 				// ADMIN_DEFAULT_PASSWORD nor one from the environment or installation script
 				wizardModel.adminUserPassword = "";
-				//if we have a runtime properties file
-				if (skipDatabaseSetupPage()) {
+				// with the database the remote system page read from the runtime properties file
+				if (wizardModel.databaseFromRuntimeProperties) {
 					wizardModel.hasCurrentOpenmrsDatabase = false;
 					wizardModel.hasCurrentDatabaseUser = true;
 					wizardModel.createDatabaseUser = false;
-					Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
-					wizardModel.currentDatabaseUsername = props.getProperty("connection.username");
-					wizardModel.currentDatabasePassword = props.getProperty("connection.password");
 					wizardModel.createDatabaseUsername = wizardModel.currentDatabaseUsername;
 					wizardModel.createDatabasePassword = wizardModel.currentDatabasePassword;
 				}
@@ -1329,10 +1338,9 @@ public class InitializationFilter extends StartupFilter {
 								return;
 							}
 
-							//If we have a runtime properties file, get the database setup details from it
-							if (skipDatabaseSetupPage()) {
-								Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
-								wizardModel.databaseConnection = props.getProperty("connection.url");
+							// as this page decided, with the database it read from the runtime properties file, when it
+							// was rendered
+							if (wizardModel.databaseFromRuntimeProperties) {
 								wizardModel.loadedDriverString = loadDriver(wizardModel.databaseConnection,
 								    wizardModel.databaseDriver);
 								if (!StringUtils.hasText(wizardModel.loadedDriverString)) {
@@ -3110,16 +3118,22 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	/**
-	 * Utility method that checks if there is a runtime properties file containing database connection
-	 * credentials
+	 * The runtime properties the testing install takes its database from: those of the runtime
+	 * properties file, only if they name the database and its credentials, and only while no install
+	 * has started since OpenMRS started. A file an install has written holds what the session that
+	 * started it entered, and a request of another session can read it, as one that waited on its
+	 * remote system while that install ran.
 	 *
-	 * @return
+	 * @return the runtime properties, or null if the testing install asks for its database
 	 */
-	private static boolean skipDatabaseSetupPage() {
+	private Properties runtimePropertiesWithDatabase() {
+		if (initJob != null) {
+			return null;
+		}
 		Properties props = OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
-		return (props != null && StringUtils.hasText(props.getProperty("connection.url"))
+		return props != null && StringUtils.hasText(props.getProperty("connection.url"))
 		        && StringUtils.hasText(props.getProperty("connection.username"))
-		        && StringUtils.hasText(props.getProperty("connection.password")));
+		        && StringUtils.hasText(props.getProperty("connection.password")) ? props : null;
 	}
 
 	/**
