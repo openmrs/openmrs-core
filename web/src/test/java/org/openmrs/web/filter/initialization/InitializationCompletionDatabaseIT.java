@@ -41,11 +41,12 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Runs the steps of an install that create its database and database user, for a database name with
- * a hyphen and a dot, against a MariaDB server through the MySQL and the MariaDB JDBC drivers. The
- * server is a container the test starts, so the test runs where Docker is available and is skipped
- * elsewhere. It does not use the database of {@link org.openmrs.util.DatabaseIT}, which is H2
- * unless the build is told otherwise, and an install on H2 skips the statement that creates the
- * database.
+ * a hyphen and a dot, against a MariaDB server through the MySQL and the MariaDB JDBC drivers, and
+ * checks that a quote in a literal the install puts into that sql, such as the user's password,
+ * reaches the server as it was. The server is a container the test starts, so the test runs where
+ * Docker is available and is skipped elsewhere. It does not use the database of
+ * {@link org.openmrs.util.DatabaseIT}, which is H2 unless the build is told otherwise, and an
+ * install on H2 skips the statement that creates the database.
  */
 class InitializationCompletionDatabaseIT {
 
@@ -139,6 +140,22 @@ class InitializationCompletionDatabaseIT {
 		        ResultSet resultSet = statement.executeQuery("select database()")) {
 			assertTrue(resultSet.next());
 			assertEquals(DATABASE_NAME, resultSet.getString(1));
+		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "mysql", "mariadb" })
+	void literal_shouldQuoteAValueSoTheServerReadsItBackAsItWas(String driver) throws Exception {
+		// a quote ends the literal unless it is escaped. Not a backslash, which the MySQL driver leaves for the
+		// server to read as the start of an escape sequence, and which no value the install quotes holds.
+		String value = "it's";
+		try (Connection connection = DriverManager
+		        .getConnection(connection(driver).replace("@DBNAME@", ""), adminUsername(), adminPassword());
+		        Statement statement = connection.createStatement();
+		        ResultSet resultSet = statement
+		                .executeQuery("select " + InitializationFilter.SqlArgument.literal(value).quote(statement))) {
+			assertTrue(resultSet.next());
+			assertEquals(value, resultSet.getString(1));
 		}
 	}
 

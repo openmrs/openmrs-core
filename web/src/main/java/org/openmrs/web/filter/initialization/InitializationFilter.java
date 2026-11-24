@@ -3079,7 +3079,7 @@ public class InitializationFilter extends StartupFilter {
 	 * A database or user name, or a password, that the wizard puts into the sql it runs
 	 */
 	@FunctionalInterface
-	private interface SqlArgument {
+	interface SqlArgument {
 
 		/**
 		 * @param statement the statement that will run the sql
