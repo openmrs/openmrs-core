@@ -11,25 +11,12 @@ package org.openmrs.module;
 
 /**
  * Event published after a module load attempt completes.
- * <p>
- * This event additionally carries {@link #getModuleFileName()}, the filename of uploaded module.
- * It is the only lifecycle event that originates from a file, so the field
- * lives here rather than on the shared base class.
- * </p>
  *
  * @since 2.7.10
  */
 public class ModuleLoadEvent extends AbstractModuleEvent {
 	
-	private final String moduleFileName;
-	
-	public ModuleLoadEvent(Object source, String moduleId, String moduleName, String moduleVersion, String moduleFileName,
-	    boolean isSuccess, String failureReason) {
-		super(source, moduleId, moduleName, moduleVersion, isSuccess, failureReason);
-		this.moduleFileName = moduleFileName;
-	}
-	
-	public String getModuleFileName() {
-		return moduleFileName;
+	public ModuleLoadEvent(Object source, String moduleId) {
+		super(source, moduleId);
 	}
 }

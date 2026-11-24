@@ -16,8 +16,7 @@ package org.openmrs.module;
  */
 public class ModuleStopEvent extends AbstractModuleEvent {
 	
-	public ModuleStopEvent(Object source, String moduleId, String moduleName, String moduleVersion, boolean isSuccess,
-	    String failureReason) {
-		super(source, moduleId, moduleName, moduleVersion, isSuccess, failureReason);
+	public ModuleStopEvent(Object source, String moduleId) {
+		super(source, moduleId);
 	}
 }

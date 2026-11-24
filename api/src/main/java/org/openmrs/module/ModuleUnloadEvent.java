@@ -16,8 +16,21 @@ package org.openmrs.module;
  */
 public class ModuleUnloadEvent extends AbstractModuleEvent {
 	
-	public ModuleUnloadEvent(Object source, String moduleId, String moduleName, String moduleVersion, boolean isSuccess,
-	    String failureReason) {
-		super(source, moduleId, moduleName, moduleVersion, isSuccess, failureReason);
+	private String moduleName;
+	
+	private String moduleVersion;
+	
+	public ModuleUnloadEvent(Object source, String moduleId, String moduleName, String moduleVersion) {
+		super(source, moduleId);
+		this.moduleName = moduleName;
+		this.moduleVersion = moduleVersion;
+	}
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	
+	public String getModuleVersion() {
+		return moduleVersion;
 	}
 }
