@@ -55,10 +55,10 @@ class InitializationCompletionDatabaseIT {
 	private static final String DATABASE_NAME = "openmrs-ref.app-2";
 
 	/**
-	 * The user the install names after the database: the first 11 characters of the name and _user,
-	 * since the name with _user is longer than 16 characters
+	 * The user the install names after the database: the name and _user, which fits in the 32
+	 * characters MySQL takes for a user name
 	 */
-	private static final String DATABASE_USER = "openmrs-ref_user";
+	private static final String DATABASE_USER = "openmrs-ref.app-2_user";
 
 	private static final String STOPPED = "stopped by the test once the database and its user were created";
 
