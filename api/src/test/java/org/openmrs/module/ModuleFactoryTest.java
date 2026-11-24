@@ -120,7 +120,7 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		//first upgrade to a newer version so a revert can be tried
 		assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
 		
-		// now verify that a rollback to an older version fails and keeps the newer module loaded.
+		//now verify that a rollback to an older version fails and keeps the newer module loaded.
 		assertThrows(ModuleException.class, () -> loadModule(MODULE1_PATH, MODULE1, true));
 		assertTrue(ModuleFactory.getLoadedModules().contains(newModule));
 	}
@@ -299,21 +299,14 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 
 		return ModuleFactory.loadModule(new File(moduleLocation), replace);
 	}
-
+	
 	private List<File> getModuleFiles() {
 		List<File> modulesToLoad = new ArrayList<>();
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE1_PATH).getPath()));
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE2_PATH).getPath()));
 		modulesToLoad.add(new File(ModuleUtil.class.getClassLoader().getResource(MODULE3_PATH).getPath()));
-
+		
 		return modulesToLoad;
-	}
-
-	private static class ThrowingModuleActivator extends BaseModuleActivator {
-		@Override
-		public void willStart() {
-			throw new ModuleException("Unable to start the module");
-		}
 	}
 
 	@Component("testingModuleEventListener")
