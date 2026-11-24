@@ -307,6 +307,26 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	}
 
 	/**
+	 * Convenience method to find the AlertRecipient object within this alert whose recipient has the
+	 * given <code>userId</code>
+	 *
+	 * @param userId the id of the recipient user
+	 * @return AlertRecipient, or null if no recipient has that id
+	 * @since 3.0.0
+	 */
+	public AlertRecipient getRecipient(Integer userId) {
+		if (userId != null && getRecipients() != null) {
+			for (AlertRecipient ar : recipients) {
+				User recipient = ar.getRecipient();
+				if (recipient != null && userId.equals(recipient.getUserId())) {
+					return ar;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Convenience method to mark this alert as read. In order to persist this change in the database,
 	 * AlertService.saveAlert(Alert) will need to be called after this method is done.
 	 *
@@ -314,10 +334,10 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	 * @see org.openmrs.notification.AlertService#saveAlert(Alert)
 	 */
 	public Alert markAlertRead() {
-		User authUser = Context.getAuthenticatedUser();
+		Integer authUserId = Context.getAuthenticatedUserId();
 
-		if (authUser != null) {
-			AlertRecipient ar = getRecipient(authUser);
+		if (authUserId != null) {
+			AlertRecipient ar = getRecipient(authUserId);
 			ar.setAlertRead(true);
 			if (isSatisfiedByAny()) {
 				setAlertRead(true);

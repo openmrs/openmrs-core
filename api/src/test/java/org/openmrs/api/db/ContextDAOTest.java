@@ -18,6 +18,7 @@ import jakarta.annotation.Resource;
 
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -71,6 +72,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	@BeforeEach
 	public void runExtraSetup() {
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 
 		if (dao == null) {
 			// fetch the dao from the spring application context
@@ -83,6 +85,11 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	 * Methods in this class might authenticate with a different user, so log that user out after this
 	 * whole junit class is done.
 	 */
+	@AfterEach
+	public void removeProxyPrivilege() {
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+	}
+
 	@AfterAll
 	public static void logOutAfterThisTest() {
 		Context.logout();
@@ -268,7 +275,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		User user = dao.authenticate("admin", "test");
 
-		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+		assertNull(Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 	}
 
 	/**
@@ -280,16 +287,68 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
 
+		assertEquals("1", Context.getUserService().getSecurityState(Context.getUserService().getUser(1),
+		    OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldRecordNoCreatorForTheLoginAttemptsEntry() {
+		Context.logout();
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
+		assertNull(
+		    sessionFactory.getCurrentSession()
+		            .createNativeQuery("select creator from user_security_state where user_id = 1 and property = ?1",
+		                Integer.class)
+		            .setParameter(1, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS).getSingleResult());
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldFailNormallyWhenTheLoginAttemptsEntryDoesNotHoldANumber() {
+		Context.getUserService().saveSecurityState(Context.getUserService().getUser(1),
+		    OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldResetTheLoginAttemptsEntryWhenItDoesNotHoldANumber() {
+		User admin = Context.getUserService().getUser(1);
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "junk");
+
+		assertThrows(ContextAuthenticationException.class, () -> dao.authenticate("admin", "wrong"));
+
 		assertEquals("1",
-		    Context.getUserService().getUser(1).getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
+		    Context.getUserService().getSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+	}
+
+	/**
+	 * @see ContextDAO#authenticate(String,String)
+	 */
+	@Test
+	public void authenticate_shouldRemoveTheLockoutTimestampEntryWhenItDoesNotHoldANumber() {
+		User admin = Context.getUserService().getUser(1);
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP, "junk");
+
+		dao.authenticate("admin", "test");
+
+		assertNull(Context.getUserService().getSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 	}
 
 	private void lockOutAdminSixMinutesAgo() {
 		User admin = Context.getUserService().getUser(1);
-		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "7");
-		admin.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP,
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS, "7");
+		Context.getUserService().saveSecurityState(admin, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
 		    String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(6)));
-		Context.flushSession();
 	}
 
 	/**

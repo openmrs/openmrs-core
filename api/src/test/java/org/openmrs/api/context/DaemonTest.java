@@ -199,6 +199,21 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see org.openmrs.api.UserService#saveSecurityState(User, String, String)
+	 */
+	@Test
+	public void setSecurityState_shouldAllowADaemonThread() throws Exception {
+		AtomicReference<String> saved = new AtomicReference<>();
+		Daemon.runNewDaemonTask(() -> {
+			User user = Context.getUserService().getUser(Context.getAuthenticatedUserId());
+			Context.getUserService().saveSecurityState(user, "daemonTest.key", "value");
+			saved.set(Context.getUserService().getSecurityState(user, "daemonTest.key"));
+		}, Daemon.callerKey()).get();
+
+		assertThat(saved.get(), is("value"));
+	}
+
+	/**
 	 * Small task that just marks itself when it gets run
 	 */
 	private static class PrivateTask extends AbstractTask {
