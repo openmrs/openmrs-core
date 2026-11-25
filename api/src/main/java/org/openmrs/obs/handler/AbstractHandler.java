@@ -166,7 +166,7 @@ public class AbstractHandler {
 	 * @param key the storage key
 	 * @param complexData the complex data to enrich
 	 * @param metadata metadata already fetched alongside the data, or null to fetch it
-	 * @since 3.0.0
+	 * @since 3.0.0, 2.9.0, 2.8.11
 	 */
 	protected void injectMissingMetadata(String key, ComplexData complexData, ObjectMetadata metadata) {
 		try {

@@ -9,6 +9,7 @@
  */
 package org.openmrs.obs.handler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
 
@@ -70,9 +71,21 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 
 				DataWithMetadata dwm = storageService.getDataWithMetadata(key);
-				InputStream in = dwm.data();
-				complexData = new ComplexData(parseFilename(obs, ""), in);
-				injectMissingMetadata(key, complexData, dwm.metadata());
+				boolean streamTransferred = false;
+				try {
+					InputStream in = dwm.data();
+					complexData = new ComplexData(parseFilename(obs, ""), in);
+					injectMissingMetadata(key, complexData, dwm.metadata());
+					streamTransferred = true;
+				} finally {
+					if (!streamTransferred) {
+						try {
+							dwm.close();
+						} catch (IOException e) {
+							log.error("Unable to close binary stream from {}", key, e);
+						}
+					}
+				}
 			} catch (NoSuchFileException e) {
 				log.error("Unable to find file associated with complex obs {}", obs.getId());
 			} catch (Exception e) {

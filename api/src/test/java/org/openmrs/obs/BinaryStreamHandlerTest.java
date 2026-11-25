@@ -16,8 +16,10 @@ import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.StorageService;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.obs.handler.BinaryStreamHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -29,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class BinaryStreamHandlerTest extends BaseContextSensitiveTest {
 
@@ -139,5 +144,23 @@ public class BinaryStreamHandlerTest extends BaseContextSensitiveTest {
 				((InputStream) complexObs2.getComplexData().getData()).close();
 			}
 		}
+	}
+
+	@Test
+	public void getObs_shouldCloseStreamWhenMetadataLookupFails() throws IOException {
+		StorageService failingStorageService = mock(StorageService.class);
+		InputStream data = mock(InputStream.class);
+		when(failingStorageService.exists("key")).thenReturn(true);
+		when(failingStorageService.getDataWithMetadata("key")).thenReturn(new DataWithMetadata(data, null));
+		when(failingStorageService.getMetadata("key")).thenThrow(new IOException("boom"));
+
+		BinaryStreamHandler failingHandler = new BinaryStreamHandler();
+		ReflectionTestUtils.setField(failingHandler, "storageService", failingStorageService);
+
+		Obs obs = new Obs();
+		obs.setValueComplex("TestingComplexObsSaving|key");
+
+		assertThrows(APIException.class, () -> failingHandler.getObs(obs, ComplexObsHandler.RAW_VIEW));
+		verify(data).close();
 	}
 }

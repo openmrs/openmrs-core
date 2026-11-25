@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.StorageService;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.obs.handler.MediaHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -30,7 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MediaHandlerTest extends BaseContextSensitiveTest {
 
@@ -130,5 +136,23 @@ public class MediaHandlerTest extends BaseContextSensitiveTest {
 		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
 		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
 		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
+	}
+
+	@Test
+	public void getObs_shouldCloseStreamWhenMetadataLookupFails() throws IOException {
+		StorageService failingStorageService = mock(StorageService.class);
+		InputStream data = mock(InputStream.class);
+		when(failingStorageService.exists("key")).thenReturn(true);
+		when(failingStorageService.getDataWithMetadata("key")).thenReturn(new DataWithMetadata(data, null));
+		when(failingStorageService.getMetadata("key")).thenThrow(new IOException("boom"));
+
+		MediaHandler failingHandler = new MediaHandler();
+		ReflectionTestUtils.setField(failingHandler, "storageService", failingStorageService);
+
+		Obs obs = new Obs();
+		obs.setValueComplex("TestingComplexObsSaving.mp3|key");
+
+		assertThrows(UncheckedIOException.class, () -> failingHandler.getObs(obs, ComplexObsHandler.RAW_VIEW));
+		verify(data).close();
 	}
 }

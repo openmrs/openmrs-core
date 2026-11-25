@@ -17,6 +17,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.StorageService;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
@@ -28,6 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TextHandlerTest extends BaseContextSensitiveTest {
 
@@ -130,5 +134,23 @@ public class TextHandlerTest extends BaseContextSensitiveTest {
 		assertEquals(filename + " file ", uriObs.getComplexData().getTitle());
 		assertEquals("text/plain", uriObs.getComplexData().getMimeType());
 		assertEquals(10L, uriObs.getComplexData().getLength());
+	}
+
+	@Test
+	public void getObs_shouldDefaultToTextPlainWhenMetadataHasNoMimeType() throws Exception {
+		TextHandler mockHandler = new TextHandler();
+		StorageService mockStorageService = mock(StorageService.class);
+		ObjectMetadata metadata = ObjectMetadata.builder().setLength(10L).build();
+		when(mockStorageService.exists("key")).thenReturn(true);
+		when(mockStorageService.getDataWithMetadata(anyString())).thenReturn(
+		    new DataWithMetadata(new ByteArrayInputStream("Teststring".getBytes(StandardCharsets.UTF_8)), metadata));
+		ReflectionTestUtils.setField(mockHandler, "storageService", mockStorageService);
+
+		Obs obs = new Obs();
+		obs.setValueComplex("file.txt file |key");
+
+		Obs result = mockHandler.getObs(obs, ComplexObsHandler.RAW_VIEW);
+		assertEquals("text/plain", result.getComplexData().getMimeType());
+		assertEquals(10L, result.getComplexData().getLength());
 	}
 }

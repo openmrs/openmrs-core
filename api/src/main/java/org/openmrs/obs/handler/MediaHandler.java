@@ -63,13 +63,25 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 				String filename = parseFilename(obs, "");
 
 				DataWithMetadata dwm = storageService.getDataWithMetadata(key);
-				InputStream in = dwm.data();
-				ComplexData complexData = new ComplexData(filename, in);
-				complexData.setMimeType(mimetypes.getContentType(filename));
+				boolean streamTransferred = false;
+				try {
+					InputStream in = dwm.data();
+					ComplexData complexData = new ComplexData(filename, in);
+					complexData.setMimeType(mimetypes.getContentType(filename));
 
-				// Get the Mime Type and set it
-				injectMissingMetadata(key, complexData, dwm.metadata());
-				obs.setComplexData(complexData);
+					// Get the Mime Type and set it
+					injectMissingMetadata(key, complexData, dwm.metadata());
+					obs.setComplexData(complexData);
+					streamTransferred = true;
+				} finally {
+					if (!streamTransferred) {
+						try {
+							dwm.close();
+						} catch (IOException e) {
+							log.error("Unable to close media stream from {}", key, e);
+						}
+					}
+				}
 			} catch (IOException e) {
 				log.error("Trying to create media file stream from {}", key, e);
 			}

@@ -18,7 +18,7 @@ import java.io.InputStream;
  * The data stream must be closed by the caller (or via {@link #close()}) to release the underlying
  * resource.
  *
- * @since 3.0.0
+ * @since 3.0.0, 2.9.0, 2.8.11
  */
 public class DataWithMetadata implements AutoCloseable {
 

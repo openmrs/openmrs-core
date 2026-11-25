@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -198,6 +199,24 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 				assertEquals("legacy content", IOUtils.toString(data, Charset.defaultCharset()));
 			}
 		} finally {
+			Files.deleteIfExists(legacyPath);
+		}
+	}
+
+	@Test
+	public void getData_shouldNotFallBackToLegacyForUnrelatedFileSystemFailure() throws IOException {
+		String key = "obs/blocked-" + UUID.randomUUID();
+		Path currentPath = tempDir.resolve(key);
+		Path legacyPath = Paths.get(OpenmrsUtil.getApplicationDataDirectory()).resolve(key);
+		try {
+			Files.createDirectories(currentPath.getParent());
+			Files.createSymbolicLink(currentPath, currentPath);
+			Files.createDirectories(legacyPath.getParent());
+			Files.writeString(legacyPath, "legacy content");
+
+			assertThrows(FileSystemException.class, () -> storageService.getData(key));
+		} finally {
+			Files.deleteIfExists(currentPath);
 			Files.deleteIfExists(legacyPath);
 		}
 	}

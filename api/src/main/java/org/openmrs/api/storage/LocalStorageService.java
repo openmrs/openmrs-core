@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import jakarta.activation.MimetypesFileTypeMap;
@@ -82,10 +84,11 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 	 * <p>
 	 * The current location is read rather than probed, so a hit costs no extra
 	 * <code>Files.exists</code> call compared to reading from a single location. Only a failed read
-	 * pays for a probe of the legacy location.
+	 * pays for a probe of the legacy location. This intentionally differs from
+	 * {@link #getPath(String)}, which prefers the legacy location because it is used for deletion.
 	 * <p>
-	 * A failed read is not necessarily a missing file. A legacy name whose encoded form exceeds the
-	 * file system's name length limit fails here too, so the legacy location decides in that case.
+	 * A legacy name whose encoded form exceeds the configured storage path's length limit fails here,
+	 * so the legacy location is tried in that case. All other failures are propagated.
 	 *
 	 * @param key the storage key
 	 * @param reader the read to perform against the resolved path
@@ -99,9 +102,12 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 		if (isInStorageDir(path)) {
 			try {
 				return reader.apply(path);
+			} catch (NoSuchFileException e) {
+				currentLocationFailure = e;
 			} catch (FileSystemException e) {
-				// Not only a missing file: a legacy name the encoding pushes past the file system's name
-				// length limit fails here too, so the legacy location decides
+				if (!isFileNameTooLong(e)) {
+					throw e;
+				}
 				currentLocationFailure = e;
 			}
 		}
@@ -116,6 +122,11 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 			throw currentLocationFailure;
 		}
 		throw new IllegalArgumentException("Key must not point outside storage dir. Wrong key: " + key);
+	}
+
+	private static boolean isFileNameTooLong(FileSystemException e) {
+		String reason = e.getReason();
+		return reason != null && reason.toLowerCase(Locale.ROOT).contains("too long");
 	}
 
 	private InputStream getDataInternal(Path path) throws IOException {

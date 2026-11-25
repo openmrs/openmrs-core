@@ -115,7 +115,9 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		if (complexData != null && metadata != null) {
 			// Get the Mime Type and set it
 			String mimeType = metadata.getMimeType();
-			mimeType = !(mimeType.equals("application/octet-stream")) ? mimeType : "text/plain";
+			if (mimeType == null || "application/octet-stream".equals(mimeType)) {
+				mimeType = "text/plain";
+			}
 			complexData.setMimeType(mimeType);
 			complexData.setLength(metadata.getLength());
 		}
