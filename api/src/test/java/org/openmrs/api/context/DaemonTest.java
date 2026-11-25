@@ -11,11 +11,13 @@ package org.openmrs.api.context;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -159,6 +161,56 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		AtomicBoolean wasRun = new AtomicBoolean(false);
 		Daemon.runNewDaemonTask(() -> wasRun.set(true), Daemon.callerKey()).get();
 		assertThat(wasRun.get(), is(true));
+	}
+
+	@Test
+	public void getAuthenticatedUserId_shouldReturnTheDaemonUsersIdOnADaemonThread() throws Exception {
+		AtomicReference<Integer> userContextId = new AtomicReference<>();
+		AtomicReference<Integer> daemonUserId = new AtomicReference<>();
+		Daemon.runNewDaemonTask(() -> {
+			userContextId.set(Context.getUserContext().getAuthenticatedUserId());
+			daemonUserId.set(Daemon.getDaemonThreadUser().getUserId());
+		}, Daemon.callerKey()).get();
+
+		assertThat(userContextId.get(), notNullValue());
+		assertThat(userContextId.get(), is(daemonUserId.get()));
+	}
+
+	@Test
+	public void saveUserProperty_shouldSaveTheDaemonUsersPropertyOnADaemonThread() throws Exception {
+		AtomicReference<String> saved = new AtomicReference<>();
+		Daemon.runNewDaemonTask(() -> {
+			Context.getUserService().saveUserProperty("daemonTest.key", "value");
+			saved.set(Context.getUserService().getUser(Context.getAuthenticatedUserId()).getUserProperty("daemonTest.key"));
+		}, Daemon.callerKey()).get();
+
+		assertThat(saved.get(), is("value"));
+	}
+
+	@Test
+	public void saveUserProperties_shouldSaveTheDaemonUsersPropertiesOnADaemonThread() throws Exception {
+		AtomicReference<String> saved = new AtomicReference<>();
+		Daemon.runNewDaemonTask(() -> {
+			Context.getUserService().saveUserProperties(Collections.singletonMap("daemonTest.key", "value"));
+			saved.set(Context.getUserService().getUser(Context.getAuthenticatedUserId()).getUserProperty("daemonTest.key"));
+		}, Daemon.callerKey()).get();
+
+		assertThat(saved.get(), is("value"));
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#saveSecurityState(User, String, String)
+	 */
+	@Test
+	public void setSecurityState_shouldAllowADaemonThread() throws Exception {
+		AtomicReference<String> saved = new AtomicReference<>();
+		Daemon.runNewDaemonTask(() -> {
+			User user = Context.getUserService().getUser(Context.getAuthenticatedUserId());
+			Context.getUserService().saveSecurityState(user, "daemonTest.key", "value");
+			saved.set(Context.getUserService().getSecurityState(user, "daemonTest.key"));
+		}, Daemon.callerKey()).get();
+
+		assertThat(saved.get(), is("value"));
 	}
 
 	/**

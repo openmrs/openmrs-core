@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
@@ -28,6 +29,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.Person;
@@ -39,10 +41,13 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.LoginCredential;
+import org.openmrs.api.db.StoredRole;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.api.impl.UserServiceImpl;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.Security;
 import org.openmrs.util.UserByNameComparator;
 import org.slf4j.Logger;
@@ -62,14 +67,19 @@ public class HibernateUserDAO implements UserDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(HibernateUserDAO.class);
 
+	private static final long DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME = TimeUnit.MINUTES.toMillis(5);
+
 	/**
 	 * Hibernate session factory
 	 */
 	private final SessionFactory sessionFactory;
 
+	private final UserSecurityStateDAO userSecurityStateDao;
+
 	@Autowired
-	public HibernateUserDAO(SessionFactory sessionFactory) {
+	public HibernateUserDAO(SessionFactory sessionFactory, UserSecurityStateDAO userSecurityStateDao) {
 		this.sessionFactory = sessionFactory;
+		this.userSecurityStateDao = userSecurityStateDao;
 	}
 
 	/**
@@ -107,19 +117,23 @@ public class HibernateUserDAO implements UserDAO {
 			}
 		}
 
-		// Ensure referenced Roles are managed. The User->Role cascade includes
-		// PERSIST, so detached Roles would cause constraint violations in Hibernate 7.
-		if (user.getRoles() != null) {
+		// Attach only stored Roles. User->Role has no cascade, so saving a user never creates or
+		// rewrites a role; a role name that isn't stored is dropped. The set is left alone when every
+		// role is already managed, so Hibernate doesn't rewrite an unchanged user_role collection.
+		if (user.getRoles() != null && !user.getRoles().stream().allMatch(currentSession::contains)) {
 			Set<Role> managedRoles = new LinkedHashSet<>();
 			for (Role role : user.getRoles()) {
 				if (!currentSession.contains(role)) {
 					Role managedRole = currentSession.get(Role.class, role.getRole());
-					managedRoles.add(managedRole != null ? managedRole : role);
+					if (managedRole != null) {
+						managedRoles.add(managedRole);
+					}
 				} else {
 					managedRoles.add(role);
 				}
 			}
-			user.setRoles(managedRoles);
+			user.getRoles().clear();
+			user.getRoles().addAll(managedRoles);
 		}
 
 		user = HibernateUtil.saveOrUpdate(currentSession, user);
@@ -137,8 +151,7 @@ public class HibernateUserDAO implements UserDAO {
 			String salt = Security.getRandomToken();
 			String hashedPassword = Security.encodePassword(password + salt);
 
-			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(),
-			    user.getUserId());
+			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUserId(), new Date(), user.getUserId());
 		}
 
 		return user;
@@ -264,6 +277,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@Override
 	public void deleteUser(User user) {
+		userSecurityStateDao.deleteAll(user.getUserId());
 		sessionFactory.getCurrentSession().remove(user);
 	}
 
@@ -352,15 +366,44 @@ public class HibernateUserDAO implements UserDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRole(String)
+	 */
+	@Override
+	public StoredRole getStoredRole(String roleName) throws DAOException {
+		return StoredRoleReader.read(sessionFactory.getCurrentSession(), roleName);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredRoleNames(Integer)
+	 */
+	@Override
+	public Set<String> getStoredRoleNames(Integer userId) throws DAOException {
+		return StoredRoleReader.readUserRoleNames(sessionFactory.getCurrentSession(), userId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getStoredUserId(User)
+	 */
+	@Override
+	public Integer getStoredUserId(User user) throws DAOException {
+		Session session = sessionFactory.getCurrentSession();
+		if (!session.contains(user)) {
+			return user.getUserId();
+		}
+		// a proxy's own id follows setUserId, so read the id recorded for the entity behind it
+		return (Integer) session.getIdentifier(Hibernate.unproxy(user));
+	}
+
+	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
 		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		User authUser = Context.getAuthenticatedUser();
-
-		if (authUser == null) {
-			authUser = u;
+		// an anonymous caller is the forgot-password flow, in which the user changes their own password
+		Integer changedBy = Context.getAuthenticatedUserId();
+		if (changedBy == null) {
+			changedBy = u.getUserId();
 		}
 
 		String salt = getLoginCredential(u).getSalt();
@@ -369,7 +412,7 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		String newHashedPassword = Security.encodePassword(pw + salt);
 
-		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		updateUserPassword(newHashedPassword, salt, changedBy, new Date(), u.getUserId());
 	}
 
 	/**
@@ -379,8 +422,7 @@ public class HibernateUserDAO implements UserDAO {
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
 		requireUserService("Illegal attempt to change user password from unknown caller");
 
-		User authUser = Context.getAuthenticatedUser();
-		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
+		updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUserId(), new Date(), user.getUserId());
 	}
 
 	/**
@@ -408,11 +450,62 @@ public class HibernateUserDAO implements UserDAO {
 
 		saveLoginCredential(credentials);
 
-		// reset lockout
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "");
-		changeForUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS,
-		    OpenmrsConstants.ZERO_LOGIN_ATTEMPTS_VALUE);
-		saveUser(changeForUser, null);
+		unlock(userIdToChange);
+	}
+
+	/**
+	 * @see UserDAO#unlockUser(User)
+	 */
+	@Override
+	public void unlockUser(User user) {
+		unlock(user.getUserId());
+	}
+
+	/**
+	 * @see UserDAO#isLockedOut(User)
+	 */
+	@Override
+	public boolean isLockedOut(User user) {
+		String lockoutTime = userSecurityStateDao.getValue(user.getUserId(),
+		    OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
+		if (lockoutTime == null) {
+			return false;
+		}
+		try {
+			return System.currentTimeMillis() - Long.parseLong(lockoutTime) <= getUnlockTimeMs();
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	private void unlock(Integer userId) {
+		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS);
+		userSecurityStateDao.delete(userId, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP);
+	}
+
+	private long getUnlockTimeMs() {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String unlockTimeGPValue = Context.getAdministrationService()
+			        .getGlobalProperty(OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME);
+			if (StringUtils.isNotBlank(unlockTimeGPValue)) {
+				return convertUnlockAccountWaitingTimeGP(unlockTimeGPValue);
+			} else {
+				return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+			}
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
+	}
+
+	private long convertUnlockAccountWaitingTimeGP(String waitingTime) {
+		try {
+			return TimeUnit.MINUTES.toMillis(Long.parseLong(waitingTime));
+		} catch (Exception ex) {
+			log.error("Unable to convert the global property " + OpenmrsConstants.GP_UNLOCK_ACCOUNT_WAITING_TIME
+			        + "to a valid Long. Using default value of 5");
+			return DEFAULT_UNLOCK_ACCOUNT_WAITING_TIME;
+		}
 	}
 
 	/**

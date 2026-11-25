@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
@@ -33,6 +34,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestContext;
@@ -130,9 +132,15 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		executeDataSet("org/openmrs/api/db/include/contextDAOTest.xml");
 		getConnection().commit();
 		authenticate();
+		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_ALLOWED_FAILED_LOGINS_BEFORE_LOCKOUT,
 		    String.valueOf(ALLOWED_FAILED_LOGINS));
 		Context.clearSession();
+	}
+
+	@AfterEach
+	void removeProxyPrivilege() {
+		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
 	}
 
 	/**
@@ -152,9 +160,10 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 		            + outcomes);
 
 		User user = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
-		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS),
-		    user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
-		assertNotNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS + 1),
+		    Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+		assertNotNull(
+		    Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 
 		String stillLocked = authenticateInSeparateSession(LOCKED_USERNAME, LOCKED_USER_PASSWORD);
 		assertTrue(stillLocked.contains(LOCKOUT_MESSAGE),
@@ -220,8 +229,8 @@ public class ContextDAOConcurrentLockoutIT extends BaseContextSensitiveNonTransa
 
 		User user = Context.getUserService().getUserByUsername(LOCKED_USERNAME);
 		assertEquals(String.valueOf(ALLOWED_FAILED_LOGINS),
-		    user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS));
-		assertNull(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null));
+		    Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOGIN_ATTEMPTS));
+		assertNull(Context.getUserService().getSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP));
 
 		assertEquals("authenticated", authenticateInSeparateSession(LOCKED_USERNAME, LOCKED_USER_PASSWORD));
 	}
