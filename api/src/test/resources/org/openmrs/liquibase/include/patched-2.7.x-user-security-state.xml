@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    This Source Code Form is subject to the terms of the Mozilla Public License,
+    v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+    the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+
+    Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+    graphic logo is a trademark of OpenMRS Inc.
+
+-->
+<!--
+	The user_security_state changesets as a patched maintenance branch ships them in its own
+	liquibase-update-to-latest file. Liquibase keys changesets by file name as well as id and author,
+	so applying these and then the same changesets from the latest update file must leave the second
+	copy marked as ran.
+-->
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet id="20261110-create-user-security-state" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="user_security_state"/>
+			</not>
+		</preConditions>
+		<createTable tableName="user_security_state">
+			<column name="user_security_state_id" type="INT" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="uuid" type="CHAR(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="user_id" type="INT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="property" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="property_value" type="MEDIUMTEXT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="INT"/>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="INT"/>
+			<column name="date_changed" type="DATETIME"/>
+		</createTable>
+		<addUniqueConstraint tableName="user_security_state" columnNames="user_id, property"
+							 constraintName="user_security_state_user_property_unique"/>
+		<addForeignKeyConstraint baseTableName="user_security_state" baseColumnNames="user_id"
+								 constraintName="user_security_state_user_fk"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint baseTableName="user_security_state" baseColumnNames="creator"
+								 constraintName="user_security_state_creator_fk"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+		<addForeignKeyConstraint baseTableName="user_security_state" baseColumnNames="changed_by"
+								 constraintName="user_security_state_changed_by_fk"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+	</changeSet>
+
+	<changeSet id="20261110-migrate-login-attempts-to-user-security-state" author="Wikum Weerakutti">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT COUNT(*) FROM user_property WHERE property IN ('loginAttempts', 'lockoutTimestamp')
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<sql>
+			INSERT INTO user_security_state (uuid, user_id, property, property_value, date_created)
+			SELECT UUID(), up.user_id, 'core.loginAttempts', up.property_value, CURRENT_TIMESTAMP
+			FROM user_property up
+			WHERE up.property = 'loginAttempts' AND up.property_value IS NOT NULL AND up.property_value NOT IN ('', '0')
+			AND NOT EXISTS (SELECT 1 FROM user_security_state s WHERE s.user_id = up.user_id AND s.property = 'core.loginAttempts')
+		</sql>
+		<sql>
+			INSERT INTO user_security_state (uuid, user_id, property, property_value, date_created)
+			SELECT UUID(), up.user_id, 'core.lockoutTimestamp', up.property_value, CURRENT_TIMESTAMP
+			FROM user_property up
+			WHERE up.property = 'lockoutTimestamp' AND up.property_value IS NOT NULL AND up.property_value NOT IN ('', '0')
+			AND NOT EXISTS (SELECT 1 FROM user_security_state s WHERE s.user_id = up.user_id AND s.property = 'core.lockoutTimestamp')
+		</sql>
+		<sql>
+			DELETE FROM user_property WHERE property IN ('loginAttempts', 'lockoutTimestamp')
+		</sql>
+		<modifySql dbms="h2">
+			<replace replace="UUID()" with="RANDOM_UUID()"/>
+		</modifySql>
+	</changeSet>
+
+</databaseChangeLog>
