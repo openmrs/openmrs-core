@@ -24,6 +24,7 @@ import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransactionalTest {
 
@@ -46,6 +47,8 @@ public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransact
 
 		// Drop the first-level cache so the next reads can only be served by the second-level cache.
 		Context.clearSession();
+		assertTrue(sessionFactory.getStatistics().isStatisticsEnabled(),
+		    "Hibernate statistics must be enabled for this test to count statements");
 		sessionFactory.getStatistics().clear();
 
 		loadGraph(5089);

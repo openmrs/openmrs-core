@@ -38,7 +38,7 @@ public class ConceptCacheInvalidationIntegrationTest extends BaseContextSensitiv
 		ConceptReferenceTerm termA = conceptService.getConceptReferenceTerm(1);
 		ConceptMapType mapType = conceptService.getConceptMapType(2);
 
-		Concept concept = new Concept();
+		Concept concept = new ConceptNumeric();
 		concept.addName(new ConceptName("Cache invalidation name", Locale.ENGLISH));
 		concept.addDescription(new ConceptDescription("A concept used to verify cache invalidation", Locale.ENGLISH));
 		concept.setDatatype(new ConceptDatatype(1));
