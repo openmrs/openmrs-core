@@ -40,6 +40,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
+import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.util.CycleException;
 import org.openmrs.util.DatabaseUpdater;
@@ -52,6 +53,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -114,6 +116,7 @@ public class ModuleFactory {
 		
 		if (module != null) {
 			loadModule(module, replaceIfExists);
+			publishModuleEvents(new ModuleLoadEvent(ModuleFactory.class, module.getModuleId()));
 		}
 		
 		return module;
@@ -124,13 +127,14 @@ public class ModuleFactory {
 	 *
 	 * @param module
 	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
-	 *            <strong>Should</strong> load module if it is currently not loaded
-	 *            <strong>Should</strong> not load module if already loaded <strong>Should</strong>
-	 *            always load module if replacement is wanted <strong>Should</strong> not load an older
-	 *            version of the same module <strong>Should</strong> load a newer version of the same
-	 *            module
-	 * @return module the module that was loaded or if the module exists already with the same version,
-	 *         the old module
+	 *                        <strong>Should</strong> load module if it is currently not loaded
+	 *                        <strong>Should</strong> not load module if already loaded <strong>Should</strong>
+	 *                        always load module if replacement is wanted <strong>Should</strong> not load an older
+	 *                        version of the same module <strong>Should</strong> load a newer version of the same
+	 *                        module
+	 * @return module the module that was loaded
+	 * @throws ModuleException if a module with the same id is already loaded, at a newer version or
+	 *                         at the same version with replaceIfExists false
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
@@ -151,8 +155,7 @@ public class ModuleFactory {
 					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
 				}
 			} else {
-				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
-				return oldModule;
+				throw new ModuleException("A newer version of this module is already loaded");
 			}
 		}
 		
@@ -546,7 +549,11 @@ public class ModuleFactory {
 	 * @see Daemon#startModule(Module)
 	 */
 	public static Module startModule(Module module) throws ModuleException {
-		return startModule(module, false, null);
+		Module startedModule =  startModule(module, false, null);
+		if (startedModule != null) {
+			publishModuleEvents(new ModuleStartEvent(ModuleFactory.class, startedModule.getModuleId()));
+		}
+		return startedModule;
 	}
 	
 	/**
@@ -1182,6 +1189,8 @@ public class ModuleFactory {
 					log.warn("Unable to delete libcachefolder for " + moduleId);
 				}
 			}
+			
+			publishModuleEvents(new ModuleStopEvent(ModuleFactory.class, mod.getModuleId()));
 		}
 		
 		return dependentModulesStopped;
@@ -1217,6 +1226,9 @@ public class ModuleFactory {
 	 */
 	public static void unloadModule(Module mod) {
 		
+		if (mod == null) {
+			return;
+		}
 		// remove this module's advice and extensions
 		if (isModuleStarted(mod)) {
 			stopModule(mod, true);
@@ -1225,16 +1237,15 @@ public class ModuleFactory {
 		// remove from list of loaded modules
 		getLoadedModules().remove(mod);
 		
-		if (mod != null) {
-			// remove the file from the module repository
-			File file = mod.getFile();
-			
-			boolean deleted = file.delete();
-			if (!deleted) {
-				file.deleteOnExit();
-				log.warn("Could not delete " + file.getAbsolutePath());
-			}
-			
+		publishModuleEvents(new ModuleUnloadEvent(ModuleFactory.class, mod.getModuleId(), mod.getName(), mod.getVersion()));
+		
+		// remove the file from the module repository
+		File file = mod.getFile();
+		
+		boolean deleted = file.delete();
+		if (!deleted) {
+			file.deleteOnExit();
+			log.warn("Could not delete " + file.getAbsolutePath());
 		}
 	}
 	
@@ -1642,4 +1653,26 @@ public class ModuleFactory {
 		}
 		return dependentModules;
 	}
+
+	/**
+	 * Helper method to publish the module events
+	 * 
+	 * @param moduleEvent of AbstractModuleEvent type for the different module actions
+	 * @since 2.7.10
+	 */
+	private static void publishModuleEvents(AbstractModuleEvent  moduleEvent) {
+		try {
+			if (moduleEvent == null) {
+				return;
+			}
+			ApplicationEventPublisher applicationEventPublisher = ServiceContext.getInstance().getApplicationContext();
+			if (applicationEventPublisher != null) {
+				applicationEventPublisher.publishEvent(moduleEvent);
+			}
+		} 
+		catch (Exception e) {
+			log.warn("Unable to publish module event", e);
+		}
+	}
+	
 }
