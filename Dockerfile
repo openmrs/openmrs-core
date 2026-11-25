@@ -131,7 +131,10 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
     && chmod g+rx /usr/bin/tini 
 
-RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
+# RemoteIpValve: behind a reverse proxy, take the client IP and scheme from X-Forwarded-For and
+# X-Forwarded-Proto, only from Tomcat's default internal proxies (private, loopback and 100.64/10 addresses).
+RUN sed -i -e '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
+    -e '/<Engine name="Catalina" defaultHost="localhost">/a <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="X-Forwarded-For" protocolHeader="X-Forwarded-Proto" />' \
     /usr/local/tomcat/conf/server.xml \
     && chmod -R g+rx /usr/local/tomcat \
     && touch /usr/local/tomcat/bin/setenv.sh && chmod g+rw /usr/local/tomcat/bin/setenv.sh \
