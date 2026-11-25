@@ -30,6 +30,9 @@ public class MySQLBooleanType extends BooleanType {
 
 	@Override
 	public DatabaseDataType toDatabaseDataType(Database database) {
+		if (database == null) {
+         return super.toDatabaseDataType(database);
+       }
 		if (database instanceof MySQLDatabase) {
 			DatabaseDataType result = new DatabaseDataType("TINYINT", 1);
 
