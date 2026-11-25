@@ -25,6 +25,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.StorageService;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -283,5 +284,18 @@ public class LocalStorageServiceTest extends BaseStorageServiceTest {
 				testFile.toFile().delete();
 			}
 		}
+	}
+
+	@Test
+	public void isFileNameTooLong_shouldRecogniseWindowsOverLimitNameWithoutTooLongReason() {
+		String filename = "я".repeat(60) + "_" + UUID.randomUUID() + ".txt";
+		LocalStorageService localStorageService = new LocalStorageService(tempDir.toAbsolutePath().toString(),
+		        streamService);
+		Path path = tempDir.resolve(localStorageService.encodeKey("obs/" + filename));
+		FileSystemException e = new FileSystemException(path.toString(), null,
+		        "The filename, directory name, or volume label syntax is incorrect");
+
+		Object result = ReflectionTestUtils.invokeMethod(LocalStorageService.class, "isFileNameTooLong", e, path);
+		assertThat((Boolean) result, is(true));
 	}
 }

@@ -12,6 +12,7 @@ package org.openmrs.api.storage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -105,7 +106,7 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 			} catch (NoSuchFileException e) {
 				currentLocationFailure = e;
 			} catch (FileSystemException e) {
-				if (!isFileNameTooLong(e)) {
+				if (!isFileNameTooLong(e, path)) {
 					throw e;
 				}
 				currentLocationFailure = e;
@@ -124,9 +125,15 @@ public class LocalStorageService extends BaseStorageService implements StorageSe
 		throw new IllegalArgumentException("Key must not point outside storage dir. Wrong key: " + key);
 	}
 
-	private static boolean isFileNameTooLong(FileSystemException e) {
+	private static boolean isFileNameTooLong(FileSystemException e, Path path) {
+		if (e instanceof AccessDeniedException) {
+			return false;
+		}
 		String reason = e.getReason();
-		return reason != null && reason.toLowerCase(Locale.ROOT).contains("too long");
+		if (reason != null && reason.toLowerCase(Locale.ROOT).contains("too long")) {
+			return true;
+		}
+		return path.getFileName().toString().length() > 255;
 	}
 
 	private InputStream getDataInternal(Path path) throws IOException {
