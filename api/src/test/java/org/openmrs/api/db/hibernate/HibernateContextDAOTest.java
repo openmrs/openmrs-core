@@ -9,12 +9,17 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import org.apache.lucene.codecs.Codec;
 import org.hibernate.SessionFactory;
+import org.hibernate.search.engine.backend.Backend;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.mapping.SearchMapping;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.MockedStatic;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.UserDAO;
@@ -28,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,6 +71,26 @@ public class HibernateContextDAOTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(indexVersion);
 	}
 
+	private static String currentIndexVersion() {
+		return OpenmrsConstants.SEARCH_INDEX_VERSION + "-" + Codec.getDefault().getName();
+	}
+
+	@Test
+	public void getSearchIndexVersion_shouldIncludeTheCodecOnTheLuceneBackend() {
+		assertEquals(currentIndexVersion(), dao.getSearchIndexVersion());
+	}
+
+	@Test
+	public void getSearchIndexVersion_shouldNotIncludeTheCodecOnOtherBackends() {
+		SearchMapping mapping = mock(SearchMapping.class);
+		when(mapping.backend()).thenReturn(mock(Backend.class));
+		try (MockedStatic<Search> search = mockStatic(Search.class)) {
+			search.when(() -> Search.mapping(sessionFactory)).thenReturn(mapping);
+
+			assertEquals(OpenmrsConstants.SEARCH_INDEX_VERSION.toString(), dao.getSearchIndexVersion());
+		}
+	}
+
 	/**
 	 * An index left behind by an older version of Lucene cannot be opened by the Lucene we run now, so
 	 * a rebuild triggered by a version change has to throw the old index away instead of indexing into
@@ -76,14 +102,14 @@ public class HibernateContextDAOTest extends BaseContextSensitiveTest {
 	public void setupSearchIndex_shouldDropTheExistingIndexWhenTheStoredIndexVersionIsStale() throws Exception {
 		when(searchSession.massIndexer()).thenReturn(massIndexer);
 		when(massIndexer.dropAndCreateSchemaOnStart(true)).thenReturn(massIndexer);
-		setStoredIndexVersion("1");
+		setStoredIndexVersion(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
 
 		dao.setupSearchIndex();
 
 		InOrder inOrder = inOrder(massIndexer);
 		inOrder.verify(massIndexer).dropAndCreateSchemaOnStart(true);
 		inOrder.verify(massIndexer).startAndWait();
-		assertEquals(OpenmrsConstants.SEARCH_INDEX_VERSION.toString(),
+		assertEquals(currentIndexVersion(),
 		    Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION));
 	}
 
@@ -92,7 +118,7 @@ public class HibernateContextDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void setupSearchIndex_shouldNotRebuildTheIndexWhenTheStoredIndexVersionMatches() throws Exception {
-		setStoredIndexVersion(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
+		setStoredIndexVersion(currentIndexVersion());
 
 		dao.setupSearchIndex();
 
@@ -111,7 +137,7 @@ public class HibernateContextDAOTest extends BaseContextSensitiveTest {
 	public void setupSearchIndex_shouldNotLeaveTheGetGlobalPropertiesPrivilegeProxied() throws Exception {
 		when(searchSession.massIndexer()).thenReturn(massIndexer);
 		when(massIndexer.dropAndCreateSchemaOnStart(true)).thenReturn(massIndexer);
-		setStoredIndexVersion("1");
+		setStoredIndexVersion(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
 
 		assertFalse(Context.getUserContext().hasProxyPrivileges());
 		dao.setupSearchIndex();

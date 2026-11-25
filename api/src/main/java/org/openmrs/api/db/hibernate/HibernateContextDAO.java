@@ -23,12 +23,14 @@ import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PessimisticLockException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.codecs.Codec;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.search.backend.lucene.LuceneBackend;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.mapper.orm.work.SearchIndexingPlan;
@@ -610,6 +612,19 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
+	 * The value recorded in {@link OpenmrsConstants#GP_SEARCH_INDEX_VERSION}. On the Lucene backend it
+	 * names Lucene's codec too, because an index written with another codec can't be read without
+	 * lucene-backward-codecs.
+	 */
+	String getSearchIndexVersion() {
+		String version = OpenmrsConstants.SEARCH_INDEX_VERSION.toString();
+		if (Search.mapping(sessionFactory).backend() instanceof LuceneBackend) {
+			version += "-" + Codec.getDefault().getName();
+		}
+		return version;
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ContextDAO#setupSearchIndex()
 	 */
 	@Override
@@ -618,7 +633,7 @@ public class HibernateContextDAO implements ContextDAO {
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			String gp = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION, "");
 
-			if (!OpenmrsConstants.SEARCH_INDEX_VERSION.toString().equals(gp)) {
+			if (!getSearchIndexVersion().equals(gp)) {
 				rebuildSearchIndex();
 			}
 		} finally {
@@ -628,8 +643,8 @@ public class HibernateContextDAO implements ContextDAO {
 
 	/**
 	 * Discards core's indexes and builds them again, then records the current
-	 * {@link OpenmrsConstants#SEARCH_INDEX_VERSION}. This runs before any module has started, so the
-	 * indexes of module entities are left as they are.
+	 * {@link #getSearchIndexVersion()}. This runs before any module has started, so the indexes of
+	 * module entities are left as they are.
 	 * <p>
 	 * The existing indexes are dropped and recreated rather than updated in place because an index
 	 * written by an older Lucene may not be readable by the Lucene we run now, let alone updated in
@@ -675,7 +690,7 @@ public class HibernateContextDAO implements ContextDAO {
 		if (gp == null) {
 			gp = new GlobalProperty(OpenmrsConstants.GP_SEARCH_INDEX_VERSION);
 		}
-		gp.setPropertyValue(OpenmrsConstants.SEARCH_INDEX_VERSION.toString());
+		gp.setPropertyValue(getSearchIndexVersion());
 		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 
