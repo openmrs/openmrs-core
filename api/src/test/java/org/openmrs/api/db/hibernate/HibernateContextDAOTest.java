@@ -23,6 +23,7 @@ import org.mockito.MockedStatic;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.openmrs.test.jupiter.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
@@ -58,7 +59,7 @@ public class HibernateContextDAOTest extends BaseContextSensitiveTest {
 		massIndexer = mock(MassIndexer.class);
 		SearchSessionFactory searchSessionFactory = () -> searchSession;
 
-		dao = new HibernateContextDAO(sessionFactory, searchSessionFactory, userDao);
+		dao = new HibernateContextDAO(sessionFactory, searchSessionFactory, userDao, mock(UserSecurityStateDAO.class));
 	}
 
 	private void setStoredIndexVersion(String version) {
