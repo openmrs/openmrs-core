@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.openmrs.util.PrivilegeConstants;
@@ -166,13 +167,26 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 	 */
 	@Test
 	void deleteSecurityState_shouldNotDeadlockWithAConcurrentIncrementForTheSameUser() throws Exception {
+		assertDoesNotDeadlockWithAConcurrentIncrement(() -> Context.getUserService().deleteSecurityState(user(), PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateDAO#deleteAll(Integer)
+	 */
+	@Test
+	void deleteAll_shouldNotDeadlockWithAConcurrentIncrementForTheSameUser() throws Exception {
+		assertDoesNotDeadlockWithAConcurrentIncrement(
+		    () -> applicationContext.getBean("userSecurityStateDAO", UserSecurityStateDAO.class).deleteAll(userId));
+	}
+
+	private void assertDoesNotDeadlockWithAConcurrentIncrement(Runnable delete) throws Exception {
 		Context.getUserService().saveSecurityState(user(), PROPERTY, TOKEN);
 		CountDownLatch deleted = new CountDownLatch(1);
 		CountDownLatch incrementing = new CountDownLatch(1);
 		ExecutorService pool = Executors.newFixedThreadPool(2);
 		try {
 			Future<?> purge = pool.submit(() -> inSession(() -> transactionTemplate().execute(status -> {
-				Context.getUserService().deleteSecurityState(user(), PROPERTY);
+				delete.run();
 				deleted.countDown();
 				await(incrementing);
 				sleepWhileTheIncrementTakesItsLocks();
