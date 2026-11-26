@@ -444,9 +444,9 @@ class InitializationFilterSessionTest {
 
 	@Test
 	void shouldInstallWithTheValuesItCheckedThoughAnotherRequestOfTheSessionArrivesMeanwhile() throws Exception {
-		filter.installationScript.setProperty("install_method", "auto");
-		filter.installationScript.setProperty("admin_user_password", "Admin123");
-		MockHttpSession session = new MockHttpSession();
+		// the session was shown the admin page, so only the check that the install started keeps its values
+		MockHttpSession session = startSession();
+		walkAdvancedWizardToConfirmation(session, "clinic_db", "jdbc:mysql://localhost:3306/@DBNAME@");
 		CountDownLatch otherRequestDone = new CountDownLatch(1);
 		Thread[] otherRequest = new Thread[1];
 		filter.beforeStart = () -> {
@@ -470,7 +470,7 @@ class InitializationFilterSessionTest {
 			}
 		};
 
-		get(session, null);
+		post(session, "wizardcomplete.vm");
 		otherRequest[0].join(TimeUnit.SECONDS.toMillis(10));
 
 		assertEquals(1, filter.installsStarted.size());
@@ -984,10 +984,16 @@ class InitializationFilterSessionTest {
 		filter.runInstalls = true;
 		String database = configureAutomaticInstallThatCannotConnect();
 		// the configuration names no database user and no implementation id, so the client's session keeps the ones
-		// it posts
+		// it posts, on pages it is shown by posting the pages before them, since a GET would start the install
 		MockHttpSession client = new MockHttpSession();
+		post(client, "chooselang.vm", "locale", "en");
+		post(client, "installmethod.vm", "install_method", "advanced");
+		post(client, "databasesetup.vm", "database_connection", "jdbc:mysql://localhost:3306/@DBNAME@", "database_driver",
+		    "", "current_openmrs_database", "yes", "openmrs_current_database_name", "client_db");
 		post(client, TABLES_AND_USER_PAGE, "create_tables", "no", "current_database_user", "yes",
 		    "current_database_username", "<b>client_user</b>", "current_database_password", "ClientPassword1");
+		post(client, "otherruntimeproperties.vm", "module_web_admin", "yes", "auto_update_database", "no");
+		post(client, "adminusersetup.vm", "new_admin_password", "Admin123", "new_admin_password_confirm", "Admin123");
 		post(client, "implementationidsetup.vm", "implementation_name", "Client", "implementation_id", "client_id",
 		    "pass_phrase", "ClientPhrase1", "description", "");
 

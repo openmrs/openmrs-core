@@ -65,6 +65,7 @@ public class StartupFilterTest {
 		filter.model.currentDatabasePassword = "NotRenderedSecret4";
 		filter.model.adminUserPassword = "NotRenderedSecret5";
 		filter.model.remotePassword = "NotRenderedSecret6";
+		filter.model.implementationIdPassPhrase = "NotRenderedSecret7";
 
 		String page = filter.render("modelfields.vm");
 
