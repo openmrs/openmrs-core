@@ -144,11 +144,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			for (ConceptName conceptName : concept.getNames()) {
 				// ignore newly added names
 				if (conceptName.getConceptNameId() != null) {
+					boolean nameChangedInSession = dao.isConceptNameNameDirty(conceptName);
 					ConceptName clone = cloneConceptName(conceptName);
 					clone.setConceptNameId(null);
 					uuidClonedConceptNameMap.put(conceptName.getUuid(), clone);
+					boolean nameChangedComparedToDatabase = hasNameChanged(conceptName);
+					String savedName = conceptName.getName();
 
-					if (hasNameChanged(conceptName)) {
+					if (nameChangedInSession && nameChangedComparedToDatabase) {
 						if (changedConceptNames == null) {
 							changedConceptNames = new ArrayList<>();
 						}
@@ -159,6 +162,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 						// Use the cloned version
 						try {
 							BeanUtils.copyProperties(conceptName, clone);
+							conceptName.setName(savedName);
+							clone.setName(savedName);
 						} catch (IllegalAccessException | InvocationTargetException e) {
 							log.error(ERROR_MESSAGE, e);
 						}

@@ -9,6 +9,8 @@
  */
 package org.openmrs.api.cache;
 
+import java.util.List;
+
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +23,10 @@ import org.openmrs.ConceptSet;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
+import org.openmrs.util.DatabaseUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -59,6 +63,40 @@ public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransact
 		    "a fully cached concept graph should be served without issuing SQL");
 	}
 
+	@Test
+	public void savingAnUnchangedConceptShouldNotOverwriteAnExternallyFixedCachedName() {
+		int maxNameId = ((Number) DatabaseUtil
+		        .executeSQL(getConnection(), "select max(concept_name_id) from concept_name", true).get(0).get(0))
+		        .intValue();
+		try {
+			Concept concept = conceptService.getConcept(5089);
+			assertEquals("WEIGHT (KG)", concept.getName().getName());
+			Context.clearSession();
+
+			DatabaseUtil.executeSQL(getConnection(),
+			    "update concept_name set name = 'WEIGHT (KG) corrected' where concept_name_id = 1439", false);
+
+			concept = conceptService.getConcept(5089);
+			assertEquals("WEIGHT (KG)", concept.getName().getName());
+
+			conceptService.saveConcept(concept);
+			assertEquals("WEIGHT (KG) corrected", concept.getName().getName());
+
+			List<List<Object>> rows = DatabaseUtil.executeSQL(getConnection(),
+			    "select name, voided from concept_name where concept_name_id = 1439", true);
+			assertEquals("WEIGHT (KG) corrected", rows.get(0).get(0));
+			assertFalse((Boolean) rows.get(0).get(1));
+		} finally {
+			DatabaseUtil.executeSQL(getConnection(),
+			    "delete from concept_name where concept_id = 5089 and concept_name_id > " + maxNameId, false);
+			DatabaseUtil.executeSQL(getConnection(),
+			    "update concept_name set name = 'WEIGHT (KG)', voided = false, void_reason = null, "
+			            + "date_voided = null, voided_by = null where concept_name_id = 1439",
+			    false);
+			Context.clearEntireCache();
+		}
+	}
+
 	private void loadGraph(Integer conceptId) {
 		Concept concept = conceptService.getConcept(conceptId);
 		assertNotNull(concept);
@@ -86,6 +124,7 @@ public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransact
 
 		for (ConceptMap map : concept.getConceptMappings()) {
 			map.getConceptReferenceTerm().getCode();
+			map.getConceptReferenceTerm().getConceptSource().getName();
 			map.getConceptMapType().getName();
 		}
 

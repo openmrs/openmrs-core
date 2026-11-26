@@ -11,6 +11,7 @@ package org.openmrs;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 /**
@@ -26,6 +29,8 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Table(name = "concept_reference_source")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = false, length = 50)),
         @AttributeOverride(name = "description", column = @Column(name = "description", nullable = false, length = 1024)) })
 @Audited
