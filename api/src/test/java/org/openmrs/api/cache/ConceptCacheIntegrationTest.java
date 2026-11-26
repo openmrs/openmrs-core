@@ -64,7 +64,7 @@ public class ConceptCacheIntegrationTest extends BaseContextSensitiveNonTransact
 	}
 
 	@Test
-	public void savingAnUnchangedConceptShouldNotOverwriteAnExternallyFixedCachedName() {
+	public void savingAnUnchangedConcept_shouldNotOverwriteAnExternallyFixedCachedName() {
 		int maxNameId = ((Number) DatabaseUtil
 		        .executeSQL(getConnection(), "select max(concept_name_id) from concept_name", true).get(0).get(0))
 		        .intValue();
