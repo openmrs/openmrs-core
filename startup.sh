@@ -84,6 +84,14 @@ fi
 SQ="'"
 # Expanded unquoted below on purpose: bash 4.2 keeps the quotes of a quoted replacement
 SQ_ESCAPED="'\\''"
+
+# Read by the RemoteIpValve in server.xml (see the Dockerfile); unset, it trusts no proxy.
+# In single quotes, so catalina.sh's eval keeps the regular expression's backslashes and | as they are
+if [ -n "${OMRS_TRUSTED_PROXIES}" ]; then
+  echo "Using X-Forwarded-For and X-Forwarded-Proto from proxies matching ${OMRS_TRUSTED_PROXIES}"
+  CATALINA_OPTS="$CATALINA_OPTS -Dopenmrs.remoteIp.internalProxies='${OMRS_TRUSTED_PROXIES//"$SQ"/$SQ_ESCAPED}'"
+fi
+
 {
   printf "export JAVA_OPTS='%s'\n" "${JAVA_OPTS//"$SQ"/$SQ_ESCAPED}"
   printf "export CATALINA_OPTS='%s'\n" "${CATALINA_OPTS//"$SQ"/$SQ_ESCAPED}"
