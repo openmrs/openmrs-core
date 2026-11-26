@@ -57,6 +57,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.ImmutableEntityInterceptor;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.api.impl.PatientServiceImplTest;
 import org.openmrs.comparator.PatientIdentifierTypeDefaultComparator;
@@ -2723,6 +2724,24 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			obsService.saveObs(earlierVersion, "testing");
 			Context.flushSession();
 		});
+	}
+
+	@Test
+	public void mergePatients_shouldEndTheMergeOnTheThreadWhenTheMergeFails() throws Exception {
+		Patient notPreferred = patientService.getPatient(7);
+		voidOrders(Collections.singleton(notPreferred));
+		Context.becomeUser(Context.getUserService().getUserByUsername("butch").getSystemId());
+		// without Delete Patients the merge fails partway, when it voids the non preferred patient
+		Arrays.stream(MERGE_PRIVILEGES).filter(p -> !PrivilegeConstants.DELETE_PATIENTS.equals(p))
+		        .forEach(Context::addProxyPrivilege);
+		try {
+			assertThrows(AccessDeniedException.class,
+			    () -> patientService.mergePatients(patientService.getPatient(999), notPreferred));
+		} finally {
+			Arrays.stream(MERGE_PRIVILEGES).forEach(Context::removeProxyPrivilege);
+			authenticate();
+		}
+		assertFalse(ImmutableEntityInterceptor.isPatientMergeMove(7, 999));
 	}
 
 	/**
