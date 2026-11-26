@@ -56,6 +56,7 @@ import java.util.zip.ZipInputStream;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -2564,14 +2565,7 @@ public class InitializationFilter extends StartupFilter {
 						Context.openSession();
 
 						if (!completeSetup(runtimeProperties)) {
-							if (runtimePropertiesWritten) {
-								// so no other install replaces the runtime properties file this one wrote
-								Context.closeSession();
-							} else {
-								Context.shutdown();
-								WebModuleUtil.shutdownModules(filterConfig.getServletContext());
-								contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
-							}
+							endFailedSetup(contextLoader, filterConfig.getServletContext());
 							return;
 						}
 
@@ -2681,6 +2675,25 @@ public class InitializationFilter extends StartupFilter {
 				automaticSetupFailed = true;
 			}
 			return false;
+		}
+
+		/**
+		 * Ends an install whose setup failed. Once it has written the runtime properties file, the web
+		 * application context stays, so that no other install replaces that file until OpenMRS restarts;
+		 * before that, the context is closed again.
+		 *
+		 * @param contextLoader the loader that started the web application context
+		 * @param servletContext the servlet context the web application context is on
+		 */
+		void endFailedSetup(ContextLoader contextLoader, ServletContext servletContext) {
+			if (runtimePropertiesWritten) {
+				// so no other install replaces the runtime properties file this one wrote
+				Context.closeSession();
+			} else {
+				Context.shutdown();
+				WebModuleUtil.shutdownModules(servletContext);
+				contextLoader.closeWebApplicationContext(servletContext);
+			}
 		}
 
 		/**

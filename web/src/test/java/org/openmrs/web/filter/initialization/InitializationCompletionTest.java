@@ -37,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
@@ -51,8 +52,10 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.util.ErrorMessageConstants;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.context.ContextLoader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -67,8 +70,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests the steps an install runs once the web application context is up, and how it ends when one
@@ -340,6 +347,23 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		assertTrue(job.runtimePropertiesWritten);
 		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
 		assertTrue(installIncompleteFile.exists());
+	}
+
+	@Test
+	void endFailedSetup_shouldLeaveTheWebApplicationContextOnceTheRuntimePropertiesFileIsWritten() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true, true);
+		assertTrue(new File(InitializationFilter.getInstallIncompleteFile(), "held").mkdirs());
+		useAnonymousUserContext();
+		assertFalse(job.completeSetup(runtimeProperties()));
+		ContextLoader contextLoader = mock(ContextLoader.class);
+
+		// so that ending the install neither closes this thread's session nor shuts down the test's context
+		try (MockedStatic<Context> ignored = mockStatic(Context.class)) {
+			job.endFailedSetup(contextLoader, new MockServletContext());
+		}
+
+		// so every wizard request gets the page saying OpenMRS has to restart until it does
+		verify(contextLoader, never()).closeWebApplicationContext(any());
 	}
 
 	@Test

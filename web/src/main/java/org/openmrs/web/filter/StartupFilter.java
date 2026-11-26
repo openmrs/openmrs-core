@@ -267,7 +267,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param model the model the template is rendered with
 	 * @param errors the errors to display
 	 * @param msgs the messages to display
-	 * @since 3.0.0
+	 * @since 2.7.10, 2.8.11, 2.9.0, 3.0.0
 	 */
 	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
 	        Object model, Map<String, Object[]> errors, Map<String, Object[]> msgs) throws IOException {
