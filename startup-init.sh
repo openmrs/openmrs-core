@@ -60,6 +60,10 @@ OMRS_WEBAPP_NAME=${OMRS_WEBAPP_NAME:-'openmrs'}
 OMRS_SEARCH=${OMRS_SEARCH:-'lucene'}
 OMRS_SEARCH_CONFIG=${OMRS_SEARCH_CONFIG:-"${OMRS_SEARCH}Config"}
 OMRS_SEARCH_ES_URIS=${OMRS_SEARCH_ES_URIS:-'http://es:9200'}
+# Reverse proxies whose X-Forwarded-For and X-Forwarded-Proto headers Tomcat uses for the client's IP address and
+# scheme: a regular expression matched against the IP address the request comes from, e.g. 10\.0\.0\.5|172\.18\.0\.2
+# Empty (the default) trusts no proxy, so the headers are ignored
+OMRS_TRUSTED_PROXIES=${OMRS_TRUSTED_PROXIES:-}
 # End of configurable environment variables
 # -----------------------------------------
 

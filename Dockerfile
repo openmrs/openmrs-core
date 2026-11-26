@@ -137,10 +137,17 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
     && chmod g+rx /usr/bin/tini 
 
-# RemoteIpValve: behind a reverse proxy, take the client IP and scheme from X-Forwarded-For and
-# X-Forwarded-Proto, only from Tomcat's default internal proxies (private, loopback and 100.64/10 addresses).
+# Edits Tomcat's stock conf/server.xml in place (sed -i). Each -e '/<pattern>/a <text>' finds the line
+# containing <pattern> and adds <text> as a new line straight after it:
+#  1. After the line opening the HTTP Connector (port 8080), add attributes to that Connector: UTF-8 URLs, and
+#     the characters Tomcat would otherwise reject in paths and query strings.
+#  2. After the line opening the Engine, add a RemoteIpValve. Behind a reverse proxy, it takes the client's
+#     IP address and scheme from X-Forwarded-For and X-Forwarded-Proto, but only from the proxies matched by
+#     internalProxies: the system property openmrs.remoteIp.internalProxies, which startup.sh sets from
+#     OMRS_TRUSTED_PROXIES. Unset, it's empty (the ':-' default), so no proxy is trusted and the headers
+#     are ignored. The pattern is the whole line, so the commented-out Engine example above it isn't matched.
 RUN sed -i -e '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
-    -e '/<Engine name="Catalina" defaultHost="localhost">/a <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="X-Forwarded-For" protocolHeader="X-Forwarded-Proto" />' \
+    -e '/<Engine name="Catalina" defaultHost="localhost">/a <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="X-Forwarded-For" protocolHeader="X-Forwarded-Proto" internalProxies="${openmrs.remoteIp.internalProxies:-}" />' \
     /usr/local/tomcat/conf/server.xml \
     && chmod -R g+rx /usr/local/tomcat \
     && touch /usr/local/tomcat/bin/setenv.sh && chmod g+rw /usr/local/tomcat/bin/setenv.sh \
