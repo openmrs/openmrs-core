@@ -321,6 +321,50 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 	}
 
 	@Test
+	void completeSetup_shouldFailWhenItCannotDeleteTheInstallIncompleteFileOnceItHasWrittenTheRuntimeProperties()
+	        throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true, true);
+		// a directory with a file in it, which cannot be deleted as a file can, whoever runs the test
+		File installIncompleteFile = InitializationFilter.getInstallIncompleteFile();
+		assertTrue(new File(installIncompleteFile, "held").mkdirs());
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+
+		assertEquals(installIncompleteFile.getAbsolutePath(),
+		    job.getErrors().get(ErrorMessageConstants.ERROR_INSTALL_INCOMPLETE_NOT_DELETED)[0]);
+		assertTrue(filter.automaticSetupFailed);
+		// written, since the admin user no longer has the seeded password, so the install thread leaves the web
+		// application context, which refuses any other install until OpenMRS restarts
+		assertTrue(runtimePropertiesFile.exists());
+		assertTrue(job.runtimePropertiesWritten);
+		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		assertTrue(installIncompleteFile.exists());
+	}
+
+	@Test
+	void completeSetup_shouldSayWhatToDoThoughItHidesWhichFileItCannotDeleteForAnInstallWhoseUrlMayCarryCredentials()
+	        throws Exception {
+		InitializationWizardModel model = new InitializationWizardModel();
+		model.adminUserPassword = CHOSEN_PASSWORD;
+		model.createTables = true;
+		// so the install's errors are shown without their details
+		model.remoteUrl = "https://admin:RemoteSecret1@remote.example/openmrs";
+		InitializationFilter.InitializationCompletion job = filter.new InitializationCompletion(
+		                                                                                        model,
+		                                                                                        false);
+		assertTrue(new File(InitializationFilter.getInstallIncompleteFile(), "held").mkdirs());
+		useAnonymousUserContext();
+
+		assertFalse(job.completeSetup(runtimeProperties()));
+
+		// whose message says which directory the file is in, what its name ends in, and what to do
+		assertThat(job.getErrors(), hasKey(ErrorMessageConstants.ERROR_INSTALL_INCOMPLETE_NOT_DELETED));
+		assertThat((String) job.getErrors().get(ErrorMessageConstants.ERROR_INSTALL_INCOMPLETE_NOT_DELETED)[0],
+		    not(containsString("install-incomplete")));
+	}
+
+	@Test
 	void completeSetup_shouldKeepTheInstallIncompleteFileWhenTheSeededAdminPasswordHasNoReplacement() throws Exception {
 		writeExistingRuntimeProperties();
 		InitializationFilter.InitializationCompletion job = job("", true);
@@ -422,6 +466,7 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		assertThat(job.getErrors(), hasKey(ErrorMessageConstants.ERROR_COMPLETE_STARTUP));
 		assertEquals("yes", readRuntimeProperties(runtimePropertiesFile).getProperty("existing"));
 		assertThat(filesTheInstallBeganToWrite(), empty());
+		assertFalse(job.runtimePropertiesWritten);
 	}
 
 	@Test

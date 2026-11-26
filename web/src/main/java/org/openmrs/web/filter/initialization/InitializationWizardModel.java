@@ -294,4 +294,17 @@ public class InitializationWizardModel {
 	 * set requests of the session can add to while an install runs, outside the session's lock.
 	 */
 	final Set<String> pagesShown = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * The connection URL the database page last set from what this session posted, which a post of that
+	 * page with its URL field empty keeps, see {@link InitializationFilter}
+	 */
+	String enteredDatabaseConnection;
+
+	/**
+	 * The remote system's URL the testing install's remote system page last set from what this session
+	 * posted, which a post of that page with its URL field empty keeps, see
+	 * {@link InitializationFilter}
+	 */
+	String enteredRemoteUrl;
 }

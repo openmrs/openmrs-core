@@ -86,6 +86,8 @@ public class ErrorMessageConstants {
 
 	public static final String ERROR_NOT_CONFIRMED = "install.error.notConfirmed";
 
+	public static final String ERROR_INSTALL_INCOMPLETE_NOT_DELETED = "install.error.installIncompleteNotDeleted";
+
 	public static final String ERROR_UNABLE_COPY_DATA = "install.error.unableCopyData";
 
 	public static final String ERROR_UNABLE_CREATE_DB = "install.error.unableCreateDb";

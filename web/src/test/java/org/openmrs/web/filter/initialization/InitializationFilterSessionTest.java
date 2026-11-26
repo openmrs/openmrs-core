@@ -119,6 +119,11 @@ class InitializationFilterSessionTest {
 	 */
 	private static final Pattern PASSWORD_FIELD_REFERENCE = Pattern.compile("\\$!?\\{?\\w*(?i:password|passphrase)");
 
+	/**
+	 * What a page says under a URL field it left empty, since the URL may carry credentials
+	 */
+	private static final String HIDDEN_URL_HINT = "Leave this field empty to keep it";
+
 	@TempDir
 	Path applicationDataDirectory;
 
@@ -1607,6 +1612,133 @@ class InitializationFilterSessionTest {
 		} finally {
 			remote.stop(0);
 		}
+	}
+
+	@Test
+	void shouldNotKeepAConfiguredConnectionUrlThatMayCarryCredentialsWhichTheSessionDidNotEnter() throws Exception {
+		String connectionUrl = "jdbc:mysql://localhost:3306/@DBNAME@?user=openmrs&password=UrlSecret1";
+		filter.installationScript.setProperty("connection.url", connectionUrl);
+		MockHttpSession session = startSession();
+
+		String databasePage = post(session, "installmethod.vm", "install_method", "advanced");
+		String page = post(session, "databasesetup.vm", "database_connection", "", "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		assertThat(databasePage, not(containsString("UrlSecret1")));
+		assertThat(databasePage, not(containsString(HIDDEN_URL_HINT)));
+		// as with a configured password, a session that does not enter the URL cannot use it
+		assertThat(page, containsString("Database connection string is required"));
+		assertNotEquals(connectionUrl, filter.getWizardModel(session).databaseConnection);
+	}
+
+	@Test
+	void shouldKeepAConnectionUrlThatMayCarryCredentialsWhenTheDatabasePageIsPostedAgainWithItsFieldEmpty()
+	        throws Exception {
+		String connectionUrl = "jdbc:mysql://localhost:3306/@DBNAME@?user=openmrs&password=UrlSecret1";
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "advanced");
+		post(session, "databasesetup.vm", "database_connection", connectionUrl, "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		String databasePage = post(session, TABLES_AND_USER_PAGE, "back", "Back");
+		// with the database name left out, so the page comes back with its error
+		String databasePageWithError = post(session, "databasesetup.vm", "database_connection", "", "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "");
+		String tablesPage = post(session, "databasesetup.vm", "database_connection", "", "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		assertThat(databasePage, containsString(HIDDEN_URL_HINT));
+		assertThat(databasePageWithError, containsString("value=\"databasesetup.vm\""));
+		assertThat(databasePageWithError, not(containsString("Database connection string is required")));
+		assertThat(databasePageWithError, containsString(HIDDEN_URL_HINT));
+		assertThat(tablesPage, containsString("value=\"" + TABLES_AND_USER_PAGE + "\""));
+		assertEquals(connectionUrl, filter.getWizardModel(session).databaseConnection);
+	}
+
+	@Test
+	void shouldNotKeepAConnectionUrlThatMayCarryCredentialsOnceTheSetupIsOpenedAgain() throws Exception {
+		String connectionUrl = "jdbc:mysql://localhost:3306/@DBNAME@?user=openmrs&password=UrlSecret1";
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "advanced");
+		post(session, "databasesetup.vm", "database_connection", connectionUrl, "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		// which forgets the passwords the session entered
+		get(session, null);
+		post(session, "chooselang.vm", "locale", "en");
+		String databasePage = post(session, "installmethod.vm", "install_method", "advanced");
+		String page = post(session, "databasesetup.vm", "database_connection", "", "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		assertThat(databasePage, not(containsString(HIDDEN_URL_HINT)));
+		assertThat(page, containsString("Database connection string is required"));
+	}
+
+	@Test
+	void shouldNotKeepARemoteUrlThatMayCarryCredentialsOnceTheSetupIsOpenedAgain() throws Exception {
+		String remoteUrl = "https://admin:RemoteSecret1@localhost:1/openmrs";
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "testing");
+		post(session, "remotedetails.vm", "remoteUrl", remoteUrl);
+
+		// which forgets the passwords the session entered
+		get(session, null);
+		post(session, "chooselang.vm", "locale", "en");
+		String remoteDetailsPage = post(session, "installmethod.vm", "install_method", "testing");
+		String page = post(session, "remotedetails.vm", "remoteUrl", "");
+
+		assertThat(remoteDetailsPage, not(containsString(HIDDEN_URL_HINT)));
+		assertThat(page, containsString("URL to remote System is required"));
+	}
+
+	@Test
+	void shouldRequireAConnectionUrlWhenTheDatabasePagePostsEmptyTheFieldThatShowedIt() throws Exception {
+		String connectionUrl = "jdbc:mysql://localhost:3306/@DBNAME@";
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "advanced");
+		post(session, "databasesetup.vm", "database_connection", connectionUrl, "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		String databasePage = post(session, TABLES_AND_USER_PAGE, "back", "Back");
+		String page = post(session, "databasesetup.vm", "database_connection", "", "database_driver", "",
+		    "current_openmrs_database", "yes", "openmrs_current_database_name", "clinic_db");
+
+		assertThat(databasePage, containsString("value=\"" + connectionUrl + "\""));
+		assertThat(databasePage, not(containsString(HIDDEN_URL_HINT)));
+		assertThat(page, containsString("Database connection string is required"));
+	}
+
+	@Test
+	void shouldKeepARemoteUrlThatMayCarryCredentialsWhenTheRemoteSystemPageIsPostedAgainWithItsFieldEmpty()
+	        throws Exception {
+		// a remote system that cannot be reached, so the page comes back with its error
+		String remoteUrl = "https://admin:RemoteSecret1@localhost:1/openmrs";
+		MockHttpSession session = startSession();
+		post(session, "installmethod.vm", "install_method", "testing");
+
+		String unreachablePage = post(session, "remotedetails.vm", "remoteUrl", remoteUrl);
+		String unreachableAgainPage = post(session, "remotedetails.vm", "remoteUrl", "");
+
+		assertThat(unreachablePage, containsString(HIDDEN_URL_HINT));
+		assertThat(unreachablePage, not(containsString("RemoteSecret1")));
+		assertThat(unreachableAgainPage, containsString("Failed to establish a connection to"));
+		assertThat(unreachableAgainPage, not(containsString("RemoteSecret1")));
+		assertEquals(remoteUrl, filter.getWizardModel(session).remoteUrl);
+	}
+
+	@Test
+	void shouldNotKeepAConfiguredRemoteUrlThatMayCarryCredentialsWhichTheSessionDidNotEnter() throws Exception {
+		String remoteUrl = "https://admin:RemoteSecret1@localhost:1/openmrs";
+		filter.installationScript.setProperty("remote_url", remoteUrl);
+		MockHttpSession session = startSession();
+
+		String remoteDetailsPage = post(session, "installmethod.vm", "install_method", "testing");
+		String page = post(session, "remotedetails.vm", "remoteUrl", "");
+
+		assertThat(remoteDetailsPage, not(containsString("RemoteSecret1")));
+		assertThat(remoteDetailsPage, not(containsString(HIDDEN_URL_HINT)));
+		assertThat(page, containsString("URL to remote System is required"));
+		assertNotEquals(remoteUrl, filter.getWizardModel(session).remoteUrl);
 	}
 
 	/**

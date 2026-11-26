@@ -17,6 +17,7 @@
                                value="${displayedRemoteUrl}" 
                                onKeyPress="return submitenter(this,event);" />
                         <span class="input-hint">$l10n.get("install.testing.remoteUrl.example")</span>
+                        #if( $remoteUrlKept )<span class="input-hint">$l10n.get("install.hiddenUrl")</span>#end
                     </div>
                 </div>
 

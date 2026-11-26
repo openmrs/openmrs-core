@@ -386,10 +386,10 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * Renders the page saying that OpenMRS has to restart before it installs again, for any request but
-	 * one for an automatic install once an install started OpenMRS and starting it failed. No wizard
-	 * page is shown then: the runtime properties that install wrote hold the values its session
-	 * entered, and the wizard pages would show them to any session. Only the session that started that
-	 * install is also shown why it failed.
+	 * one for an automatic install once an install started OpenMRS and starting it failed, or failed
+	 * once it wrote its runtime properties file. No wizard page is shown then: the runtime properties
+	 * that install wrote hold the values its session entered, and the wizard pages would show them to
+	 * any session. Only the session that started that install is also shown why it failed.
 	 *
 	 * @param session the session of the request
 	 * @param referenceMap
@@ -693,7 +693,8 @@ public class InitializationFilter extends StartupFilter {
 	 * the runtime properties file, reading the file then if it does, and counts the install's steps by
 	 * that decision, which posting the page keeps to. Pages show the connection URL as
 	 * displayedDatabaseConnection and the remote system's URL as displayedRemoteUrl, each empty when
-	 * the URL may carry credentials.
+	 * the URL may carry credentials, and databaseConnectionKept and remoteUrlKept tell whether posting
+	 * such a field empty keeps the URL, see {@link #keepsUrl(String, String)}.
 	 */
 	private void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse,
 	        InitializationWizardModel wizardModel) throws IOException {
@@ -714,8 +715,10 @@ public class InitializationFilter extends StartupFilter {
 		String databaseConnection = wizardModel.databaseConnection;
 		referenceMap.put("displayedDatabaseConnection",
 		    databaseConnection == null || mayCarryCredentials(databaseConnection) ? "" : databaseConnection);
+		referenceMap.put("databaseConnectionKept", keepsUrl(databaseConnection, wizardModel.enteredDatabaseConnection));
 		String remoteUrl = wizardModel.remoteUrl;
 		referenceMap.put("displayedRemoteUrl", remoteUrl == null || mayCarryCredentials(remoteUrl) ? "" : remoteUrl);
+		referenceMap.put("remoteUrlKept", keepsUrl(remoteUrl, wizardModel.enteredRemoteUrl));
 		renderTemplate(templateName, referenceMap, httpResponse, wizardModel, wizardModel.errors, wizardModel.msgs);
 	}
 
@@ -823,6 +826,9 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.createUserPassword = "";
 		wizardModel.currentDatabasePassword = "";
 		wizardModel.remotePassword = "";
+		// a URL the session entered may hold a password too, so it is no longer kept without being entered again
+		wizardModel.enteredDatabaseConnection = null;
+		wizardModel.enteredRemoteUrl = null;
 	}
 
 	/**
@@ -1046,7 +1052,9 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 
-			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
+			wizardModel.databaseConnection = urlAfterPost(httpRequest.getParameter("database_connection"),
+			    wizardModel.databaseConnection, wizardModel.enteredDatabaseConnection);
+			wizardModel.enteredDatabaseConnection = wizardModel.databaseConnection;
 			checkForEmptyValue(wizardModel.databaseConnection, wizardModel.errors, ErrorMessageConstants.ERROR_DB_CONN_REQ);
 
 			wizardModel.databaseDriver = httpRequest.getParameter("database_driver");
@@ -1300,7 +1308,9 @@ public class InitializationFilter extends StartupFilter {
 				return;
 			}
 
-			wizardModel.remoteUrl = httpRequest.getParameter("remoteUrl");
+			wizardModel.remoteUrl = urlAfterPost(httpRequest.getParameter("remoteUrl"), wizardModel.remoteUrl,
+			    wizardModel.enteredRemoteUrl);
+			wizardModel.enteredRemoteUrl = wizardModel.remoteUrl;
 			checkForEmptyValue(wizardModel.remoteUrl, wizardModel.errors, "install.testing.remote.url.required");
 			if (wizardModel.errors.isEmpty()) {
 				//Check if the remote system is running
@@ -1840,9 +1850,9 @@ public class InitializationFilter extends StartupFilter {
 
 	/**
 	 * @return true once an earlier install has started the root web application context and then failed
-	 *         to start OpenMRS, or failed while starting that context, either of which leaves the
-	 *         context or its failure on the servlet context; no second one can be started until OpenMRS
-	 *         restarts
+	 *         to start OpenMRS, or failed once it wrote the runtime properties file, or failed while
+	 *         starting that context, any of which leaves the context or its failure on the servlet
+	 *         context; no second one can be started until OpenMRS restarts
 	 */
 	private boolean isRootWebApplicationContextSet() {
 		return filterConfig.getServletContext()
@@ -1959,6 +1969,33 @@ public class InitializationFilter extends StartupFilter {
 	}
 
 	/**
+	 * Whether posting a URL field that its page left empty, since the URL may carry credentials, keeps
+	 * the URL, as going back to the page or correcting another of its fields does. Only a URL the page
+	 * set from what the session posted is kept, so that, as with a stored password, a session uses a
+	 * configured URL that may carry credentials only by entering it.
+	 *
+	 * @param modelUrl the URL the session's model has
+	 * @param enteredUrl the URL the page last set from what the session posted, or null
+	 * @return true if the model's URL may carry credentials and is the one the page last set
+	 */
+	private static boolean keepsUrl(String modelUrl, String enteredUrl) {
+		return mayCarryCredentials(modelUrl) && modelUrl.equals(enteredUrl);
+	}
+
+	/**
+	 * The URL a wizard page sets in the session's model
+	 *
+	 * @param postedUrl the URL the page posted
+	 * @param modelUrl the URL the session's model has
+	 * @param enteredUrl the URL the page last set from what the session posted, or null
+	 * @return the model's URL if the page posted no URL and keeps the model's, see
+	 *         {@link #keepsUrl(String, String)}, otherwise the posted URL
+	 */
+	private static String urlAfterPost(String postedUrl, String modelUrl, String enteredUrl) {
+		return !StringUtils.hasText(postedUrl) && keepsUrl(modelUrl, enteredUrl) ? modelUrl : postedUrl;
+	}
+
+	/**
 	 * Whether an install with this model uses a URL that may carry credentials: its connection URL, the
 	 * remote system's URL, or a runtime property named like a URL that it adds to the ones OpenMRS has,
 	 * such as property.connection.url in an installation script, or keeps from them. A driver parses
@@ -2026,6 +2063,13 @@ public class InitializationFilter extends StartupFilter {
 		 * The runtime properties OpenMRS had before this install added its own, once it has added them
 		 */
 		private Properties runtimePropertiesBeforeInstall;
+
+		/**
+		 * Whether this install has written the runtime properties file, after which a failure leaves the
+		 * web application context on the servlet context, so that no other install starts until OpenMRS
+		 * restarts and replaces that file
+		 */
+		boolean runtimePropertiesWritten;
 
 		/**
 		 * The file that marks the install incomplete, where the next start looks for it: the install's own
@@ -2506,10 +2550,11 @@ public class InitializationFilter extends StartupFilter {
 						setMessage("Starting OpenMRS");
 
 						// start spring
-						// if setting up fails after this point, the web application context is closed again, and once an
-						// automatic install fails so, no automatic install starts until a restart; if starting it or
-						// OpenMRS fails, it or its failure stays on the servlet context, and a later install is refused
-						// until a restart
+						// if setting up fails after this point, before the runtime properties file is written, the web
+						// application context is closed again, and once an automatic install fails so, no automatic install
+						// starts until a restart; if starting it or OpenMRS fails, or setting up fails once the runtime
+						// properties file is written, it or its failure stays on the servlet context, and a later install is
+						// refused until a restart
 						// logic copied from org.springframework.web.context.ContextLoaderListener
 						log.debug("Initializing WAC");
 						ContextLoader contextLoader = new ContextLoader();
@@ -2519,9 +2564,14 @@ public class InitializationFilter extends StartupFilter {
 						Context.openSession();
 
 						if (!completeSetup(runtimeProperties)) {
-							Context.shutdown();
-							WebModuleUtil.shutdownModules(filterConfig.getServletContext());
-							contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
+							if (runtimePropertiesWritten) {
+								// so no other install replaces the runtime properties file this one wrote
+								Context.closeSession();
+							} else {
+								Context.shutdown();
+								WebModuleUtil.shutdownModules(filterConfig.getServletContext());
+								contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
+							}
 							return;
 						}
 
@@ -2613,10 +2663,12 @@ public class InitializationFilter extends StartupFilter {
 		 * the caller opened, unless an earlier step of the install has reported an error. The runtime
 		 * properties file, which marks OpenMRS as installed, is written last, so a step that fails before
 		 * it, or writing it, leaves the file as it was, and the file that marks the install incomplete, if
-		 * the install wrote one, is deleted only once the runtime properties file is written. When a step
-		 * fails, the caller closes the web application context again, so an automatic install that fails
-		 * here refuses the automatic installs after it until OpenMRS restarts, see
-		 * {@link InitializationFilter#automaticSetupFailed}.
+		 * the install wrote one, is deleted only once the runtime properties file is written. Failing to
+		 * delete it fails the install too, though the runtime properties file it wrote stays. When a step
+		 * fails before the runtime properties file is written, the caller closes the web application
+		 * context again, so an automatic install that fails here refuses the automatic installs after it
+		 * until OpenMRS restarts, see {@link InitializationFilter#automaticSetupFailed}; once the file is
+		 * written, the caller leaves the context, which refuses every install until OpenMRS restarts.
 		 *
 		 * @param runtimeProperties the runtime properties of the install, holding its database connection
 		 * @return true if every step succeeded, false once a step has reported an error
@@ -2659,12 +2711,15 @@ public class InitializationFilter extends StartupFilter {
 				log.warn("Unable to write the runtime properties file", e);
 				return false;
 			}
+			runtimePropertiesWritten = true;
 			if (installIncompleteFile.exists() && !installIncompleteFile.delete()) {
 				// the admin user no longer has the seeded password, so the next start deletes the file rather than
-				// start this wizard, and does not start OpenMRS while it cannot
-				log.error("Unable to delete {}. Delete it: when OpenMRS next starts, it tries again, and does not start "
-				        + "if it cannot.",
+				// start this wizard, and does not start OpenMRS while it cannot, which failing now shows while the
+				// install is watched rather than at some later start
+				reportError(ErrorMessageConstants.ERROR_INSTALL_INCOMPLETE_NOT_DELETED, DEFAULT_PAGE,
 				    installIncompleteFile.getAbsolutePath());
+				log.error("Unable to delete {}. Delete it, then restart OpenMRS.", installIncompleteFile.getAbsolutePath());
+				return false;
 			}
 			return true;
 		}
@@ -2938,9 +2993,10 @@ public class InitializationFilter extends StartupFilter {
 		 * them. It leaves the runtime properties file as it is: one that failed before its setup was
 		 * complete has not written it, see {@link #writeRuntimeProperties(Properties)}, so a file that was
 		 * there before the install stays, since whoever wrote it owns it, and so does the file that marks
-		 * the install incomplete, which brings the next start back to this wizard. Once the setup is
-		 * complete the database no longer has the seeded admin password, so the file stays when only
-		 * starting OpenMRS failed.
+		 * the install incomplete, which brings the next start back to this wizard. Once the setup has
+		 * written the runtime properties file the database no longer has the seeded admin password, so that
+		 * file stays when only deleting the file that marks the install incomplete, or starting OpenMRS,
+		 * failed.
 		 *
 		 * @param succeeded whether the install got through starting OpenMRS
 		 */
