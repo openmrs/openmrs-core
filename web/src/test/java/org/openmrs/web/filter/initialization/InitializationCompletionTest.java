@@ -367,6 +367,28 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 	}
 
 	@Test
+	void endFailedSetup_shouldCloseTheWebApplicationContextBeforeTheRuntimePropertiesFileIsWritten() throws Exception {
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+		job.wizardModel.implementationId = "TESTID";
+		job.wizardModel.implementationIdName = "Test";
+		job.wizardModel.implementationIdPassPhrase = "secret";
+		// an id without a description is refused before the implementation id server is contacted
+		job.wizardModel.implementationIdDescription = "";
+		useAnonymousUserContext();
+		assertFalse(job.completeSetup(runtimeProperties()));
+		ContextLoader contextLoader = mock(ContextLoader.class);
+		MockServletContext servletContext = new MockServletContext();
+
+		// so that ending the install does not shut down the test's context
+		try (MockedStatic<Context> ignored = mockStatic(Context.class)) {
+			job.endFailedSetup(contextLoader, servletContext);
+		}
+
+		// so an install from the wizard pages can start again without a restart
+		verify(contextLoader).closeWebApplicationContext(servletContext);
+	}
+
+	@Test
 	void completeSetup_shouldSayWhatToDoThoughItHidesWhichFileItCannotDeleteForAnInstallWhoseUrlMayCarryCredentials()
 	        throws Exception {
 		InitializationWizardModel model = new InitializationWizardModel();
