@@ -611,6 +611,30 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see UserService#unlockUser(User)
+	 */
+	@Test
+	public void unlockUser_shouldCheckTheRolesAsStoredNotAsLoadedInTheSession() {
+		User user = userService.getUser(502);
+		user.getRoles().size();
+		Context.getUserService().saveSecurityState(user, OpenmrsConstants.USER_SECURITY_STATE_LOCKOUT_TIMESTAMP,
+		    String.valueOf(System.currentTimeMillis()));
+		sessionFactory.getCurrentSession()
+		        .createNativeQuery("insert into user_role (user_id, role) values (502, 'System Developer')").executeUpdate();
+		User currentUser = new User();
+		currentUser.addRole(new Role(RoleConstants.AUTHENTICATED));
+		Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+
+		try {
+			assertThrows(APIException.class, () -> withCurrentUserAs(currentUser, () -> userService.unlockUser(user)));
+		} finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+
+		assertTrue(userService.isLockedOut(user));
+	}
+
+	/**
+	 * @see UserService#unlockUser(User)
 	 * @see UserService#isLockedOut(User)
 	 */
 	@Test

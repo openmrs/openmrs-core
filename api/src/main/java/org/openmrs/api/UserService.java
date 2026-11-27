@@ -791,6 +791,7 @@ public interface UserService extends OpenmrsService {
 	 * <strong>Should</strong> keep the lockout of a system developer when the current user cannot
 	 * assign that role<br/>
 	 * <strong>Should</strong> check the roles of the stored user not of the given object<br/>
+	 * <strong>Should</strong> check the roles as stored not as loaded in the session<br/>
 	 * <strong>Should</strong> not need the manage user security state proxy privilege
 	 *
 	 * @param user the user to unlock
@@ -905,7 +906,7 @@ public interface UserService extends OpenmrsService {
 	 *         <strong>Should</strong> return false when the user has no such entry
 	 *         <strong>Should</strong> fail without the manage user security state proxy privilege
 	 *         <strong>Should</strong> fail for a null user <strong>Should</strong> fail for an unsaved
-	 *         user
+	 *         user <strong>Should</strong> fail for an unknown user
 	 * @throws APIException if the user is null or has no id
 	 * @since 3.0.0, 2.9.0
 	 */

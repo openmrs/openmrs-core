@@ -20,10 +20,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.jupiter.BaseContextSensitiveNonTransactionalTest;
 import org.openmrs.util.PrivilegeConstants;
@@ -31,6 +33,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -151,6 +155,56 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 		assertEquals(CONCURRENT_CALLS, outcomes.stream().distinct().count(), outcomes.toString());
 	}
 
+	/**
+	 * A purge or a password change deletes the user's entries and then writes the user's row, while a
+	 * failed login locks the user's row and then the entries. Deleting must take the user's lock first,
+	 * or the two deadlock and the database rolls one of them back.
+	 *
+	 * @see UserService#deleteSecurityState(User, String)
+	 */
+	@Test
+	void deleteSecurityState_shouldNotDeadlockWithAConcurrentIncrementForTheSameUser() throws Exception {
+		assertDoesNotDeadlockWithAConcurrentIncrement(() -> Context.getUserService().deleteSecurityState(user(), PROPERTY));
+	}
+
+	/**
+	 * @see UserSecurityStateDAO#deleteAll(Integer)
+	 */
+	@Test
+	void deleteAll_shouldNotDeadlockWithAConcurrentIncrementForTheSameUser() throws Exception {
+		assertDoesNotDeadlockWithAConcurrentIncrement(
+		    () -> applicationContext.getBean("userSecurityStateDAO", UserSecurityStateDAO.class).deleteAll(userId));
+	}
+
+	private void assertDoesNotDeadlockWithAConcurrentIncrement(Runnable delete) throws Exception {
+		Context.getUserService().saveSecurityState(user(), PROPERTY, TOKEN);
+		CountDownLatch deleted = new CountDownLatch(1);
+		CountDownLatch incrementing = new CountDownLatch(1);
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+		try {
+			Future<?> purge = pool.submit(() -> inSession(() -> transactionTemplate().execute(status -> {
+				delete.run();
+				deleted.countDown();
+				await(incrementing);
+				sleepWhileTheIncrementTakesItsLocks();
+				return applicationContext.getBean("sessionFactory", SessionFactory.class).getCurrentSession()
+				        .createNativeQuery("update users set date_changed = current_timestamp where user_id = ?1")
+				        .setParameter(1, userId).executeUpdate();
+			})));
+			Future<?> login = pool.submit(() -> inSession(() -> {
+				await(deleted);
+				incrementing.countDown();
+				return Context.getUserService().incrementSecurityState(user(), PROPERTY);
+			}));
+			purge.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+			login.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+		} finally {
+			pool.shutdownNow();
+		}
+
+		assertEquals("1", Context.getUserService().getSecurityState(user(), PROPERTY));
+	}
+
 	@Test
 	void liquibase_shouldCreateTheUserSecurityStateTable() throws Exception {
 		List<String> columns = new ArrayList<>();
@@ -180,18 +234,11 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 		try {
 			List<Future<T>> futures = new ArrayList<>();
 			for (int i = 0; i < CONCURRENT_CALLS; i++) {
-				futures.add(pool.submit(() -> {
-					Context.openSession();
-					try {
-						Context.authenticate("admin", "test");
-						Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
-						ready.countDown();
-						start.await();
-						return call.call();
-					} finally {
-						Context.closeSession();
-					}
-				}));
+				futures.add(pool.submit(() -> inSession(() -> {
+					ready.countDown();
+					start.await();
+					return call.call();
+				})));
 			}
 			assertTrue(ready.await(TIMEOUT_SECONDS, TimeUnit.SECONDS), "not all calls were ready to start");
 			start.countDown();
@@ -203,6 +250,46 @@ public class UserServiceSecurityStateConcurrencyIT extends BaseContextSensitiveN
 			return outcomes;
 		} finally {
 			pool.shutdownNow();
+		}
+	}
+
+	/**
+	 * Runs {@code call} in its own session authenticated as the admin user.
+	 */
+	private <T> T inSession(Callable<T> call) throws Exception {
+		Context.openSession();
+		try {
+			Context.authenticate("admin", "test");
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_USER_SECURITY_STATE);
+			return call.call();
+		} finally {
+			Context.closeSession();
+		}
+	}
+
+	private TransactionTemplate transactionTemplate() {
+		return new TransactionTemplate(applicationContext.getBean("transactionManager", PlatformTransactionManager.class));
+	}
+
+	private static void await(CountDownLatch latch) {
+		try {
+			assertTrue(latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS), "the other session did not get to its lock");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * Gives the increment time to lock the user's row and block on the entry, which cannot be signalled
+	 * from inside the service call.
+	 */
+	private static void sleepWhileTheIncrementTakesItsLocks() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e);
 		}
 	}
 }

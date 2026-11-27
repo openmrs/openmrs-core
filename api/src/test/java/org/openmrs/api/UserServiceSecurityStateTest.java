@@ -435,6 +435,14 @@ public class UserServiceSecurityStateTest extends BaseContextSensitiveTest {
 	}
 
 	/**
+	 * @see UserService#deleteSecurityState(User, String)
+	 */
+	@Test
+	public void deleteSecurityState_shouldFailForAnUnknownUser() {
+		assertThrows(DAOException.class, () -> service.deleteSecurityState(new User(Integer.MAX_VALUE), PROPERTY));
+	}
+
+	/**
 	 * @see UserService#incrementSecurityState(User, String)
 	 */
 	@Test
