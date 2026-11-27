@@ -277,4 +277,12 @@
 		</modifySql>
 	</changeSet>
 
+	<changeSet id="20261127-TRUNK-6879-concept-proposal-locale-default" author="Madhav-Rakhonde">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept_proposal" columnName="locale"/>
+		</preConditions>
+		<comment>Adding empty string default value to concept_proposal.locale for TRUNK-6879</comment>
+		<addDefaultValue tableName="concept_proposal" columnName="locale" defaultValue="" columnDataType="VARCHAR(50)"/>
+	</changeSet>
+
 </databaseChangeLog>
