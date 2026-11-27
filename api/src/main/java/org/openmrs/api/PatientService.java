@@ -548,7 +548,7 @@ public interface PatientService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
-	//TODO: DAO auth filter
+	// TODO: DAO auth filter
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
 
 	/**
@@ -563,8 +563,21 @@ public interface PatientService extends OpenmrsService {
 	 * @since 1.11
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
-	//TODO: DAO auth filter
+	// TODO: DAO auth filter
 	public List<Patient> getPatients(String query, boolean includeVoided, Integer start, Integer length) throws APIException;
+
+	/**
+	 * Returns non-voided patients whose age falls within the specified inclusive age range, calculated
+	 * from their recorded birthdate. Patients without a known birthdate are excluded.
+	 *
+	 * @param minAge the minimum age in years, inclusive
+	 * @param maxAge the maximum age in years, inclusive
+	 * @return a list of matching patients
+	 * @throws APIException if either age is negative or minAge exceeds maxAge
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge) throws APIException;
 
 	/**
 	 * This method tries to find a patient in the database given the attributes on the given
@@ -1043,7 +1056,7 @@ public interface PatientService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
-	//TODO: DAO auth filter
+	// TODO: DAO auth filter
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
 
