@@ -258,9 +258,28 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		assertFalse(job.completeSetup(runtimeProperties()));
 
 		assertThat(job.getErrors(), hasKey(ErrorMessageConstants.ERROR_SET_INPL_ID));
-		// replaced before the implementation id is set, so the seeded password is gone either way
-		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		// replaced after the implementation id is set, so an install run after this one replaces it with its own
+		assertEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
 		assertFalse(runtimePropertiesFile.exists());
+	}
+
+	@Test
+	void completeSetup_shouldReplaceTheSeededAdminPasswordWithTheOneOfAnInstallRunAfterOneWhoseImplementationIdFailed()
+	        throws Exception {
+		InitializationFilter.InitializationCompletion failed = job("Failed123", true);
+		failed.wizardModel.implementationId = "TESTID";
+		failed.wizardModel.implementationIdName = "Test";
+		failed.wizardModel.implementationIdPassPhrase = "secret";
+		// an id without a description is refused before the implementation id server is contacted
+		failed.wizardModel.implementationIdDescription = "";
+		useAnonymousUserContext();
+		assertFalse(failed.completeSetup(runtimeProperties()));
+		InitializationFilter.InitializationCompletion job = job(CHOSEN_PASSWORD, true);
+
+		assertTrue(job.completeSetup(runtimeProperties()));
+
+		assertThat(job.wizardModel.workLog, hasItem(REPLACED_WORK_LOG_ENTRY));
+		Context.authenticate(new UsernamePasswordCredentials("admin", CHOSEN_PASSWORD));
 	}
 
 	@Test
@@ -309,8 +328,8 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 		assertFalse(job.completeSetup(runtimeProperties()));
 
 		assertThat(job.getErrors(), hasKey(ErrorMessageConstants.ERROR_COMPLETE_STARTUP));
-		// replaced before the sequences are updated, so the seeded password is gone either way
-		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		// replaced after the sequences are updated, so an install run after this one replaces it with its own
+		assertEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
 		assertFalse(runtimePropertiesFile.exists());
 	}
 
@@ -438,7 +457,7 @@ class InitializationCompletionTest extends BaseContextSensitiveNonTransactionalT
 
 		assertFalse(job.completeSetup(runtimeProperties()));
 
-		assertNotEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
+		assertEquals(SEEDED_PASSWORD_HASH, storedAdminPassword());
 		assertFalse(runtimePropertiesFile.exists());
 		assertTrue(InitializationFilter.getInstallIncompleteFile().exists());
 	}

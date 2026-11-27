@@ -2703,7 +2703,7 @@ public class InitializationFilter extends StartupFilter {
 		 * @return true if every step succeeded, false once a step has reported an error
 		 */
 		private boolean runSetupSteps(Properties runtimeProperties) {
-			if (hasErrors() || !replaceSeededAdminPassword() || !setImplementationId()) {
+			if (hasErrors() || !setImplementationId()) {
 				return false;
 			}
 
@@ -2713,6 +2713,12 @@ public class InitializationFilter extends StartupFilter {
 			} catch (Exception e) {
 				log.warn("Not able to update PostgreSQL sequence. Startup failed for PostgreSQL", e);
 				reportError(ErrorMessageConstants.ERROR_COMPLETE_STARTUP, DEFAULT_PAGE, e.getMessage());
+				return false;
+			}
+
+			// last before the runtime properties file, so a step that fails leaves the seeded password, which an install
+			// run after this one then replaces with its own
+			if (!replaceSeededAdminPassword()) {
 				return false;
 			}
 
