@@ -238,6 +238,13 @@ public class InitializationFilter extends StartupFilter {
 	private static final Pattern URL_PLACEHOLDERS = Pattern.compile("@(DBNAME|APPLICATIONDATADIR)@");
 
 	/**
+	 * A placeholder in the name of a URL parameter, where what the install fills in can make the name
+	 * one that carries a password
+	 */
+	private static final Pattern PLACEHOLDER_IN_PARAMETER_NAME = Pattern
+	        .compile("[?&;][^=?&;#]*@(DBNAME|APPLICATIONDATADIR)@[^=?&;#]*=");
+
+	/**
 	 * The key of the value in an install's thread context that tags the server log lines it logs
 	 */
 	static final String INSTALL_THREAD_CONTEXT_KEY = "openmrsInstall";
@@ -1935,13 +1942,15 @@ public class InitializationFilter extends StartupFilter {
 	 * user info before an @, so rather than parse them out, the wizard shows no URL that names a
 	 * password or holds an @ in its authority, from its first // to the next /, ? or #, where user info
 	 * goes, or an @ after it other than those of the placeholders &#64;DBNAME&#64; and
-	 * &#64;APPLICATIONDATADIR&#64;, which the install fills in.
+	 * &#64;APPLICATIONDATADIR&#64;, which the install fills in, nor one with a placeholder in the name
+	 * of a parameter, which what the install fills in can make the name of a password.
 	 *
 	 * @param connectionUrl a connection URL or the remote system's URL, or null
 	 * @return true if the URL contains "pass", ignoring case, or an @ in its authority or outside those
-	 *         placeholders, once its percent encoding is decoded, or if it cannot be decoded. MySQL
-	 *         Connector/J decodes the names of its parameters and compares them ignoring case, which
-	 *         takes the long s for an s, so the URL is compared in upper case.
+	 *         placeholders, or a placeholder in the name of a parameter, once its percent encoding is
+	 *         decoded, or if it cannot be decoded. MySQL Connector/J decodes the names of its
+	 *         parameters and compares them ignoring case, which takes the long s for an s, so the URL
+	 *         is compared in upper case.
 	 */
 	static boolean mayCarryCredentials(String connectionUrl) {
 		if (connectionUrl == null) {
@@ -1949,6 +1958,9 @@ public class InitializationFilter extends StartupFilter {
 		}
 		String url;
 		try {
+			if (PLACEHOLDER_IN_PARAMETER_NAME.matcher(URLDecoder.decode(connectionUrl, StandardCharsets.UTF_8)).find()) {
+				return true;
+			}
 			Matcher authority = URL_AUTHORITY.matcher(connectionUrl);
 			int authorityEnd = authority.find() ? authority.end() : 0;
 			url = URLDecoder.decode(

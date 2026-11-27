@@ -1536,7 +1536,11 @@ class InitializationFilterSessionTest {
 	        "jdbc:mysql://openmrs:Secret1@APPLICATIONDATADIR@/openmrs", "jdbc:mysql://openmrs:Secret1@DBNAME@/openmrs",
 	        "jdbc:mysql://openmrs:Secret1:@DBNAME@/openmrs", "jdbc:mysql://openmrs:Se;cret1@DBNAME@/openmrs",
 	        "jdbc:mysql://openmrs:Sjdbc:h2:@APPLICATIONDATADIR@/openmrs",
-	        "http://admin:Xjdbc:h2:@APPLICATIONDATADIR@example.org/openmrs" })
+	        "http://admin:Xjdbc:h2:@APPLICATIONDATADIR@example.org/openmrs",
+	        // a placeholder in the name of a parameter, which the database name filled in for it can make a password
+	        "jdbc:mysql://localhost:3306/@DBNAME@?user=openmrs&@DBNAME@word=Secret1",
+	        "jdbc:mysql://localhost:3306/@DBNAME@?user=openmrs&pa@DBNAME@word=Secret1",
+	        "jdbc:h2:mem:@DBNAME@;USER=openmrs;@DBNAME@WORD=Secret1" })
 	void shouldNotShowAConnectionUrlThatNamesAPasswordOrHoldsUserInfo(String connectionUrl) {
 		assertTrue(InitializationFilter.mayCarryCredentials(connectionUrl));
 	}
@@ -1554,7 +1558,9 @@ class InitializationFilterSessionTest {
 	        "jdbc:h2:@APPLICATIONDATADIR@/database/@DBNAME@;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1;MODE=LEGACY;NON_KEYWORDS=VALUE",
 	        "jdbc:h2:mem:@DBNAME@;DB_CLOSE_DELAY=-1",
 	        // placeholders after the authority
-	        "jdbc:h2:tcp://localhost/@APPLICATIONDATADIR@/database/@DBNAME@" })
+	        "jdbc:h2:tcp://localhost/@APPLICATIONDATADIR@/database/@DBNAME@",
+	        // and in the value of a parameter
+	        "jdbc:mysql://localhost:3306/@DBNAME@?connectionCollation=@DBNAME@_ci" })
 	void shouldShowAConnectionUrlWithoutCredentials(String connectionUrl) {
 		assertFalse(InitializationFilter.mayCarryCredentials(connectionUrl));
 	}
