@@ -9,10 +9,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +26,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.EntityPersister;
@@ -383,6 +381,71 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 		}
 	}
 
+	protected static final List<String> POSTGRES_SEQUENCES = Collections.unmodifiableList(Arrays.asList(
+	    "SELECT setval('person_person_id_seq', (SELECT MAX(person_id) FROM person)+1)",
+	    "SELECT setval('person_name_person_name_id_seq', (SELECT MAX(person_name_id) FROM person_name)+1)",
+	    "SELECT setval('person_attribute_type_person_attribute_type_id_seq', (SELECT MAX(person_attribute_type_id) FROM person_attribute_type)+1)",
+	    "SELECT setval('relationship_type_relationship_type_id_seq', (SELECT MAX(relationship_type_id) FROM relationship_type)+1)",
+	    "SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM users)+1)",
+	    "SELECT setval('care_setting_care_setting_id_seq', (SELECT MAX(care_setting_id) FROM care_setting)+1)",
+	    "SELECT setval('concept_datatype_concept_datatype_id_seq', (SELECT MAX(concept_datatype_id) FROM concept_datatype)+1)",
+	    "SELECT setval('concept_map_type_concept_map_type_id_seq', (SELECT MAX(concept_map_type_id) FROM concept_map_type)+1)",
+	    "SELECT setval('concept_stop_word_concept_stop_word_id_seq', (SELECT MAX(concept_stop_word_id) FROM concept_stop_word)+1)",
+	    "SELECT setval('concept_concept_id_seq', (SELECT MAX(concept_id) FROM concept)+1)",
+	    "SELECT setval('concept_name_concept_name_id_seq', (SELECT MAX(concept_name_id) FROM concept_name)+1)",
+	    "SELECT setval('concept_class_concept_class_id_seq', (SELECT MAX(concept_class_id) FROM concept_class)+1)",
+	    "SELECT setval('concept_reference_source_concept_source_id_seq', (SELECT MAX(concept_source_id) FROM concept_reference_source)+1)",
+	    "SELECT setval('encounter_role_encounter_role_id_seq', (SELECT MAX(encounter_role_id) FROM encounter_role)+1)",
+	    "SELECT setval('field_type_field_type_id_seq', (SELECT MAX(field_type_id) FROM field_type)+1)",
+	    "SELECT setval('hl7_source_hl7_source_id_seq', (SELECT MAX(hl7_source_id) FROM hl7_source)+1)",
+	    "SELECT setval('location_location_id_seq', (SELECT MAX(location_id) FROM location)+1)",
+	    "SELECT setval('encounter_encounter_id_seq', (SELECT MAX(encounter_id) FROM encounter)+1)",
+	    "SELECT setval('concept_description_concept_description_id_seq', (SELECT MAX(concept_description_id) FROM concept_description)+1)",
+	    "SELECT setval('conditions_condition_id_seq', (SELECT MAX(condition_id) FROM conditions)+1)",
+	    "SELECT setval('encounter_diagnosis_diagnosis_id_seq', (SELECT MAX(diagnosis_id) FROM encounter_diagnosis)+1)",
+	    "SELECT setval('diagnosis_attribute_type_diagnosis_attribute_type_id_seq', (SELECT MAX(diagnosis_attribute_type_id) FROM diagnosis_attribute_type)+1)",
+	    "SELECT setval('visit_visit_id_seq', (SELECT MAX(visit_id) FROM visit)+1)",
+	    "SELECT setval('concept_reference_term_concept_reference_term_id_seq', (SELECT MAX(concept_reference_term_id) FROM concept_reference_term)+1)",
+	    "SELECT setval('orders_order_id_seq', (SELECT MAX(order_id) FROM orders)+1)",
+	    "SELECT setval('order_group_order_group_id_seq', (SELECT MAX(order_group_id) FROM order_group)+1)",
+	    "SELECT setval('concept_reference_map_concept_map_id_seq', (SELECT MAX(concept_map_id) FROM concept_reference_map)+1)",
+	    "SELECT setval('order_group_attribute_type_order_group_attribute_type_id_seq', (SELECT MAX(order_group_attribute_type_id) FROM order_group_attribute_type)+1)",
+	    "SELECT setval('encounter_provider_encounter_provider_id_seq', (SELECT MAX(encounter_provider_id) FROM encounter_provider)+1)",
+	    "SELECT setval('provider_attribute_type_provider_attribute_type_id_seq', (SELECT MAX(provider_attribute_type_id) FROM provider_attribute_type)+1)",
+	    "SELECT setval('program_attribute_type_program_attribute_type_id_seq', (SELECT MAX(program_attribute_type_id) FROM program_attribute_type)+1)",
+	    "SELECT setval('concept_state_conversion_concept_state_conversion_id_seq', (SELECT MAX(concept_state_conversion_id) FROM concept_state_conversion)+1)",
+	    "SELECT setval('program_program_id_seq', (SELECT MAX(program_id) FROM program)+1)",
+	    "SELECT setval('concept_attribute_type_concept_attribute_type_id_seq', (SELECT MAX(concept_attribute_type_id) FROM concept_attribute_type)+1)",
+	    "SELECT setval('concept_name_tag_concept_name_tag_id_seq', (SELECT MAX(concept_name_tag_id) FROM concept_name_tag)+1)",
+	    "SELECT setval('allergy_reaction_allergy_reaction_id_seq', (SELECT MAX(allergy_reaction_id) FROM allergy_reaction)+1)",
+	    "SELECT setval('cohort_cohort_id_seq', (SELECT MAX(cohort_id) FROM cohort)+1)",
+	    "SELECT setval('cohort_member_cohort_member_id_seq', (SELECT MAX(cohort_member_id) FROM cohort_member)+1)",
+	    "SELECT setval('visit_type_visit_type_id_seq', (SELECT MAX(visit_type_id) FROM visit_type)+1)",
+	    "SELECT setval('visit_attribute_type_visit_attribute_type_id_seq', (SELECT MAX(visit_attribute_type_id) FROM visit_attribute_type)+1)",
+	    "SELECT setval('order_attribute_type_order_attribute_type_id_seq', (SELECT MAX(order_attribute_type_id) FROM order_attribute_type)+1)",
+	    "SELECT setval('medication_dispense_medication_dispense_id_seq', (SELECT MAX(medication_dispense_id) FROM medication_dispense)+1)",
+	    "SELECT setval('order_set_attribute_type_order_set_attribute_type_id_seq', (SELECT MAX(order_set_attribute_type_id) FROM order_set_attribute_type)+1)",
+	    "SELECT setval('person_address_person_address_id_seq', (SELECT MAX(person_address_id) FROM person_address)+1)",
+	    "SELECT setval('patient_identifier_patient_identifier_id_seq', (SELECT MAX(patient_identifier_id) FROM patient_identifier)+1)",
+	    "SELECT setval('relationship_relationship_id_seq', (SELECT MAX(relationship_id) FROM relationship)+1)",
+	    "SELECT setval('provider_provider_id_seq', (SELECT MAX(provider_id) FROM provider)+1)",
+	    "SELECT setval('encounter_type_encounter_type_id_seq', (SELECT MAX(encounter_type_id) FROM encounter_type)+1)",
+	    "SELECT setval('person_attribute_person_attribute_id_seq', (SELECT MAX(person_attribute_id) FROM person_attribute)+1)",
+	    "SELECT setval('allergy_allergy_id_seq', (SELECT MAX(allergy_id) FROM allergy)+1)",
+	    "SELECT setval('location_attribute_type_location_attribute_type_id_seq', (SELECT MAX(location_attribute_type_id) FROM location_attribute_type)+1)",
+	    "SELECT setval('order_frequency_order_frequency_id_seq', (SELECT MAX(order_frequency_id) FROM order_frequency)+1)",
+	    "SELECT setval('patient_program_patient_program_id_seq', (SELECT MAX(patient_program_id) FROM patient_program)+1)",
+	    "SELECT setval('form_field_form_field_id_seq', (SELECT MAX(form_field_id) FROM form_field)+1)",
+	    "SELECT setval('concept_proposal_concept_proposal_id_seq', (SELECT MAX(concept_proposal_id) FROM concept_proposal)+1)",
+	    "SELECT setval('program_workflow_program_workflow_id_seq', (SELECT MAX(program_workflow_id) FROM program_workflow)+1)",
+	    "SELECT setval('program_workflow_state_program_workflow_state_id_seq', (SELECT MAX(program_workflow_state_id) FROM program_workflow_state)+1)",
+	    "SELECT setval('patient_state_patient_state_id_seq', (SELECT MAX(patient_state_id) FROM patient_state)+1)",
+	    "SELECT setval('obs_obs_id_seq', (SELECT MAX(obs_id) FROM obs)+1)",
+	    "SELECT setval('order_type_order_type_id_seq', (SELECT MAX(order_type_id) FROM order_type)+1)",
+	    "SELECT setval('patient_identifier_type_patient_identifier_type_id_seq', (SELECT MAX(patient_identifier_type_id) FROM patient_identifier_type)+1)",
+	    "SELECT setval('scheduler_task_config_task_config_id_seq', (SELECT MAX(task_config_id) FROM scheduler_task_config)+1)",
+	    "SELECT setval('scheduler_task_config_property_task_config_property_id_seq', (SELECT MAX(task_config_property_id) FROM scheduler_task_config_property)+1)"));
+
 	/**
 	 * Updates PostgreSQL Sequences after core data insertion
 	 *
@@ -392,80 +455,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO, Applicatio
 	public void updatePostgresSequence() throws DAOException {
 
 		if (HibernateUtil.isPostgreSQLDialect(sessionFactory)) {
-
-			// All the required PostgreSQL sequences that need to be updated
-			String postgresSequences = "SELECT setval('person_person_id_seq', (SELECT MAX(person_id) FROM person)+1);"
-			        + "SELECT setval('person_name_person_name_id_seq', (SELECT MAX(person_name_id) FROM person_name)+1);"
-			        + "SELECT setval('person_attribute_type_person_attribute_type_id_seq', (SELECT MAX(person_attribute_type_id) FROM person_attribute_type)+1);"
-			        + "SELECT setval('relationship_type_relationship_type_id_seq', (SELECT MAX(relationship_type_id) FROM relationship_type)+1);"
-			        + "SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM users)+1);"
-			        + "SELECT setval('care_setting_care_setting_id_seq', (SELECT MAX(care_setting_id) FROM care_setting)+1);"
-			        + "SELECT setval('concept_datatype_concept_datatype_id_seq', (SELECT MAX(concept_datatype_id) FROM concept_datatype)+1);"
-			        + "SELECT setval('concept_map_type_concept_map_type_id_seq', (SELECT MAX(concept_map_type_id) FROM concept_map_type)+1);"
-			        + "SELECT setval('concept_stop_word_concept_stop_word_id_seq', (SELECT MAX(concept_stop_word_id) FROM concept_stop_word)+1);"
-			        + "SELECT setval('concept_concept_id_seq', (SELECT MAX(concept_id) FROM concept)+1);"
-			        + "SELECT setval('concept_name_concept_name_id_seq', (SELECT MAX(concept_name_id) FROM concept_name)+1);"
-			        + "SELECT setval('concept_class_concept_class_id_seq', (SELECT MAX(concept_class_id) FROM concept_class)+1);"
-			        + "SELECT setval('concept_reference_source_concept_source_id_seq', (SELECT MAX(concept_source_id) FROM concept_reference_source)+1);"
-			        + "SELECT setval('encounter_role_encounter_role_id_seq', (SELECT MAX(encounter_role_id) FROM encounter_role)+1);"
-			        + "SELECT setval('field_type_field_type_id_seq', (SELECT MAX(field_type_id) FROM field_type)+1);"
-			        + "SELECT setval('hl7_source_hl7_source_id_seq', (SELECT MAX(hl7_source_id) FROM hl7_source)+1);"
-			        + "SELECT setval('location_location_id_seq', (SELECT MAX(location_id) FROM location)+1);"
-			        + "SELECT setval('encounter_encounter_id_seq', (SELECT MAX(encounter_id) FROM encounter)+1);"
-			        + "SELECT setval('concept_description_concept_description_id_seq', (SELECT MAX(concept_description_id) FROM concept_description)+1);"
-			        + "SELECT setval('conditions_condition_id_seq', (SELECT MAX(condition_id) FROM conditions)+1);"
-			        + "SELECT setval('encounter_diagnosis_diagnosis_id_seq', (SELECT MAX(diagnosis_id) FROM encounter_diagnosis)+1);"
-			        + "SELECT setval('diagnosis_attribute_type_diagnosis_attribute_type_id_seq', (SELECT MAX(diagnosis_attribute_type_id) FROM diagnosis_attribute_type)+1);"
-			        + "SELECT setval('visit_visit_id_seq', (SELECT MAX(visit_id) FROM visit)+1);"
-			        + "SELECT setval('concept_reference_term_concept_reference_term_id_seq', (SELECT MAX(concept_reference_term_id) FROM concept_reference_term)+1);"
-			        + "SELECT setval('orders_order_id_seq', (SELECT MAX(order_id) FROM orders)+1);"
-			        + "SELECT setval('order_group_order_group_id_seq', (SELECT MAX(order_group_id) FROM order_group)+1);"
-			        + "SELECT setval('concept_reference_map_concept_map_id_seq', (SELECT MAX(concept_map_id) FROM concept_reference_map)+1);"
-			        + "SELECT setval('order_group_attribute_type_order_group_attribute_type_id_seq', (SELECT MAX(order_group_attribute_type_id) FROM order_group_attribute_type)+1);"
-			        + "SELECT setval('encounter_provider_encounter_provider_id_seq', (SELECT MAX(encounter_provider_id) FROM encounter_provider)+1);"
-			        + "SELECT setval('provider_attribute_type_provider_attribute_type_id_seq', (SELECT MAX(provider_attribute_type_id) FROM provider_attribute_type)+1);"
-			        + "SELECT setval('program_attribute_type_program_attribute_type_id_seq', (SELECT MAX(program_attribute_type_id) FROM program_attribute_type)+1);"
-			        + "SELECT setval('concept_state_conversion_concept_state_conversion_id_seq', (SELECT MAX(concept_state_conversion_id) FROM concept_state_conversion)+1);"
-			        + "SELECT setval('program_program_id_seq', (SELECT MAX(program_id) FROM program)+1);"
-			        + "SELECT setval('concept_attribute_type_concept_attribute_type_id_seq', (SELECT MAX(concept_attribute_type_id) FROM concept_attribute_type)+1);"
-			        + "SELECT setval('concept_name_tag_concept_name_tag_id_seq', (SELECT MAX(concept_name_tag_id) FROM concept_name_tag)+1);"
-			        + "SELECT setval('allergy_reaction_allergy_reaction_id_seq', (SELECT MAX(allergy_reaction_id) FROM allergy_reaction)+1);"
-			        + "SELECT setval('cohort_cohort_id_seq', (SELECT MAX(cohort_id) FROM cohort)+1);"
-			        + "SELECT setval('cohort_member_cohort_member_id_seq', (SELECT MAX(cohort_member_id) FROM cohort_member)+1);"
-			        + "SELECT setval('visit_type_visit_type_id_seq', (SELECT MAX(visit_type_id) FROM visit_type)+1);"
-			        + "SELECT setval('visit_attribute_type_visit_attribute_type_id_seq', (SELECT MAX(visit_attribute_type_id) FROM visit_attribute_type)+1);"
-			        + "SELECT setval('order_attribute_type_order_attribute_type_id_seq', (SELECT MAX(order_attribute_type_id) FROM order_attribute_type)+1);"
-			        + "SELECT setval('medication_dispense_medication_dispense_id_seq', (SELECT MAX(medication_dispense_id) FROM medication_dispense)+1);"
-			        + "SELECT setval('order_set_attribute_type_order_set_attribute_type_id_seq', (SELECT MAX(order_set_attribute_type_id) FROM order_set_attribute_type)+1);"
-			        + "SELECT setval('person_address_person_address_id_seq', (SELECT MAX(person_address_id) FROM person_address)+1);"
-			        + "SELECT setval('patient_identifier_patient_identifier_id_seq', (SELECT MAX(patient_identifier_id) FROM patient_identifier)+1);"
-			        + "SELECT setval('relationship_relationship_id_seq', (SELECT MAX(relationship_id) FROM relationship)+1);"
-			        + "SELECT setval('provider_provider_id_seq', (SELECT MAX(provider_id) FROM provider)+1);"
-			        + "SELECT setval('encounter_type_encounter_type_id_seq', (SELECT MAX(encounter_type_id) FROM encounter_type)+1);"
-			        + "SELECT setval('person_attribute_person_attribute_id_seq', (SELECT MAX(person_attribute_id) FROM person_attribute)+1);"
-			        + "SELECT setval('allergy_allergy_id_seq', (SELECT MAX(allergy_id) FROM allergy)+1);"
-			        + "SELECT setval('location_attribute_type_location_attribute_type_id_seq', (SELECT MAX(location_attribute_type_id) FROM location_attribute_type)+1);"
-			        + "SELECT setval('order_frequency_order_frequency_id_seq', (SELECT MAX(order_frequency_id) FROM order_frequency)+1);"
-			        + "SELECT setval('patient_program_patient_program_id_seq', (SELECT MAX(patient_program_id) FROM patient_program)+1);"
-			        + "SELECT setval('form_field_form_field_id_seq', (SELECT MAX(form_field_id) FROM form_field)+1);"
-			        + "SELECT setval('concept_proposal_concept_proposal_id_seq', (SELECT MAX(concept_proposal_id) FROM concept_proposal)+1);"
-			        + "SELECT setval('program_workflow_program_workflow_id_seq', (SELECT MAX(program_workflow_id) FROM program_workflow)+1);"
-			        + "SELECT setval('program_workflow_state_program_workflow_state_id_seq', (SELECT MAX(program_workflow_state_id) FROM program_workflow_state)+1);"
-			        + "SELECT setval('patient_state_patient_state_id_seq', (SELECT MAX(patient_state_id) FROM patient_state)+1);"
-			        + "SELECT setval('obs_obs_id_seq', (SELECT MAX(obs_id) FROM obs)+1);"
-			        + "SELECT setval('order_type_order_type_id_seq', (SELECT MAX(order_type_id) FROM order_type)+1);"
-			        + "SELECT setval('patient_identifier_type_patient_identifier_type_id_seq', (SELECT MAX(patient_identifier_type_id) FROM patient_identifier_type)+1);"
-			        + "SELECT setval('scheduler_task_config_task_config_id_seq', (SELECT MAX(task_config_id) FROM scheduler_task_config)+1);"
-			        + "SELECT setval('scheduler_task_config_property_task_config_property_id_seq', (SELECT MAX(task_config_property_id) FROM scheduler_task_config_property)+1)"
-			        + "";
 			Session session = sessionFactory.getCurrentSession();
 
-			session.doWork(new Work() {
-
-				@Override
-				public void execute(Connection con) throws SQLException {
-					Statement stmt = con.createStatement();
-					stmt.addBatch(postgresSequences);
+			session.doWork(con -> {
+				try (Statement stmt = con.createStatement()) {
+					for (String sql : POSTGRES_SEQUENCES) {
+						stmt.addBatch(sql);
+					}
 					stmt.executeBatch();
 				}
 			});
