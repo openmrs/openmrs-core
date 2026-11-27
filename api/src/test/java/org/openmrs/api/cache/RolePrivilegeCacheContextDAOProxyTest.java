@@ -21,6 +21,7 @@ import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.api.db.UserSecurityStateDAO;
 import org.openmrs.api.db.hibernate.search.session.SearchSessionFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
@@ -73,6 +74,10 @@ public class RolePrivilegeCacheContextDAOProxyTest {
 
 	public static SearchSessionFactory searchSessionFactory() {
 		return mock(SearchSessionFactory.class);
+	}
+
+	public static UserSecurityStateDAO userSecurityStateDAO() {
+		return mock(UserSecurityStateDAO.class);
 	}
 
 	public static SpringEmbeddedCacheManager cacheManager() {
