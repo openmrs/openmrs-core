@@ -238,11 +238,9 @@ public class InitializationFilter extends StartupFilter {
 	private static final Pattern URL_PLACEHOLDERS = Pattern.compile("@(DBNAME|APPLICATIONDATADIR)@");
 
 	/**
-	 * A placeholder in the name of a URL parameter, where what the install fills in can make the name
-	 * one that carries a password
+	 * What starts a parameter of a URL
 	 */
-	private static final Pattern PLACEHOLDER_IN_PARAMETER_NAME = Pattern
-	        .compile("[?&;][^=?&;#]*@(DBNAME|APPLICATIONDATADIR)@[^=?&;#]*=");
+	private static final Pattern URL_PARAMETER_START = Pattern.compile("[?&;]");
 
 	/**
 	 * The key of the value in an install's thread context that tags the server log lines it logs
@@ -1958,7 +1956,7 @@ public class InitializationFilter extends StartupFilter {
 		}
 		String url;
 		try {
-			if (PLACEHOLDER_IN_PARAMETER_NAME.matcher(URLDecoder.decode(connectionUrl, StandardCharsets.UTF_8)).find()) {
+			if (hasPlaceholderInParameterName(URLDecoder.decode(connectionUrl, StandardCharsets.UTF_8))) {
 				return true;
 			}
 			Matcher authority = URL_AUTHORITY.matcher(connectionUrl);
@@ -1971,6 +1969,26 @@ public class InitializationFilter extends StartupFilter {
 			return true;
 		}
 		return url.toUpperCase(Locale.ROOT).contains("PASS") || url.contains("@");
+	}
+
+	/**
+	 * Whether a parameter of the given URL has a placeholder in its name, where what the install fills
+	 * in can make the name one that carries a password. The URL is split rather than matched against
+	 * one pattern, which takes time growing with the square of the length of some URLs.
+	 *
+	 * @param url a decoded URL
+	 * @return true if the name of a parameter, from a ?, &amp; or ; to the next =, holds a placeholder
+	 */
+	private static boolean hasPlaceholderInParameterName(String url) {
+		String[] parameters = URL_PARAMETER_START.split(url, -1);
+		// what comes before the first ?, & or ; is no parameter
+		for (int i = 1; i < parameters.length; i++) {
+			int nameEnd = parameters[i].indexOf('=');
+			if (nameEnd > 0 && URL_PLACEHOLDERS.matcher(parameters[i].substring(0, nameEnd)).find()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
