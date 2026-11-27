@@ -9,6 +9,8 @@
  */
 package org.openmrs.validator;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -92,7 +94,8 @@ public class PatientIdentifierValidator implements Validator {
 			// Check that this is a valid identifier
 			validateIdentifier(pi.getIdentifier(), pi.getIdentifierType());
 
-			// Check that location is included if it is required (default behavior is to require it)
+			// Check that location is included if it is required (default behavior is to
+			// require it)
 			LocationBehavior lb = pi.getIdentifierType().getLocationBehavior();
 			if (pi.getLocation() == null && (lb == null || lb == LocationBehavior.REQUIRED)) {
 				String identifierString = (pi.getIdentifier() != null) ? pi.getIdentifier() : "";
@@ -109,13 +112,14 @@ public class PatientIdentifierValidator implements Validator {
 				        pi);
 			}
 
-			// check that patient does not already have the same identifier of this type at this location
+			// check that patient does not already have the same identifier of this type at
+			// this location
 			Patient patient = pi.getPatient();
 			if (patient != null) {
 				for (PatientIdentifier existingIdentifier : patient.getPatientIdentifiers(pi.getIdentifierType())) {
 
 					boolean isDifferentIdentifierObject = !existingIdentifier.getUuid().equals(pi.getUuid());
-					boolean hasSameIdentifierValue = existingIdentifier.getIdentifier().equals(pi.getIdentifier());
+					boolean hasSameIdentifierValue = Objects.equals(existingIdentifier.getIdentifier(), pi.getIdentifier());
 					boolean shouldBeGloballyUnique = UniquenessBehavior.UNIQUE
 					        .equals(pi.getIdentifierType().getUniquenessBehavior());
 					boolean bothLocationsNull = existingIdentifier.getLocation() == null && pi.getLocation() == null;

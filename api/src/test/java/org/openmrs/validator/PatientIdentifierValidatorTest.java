@@ -341,4 +341,20 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 		    () -> PatientIdentifierValidator.checkIdentifierAgainstFormat("abc", format, formatDescription));
 	}
 
+	@Test
+	public void validateIdentifier_shouldHandleExistingNullIdentifier() {
+		Patient patient = new Patient();
+		PatientIdentifierType type = new PatientIdentifierType();
+		type.setUniquenessBehavior(UniquenessBehavior.NON_UNIQUE);
+
+		Location location = new Location(1);
+		PatientIdentifier existing = new PatientIdentifier(null, type, location);
+		patient.addIdentifier(existing);
+
+		PatientIdentifier identifier = new PatientIdentifier("12345", type, location);
+		identifier.setPatient(patient);
+
+		PatientIdentifierValidator.validateIdentifier(identifier);
+	}
+
 }
