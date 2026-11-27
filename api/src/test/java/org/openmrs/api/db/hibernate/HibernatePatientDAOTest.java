@@ -49,7 +49,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	private static final int LARGE_PAGE = 40;
 
-	/** Headroom for effects that scale with the page without being per-hit loading. */
+	/**
+	 * Headroom for effects that scale with the page without being per-hit loading.
+	 */
 	private static final int PAGE_GROWTH_ALLOWANCE = 8;
 
 	private static final String PATIENT_SEARCH_XML = "org/openmrs/api/db/hibernate/include/HibernatePatientDAOTest-patientSearchRanking.xml";
@@ -130,7 +132,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.addName(new PersonName("Ioan", "Theo", "Fletcher"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("givenName", "middleName", "familyName");
@@ -153,7 +155,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.addName(new PersonName("Ioan1", "Theo1", "Fletcher"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(singletonList("familyName"));
@@ -178,7 +180,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.setBirthdate(Date.valueOf("2021-06-26"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName");
@@ -235,7 +237,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient2 = new Patient(person2);
 		patient2.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		hibernatePatientDao.savePatient(patient2);
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName",
@@ -330,7 +332,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> identifierTypes = singletonList(Context.getPatientService().getPatientIdentifierType(2));
 		createIdentifierSearchFixture();
 
-		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		// The first search of the process carries one-off warm-up, so prime it before
+		// measuring.
 		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, SMALL_PAGE);
 
 		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
@@ -353,7 +356,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheJoinedSearchPageGrows() {
 		createIdentifierSearchFixture();
 
-		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		// The first search of the process carries one-off warm-up, so prime it before
+		// measuring.
 		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, SMALL_PAGE);
 
 		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
@@ -417,7 +421,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		for (int i = 0; i < SEARCH_FIXTURE_SIZE; i++) {
 			Patient patient = new Patient();
-			// Deliberately unrelated to SEARCH_FIXTURE_TOKEN so only the identifiers match the search.
+			// Deliberately unrelated to SEARCH_FIXTURE_TOKEN so only the identifiers match
+			// the search.
 			patient.addName(new PersonName("Ada", null, "Lovelace" + i));
 			patient.setGender("F");
 
@@ -447,6 +452,42 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		assertThat(patients.size(), is(2));
 		assertThat(patients.get(0).getPatientId(), is(102));
 		assertThat(patients.get(1).getPatientId(), is(101));
+	}
+
+	@Test
+	public void getPatients_shouldRespectConfiguredMaximumSearchResults() {
+
+		createIdentifierSearchFixture();
+
+		Context.getAdministrationService().setGlobalProperty("person.searchMaxResults", "10");
+
+		List<Patient> patients = hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, LARGE_PAGE);
+
+		assertEquals(10, patients.size());
+	}
+
+	@Test
+	public void getPatients_shouldRespectRequestedLengthBelowMaximum() {
+
+		createIdentifierSearchFixture();
+
+		Context.getAdministrationService().setGlobalProperty("person.searchMaxResults", "10");
+
+		List<Patient> patients = hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, SMALL_PAGE);
+
+		assertEquals(5, patients.size());
+	}
+
+	@Test
+	public void getPatients_shouldUseMaximumWhenLengthIsNull() {
+
+		createIdentifierSearchFixture();
+
+		Context.getAdministrationService().setGlobalProperty("person.searchMaxResults", "10");
+
+		List<Patient> patients = hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, null);
+
+		assertEquals(10, patients.size());
 	}
 
 }
