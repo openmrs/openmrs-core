@@ -15,7 +15,7 @@ source /openmrs/startup-init.sh
 TRUSTED_PROXIES_REGEX=""
 if [ -n "${OMRS_TRUSTED_PROXIES:-}" ]; then
   IPV4_PATTERN='^([0-9]{1,3}|\*)\.([0-9]{1,3}|\*)\.([0-9]{1,3}|\*)\.([0-9]{1,3}|\*)$'
-  IFS=',' read -r -a TRUSTED_PROXIES <<< "${OMRS_TRUSTED_PROXIES// /}"
+  IFS=',' read -r -a TRUSTED_PROXIES <<< "${OMRS_TRUSTED_PROXIES//[[:space:]]/}"
   for PROXY in ${TRUSTED_PROXIES[@]+"${TRUSTED_PROXIES[@]}"}; do
     if [ -z "$PROXY" ]; then
       continue
