@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -142,11 +143,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 
 			Date newDate = encounter.getEncounterDatetime();
 			Location newLocation = encounter.getLocation();
+			// whether a voided group moves is worked out once per save, for its topmost saved voided obs
+			Map<Obs, Boolean> movesByTopGroup = new HashMap<>();
 			for (Obs obs : encounter.getAllFlattenedObs(true)) {
 				// a saved voided obs moves with this encounter only if it belongs to it, so a voided member of
 				// a group here with another encounter, or with none, keeps its patient, and so does the rest
 				// of its voided group
-				if (obs.getVoided() && obs.getObsId() != null && !movesWithEncounter(obs, encounter, p)) {
+				if (obs.getVoided() && obs.getObsId() != null && !movesWithEncounter(obs, encounter, p, movesByTopGroup)) {
 					continue;
 				}
 				// a voided obs keeps the datetime and location it was voided with
@@ -262,9 +265,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @param obs a saved voided obs reached from the encounter
 	 * @param encounter the encounter being saved
 	 * @param patient the patient the encounter is saved with
+	 * @param movesByTopGroup what was worked out for each topmost saved voided obs earlier in this save
 	 * @return true if the obs takes the encounter's patient
 	 */
-	private static boolean movesWithEncounter(Obs obs, Encounter encounter, Patient patient) {
+	private static boolean movesWithEncounter(Obs obs, Encounter encounter, Patient patient,
+	        Map<Obs, Boolean> movesByTopGroup) {
 		if (!isInEncounter(obs, encounter)) {
 			return false;
 		}
@@ -278,7 +283,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		while (walked.add(top) && isSavedAndVoided(top.getObsGroup())) {
 			top = top.getObsGroup();
 		}
-		return endsUpWithPatient(top, encounter, patient, new HashSet<>());
+		return movesByTopGroup.computeIfAbsent(top, t -> endsUpWithPatient(t, encounter, patient, new HashSet<>()));
 	}
 
 	/**
