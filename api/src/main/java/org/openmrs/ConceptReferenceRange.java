@@ -49,6 +49,9 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	@Column(name = "criteria", length = 65535)
 	private String criteria;
 
+	@Column(name = "priority")
+	private Integer priority;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concept_id", nullable = false)
 	private ConceptNumeric conceptNumeric;
@@ -90,6 +93,32 @@ public class ConceptReferenceRange extends BaseReferenceRange implements Openmrs
 	 */
 	public void setCriteria(String criteria) {
 		this.criteria = criteria;
+	}
+
+	/**
+	 * Gets the priority of this reference range.
+	 * <p>
+	 * When several ranges match a patient, only those with the highest priority are used, and ties
+	 * between them are merged with the legacy "strictest bounds" logic. Ranges without a priority are
+	 * ignored as soon as any matching range has one; if none does, all matching ranges are merged the
+	 * legacy way. The winning range is used as is: a bound it leaves empty, such as hiCritical or
+	 * hiAbsolute, is not taken from a lower-priority range.
+	 *
+	 * @return the priority, or null if not set
+	 * @since 3.0.0
+	 */
+	public Integer getPriority() {
+		return priority;
+	}
+
+	/**
+	 * Sets the priority of this reference range.
+	 *
+	 * @param priority the priority to set
+	 * @since 3.0.0
+	 */
+	public void setPriority(Integer priority) {
+		this.priority = priority;
 	}
 
 	/**
