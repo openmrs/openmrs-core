@@ -30,6 +30,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptSource;
@@ -297,6 +298,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 
 		gp.setPropertyValue(propertyValue);
+		validateSerializerTypeConfiguration(gp);
 		dao.saveGlobalProperty(gp);
 		globalPropertyCache.evict(propertyName);
 	}
@@ -403,6 +405,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			}
 
 			CustomDatatypeUtil.saveIfDirty(gp);
+			validateSerializerTypeConfiguration(gp);
 			dao.saveGlobalProperty(gp);
 			globalPropertyCache.evict(gp.getProperty());
 			notifyGlobalPropertyChange(gp);
@@ -967,8 +970,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		dao.updatePostgresSequence();
 	}
 
+	/**
+	 * Package prefix of a module that does not declare its own package; see
+	 * {@link #filterSerializerTypeEntries(String, String, Map)}.
+	 */
+	private static final String MODULE_PACKAGE_PREFIX = "org.openmrs.module.";
+
 	@Override
-	@Cacheable(value = "serializerWhiteListTypes")
 	public List<String> getSerializerWhitelistTypes() {
 		List<String> whitelistTypes = new ArrayList<>();
 		List<Class<?>> hierarchyTypes = getSerializerDefaultWhitelistHierarchyTypes();
@@ -976,18 +984,280 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			whitelistTypes.add(GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX + hierarchyType.getName());
 		}
 
+		Map<String, String> loadedModulePackages = getLoadedModulePackages();
+
 		List<GlobalProperty> gpTypes = getGlobalPropertiesBySuffix(
 		    AdministrationService.GP_SUFFIX_SERIALIZER_WHITELIST_TYPES);
 		for (GlobalProperty gpType : gpTypes) {
-			String[] types = gpType.getPropertyValue().split(",");
-			for (String type : types) {
-				if (!StringUtils.isBlank(type)) {
-					whitelistTypes.add(type.trim());
-				}
+			SerializerTypeFilterResult result = filterSerializerTypeEntries(gpType.getProperty(), gpType.getPropertyValue(),
+			    loadedModulePackages);
+			if (result.getIgnoreReason() != null) {
+				logIgnoredSerializerTypeConfiguration(sanitizeForLog(gpType.getProperty()),
+				    "Ignoring serializer type configuration property '{}' because {}", sanitizeForLog(gpType.getProperty()),
+				    result.getIgnoreReason());
 			}
+			for (Map.Entry<String, String> rejected : result.getRejectedEntries().entrySet()) {
+				logIgnoredSerializerTypeConfiguration(
+				    sanitizeForLog(gpType.getProperty()) + " | " + sanitizeForLog(rejected.getKey()),
+				    "Ignoring entry '{}' of serializer type configuration property '{}' because {}",
+				    sanitizeForLog(rejected.getKey()), sanitizeForLog(gpType.getProperty()), rejected.getValue());
+			}
+			if (!result.getAcceptedEntries().isEmpty()
+			        || (result.getIgnoreReason() == null && !result.getRejectedEntries().isEmpty())) {
+				log.debug("Serializer type configuration property '{}' contributed {} entries; {} entries ignored",
+				    sanitizeForLog(gpType.getProperty()), result.getAcceptedEntries().size(),
+				    result.getRejectedEntries().size());
+			}
+			whitelistTypes.addAll(result.getAcceptedEntries());
 		}
 
 		return whitelistTypes;
+	}
+
+	private static Map<String, String> getLoadedModulePackages() {
+		Map<String, String> loadedModulePackages = new HashMap<>();
+		for (Module module : ModuleFactory.getLoadedModules()) {
+			loadedModulePackages.put(module.getModuleId(), module.getPackageName());
+		}
+		return loadedModulePackages;
+	}
+
+	/** Bound on remembered warning-once problems; cleared when full so reporting resumes. */
+	private static final int SERIALIZER_TYPE_PROBLEMS_REMEMBERED_LIMIT = 100;
+
+	/** Problems already reported, so a stored problem logs once at WARN and then at DEBUG. */
+	private static final Set<String> reportedSerializerTypeConfigurationProblems = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * Logs a serializer type configuration problem at WARN the first time it is seen and at DEBUG
+	 * afterwards, so a stored value does not repeat on every rebuild of the list. Arguments must be
+	 * sanitized.
+	 */
+	private static void logIgnoredSerializerTypeConfiguration(String deduplicationKey, String message, Object... args) {
+		if (reportedSerializerTypeConfigurationProblems.contains(deduplicationKey)) {
+			log.debug(message + " (reported previously)", args);
+			return;
+		}
+		if (reportedSerializerTypeConfigurationProblems.size() >= SERIALIZER_TYPE_PROBLEMS_REMEMBERED_LIMIT) {
+			reportedSerializerTypeConfigurationProblems.clear();
+		}
+		reportedSerializerTypeConfigurationProblems.add(deduplicationKey);
+		log.warn(message, args);
+	}
+
+	/** Forgets which problems have been reported; used by tests that count the reported lines. */
+	static void resetSerializerTypeConfigurationProblemReporting() {
+		reportedSerializerTypeConfigurationProblems.clear();
+	}
+
+	/**
+	 * Returns the part of the property name before
+	 * {@link AdministrationService#GP_SUFFIX_SERIALIZER_WHITELIST_TYPES}, or null when the name does
+	 * not end with that suffix.
+	 */
+	static String serializerTypePropertyPrefix(String propertyName) {
+		if (propertyName == null || !propertyName.endsWith(AdministrationService.GP_SUFFIX_SERIALIZER_WHITELIST_TYPES)) {
+			return null;
+		}
+		return propertyName.substring(0,
+		    propertyName.length() - AdministrationService.GP_SUFFIX_SERIALIZER_WHITELIST_TYPES.length());
+	}
+
+	/**
+	 * Applies the module scoping rules to one serializer type configuration property: it is honoured
+	 * only when the part of its name before
+	 * {@link AdministrationService#GP_SUFFIX_SERIALIZER_WHITELIST_TYPES} is exactly the id of a loaded
+	 * module (started or not), and only entries naming types inside that module's package are accepted.
+	 * Rejected entries never reach the deserializer, and no class named by a rejected entry is
+	 * resolved.
+	 *
+	 * @param propertyName the property name, may be null
+	 * @param propertyValue the property value, may be null
+	 * @param loadedModulePackages the loaded module ids mapped to their declared package names, may be
+	 *            null
+	 * @return the accepted entries and, per rejected entry, the reason it was rejected
+	 */
+	static SerializerTypeFilterResult filterSerializerTypeEntries(String propertyName, String propertyValue,
+	        Map<String, String> loadedModulePackages) {
+		SerializerTypeFilterResult result = new SerializerTypeFilterResult();
+		String prefix = serializerTypePropertyPrefix(propertyName);
+		if (prefix == null) {
+			result.setIgnoreReason("the name does not carry the expected suffix");
+			return result;
+		}
+		if (prefix.isEmpty()) {
+			result.setIgnoreReason("the name has no module id before the suffix");
+			return result;
+		}
+		if (loadedModulePackages == null || !loadedModulePackages.containsKey(prefix)) {
+			result.setIgnoreReason("no loaded module has this id");
+			return result;
+		}
+		if (propertyValue == null) {
+			return result;
+		}
+
+		String modulePackage = resolveModulePackage(prefix, loadedModulePackages);
+		String[] entries = propertyValue.split(",");
+		for (String entry : entries) {
+			String trimmed = entry.trim();
+			if (trimmed.isEmpty()) {
+				continue;
+			}
+			String reason = serializerTypeEntryProblem(modulePackage, trimmed);
+			if (reason == null) {
+				result.getAcceptedEntries().add(trimmed);
+			} else {
+				result.getRejectedEntries().put(trimmed, reason);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns null when the entry is an acceptable type entry for the module that owns the property: an
+	 * exact class name or wildcard inside the module's declared package. Otherwise a short reason.
+	 *
+	 * @param modulePackage the package declared by the module that owns the property, may be null
+	 * @param entry the trimmed, non-blank entry, not null
+	 */
+	static String serializerTypeEntryProblem(String modulePackage, String entry) {
+		if (modulePackage == null || modulePackage.isEmpty()) {
+			return "no owning module";
+		}
+		for (int i = 0; i < entry.length(); i++) {
+			char current = entry.charAt(i);
+			if (Character.isWhitespace(current) || Character.isISOControl(current)) {
+				return "contains whitespace or control characters";
+			}
+			if (current == '{' || current == '}') {
+				return "contains unsupported wildcard characters";
+			}
+		}
+
+		if (entry.regionMatches(true, 0, AdministrationService.GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX, 0,
+		    AdministrationService.GP_SERIALIZER_WHITELIST_HIERARCHY_TYPES_PREFIX.length())) {
+			return "hierarchy entries are not accepted";
+		}
+
+		String requiredPrefix = modulePackage.endsWith(".") ? modulePackage : modulePackage + ".";
+		int wildcardIndex = entry.indexOf('*');
+		if (wildcardIndex >= 0) {
+			String fixedPart = entry.substring(0, wildcardIndex);
+			if (fixedPart.startsWith(requiredPrefix)) {
+				return null;
+			}
+			return "outside the owning module's package";
+		}
+
+		if (!entry.startsWith(requiredPrefix)) {
+			return "outside the owning module's package";
+		}
+		String className = entry.substring(requiredPrefix.length());
+		if (className.isEmpty()) {
+			return "no type named after the module package";
+		}
+		if (className.startsWith(".") || className.endsWith(".") || className.contains("..")) {
+			return "not a valid type name";
+		}
+		return null;
+	}
+
+	private static String resolveModulePackage(String moduleId, Map<String, String> loadedModulePackages) {
+		String modulePackage = loadedModulePackages.get(moduleId);
+		if (StringUtils.isBlank(modulePackage)) {
+			return MODULE_PACKAGE_PREFIX + moduleId;
+		}
+		return modulePackage;
+	}
+
+	/**
+	 * Escapes control characters (line breaks literally, every other control character as a question
+	 * mark) so that a value taken from stored data cannot forge log lines.
+	 *
+	 * @param value the value to make safe for logging, may be null
+	 * @return the sanitized value
+	 */
+	static String sanitizeForLog(String value) {
+		if (value == null) {
+			return null;
+		}
+		StringBuilder sanitized = new StringBuilder(value.length());
+		for (int i = 0; i < value.length(); i++) {
+			char current = value.charAt(i);
+			if (current == '\n') {
+				sanitized.append("\\n");
+			} else if (current == '\r') {
+				sanitized.append("\\r");
+			} else if (current == '\u2028') {
+				sanitized.append("\\u2028");
+			} else if (current == '\u2029') {
+				sanitized.append("\\u2029");
+			} else if (Character.isISOControl(current)) {
+				sanitized.append('?');
+			} else {
+				sanitized.append(current);
+			}
+		}
+		return sanitized.toString();
+	}
+
+	/**
+	 * The outcome of {@link #filterSerializerTypeEntries(String, String, Map)} for one property.
+	 */
+	static class SerializerTypeFilterResult {
+
+		private final List<String> acceptedEntries = new ArrayList<>();
+
+		private final Map<String, String> rejectedEntries = new LinkedHashMap<>();
+
+		private String ignoreReason;
+
+		public List<String> getAcceptedEntries() {
+			return acceptedEntries;
+		}
+
+		public Map<String, String> getRejectedEntries() {
+			return rejectedEntries;
+		}
+
+		public String getIgnoreReason() {
+			return ignoreReason;
+		}
+
+		void setIgnoreReason(String ignoreReason) {
+			this.ignoreReason = ignoreReason;
+		}
+	}
+
+	/**
+	 * Checks the entries of a serializer type configuration property at save time, naming the offending
+	 * entries in the thrown {@link APIException}. A module that is not loaded yet is checked against
+	 * the conventional package, so configuration shipped ahead of a module install can still be saved.
+	 */
+	private void validateSerializerTypeConfiguration(GlobalProperty globalProperty) throws APIException {
+		String prefix = serializerTypePropertyPrefix(globalProperty.getProperty());
+		if (prefix == null || StringUtils.isBlank(globalProperty.getPropertyValue())) {
+			return;
+		}
+
+		String modulePackage = resolveModulePackage(prefix, getLoadedModulePackages());
+		List<String> problems = new ArrayList<>();
+		for (String entry : globalProperty.getPropertyValue().split(",")) {
+			String trimmed = entry.trim();
+			if (trimmed.isEmpty()) {
+				continue;
+			}
+			String reason = serializerTypeEntryProblem(modulePackage, trimmed);
+			if (reason != null) {
+				problems.add(sanitizeForLog(trimmed) + " (" + reason + ")");
+			}
+		}
+		if (!problems.isEmpty()) {
+			throw new APIException(Context.getMessageSourceService().getMessage("GlobalProperty.error.serializer.type.entry",
+			    new Object[] { StringUtils.join(problems, ", "), sanitizeForLog(globalProperty.getProperty()) },
+			    Context.getLocale()));
+		}
 	}
 
 	public static List<Class<?>> getSerializerDefaultWhitelistHierarchyTypes() {
