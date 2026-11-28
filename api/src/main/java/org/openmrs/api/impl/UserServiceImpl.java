@@ -388,7 +388,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 	 */
 	@Override
 	public void purgePrivilege(Privilege privilege) throws APIException {
-		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege())) {
+		if (privilege == null || privilege.getPrivilege() == null) {
+			return;
+		}
+
+		if (OpenmrsUtil.getCorePrivileges().keySet().stream().anyMatch(privilege.getPrivilege()::equalsIgnoreCase)) {
 			throw new APIException("Privilege.cannot.delete.core", (Object[]) null);
 		}
 
@@ -433,7 +437,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService, 
 			return;
 		}
 
-		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole())) {
+		if (OpenmrsUtil.getCoreRoles().keySet().stream().anyMatch(role.getRole()::equalsIgnoreCase)) {
 			throw new APIException("Role.cannot.delete.core", (Object[]) null);
 		}
 

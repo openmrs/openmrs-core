@@ -322,6 +322,7 @@ public interface UserService extends OpenmrsService {
 	 * Complete remove a role from the database
 	 * <p>
 	 * <strong>Should</strong> throw error when role is a core role<br/>
+	 * <strong>Should</strong> throw error when role matches a core role case insensitively<br/>
 	 * <strong>Should</strong> return if role is null<br/>
 	 * <strong>Should</strong> delete given role from database
 	 *
@@ -351,7 +352,10 @@ public interface UserService extends OpenmrsService {
 	 * Completely remove a privilege from the database
 	 * <p>
 	 * <strong>Should</strong> delete given privilege from the database<br/>
-	 * <strong>Should</strong> throw error when privilege is core privilege
+	 * <strong>Should</strong> throw error when privilege is core privilege<br/>
+	 * <strong>Should</strong> throw error when privilege matches a core privilege case
+	 * insensitively<br/>
+	 * <strong>Should</strong> return if privilege is null
 	 *
 	 * @param privilege Privilege to delete
 	 * @throws APIException
