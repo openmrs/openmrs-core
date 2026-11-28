@@ -14,6 +14,7 @@ import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
@@ -43,6 +46,8 @@ import org.openmrs.util.CollectionUtil;
 @BatchSize(size = 25)
 @Entity
 @Table(name = "concept_reference_term")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "name", nullable = true)) })
 public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 
@@ -67,6 +72,7 @@ public class ConceptReferenceTerm extends BaseChangeableOpenmrsMetadata {
 	private String version;
 
 	@OneToMany(mappedBy = "termA", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Set<ConceptReferenceTermMap> conceptReferenceTermMaps = new LinkedHashSet<>();
 
 	/** default constructor */

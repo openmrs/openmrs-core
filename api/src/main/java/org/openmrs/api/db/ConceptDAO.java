@@ -445,7 +445,17 @@ public interface ConceptDAO {
 	public ConceptName getSavedConceptName(ConceptName conceptName);
 
 	/**
-	 * @see org.openmrs.api.ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)
+	 * Checks whether the name property of the given concept name has been changed since it was loaded
+	 * into the current persistence context. This distinguishes caller edits from a stale value loaded
+	 * from the second-level cache.
+	 *
+	 * @param conceptName the concept name to check
+	 * @return true if the name was changed since it was loaded or the load state is unavailable
+	 */
+	public boolean isConceptNameNameDirty(ConceptName conceptName);
+
+	/**
+	 * @see ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)
 	 */
 	public ConceptStopWord saveConceptStopWord(ConceptStopWord conceptStopWord) throws DAOException;
 

@@ -39,6 +39,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.EntityEntry;
+import org.hibernate.event.spi.EventSource;
 import org.hibernate.query.MutationQuery;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
@@ -1448,6 +1450,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public ConceptName getSavedConceptName(ConceptName conceptName) {
 		sessionFactory.getCurrentSession().refresh(conceptName);
 		return conceptName;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#isConceptNameNameDirty(ConceptName)
+	 */
+	@Override
+	public boolean isConceptNameNameDirty(ConceptName conceptName) {
+		EventSource session = (EventSource) sessionFactory.getCurrentSession();
+		EntityEntry entry = session.getPersistenceContextInternal().getEntry(conceptName);
+		if (entry == null || entry.getLoadedState() == null) {
+			return true;
+		}
+		String[] propertyNames = entry.getPersister().getPropertyNames();
+		for (int i = 0; i < propertyNames.length; i++) {
+			if ("name".equals(propertyNames[i])) {
+				return !Objects.equals(entry.getLoadedState()[i], conceptName.getName());
+			}
+		}
+		return true;
 	}
 
 	/**
