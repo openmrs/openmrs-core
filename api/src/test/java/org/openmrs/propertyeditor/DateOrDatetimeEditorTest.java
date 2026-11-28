@@ -85,4 +85,31 @@ public class DateOrDatetimeEditorTest {
 	public void setAsText_shouldFailOnPartialDateAndTime() {
 		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("27/10/2011 17"));
 	}
+
+	/**
+	 * @see DateOrDatetimeEditor#setAsText(String)
+	 */
+	@Test
+	public void setAsText_shouldFailOnDateAndTimeWithTwoDigitYear() {
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("01/02/24 10:30"));
+	}
+
+	/**
+	 * @see DateOrDatetimeEditor#setAsText(String)
+	 */
+	@Test
+	public void setAsText_shouldFailOnInvalidDateAndTime() {
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("32/01/2024 10:30"));
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("31/02/2024 10:30"));
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("13/45/2024 10:99"));
+	}
+
+	/**
+	 * @see DateOrDatetimeEditor#setAsText(String)
+	 */
+	@Test
+	public void setAsText_shouldFailOnDateWithInvalidTimeEndingInFourDigits() {
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("31/01/2024 10:9999"));
+		assertThrows(IllegalArgumentException.class, () -> ed.setAsText("31/01/2024 99:2024"));
+	}
 }
