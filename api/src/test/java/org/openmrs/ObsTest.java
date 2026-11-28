@@ -1129,6 +1129,30 @@ public class ObsTest {
 
 	}
 
+	/**
+	 * @see Obs#newInstance(Obs)
+	 */
+	@Test
+	public void newInstance_shouldCopyAVoidedGroupMemberWithoutAPreviousVersion() {
+		Obs group = new Obs();
+		Obs liveMember = new Obs(1);
+		Obs voidedMember = new Obs(2);
+		voidedMember.setVoided(true);
+		group.addGroupMember(liveMember);
+		group.addGroupMember(voidedMember);
+
+		Obs copy = Obs.newInstance(group);
+
+		assertThat(copy.getGroupMembers(true).size(), is(2));
+		for (Obs copiedMember : copy.getGroupMembers(true)) {
+			if (copiedMember.getVoided()) {
+				assertThat(copiedMember.getPreviousVersion(), nullValue());
+			} else {
+				assertThat(copiedMember.getPreviousVersion(), is(liveMember));
+			}
+		}
+	}
+
 	@Test
 	public void shouldSupportInterpretationProperty() throws Exception {
 		Obs obs = new Obs();

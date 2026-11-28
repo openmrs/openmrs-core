@@ -63,6 +63,7 @@ import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.api.db.hibernate.ImmutableEntityInterceptor;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.parameter.MedicationDispenseCriteria;
@@ -569,6 +570,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			throw new APIException("Patient.merge.cancelled", new Object[] { preferred.getPatientId() });
 		}
 		requireNoActiveOrderOfSameType(preferred, notPreferred);
+		ImmutableEntityInterceptor.setPatientMergeForThread(preferred, notPreferred);
+		try {
+			mergePatientRecords(preferred, notPreferred);
+			// obs and orders moved in place are checked when they are flushed, so flush while the merge is open
+			Context.flushSession();
+		} finally {
+			ImmutableEntityInterceptor.removePatientMergeForThread();
+		}
+	}
+
+	private void mergePatientRecords(Patient preferred, Patient notPreferred) throws SerializationException {
 		PersonMergeLogData mergedData = new PersonMergeLogData();
 		mergeVisits(preferred, notPreferred, mergedData);
 		mergeEncounters(preferred, notPreferred, mergedData);
@@ -716,11 +728,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	private void mergeObservationsNotContainedInEncounters(Patient preferred, Patient notPreferred,
 	        PersonMergeLogData mergedData) {
-		// move all obs that weren't contained in encounters
+		// move all obs that weren't contained in encounters, voided ones in place
 		// TODO: this should be a copy, not a move
 		ObsService obsService = Context.getObsService();
-		for (Obs obs : obsService.getObservationsByPerson(notPreferred)) {
-			if (obs.getEncounter() == null && !obs.getVoided()) {
+		List<Obs> observations = obsService.getObservations(Collections.singletonList((Person) notPreferred), null, null,
+		    null, null, null, null, null, null, null, null, true);
+		for (Obs obs : observations) {
+			if (obs.getEncounter() == null) {
 				obs.setPerson(preferred);
 				Obs persisted = obsService.saveObs(obs, "Merged from patient #" + notPreferred.getPatientId());
 				mergedData.addMovedIndependentObservation(persisted.getUuid());
