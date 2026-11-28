@@ -68,6 +68,8 @@ public class ModuleUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(ModuleUtil.class);
 
+	private static final Pattern VERSION_BOUND_PATTERN = Pattern.compile("^\\s?\\d+(?:\\.[0-9*]+)*+");
+
 	/**
 	 * Start up the module system with the given properties.
 	 *
@@ -265,6 +267,11 @@ public class ModuleUtil {
 		return result;
 	}
 
+	private static String extractVersionBound(String bound) {
+		Matcher matcher = VERSION_BOUND_PATTERN.matcher(bound);
+		return matcher.find() ? matcher.group() : "";
+	}
+
 	/**
 	 * This method is an enhancement of {@link #compareVersion(String, String)} and adds support for
 	 * wildcard characters and upperbounds. <br>
@@ -352,8 +359,8 @@ public class ModuleUtil {
 					// only preserve part of the string that match the following format:
 					// - xx.yy.*
 					// - xx.yy.zz*
-					lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
-					upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+					lowerBound = extractVersionBound(lowerBound);
+					upperBound = extractVersionBound(upperBound);
 
 					// if the lower contains "*" then change it to zero
 					if (lowerBound.indexOf("*") > 0) {
