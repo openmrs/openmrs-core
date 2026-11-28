@@ -9,8 +9,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -271,15 +269,12 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	@Override
 	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge) {
+		return getPatientsByAgeRange(minAge, maxAge, 0, Integer.MAX_VALUE);
+	}
 
-		LocalDate today = LocalDate.now();
-
-		LocalDate oldestBirthdate = today.minusYears((long) maxAge + 1).plusDays(1);
-		LocalDate youngestBirthdate = today.minusYears(minAge);
-
-		Date startDate = Date.from(oldestBirthdate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-		Date endDate = Date.from(youngestBirthdate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	@Override
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge, int start, int length) {
+		Date today = new Date();
 
 		Session session = sessionFactory.getCurrentSession();
 
@@ -287,10 +282,33 @@ public class HibernatePatientDAO implements PatientDAO {
 		CriteriaQuery<Patient> query = builder.createQuery(Patient.class);
 		Root<Patient> root = query.from(Patient.class);
 
-		query.select(root).where(builder.isFalse(root.get("voided")), builder.isNotNull(root.get("birthdate")),
-		    builder.between(root.<Date> get("birthdate"), startDate, endDate));
+		var birthdate = root.<Date>get("birthdate");
+		var deathDate = root.<Date>get("deathDate");
 
-		return session.createQuery(query).getResultList();
+		var referenceDate = builder.<Date>selectCase().when(builder.lessThan(deathDate, today), deathDate)
+				.otherwise(today);
+
+		var birthYear = builder.function("year", Integer.class, birthdate);
+		var birthMonth = builder.function("month", Integer.class, birthdate);
+		var birthDay = builder.function("day", Integer.class, birthdate);
+
+		var referenceYear = builder.function("year", Integer.class, referenceDate);
+		var referenceMonth = builder.function("month", Integer.class, referenceDate);
+		var referenceDay = builder.function("day", Integer.class, referenceDate);
+
+		var beforeBirthday = builder.or(builder.lt(referenceMonth, birthMonth),
+				builder.and(builder.equal(referenceMonth, birthMonth), builder.lt(referenceDay, birthDay)));
+
+		var adjustment = builder.<Integer>selectCase().when(beforeBirthday, 1).otherwise(0);
+
+		var age = builder.diff(builder.diff(referenceYear, birthYear), adjustment);
+
+		query.select(root).where(builder.isFalse(root.get("voided")), builder.isNotNull(birthdate),
+				builder.between(age, minAge, maxAge));
+
+		query.orderBy(builder.asc(root.get("patientId")));
+
+		return session.createQuery(query).setFirstResult(start).setMaxResults(length).getResultList();
 	}
 
 	/**

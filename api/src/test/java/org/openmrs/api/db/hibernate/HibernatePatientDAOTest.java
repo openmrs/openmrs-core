@@ -549,4 +549,70 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		assertFalse(patients.contains(patient2));
 	}
 
+	@Test
+	public void getPatientsByAgeRange_shouldUseAgeAtDeath() {
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Test", null, "Deceased"));
+		patient.setGender("M");
+		patient.setBirthdate(Date.valueOf("1980-06-15"));
+		patient.setDeathDate(Date.valueOf("2000-06-15"));
+		patient = hibernatePatientDao.savePatient(patient);
+
+		Context.flushSession();
+
+		assertEquals(20, patient.getAge());
+
+		assertTrue(hibernatePatientDao.getPatientsByAgeRange(20, 20).contains(patient));
+
+		assertFalse(hibernatePatientDao.getPatientsByAgeRange(21, 100).contains(patient));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRespectBirthdayAtDeath() {
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Test", null, "DeceasedBeforeBirthday"));
+		patient.setGender("M");
+		patient.setBirthdate(Date.valueOf("1980-06-15"));
+		patient.setDeathDate(Date.valueOf("2000-06-14"));
+		patient = hibernatePatientDao.savePatient(patient);
+
+		Context.flushSession();
+
+		assertEquals(19, patient.getAge());
+
+		assertTrue(hibernatePatientDao.getPatientsByAgeRange(19, 19).contains(patient));
+
+		assertFalse(hibernatePatientDao.getPatientsByAgeRange(20, 20).contains(patient));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldPaginateResults() {
+		for (int i = 0; i < 5; i++) {
+			Patient patient = new Patient();
+			patient.addName(new PersonName("Test", null, "Pagination" + i));
+			patient.setGender("M");
+			patient.setBirthdate(Date.valueOf(LocalDate.now().minusYears(20)));
+			hibernatePatientDao.savePatient(patient);
+		}
+
+		Context.flushSession();
+
+		List<Patient> all = hibernatePatientDao.getPatientsByAgeRange(20, 20);
+
+		List<Patient> firstPage = hibernatePatientDao.getPatientsByAgeRange(20, 20, 0, 2);
+
+		List<Patient> secondPage = hibernatePatientDao.getPatientsByAgeRange(20, 20, 2, 2);
+
+		assertTrue(all.size() >= 5);
+		assertEquals(2, firstPage.size());
+		assertEquals(2, secondPage.size());
+
+		assertEquals(all.subList(0, 2), firstPage);
+		assertEquals(all.subList(2, 4), secondPage);
+
+		assertTrue(Collections.disjoint(firstPage, secondPage));
+
+		assertTrue(hibernatePatientDao.getPatientsByAgeRange(20, 20, all.size(), 2).isEmpty());
+	}
+
 }

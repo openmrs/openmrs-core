@@ -113,6 +113,30 @@ public class PatientServiceHasPermissionTest extends BaseContextSensitiveTest {
 		assertFalse(patientService.getPatient(2).getVoided(), "a denied @PreAuthorize call must not run the method body");
 	}
 
+	@Test
+	public void getPatientsByAgeRange_shouldPaginateOnlyAuthorizedPatients() {
+		List<Patient> all = patientService.getPatientsByAgeRange(0, 150);
+		assertTrue(all.size() >= 3);
+		rule.setDeniedPatientId(all.get(0).getPatientId());
+
+		List<Patient> firstPage = patientService.getPatientsByAgeRange(0, 150, 0, 1);
+		List<Patient> secondPage = patientService.getPatientsByAgeRange(0, 150, 1, 1);
+
+		assertEquals(all.subList(1, 2), firstPage);
+		assertEquals(all.subList(2, 3), secondPage);
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRejectInvalidPagination() {
+		assertThrows(APIException.class, () -> patientService.getPatientsByAgeRange(18, 25, -1, 10));
+		assertThrows(APIException.class, () -> patientService.getPatientsByAgeRange(18, 25, 0, 0));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRejectInvalidPaginatedAgeRange() {
+		assertThrows(APIException.class, () -> patientService.getPatientsByAgeRange(40, 20, 0, 10));
+	}
+
 	/**
 	 * Denies exactly one, test-selected patient - by id or by uuid, matching whichever form
 	 * {@link DomainObjectAuthorizationRule}'s id-based {@code isAuthorized} was actually called with

@@ -84,6 +84,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.openmrs.security.OpenmrsAuthenticationToken;
+import org.openmrs.security.OpenmrsPermissionEvaluator;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
  * current OpenMRS implementation should be fetched from the Context via
@@ -1671,6 +1675,58 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 
 		return dao.getPatientsByAgeRange(minAge, maxAge);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge, int start, int length) throws APIException {
+
+		if (minAge < 0 || maxAge < 0 || minAge > maxAge) {
+			throw new APIException("Invalid age range");
+		}
+
+		if (start < 0 || length <= 0) {
+			throw new APIException("Invalid pagination parameters");
+		}
+
+		var evaluator = Context.getRegisteredComponents(OpenmrsPermissionEvaluator.class).get(0);
+
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication == null) {
+			authentication = new OpenmrsAuthenticationToken(Context.getUserContext());
+		}
+
+		List<Patient> results = new ArrayList<>();
+		int offset = 0;
+		int skipped = 0;
+		int batchSize = 100;
+
+		while (results.size() < length) {
+			List<Patient> batch = dao.getPatientsByAgeRange(minAge, maxAge, offset, batchSize);
+
+			for (Patient patient : batch) {
+				if (evaluator.hasPermission(authentication, patient, PrivilegeConstants.GET_PATIENTS)) {
+
+					if (skipped < start) {
+						skipped++;
+					} else {
+						results.add(patient);
+						if (results.size() == length) {
+							return results;
+						}
+					}
+				}
+			}
+
+			if (batch.size() < batchSize) {
+				break;
+			}
+
+			offset += batch.size();
+		}
+
+		return results;
 	}
 
 	/**

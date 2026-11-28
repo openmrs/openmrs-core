@@ -580,6 +580,20 @@ public interface PatientService extends OpenmrsService {
 	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge) throws APIException;
 
 	/**
+	 * Returns a page of patients matching the inclusive age range.
+	 *
+	 * @param minAge minimum age in years
+	 * @param maxAge maximum age in years
+	 * @param start zero-based offset among authorized matching patients
+	 * @param length maximum number of results
+	 * @return matching patients visible to the caller, ordered by patient ID
+	 * @throws APIException if the age range or pagination parameters are invalid
+	 */
+	@PreAuthorize("hasAuthority('" + PrivilegeConstants.GET_PATIENTS + "')")
+	@PostFilter("hasPermission(filterObject, '" + PrivilegeConstants.GET_PATIENTS + "')")
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge, int start, int length) throws APIException;
+
+	/**
 	 * This method tries to find a patient in the database given the attributes on the given
 	 * <code>patientToMatch</code> object. Assumes there could be a PersonAttribute on this Patient with
 	 * PersonAttributeType.name = "Other Matching Information". This PersonAttribute has a "value" that
