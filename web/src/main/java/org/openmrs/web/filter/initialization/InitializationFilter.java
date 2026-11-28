@@ -14,7 +14,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -1977,10 +1979,10 @@ public class InitializationFilter extends StartupFilter {
 				if (input == null) {
 					return null;
 				}
-				prop.load(input);
+				try (Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
+					prop.load(reader);
+				}
 				log.info("Using installation script from classpath: {}", fileName);
-
-				input.close();
 			} catch (IOException ex) {
 				log.error("Failed to load installation script from classpath: {}", fileName, ex);
 				throw new RuntimeException(ex);
@@ -1993,10 +1995,10 @@ public class InitializationFilter extends StartupFilter {
 				InputStream input = null;
 				try {
 					input = new FileInputStream(fileName);
-					prop.load(input);
+					try (Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
+						prop.load(reader);
+					}
 					log.info("Using installation script from absolute path: {}", file.getAbsolutePath());
-
-					input.close();
 				} catch (IOException ex) {
 					log.error("Failed to load installation script from absolute path: {}", file.getAbsolutePath(), ex);
 					throw new RuntimeException(ex);

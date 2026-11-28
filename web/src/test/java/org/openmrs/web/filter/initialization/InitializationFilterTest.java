@@ -12,6 +12,8 @@ package org.openmrs.web.filter.initialization;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -257,6 +259,39 @@ public class InitializationFilterTest extends BaseWebContextSensitiveTest {
 		assertTrue(model.moduleWebAdmin);
 		assertFalse(model.autoUpdateDatabase);
 		assertEquals("Admin123", model.adminUserPassword);
+	}
+
+	@Test
+	public void getInstallationScript_shouldReadNonAsciiCharactersCorrectlyFromUtf8EncodedFile() throws IOException {
+		File tempFile = File.createTempFile("openmrs-install-", ".properties");
+		try {
+			String fileContent = "connection.password=contraseña\nadmin_user_password=Pässwort1\n";
+			Files.writeString(tempFile.toPath(), fileContent, StandardCharsets.UTF_8);
+
+			System.setProperty("OPENMRS_INSTALLATION_SCRIPT", tempFile.getAbsolutePath());
+			Properties props = filter.getInstallationScript();
+
+			assertNotNull(props);
+			assertEquals("contraseña", props.getProperty("connection.password"));
+			assertEquals("Pässwort1", props.getProperty("admin_user_password"));
+		} finally {
+			System.clearProperty("OPENMRS_INSTALLATION_SCRIPT");
+			tempFile.delete();
+		}
+	}
+
+	@Test
+	public void getInstallationScript_shouldReadNonAsciiCharactersCorrectlyFromClasspath() {
+		try {
+			System.setProperty("OPENMRS_INSTALLATION_SCRIPT", "classpath:test-install-script-utf8.properties");
+			Properties props = filter.getInstallationScript();
+
+			assertNotNull(props);
+			assertEquals("contraseña", props.getProperty("connection.password"));
+			assertEquals("Pässwort1", props.getProperty("admin_user_password"));
+		} finally {
+			System.clearProperty("OPENMRS_INSTALLATION_SCRIPT");
+		}
 	}
 
 	private static Properties getInstallScript() {
