@@ -737,7 +737,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@Override
 	public Long getCountOfPatients(String query, boolean includeVoided) {
-		if (StringUtils.isBlank(query)) {
+		if (StringUtils.isBlank(query) || isShorterThanMinSearchCharacters(query)) {
 			return 0L;
 		}
 
@@ -757,6 +757,19 @@ public class HibernatePatientDAO implements PatientDAO {
 		                    .join(SearchQueryUnique.newQuery(PersonAttribute.class,
 		                        f -> personQuery.getPatientAttributeQuery(f, query, includeVoided), "person.personId"))),
 		    HibernatePersonDAO.getMaximumSearchResults());
+	}
+
+	/**
+	 * Returns true if the query is shorter than the minimum search characters global property, in which
+	 * case the patient search returns no results and its count must be 0.
+	 */
+	private boolean isShorterThanMinSearchCharacters(String query) {
+		String minChars = Context.getAdministrationService()
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
+		if (!StringUtils.isNumeric(minChars)) {
+			minChars = "" + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS;
+		}
+		return query.length() < Integer.parseInt(minChars);
 	}
 
 	private List<Patient> findPatients(String query, boolean includeVoided) {
