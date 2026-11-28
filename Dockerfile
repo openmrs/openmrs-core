@@ -137,8 +137,21 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then TINI_URL="${TINI_URL}-arm64" TINI_SHA=
     && echo "${TINI_SHA}  /usr/bin/tini" | sha256sum -c \
     && chmod g+rx /usr/bin/tini 
 
-RUN sed -i '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
+# Edits Tomcat's stock conf/server.xml in place (sed -i). Each -e '/<pattern>/a <text>' finds the line
+# containing <pattern> and adds <text> as a new line straight after it:
+#  1. After the line opening the HTTP Connector (port 8080), add attributes to that Connector: UTF-8 URLs, and
+#     the characters Tomcat would otherwise reject in paths and query strings.
+#  2. After the line opening the Engine, add a RemoteIpValve. Behind a reverse proxy, it takes the client's
+#     IP address, scheme and port from X-Forwarded-For, X-Forwarded-Proto and X-Forwarded-Port, but only for
+#     requests from the proxies matched by internalProxies: the system property openmrs.remoteIp.internalProxies,
+#     which startup.sh sets from OMRS_TRUSTED_PROXIES. Unset, it's empty (the ':-' default), so no proxy is
+#     trusted and the headers are ignored. The pattern is the whole Engine tag, so the commented-out example
+#     with a jvmRoute isn't matched.
+# The grep fails the build if the valve wasn't added (e.g. a new Tomcat base writes the Engine tag differently).
+RUN sed -i -e '/Connector port="8080"/a URIEncoding="UTF-8" relaxedPathChars="[]|" relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"' \
+    -e '/<Engine name="Catalina" defaultHost="localhost">/a <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="X-Forwarded-For" protocolHeader="X-Forwarded-Proto" portHeader="X-Forwarded-Port" internalProxies="${openmrs.remoteIp.internalProxies:-}" />' \
     /usr/local/tomcat/conf/server.xml \
+    && grep -q 'className="org.apache.catalina.valves.RemoteIpValve"' /usr/local/tomcat/conf/server.xml \
     && chmod -R g+rx /usr/local/tomcat \
     && touch /usr/local/tomcat/bin/setenv.sh && chmod g+rw /usr/local/tomcat/bin/setenv.sh \
     && chmod -R g+rw /usr/local/tomcat/webapps /usr/local/tomcat/logs /usr/local/tomcat/work /usr/local/tomcat/temp \
