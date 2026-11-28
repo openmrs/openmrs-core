@@ -17,6 +17,7 @@ import jakarta.activation.MimetypesFileTypeMap;
 import org.apache.commons.io.IOUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -61,13 +62,26 @@ public class MediaHandler extends AbstractHandler implements ComplexObsHandler {
 
 				String filename = parseFilename(obs, "");
 
-				InputStream in = storageService.getData(key);
-				ComplexData complexData = new ComplexData(filename, in);
-				complexData.setMimeType(mimetypes.getContentType(filename));
+				DataWithMetadata dwm = storageService.getDataWithMetadata(key);
+				boolean streamTransferred = false;
+				try {
+					InputStream in = dwm.data();
+					ComplexData complexData = new ComplexData(filename, in);
+					complexData.setMimeType(mimetypes.getContentType(filename));
 
-				// Get the Mime Type and set it
-				injectMissingMetadata(key, complexData);
-				obs.setComplexData(complexData);
+					// Get the Mime Type and set it
+					injectMissingMetadata(key, complexData, dwm.metadata());
+					obs.setComplexData(complexData);
+					streamTransferred = true;
+				} finally {
+					if (!streamTransferred) {
+						try {
+							dwm.close();
+						} catch (IOException e) {
+							log.error("Unable to close media stream from {}", key, e);
+						}
+					}
+				}
 			} catch (IOException e) {
 				log.error("Trying to create media file stream from {}", key, e);
 			}

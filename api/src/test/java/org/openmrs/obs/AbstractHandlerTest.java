@@ -25,6 +25,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AbstractHandlerTest extends BaseContextSensitiveTest {
 
@@ -97,6 +98,25 @@ public class AbstractHandlerTest extends BaseContextSensitiveTest {
 		String key = nameWithNullTitle[1];
 
 		assertEquals(filename, key);
+	}
+
+	@Test
+	public void getObs_shouldNotIssueRedundantStorageCallsForLocalStorage() throws APIException {
+		CountingStorageService counting = new CountingStorageService(storageService);
+		AbstractHandler countingHandler = new AbstractHandler(adminService, counting);
+
+		ComplexData complexData = new ComplexData(FILENAME, "test".getBytes(StandardCharsets.UTF_8));
+		Obs obs = new Obs();
+		obs.setComplexData(complexData);
+		countingHandler.saveObs(obs);
+
+		Obs fetched = countingHandler.getObs(obs, null);
+
+		assertEquals("test", new String((byte[]) fetched.getComplexData().getData()));
+		assertEquals(1, counting.getDataWithMetadataCalls, "data+metadata must be fetched together");
+		assertEquals(0, counting.getMetadataCalls, "no separate metadata request when data provides it");
+		assertEquals(1, counting.existsCalls, "single existence probe to resolve the key layout");
+		assertTrue(fetched.getComplexData().getLength() > 0, "metadata length should be populated");
 	}
 
 }

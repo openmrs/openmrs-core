@@ -9,12 +9,15 @@
  */
 package org.openmrs.obs.handler;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.storage.DataWithMetadata;
 import org.openmrs.api.storage.ObjectMetadata;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -67,12 +70,24 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 				String originalFilename = names[0];
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 
-				if (storageService.exists(key)) {
-					InputStream in = storageService.getData(key);
+				DataWithMetadata dwm = storageService.getDataWithMetadata(key);
+				boolean streamTransferred = false;
+				try {
+					InputStream in = dwm.data();
 					complexData = new ComplexData(parseFilename(obs, ""), in);
-				} else {
-					log.error("Unable to find file associated with complex obs {}", obs.getId());
+					injectMissingMetadata(key, complexData, dwm.metadata());
+					streamTransferred = true;
+				} finally {
+					if (!streamTransferred) {
+						try {
+							dwm.close();
+						} catch (IOException e) {
+							log.error("Unable to close binary stream from {}", key, e);
+						}
+					}
 				}
+			} catch (NoSuchFileException e) {
+				log.error("Unable to find file associated with complex obs {}", obs.getId());
 			} catch (Exception e) {
 				throw new APIException("Obs.error.while.trying.get.binary.complex", null, e);
 			}
@@ -84,7 +99,6 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 
 		Assert.notNull(complexData, "Complex data must not be null");
 
-		injectMissingMetadata(key, complexData);
 		obs.setComplexData(complexData);
 
 		return obs;
