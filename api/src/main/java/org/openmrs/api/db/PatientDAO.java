@@ -306,4 +306,7 @@ public interface PatientDAO {
 	 */
 	public List getPatientIdentifierByProgram(PatientProgram patientProgram);
 
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge);
+
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge, int start, int length);
 }

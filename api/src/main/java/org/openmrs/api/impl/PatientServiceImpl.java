@@ -84,6 +84,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.openmrs.security.OpenmrsAuthenticationToken;
+import org.openmrs.security.OpenmrsPermissionEvaluator;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 /**
  * Default implementation of the patient service. This class should not be used on its own. The
  * current OpenMRS implementation should be fetched from the Context via
@@ -328,7 +332,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		}
 
 		// patient and patientidentifier attributes taken care of by the BaseVoidHandler
-		//call the DAO layer directly to avoid any further AOP around save*
+		// call the DAO layer directly to avoid any further AOP around save*
 		return dao.savePatient(patient);
 	}
 
@@ -341,7 +345,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return null;
 		}
 
-		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
+		// patient and patientidentifier attributes taken care of by the
+		// BaseUnvoidHandler
 
 		return Context.getPatientService().savePatient(patient);
 	}
@@ -594,15 +599,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPersonService().voidPerson(notPreferred,
 		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
 
-		// associate the Users associated with the not preferred person, to the preferred person.
+		// associate the Users associated with the not preferred person, to the
+		// preferred person.
 		changeUserAssociations(preferred, notPreferred, mergedData);
 
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
-		//  a "Duplicate Identifier" error doesn't pop up.
+		// a "Duplicate Identifier" error doesn't pop up.
 		preferred = savePatient(preferred);
 
-		//save the person merge log
+		// save the person merge log
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(preferred);
 		personMergeLog.setLoser(notPreferred);
@@ -639,7 +645,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	private void mergeVisits(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all visits, including voided ones (encounters will be handled below)
-		//TODO: this should be a copy, not a move
+		// TODO: this should be a copy, not a move
 
 		VisitService visitService = Context.getVisitService();
 
@@ -652,7 +658,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	private void mergeEncounters(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
-		// change all encounters. This will cascade to obs and orders contained in those encounters
+		// change all encounters. This will cascade to obs and orders contained in those
+		// encounters
 		// TODO: this should be a copy, not a move
 		EncounterService es = Context.getEncounterService();
 
@@ -674,7 +681,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		for (Relationship rel : personService.getRelationshipsByPerson(preferred)) {
 			existingRelationships.add(relationshipHash(rel, preferred));
 		}
-		// iterate over notPreferred's relationships and only copy them if they are needed
+		// iterate over notPreferred's relationships and only copy them if they are
+		// needed
 		for (Relationship rel : personService.getRelationshipsByPerson(notPreferred)) {
 			if (!rel.getVoided()) {
 				boolean personAisPreferred = rel.getPersonA().equals(preferred);
@@ -684,11 +692,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				String relHash = relationshipHash(rel, notPreferred);
 
 				if ((personAisPreferred && personBisNotPreferred) || (personBisPreferred && personAisNotPreferred)) {
-					// void this relationship if it's between the preferred and notPreferred patients
+					// void this relationship if it's between the preferred and notPreferred
+					// patients
 					personService.voidRelationship(rel, "person " + (personAisNotPreferred ? "A" : "B")
 					        + " was merged to person " + (personAisPreferred ? "A" : "B"));
 				} else if (existingRelationships.contains(relHash)) {
-					// void this relationship if it already exists between preferred and the other side
+					// void this relationship if it already exists between preferred and the other
+					// side
 					personService.voidRelationship(rel,
 					    "person " + (personAisNotPreferred ? "A" : "B") + " was merged and a relationship already exists");
 				} else {
@@ -729,7 +739,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	private void mergeConditions(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
-		// move all non-voided conditions (both patient-level and encounter-linked, since moving an
+		// move all non-voided conditions (both patient-level and encounter-linked,
+		// since moving an
 		// encounter does not reassign the patient on its conditions)
 		// TODO: this should be a copy, not a move
 		ConditionService conditionService = Context.getConditionService();
@@ -742,13 +753,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	private void mergeAllergies(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
-		// move all non-voided allergies, skipping any whose allergen the preferred patient already
-		// records: a patient cannot hold two allergies for the same allergen (Allergies enforces this),
-		// so moving a duplicate would make the survivor's allergy list fail to load afterwards
+		// move all non-voided allergies, skipping any whose allergen the preferred
+		// patient already
+		// records: a patient cannot hold two allergies for the same allergen (Allergies
+		// enforces this),
+		// so moving a duplicate would make the survivor's allergy list fail to load
+		// afterwards
 		// TODO: this should be a copy, not a move
 		PatientService patientService = Context.getPatientService();
-		// these are internal reads made on behalf of the merge; mergePatients is authorized with
-		// Edit Patients, so acquire Get Allergies here rather than forcing the merging user to hold it
+		// these are internal reads made on behalf of the merge; mergePatients is
+		// authorized with
+		// Edit Patients, so acquire Get Allergies here rather than forcing the merging
+		// user to hold it
 		Allergies preferredAllergies;
 		Allergies notPreferredAllergies;
 		try {
@@ -772,7 +788,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	private void mergeMedicationDispenses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
-		// move all non-voided medication dispenses (encounter-linked ones are not reassigned when their
+		// move all non-voided medication dispenses (encounter-linked ones are not
+		// reassigned when their
 		// encounter is moved, so they must be handled here)
 		// TODO: this should be a copy, not a move
 		MedicationDispenseService medicationDispenseService = Context.getMedicationDispenseService();
@@ -788,7 +805,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	private void mergeIdentifiers(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all identifiers
-		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		// (must be done after all calls to services above so hbm doesn't try to save
+		// things prematurely (hacky)
 		for (PatientIdentifier pi : notPreferred.getActiveIdentifiers()) {
 			PatientIdentifier tmpIdentifier = new PatientIdentifier();
 			tmpIdentifier.setIdentifier(pi.getIdentifier());
@@ -868,7 +886,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	private void mergeNames(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData) {
 		// move all names
-		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		// (must be done after all calls to services above so hbm doesn't try to save
+		// things prematurely (hacky)
 		for (PersonName newName : notPreferred.getNames()) {
 			boolean containsName = false;
 			for (PersonName currentName : preferred.getNames()) {
@@ -901,7 +920,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	private void mergeAddresses(Patient preferred, Patient notPreferred, PersonMergeLogData mergedData)
 	        throws SerializationException {
 		// move all addresses
-		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		// (must be done after all calls to services above so hbm doesn't try to save
+		// things prematurely (hacky)
 		for (PersonAddress newAddress : notPreferred.getAddresses()) {
 			boolean containsAddress = false;
 			for (PersonAddress currentAddress : preferred.getAddresses()) {
@@ -972,15 +992,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		Context.getPersonService().voidPerson(notPreferred,
 		    "The patient corresponding to this person has been voided and Merged with patient #" + preferred.getPatientId());
 
-		// associate the Users associated with the not preferred person, to the preferred person.
+		// associate the Users associated with the not preferred person, to the
+		// preferred person.
 		changeUserAssociations(preferred, notPreferred, mergedData);
 
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
-		//  a "Duplicate Identifier" error doesn't pop up.
+		// a "Duplicate Identifier" error doesn't pop up.
 		preferred = savePatient(preferred);
 
-		//save the person merge log
+		// save the person merge log
 		PersonMergeLog personMergeLog = new PersonMergeLog();
 		personMergeLog.setWinner(preferred);
 		personMergeLog.setLoser(notPreferred);
@@ -1416,7 +1437,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
-		//if the argument or the following required fields are not specified
+		// if the argument or the following required fields are not specified
 		PatientIdentifierType.LocationBehavior locationBehavior = null;
 		if (patientIdentifier != null) {
 			locationBehavior = patientIdentifier.getIdentifierType().getLocationBehavior();
@@ -1475,31 +1496,32 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public Allergies setAllergies(Patient patient, Allergies allergies) {
-		//NOTE We neither delete nor edit allergies. We instead void them.
-		//Because we shield the API users from this business logic,
-		//we end up with the complicated code below. :)
+		// NOTE We neither delete nor edit allergies. We instead void them.
+		// Because we shield the API users from this business logic,
+		// we end up with the complicated code below. :)
 
-		//get the current allergies as stored in the database
+		// get the current allergies as stored in the database
 		List<Allergy> dbAllergyList = getAllergies(patient);
 		for (Allergy originalAllergy : dbAllergyList) {
-			//check if we still have each allergy, else it has just been deleted
+			// check if we still have each allergy, else it has just been deleted
 			if (allergies.contains(originalAllergy)) {
-				//we still have this allergy, check if it has been edited/changed
+				// we still have this allergy, check if it has been edited/changed
 				Allergy potentiallyEditedAllergy = allergies.getAllergy(originalAllergy.getAllergyId());
 				if (!potentiallyEditedAllergy.hasSameValues(originalAllergy)) {
-					//allergy has been edited, so void it and create a new one with the current values
+					// allergy has been edited, so void it and create a new one with the current
+					// values
 					Allergy newAllergy = new Allergy();
 					try {
-						//remove the edited allergy from our current list, and void id
+						// remove the edited allergy from our current list, and void id
 						allergies.remove(potentiallyEditedAllergy);
 
-						//copy values from edited allergy, and add it to the current list
+						// copy values from edited allergy, and add it to the current list
 						newAllergy.copy(potentiallyEditedAllergy);
 						allergies.add(newAllergy);
 
-						//we void its original values, as came from the database,
-						//instead the current ones which have just been copied
-						//into the new allergy we have just created above
+						// we void its original values, as came from the database,
+						// instead the current ones which have just been copied
+						// into the new allergy we have just created above
 						voidAllergy(originalAllergy);
 					} catch (Exception ex) {
 						throw new APIException("Failed to copy edited values", ex);
@@ -1508,7 +1530,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				continue;
 			}
 
-			//void the allergy that has been deleted
+			// void the allergy that has been deleted
 			voidAllergy(originalAllergy);
 		}
 
@@ -1644,10 +1666,74 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return dao.getPatients(query, includeVoided, start, length);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge) throws APIException {
+
+		if (minAge < 0 || maxAge < 0 || minAge > maxAge) {
+			throw new APIException("Invalid age range");
+		}
+
+		return dao.getPatientsByAgeRange(minAge, maxAge);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge, int start, int length) throws APIException {
+
+		if (minAge < 0 || maxAge < 0 || minAge > maxAge) {
+			throw new APIException("Invalid age range");
+		}
+
+		if (start < 0 || length <= 0) {
+			throw new APIException("Invalid pagination parameters");
+		}
+
+		var evaluator = Context.getRegisteredComponents(OpenmrsPermissionEvaluator.class).get(0);
+
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication == null) {
+			authentication = new OpenmrsAuthenticationToken(Context.getUserContext());
+		}
+
+		List<Patient> results = new ArrayList<>();
+		int offset = 0;
+		int skipped = 0;
+		int batchSize = 100;
+
+		while (results.size() < length) {
+			List<Patient> batch = dao.getPatientsByAgeRange(minAge, maxAge, offset, batchSize);
+
+			for (Patient patient : batch) {
+				if (evaluator.hasPermission(authentication, patient, PrivilegeConstants.GET_PATIENTS)) {
+
+					if (skipped < start) {
+						skipped++;
+					} else {
+						results.add(patient);
+						if (results.size() == length) {
+							return results;
+						}
+					}
+				}
+			}
+
+			if (batch.size() < batchSize) {
+				break;
+			}
+
+			offset += batch.size();
+		}
+
+		return results;
+	}
+
 	/**
 	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 */
-	// TODO - search for usage with non-empty list of patient identifier types - not used
+	// TODO - search for usage with non-empty list of patient identifier types - not
+	// used
 	@Override
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,

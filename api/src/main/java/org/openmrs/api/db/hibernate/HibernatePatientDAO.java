@@ -159,11 +159,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 
 		if (stubInsertNeeded) {
-			//If not yet persisted
+			// If not yet persisted
 			if (patient.getCreator() == null) {
 				patient.setCreator(Context.getAuthenticatedUser());
 			}
-			//If not yet persisted
+			// If not yet persisted
 			if (patient.getDateCreated() == null) {
 				patient.setDateCreated(new Date());
 			}
@@ -177,10 +177,12 @@ public class HibernatePatientDAO implements PatientDAO {
 
 			query.executeUpdate();
 
-			//Without evicting person, you will get this error when promoting person to patient
-			//org.hibernate.NonUniqueObjectException: a different object with the same identifier
-			//value was already associated with the session: [org.openmrs.Patient#]
-			//see TRUNK-3728
+			// Without evicting person, you will get this error when promoting person to
+			// patient
+			// org.hibernate.NonUniqueObjectException: a different object with the same
+			// identifier
+			// value was already associated with the session: [org.openmrs.Patient#]
+			// see TRUNK-3728
 			Person person = (Person) sessionFactory.getCurrentSession().get(Person.class, patient.getPersonId());
 			sessionFactory.getCurrentSession().evict(person);
 		}
@@ -263,6 +265,50 @@ public class HibernatePatientDAO implements PatientDAO {
 		query.select(root);
 
 		return session.createQuery(query).getResultList();
+	}
+
+	@Override
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge) {
+		return getPatientsByAgeRange(minAge, maxAge, 0, Integer.MAX_VALUE);
+	}
+
+	@Override
+	public List<Patient> getPatientsByAgeRange(int minAge, int maxAge, int start, int length) {
+		Date today = new Date();
+
+		Session session = sessionFactory.getCurrentSession();
+
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Patient> query = builder.createQuery(Patient.class);
+		Root<Patient> root = query.from(Patient.class);
+
+		var birthdate = root.<Date>get("birthdate");
+		var deathDate = root.<Date>get("deathDate");
+
+		var referenceDate = builder.<Date>selectCase().when(builder.lessThan(deathDate, today), deathDate)
+				.otherwise(today);
+
+		var birthYear = builder.function("year", Integer.class, birthdate);
+		var birthMonth = builder.function("month", Integer.class, birthdate);
+		var birthDay = builder.function("day", Integer.class, birthdate);
+
+		var referenceYear = builder.function("year", Integer.class, referenceDate);
+		var referenceMonth = builder.function("month", Integer.class, referenceDate);
+		var referenceDay = builder.function("day", Integer.class, referenceDate);
+
+		var beforeBirthday = builder.or(builder.lt(referenceMonth, birthMonth),
+				builder.and(builder.equal(referenceMonth, birthMonth), builder.lt(referenceDay, birthDay)));
+
+		var adjustment = builder.<Integer>selectCase().when(beforeBirthday, 1).otherwise(0);
+
+		var age = builder.diff(builder.diff(referenceYear, birthYear), adjustment);
+
+		query.select(root).where(builder.isFalse(root.get("voided")), builder.isNotNull(birthdate),
+				builder.between(age, minAge, maxAge));
+
+		query.orderBy(builder.asc(root.get("patientId")));
+
+		return session.createQuery(query).setFirstResult(start).setMaxResults(length).getResultList();
 	}
 
 	/**
@@ -367,11 +413,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (!includeRetired) {
 			query.where(builder.isFalse(root.get("retired")));
 		} else {
-			//retired last
+			// retired last
 			orders.add(builder.asc(root.get("retired")));
 		}
 
-		//required first
+		// required first
 		orders.add(builder.desc(root.get("required")));
 		orders.add(builder.asc(root.get("name")));
 		orders.add(builder.asc(root.get("patientIdentifierTypeId")));
@@ -430,7 +476,7 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		List<Order> orders = new ArrayList<>();
 
-		//required first
+		// required first
 		orders.add(builder.desc(root.get("required")));
 		orders.add(builder.asc(root.get("name")));
 		orders.add(builder.asc(root.get("patientIdentifierTypeId")));
@@ -532,7 +578,8 @@ public class HibernatePatientDAO implements PatientDAO {
 					innerSelect.append("inner join person_name pn1 on p1.patient_id = pn1.person_id ");
 				}
 
-				//Since we are firing a native query get the actual table column name from the field name of the entity
+				// Since we are firing a native query get the actual table column name from the
+				// field name of the entity
 				SessionFactoryImplementor sfi = sessionFactory.unwrap(SessionFactoryImplementor.class);
 
 				AbstractEntityPersister aep = (AbstractEntityPersister) sfi.getRuntimeMetamodels().getMappingMetamodel()
@@ -661,7 +708,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		boolean checkLocation = patientIdentifier.getLocation() != null
 		        && patientIdentifier.getIdentifierType().getUniquenessBehavior() == UniquenessBehavior.LOCATION;
 
-		// switched this to an hql query so the hibernate cache can be considered as well as the database
+		// switched this to an hql query so the hibernate cache can be considered as
+		// well as the database
 		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patientId "
 		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType.patientIdentifierTypeId = :idType";
 
@@ -743,9 +791,12 @@ public class HibernatePatientDAO implements PatientDAO {
 
 		PersonQuery personQuery = new PersonQuery();
 
-		// Bound the count deduplication to the maximum number of results a patient search can return: an
-		// exact count past that point costs a full hit-set scan for a total the caller cannot page to.
-		// The count path only reads unique keys and never maps hits to entities, so these sub-queries are
+		// Bound the count deduplication to the maximum number of results a patient
+		// search can return: an
+		// exact count past that point costs a full hit-set scan for a total the caller
+		// cannot page to.
+		// The count path only reads unique keys and never maps hits to entities, so
+		// these sub-queries are
 		// declared without a mapper.
 		return SearchQueryUnique.searchCount(searchSessionFactory,
 		    SearchQueryUnique
@@ -844,8 +895,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	        boolean matchExactly) {
 		List<String> tokens = tokenizeIdentifierQuery(removeIdentifierPadding(paramQuery));
 		final String query = StringUtils.join(tokens, " | ");
-		//TODO: hibernate search identifierType?
-		//fields.add("identifierType");
+		// TODO: hibernate search identifierType?
+		// fields.add("identifierType");
 		return f.bool().with(b -> {
 			b.minimumShouldMatchNumber(1);
 			b.should(f.simpleQueryString().field("identifierPhrase").matching(query).boost(8f));
@@ -924,7 +975,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	private String replaceSearchString(String regex, String identifierSearched) {
 		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
 		if (identifierSearched.length() > 1) {
-			// for 2 or more character searches, we allow regex to use last character as check digit
+			// for 2 or more character searches, we allow regex to use last character as
+			// check digit
 			returnString = returnString.replaceAll("@SEARCH-1@",
 			    identifierSearched.substring(0, identifierSearched.length() - 1));
 			returnString = returnString.replaceAll("@CHECKDIGIT@",
@@ -939,7 +991,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getAllergies(org.openmrs.Patient)
 	 */
-	//@Override
+	// @Override
 	@Override
 	public List<Allergy> getAllergies(Patient patient) {
 		Session session = sessionFactory.getCurrentSession();
@@ -955,7 +1007,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getAllergyStatus(org.openmrs.Patient)
 	 */
-	//@Override
+	// @Override
 	@Override
 	public String getAllergyStatus(Patient patient) {
 

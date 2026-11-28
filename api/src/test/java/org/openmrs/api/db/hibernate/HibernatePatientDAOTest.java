@@ -10,6 +10,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,9 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 	private static final int LARGE_PAGE = 40;
 
-	/** Headroom for effects that scale with the page without being per-hit loading. */
+	/**
+	 * Headroom for effects that scale with the page without being per-hit loading.
+	 */
 	private static final int PAGE_GROWTH_ALLOWANCE = 8;
 
 	private static final String PATIENT_SEARCH_XML = "org/openmrs/api/db/hibernate/include/HibernatePatientDAOTest-patientSearchRanking.xml";
@@ -130,7 +133,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.addName(new PersonName("Ioan", "Theo", "Fletcher"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("givenName", "middleName", "familyName");
@@ -153,7 +156,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.addName(new PersonName("Ioan1", "Theo1", "Fletcher"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<Patient> duplicatePatients = hibernatePatientDao.getDuplicatePatientsByAttributes(singletonList("familyName"));
@@ -178,7 +181,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		person2.setBirthdate(Date.valueOf("2021-06-26"));
 		person2 = hibernatePersonDAO.savePerson(person2);
 		hibernatePatientDao.savePatient(new Patient(person2));
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "birthdate", "givenName", "middleName", "familyName");
@@ -235,7 +238,7 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		Patient patient2 = new Patient(person2);
 		patient2.addIdentifier(new PatientIdentifier("101X", new PatientIdentifierType(1), null));
 		hibernatePatientDao.savePatient(patient2);
-		Context.flushSession(); //needed by postgres
+		Context.flushSession(); // needed by postgres
 
 		// when
 		List<String> attributes = Arrays.asList("gender", "identifier", "birthdate", "givenName", "middleName",
@@ -330,7 +333,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		List<PatientIdentifierType> identifierTypes = singletonList(Context.getPatientService().getPatientIdentifierType(2));
 		createIdentifierSearchFixture();
 
-		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		// The first search of the process carries one-off warm-up, so prime it before
+		// measuring.
 		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, identifierTypes, false, 0, SMALL_PAGE);
 
 		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
@@ -353,7 +357,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldNotIssueMoreDatabaseTripsAsTheJoinedSearchPageGrows() {
 		createIdentifierSearchFixture();
 
-		// The first search of the process carries one-off warm-up, so prime it before measuring.
+		// The first search of the process carries one-off warm-up, so prime it before
+		// measuring.
 		hibernatePatientDao.getPatients(SEARCH_FIXTURE_TOKEN, false, 0, SMALL_PAGE);
 
 		int smallPageTrips = countDatabaseTrips(SMALL_PAGE,
@@ -417,7 +422,8 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 
 		for (int i = 0; i < SEARCH_FIXTURE_SIZE; i++) {
 			Patient patient = new Patient();
-			// Deliberately unrelated to SEARCH_FIXTURE_TOKEN so only the identifiers match the search.
+			// Deliberately unrelated to SEARCH_FIXTURE_TOKEN so only the identifiers match
+			// the search.
 			patient.addName(new PersonName("Ada", null, "Lovelace" + i));
 			patient.setGender("F");
 
@@ -447,6 +453,166 @@ public class HibernatePatientDAOTest extends BaseContextSensitiveTest {
 		assertThat(patients.size(), is(2));
 		assertThat(patients.get(0).getPatientId(), is(102));
 		assertThat(patients.get(1).getPatientId(), is(101));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldReturnMatchingPatients() {
+
+		Patient patient1 = new Patient();
+		patient1.addName(new PersonName("Test", null, "Young"));
+		patient1.setGender("M");
+		patient1.setBirthdate(Date.valueOf(LocalDate.now().minusYears(20)));
+		patient1 = hibernatePatientDao.savePatient(patient1);
+
+		Patient patient2 = new Patient();
+		patient2.addName(new PersonName("Test", null, "Older"));
+		patient2.setGender("M");
+		patient2.setBirthdate(Date.valueOf(LocalDate.now().minusYears(40)));
+		patient2 = hibernatePatientDao.savePatient(patient2);
+
+		Context.flushSession();
+
+		List<Patient> patients = hibernatePatientDao.getPatientsByAgeRange(18, 25);
+
+		assertTrue(patients.contains(patient1));
+		assertFalse(patients.contains(patient2));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldIncludeAgeBoundaries() {
+
+		int[] ages = { 17, 18, 25, 26 };
+
+		for (int age : ages) {
+			Patient patient = new Patient();
+			patient.addName(new PersonName("Test", null, "Age" + age));
+			patient.setGender("M");
+			patient.setBirthdate(Date.valueOf(LocalDate.now().minusYears(age)));
+			hibernatePatientDao.savePatient(patient);
+		}
+
+		Context.flushSession();
+
+		List<Patient> patients = hibernatePatientDao.getPatientsByAgeRange(18, 25);
+
+		assertTrue(patients.stream().anyMatch(p -> p.getAge() == 18));
+		assertTrue(patients.stream().anyMatch(p -> p.getAge() == 25));
+		assertFalse(patients.stream().anyMatch(p -> p.getAge() == 17));
+		assertFalse(patients.stream().anyMatch(p -> p.getAge() == 26));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldExcludeVoidedAndUnknownBirthdates() {
+
+		Patient voidedPatient = new Patient();
+		voidedPatient.addName(new PersonName("Test", null, "Voided"));
+		voidedPatient.setGender("M");
+		voidedPatient.setBirthdate(Date.valueOf(LocalDate.now().minusYears(20)));
+		voidedPatient.setVoided(true);
+		voidedPatient = hibernatePatientDao.savePatient(voidedPatient);
+
+		Patient unknownPatient = new Patient();
+		unknownPatient.addName(new PersonName("Test", null, "Unknown"));
+		unknownPatient.setGender("M");
+		unknownPatient = hibernatePatientDao.savePatient(unknownPatient);
+
+		Context.flushSession();
+
+		List<Patient> patients = hibernatePatientDao.getPatientsByAgeRange(18, 25);
+
+		assertFalse(patients.contains(voidedPatient));
+		assertFalse(patients.contains(unknownPatient));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRespectBirthdayBoundaries() {
+
+		LocalDate today = LocalDate.now();
+
+		Patient patient1 = new Patient();
+		patient1.addName(new PersonName("Test", null, "BirthdayToday"));
+		patient1.setGender("M");
+		patient1.setBirthdate(Date.valueOf(today.minusYears(20)));
+		patient1 = hibernatePatientDao.savePatient(patient1);
+
+		Patient patient2 = new Patient();
+		patient2.addName(new PersonName("Test", null, "BirthdayTomorrow"));
+		patient2.setGender("M");
+		patient2.setBirthdate(Date.valueOf(today.minusYears(20).plusDays(1)));
+		patient2 = hibernatePatientDao.savePatient(patient2);
+
+		Context.flushSession();
+
+		List<Patient> patients = hibernatePatientDao.getPatientsByAgeRange(20, 20);
+
+		assertTrue(patients.contains(patient1));
+		assertFalse(patients.contains(patient2));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldUseAgeAtDeath() {
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Test", null, "Deceased"));
+		patient.setGender("M");
+		patient.setBirthdate(Date.valueOf("1980-06-15"));
+		patient.setDeathDate(Date.valueOf("2000-06-15"));
+		patient = hibernatePatientDao.savePatient(patient);
+
+		Context.flushSession();
+
+		assertEquals(20, patient.getAge());
+
+		assertTrue(hibernatePatientDao.getPatientsByAgeRange(20, 20).contains(patient));
+
+		assertFalse(hibernatePatientDao.getPatientsByAgeRange(21, 100).contains(patient));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRespectBirthdayAtDeath() {
+		Patient patient = new Patient();
+		patient.addName(new PersonName("Test", null, "DeceasedBeforeBirthday"));
+		patient.setGender("M");
+		patient.setBirthdate(Date.valueOf("1980-06-15"));
+		patient.setDeathDate(Date.valueOf("2000-06-14"));
+		patient = hibernatePatientDao.savePatient(patient);
+
+		Context.flushSession();
+
+		assertEquals(19, patient.getAge());
+
+		assertTrue(hibernatePatientDao.getPatientsByAgeRange(19, 19).contains(patient));
+
+		assertFalse(hibernatePatientDao.getPatientsByAgeRange(20, 20).contains(patient));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldPaginateResults() {
+		for (int i = 0; i < 5; i++) {
+			Patient patient = new Patient();
+			patient.addName(new PersonName("Test", null, "Pagination" + i));
+			patient.setGender("M");
+			patient.setBirthdate(Date.valueOf(LocalDate.now().minusYears(20)));
+			hibernatePatientDao.savePatient(patient);
+		}
+
+		Context.flushSession();
+
+		List<Patient> all = hibernatePatientDao.getPatientsByAgeRange(20, 20);
+
+		List<Patient> firstPage = hibernatePatientDao.getPatientsByAgeRange(20, 20, 0, 2);
+
+		List<Patient> secondPage = hibernatePatientDao.getPatientsByAgeRange(20, 20, 2, 2);
+
+		assertTrue(all.size() >= 5);
+		assertEquals(2, firstPage.size());
+		assertEquals(2, secondPage.size());
+
+		assertEquals(all.subList(0, 2), firstPage);
+		assertEquals(all.subList(2, 4), secondPage);
+
+		assertTrue(Collections.disjoint(firstPage, secondPage));
+
+		assertTrue(hibernatePatientDao.getPatientsByAgeRange(20, 20, all.size(), 2).isEmpty());
 	}
 
 }

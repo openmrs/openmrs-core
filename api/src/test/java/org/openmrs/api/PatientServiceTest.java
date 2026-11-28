@@ -401,15 +401,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	// *
 	// * Note: if enabled, this test will be considerably slower
 	// *
-	// * @see org.openmrs.test.jupiter.BaseContextSensitiveTest#getRuntimeProperties()
+	// * @see
+	// org.openmrs.test.jupiter.BaseContextSensitiveTest#getRuntimeProperties()
 	// */
-	//* @Override
-	//* public Properties getRuntimeProperties() {
-	//* 		Properties props = super.getRuntimeProperties();
-	//* 		props.setProperty("hibernate.show_sql", "true");
-	//*
-	//* 		return props;
-	//* }
+	// * @Override
+	// * public Properties getRuntimeProperties() {
+	// * Properties props = super.getRuntimeProperties();
+	// * props.setProperty("hibernate.show_sql", "true");
+	// *
+	// * return props;
+	// * }
 
 	/**
 	 * Check that the patient list is kept under the max for getPatientsByName
@@ -429,28 +430,24 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		/*
 		 * Temporary code to create lots of johns file
 		 *
-		 * File file = new File("test/api/" + JOHN_PATIENTS_XML); PrintWriter
-		 * writer = new PrintWriter(file);
+		 * File file = new File("test/api/" + JOHN_PATIENTS_XML); PrintWriter writer =
+		 * new PrintWriter(file);
 		 *
 		 * int x = 3; while (x < 1010) { String line =
 		 * "<person person_id=\"2\" dead=\"false\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" gender=\"M\" />"
-		 * ; writer.println(line.replaceAll("2",
-		 * Integer.valueOf(x).toString()));
+		 * ; writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
 		 *
 		 * line =
 		 * "<person_name person_id=\"2\" person_name_id=\"2\" preferred=\"1\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" given_name=\"John2\" middle_name=\" \" family_name=\"Patient\" />"
-		 * ; writer.println(line.replaceAll("2",
-		 * Integer.valueOf(x).toString()));
+		 * ; writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
 		 *
 		 * line =
 		 * "<patient patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" voided=\"false\" />"
-		 * ; writer.println(line.replaceAll("2",
-		 * Integer.valueOf(x).toString()));
+		 * ; writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
 		 *
 		 * line =
 		 * "<patient_identifier patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" identifier=\"2\" identifier_type=\"1\" preferred=\"1\" voided=\"false\" location_id=\"1\" />"
-		 * ; writer.println(line.replaceAll("2",
-		 * Integer.valueOf(x).toString()));
+		 * ; writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
 		 *
 		 * x = x + 1; }
 		 *
@@ -687,7 +684,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		voidOrders(Collections.singleton(notPreferred));
 		Patient preferred = patientService.getPatient(6);
 
-		// patient 2 (not preferred) has 3 unvoided visits (id = 1, 2, 3) and 1 voided visit (id = 6)
+		// patient 2 (not preferred) has 3 unvoided visits (id = 1, 2, 3) and 1 voided
+		// visit (id = 6)
 		Visit visit1 = visitService.getVisit(1);
 		Visit visit2 = visitService.getVisit(2);
 		Visit visit3 = visitService.getVisit(3);
@@ -711,11 +709,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Visit> mergedVisits = visitService.getVisitsByPatient(merged, true, true);
 
 		assertThat(mergedVisits.size(), is(6));
-		// in order to keep this test passing when (someday?) we copy visits instead of moving them, use matchers here:
+		// in order to keep this test passing when (someday?) we copy visits instead of
+		// moving them, use matchers here:
 		assertThat(mergedVisits, containsInAnyOrder(matchingVisit(visit1), matchingVisit(visit2), matchingVisit(visit3),
 		    matchingVisit(visit4), matchingVisit(visit5), matchingVisit(visit6)));
 
-		// be sure nothing slipped through without being assigned to the right patient (probably not necessary)
+		// be sure nothing slipped through without being assigned to the right patient
+		// (probably not necessary)
 		for (Visit v : mergedVisits) {
 			for (Encounter e : v.getEncounters()) {
 				assertThat(e.getPatient(), is(v.getPatient()));
@@ -727,7 +727,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 
-		// now check that moving visits and their contained encounters was audited correctly
+		// now check that moving visits and their contained encounters was audited
+		// correctly
 		PersonMergeLogData mergeLogData = mergeLog.getPersonMergeLogData();
 		assertThat(mergeLogData.getMovedVisits().size(), is(4));
 		assertThat(mergeLogData.getMovedVisits(),
@@ -1742,7 +1743,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient preferred = patientService.getPatient(7);
 		Patient notPreferred = patientService.getPatient(8);
 
-		// since the test data has no preferred addresses, we need to mark addresses to preferred to set up the test
+		// since the test data has no preferred addresses, we need to mark addresses to
+		// preferred to set up the test
 		preferred.getPersonAddress().setPreferred(true);
 		notPreferred.getPersonAddress().setPreferred(true);
 
@@ -2031,17 +2033,20 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue(patients.contains(patientService.getPatient(207)),
 		    "did not find a Greek name that should have matched exactly");
 
-		// This is more to document behavior than to assert that this should necessarily behave this way
+		// This is more to document behavior than to assert that this should necessarily
+		// behave this way
 		patients = patientService.getPatients("Amarantá", null, null, false);
 		assertFalse(patients.contains(patientService.getPatient(204)),
 		    "unexpectedly found a patient using a search term with an extraneous accent");
 
-		// This is more to document behavior than to assert that this should necessarily behave this way
+		// This is more to document behavior than to assert that this should necessarily
+		// behave this way
 		patients = patientService.getPatients("Οδυσσευς", null, null, false);
 		assertFalse(patients.contains(patientService.getPatient(207)),
 		    "unexpectedly found an accented Greek name by searching for its un-accented equivalent");
 
-		// This is more to document behavior than to assert that this should necessarily behave this way
+		// This is more to document behavior than to assert that this should necessarily
+		// behave this way
 		patients = patientService.getPatients("Dost", null, null, false);
 		assertFalse(patients.contains(patientService.getPatient(209)),
 		    "unexpectedly found a Russian name with an ASCII search");
@@ -2284,10 +2289,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void mergePatients_shouldAuditCreatedAddresses() throws Exception {
 
-		//retrieve preferred patient
+		// retrieve preferred patient
 		Patient preferred = patientService.getPatient(999);
 
-		//retrieve notPreferredPatient and save it with a new address
+		// retrieve notPreferredPatient and save it with a new address
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 		PersonAddress address = new PersonAddress();
@@ -2298,10 +2303,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		notPreferred.addAddress(address);
 		patientService.savePatient(notPreferred);
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		//find the UUID of the address that was added by the merge
+		// find the UUID of the address that was added by the merge
 		String addedAddressUuid = null;
 		preferred = patientService.getPatient(999);
 		for (PersonAddress a : preferred.getAddresses()) {
@@ -2319,10 +2324,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditCreatedAttributes() throws Exception {
-		//retrieve preferred patient
+		// retrieve preferred patient
 		Patient preferred = patientService.getPatient(999);
 
-		//retrieve notPreferredPatient and save it with a new attribute
+		// retrieve notPreferredPatient and save it with a new attribute
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 		PersonAttribute attribute = new PersonAttribute();
@@ -2331,10 +2336,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		notPreferred.addAttribute(attribute);
 		patientService.savePatient(notPreferred);
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		//find the UUID of the attribute that was added by the merge
+		// find the UUID of the attribute that was added by the merge
 		String addedAttributeUuid = null;
 		preferred = patientService.getPatient(999);
 		for (PersonAttribute a : preferred.getAttributes()) {
@@ -2352,10 +2357,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditCreatedIdentifiers() throws Exception {
-		//retrieve preferred patient
+		// retrieve preferred patient
 		Patient preferred = patientService.getPatient(999);
 
-		//retrieve notPreferredPatient and save it with a new identifier
+		// retrieve notPreferredPatient and save it with a new identifier
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
@@ -2365,10 +2370,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		notPreferred.addIdentifier(patientIdentifier);
 		patientService.savePatient(notPreferred);
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		//find the UUID of the identifier that was added by the merge
+		// find the UUID of the identifier that was added by the merge
 		String addedIdentifierUuid = null;
 		preferred = patientService.getPatient(999);
 		for (PatientIdentifier id : preferred.getIdentifiers()) {
@@ -2386,20 +2391,20 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditCreatedNames() throws Exception {
-		//retrieve preferred patient
+		// retrieve preferred patient
 		Patient preferred = patientService.getPatient(999);
 
-		//retrieve notPreferredPatient and save it with an added name
+		// retrieve notPreferredPatient and save it with an added name
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 		PersonName name = new PersonName("first1234", "middle", "last1234");
 		notPreferred.addName(name);
 		patientService.savePatient(notPreferred);
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		//find the UUID of the name that was added by the merge
+		// find the UUID of the name that was added by the merge
 		String addedNameUuid = null;
 		preferred = patientService.getPatient(999);
 		for (PersonName n : preferred.getNames()) {
@@ -2418,31 +2423,33 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 	@Test
 	public void mergePatients_shouldCopyProgramsFromNonPreferredPatient() throws Exception {
-		//retrieve preferred  and notPreferredPatient patient
+		// retrieve preferred and notPreferredPatient patient
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 
-		//retrieve program for notProferred patient
+		// retrieve program for notProferred patient
 		List<PatientProgram> nonPreferredPrograms = Context.getProgramWorkflowService().getPatientPrograms(notPreferred,
 		    null, null, null, null, null, false);
 
-		//retrieve program for preferred patient
+		// retrieve program for preferred patient
 		List<PatientProgram> preferredPrograms = Context.getProgramWorkflowService().getPatientPrograms(preferred, null,
 		    null, null, null, null, false);
 
-		assertEquals(2, nonPreferredPrograms.size()); // sanity check, non preferred patient had 2 programs at time of writing test
-		assertEquals(0, preferredPrograms.size()); // sanity check, preferred patient had 0 programs at time of writing test
+		assertEquals(2, nonPreferredPrograms.size()); // sanity check, non preferred patient had 2 programs at time of
+		                                              // writing test
+		assertEquals(0, preferredPrograms.size()); // sanity check, preferred patient had 0 programs at time of writing
+		                                           // test
 
 		List<String> programUuids = nonPreferredPrograms.stream().map(PatientProgram::getUuid).collect(Collectors.toList());
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		//retrieve updated program for notProferred patient
+		// retrieve updated program for notProferred patient
 		List<PatientProgram> updatedNonPreferredPrograms = Context.getProgramWorkflowService()
 		        .getPatientPrograms(notPreferred, null, null, null, null, null, false);
 
-		//retrieve program for preferred patient
+		// retrieve program for preferred patient
 		List<PatientProgram> updatedPreferredPrograms = Context.getProgramWorkflowService().getPatientPrograms(preferred,
 		    null, null, null, null, null, false);
 
@@ -2459,17 +2466,18 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditCreatedRelationships() throws Exception {
-		//create relationships and retrieve preferred  and notPreferredPatient patient
+		// create relationships and retrieve preferred and notPreferredPatient patient
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
 		Patient preferred = patientService.getPatient(7);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		//find the UUID of the created relationship as a result of the merge
-		//note: since patient 2 is related to patient 1. patient 7 should now be related to patient 1
+		// find the UUID of the created relationship as a result of the merge
+		// note: since patient 2 is related to patient 1. patient 7 should now be
+		// related to patient 1
 		String createdRelationshipUuid = null;
 		List<Relationship> relationships = personService.getRelationshipsByPerson(preferred);
 		for (Relationship r : relationships) {
@@ -2488,13 +2496,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditVoidedRelationships() throws Exception {
-		//create relationships and retrieve preferred and notPreferredPatient patient
+		// create relationships and retrieve preferred and notPreferredPatient patient
 		executeDataSet(PATIENT_RELATIONSHIPS_XML);
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(2);
 		voidOrders(Collections.singleton(notPreferred));
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
 		assertTrue(isValueInList(personService.getRelationship(4).getUuid(),
@@ -2506,12 +2514,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditMovedEncounters() throws Exception {
-		//retrieve patients
+		// retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
 		assertTrue(isValueInList(Context.getEncounterService().getEncounter(3).getUuid(),
@@ -2523,18 +2531,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditMovedIndependentObservations() throws Exception {
-		//retrieve patients
+		// retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 
-		//get an observation for notPreferred and make it independent from any encounter
+		// get an observation for notPreferred and make it independent from any
+		// encounter
 		Obs obs = Context.getObsService().getObs(7);
 		obs.setEncounter(null);
 		obs.setComment("this observation is for testing the merge");
 		Context.getObsService().saveObs(obs, "Reason cannot be blank");
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 		String uuid = null;
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(preferred);
@@ -2570,7 +2579,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// the condition should now belong to the preferred patient and the move should be audited
+		// the condition should now belong to the preferred patient and the move should
+		// be audited
 		List<Condition> preferredConditions = conditionService.getAllConditions(preferred);
 		assertThat(preferredConditions.size(), is(1));
 		assertThat(preferredConditions.get(0).getCondition().getNonCoded(), is("Severe headache"));
@@ -2588,8 +2598,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		voidOrders(Collections.singleton(notPreferred));
 		ConditionService conditionService = Context.getConditionService();
 
-		// give the non-preferred patient a condition linked to one of its encounters: moving the encounter
-		// does not reassign the condition's patient, so mergeConditions must move it (and keep the link)
+		// give the non-preferred patient a condition linked to one of its encounters:
+		// moving the encounter
+		// does not reassign the condition's patient, so mergeConditions must move it
+		// (and keep the link)
 		Encounter encounter = Context.getEncounterService().getEncounter(3);
 		assertThat(encounter.getPatient(), is(notPreferred));
 		CodedOrFreeText codedOrFreeText = new CodedOrFreeText();
@@ -2603,7 +2615,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// the condition (and the encounter it rides on) now belong to the preferred patient, and the move is audited
+		// the condition (and the encounter it rides on) now belong to the preferred
+		// patient, and the move is audited
 		List<Condition> preferredConditions = conditionService.getAllConditions(preferred);
 		assertThat(preferredConditions.size(), is(1));
 		Condition moved = preferredConditions.get(0);
@@ -2644,7 +2657,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// only the live condition moves; the voided one stays behind on the loser and is not audited
+		// only the live condition moves; the voided one stays behind on the loser and
+		// is not audited
 		List<Condition> preferredConditions = conditionService.getAllConditions(preferred);
 		assertThat(preferredConditions.size(), is(1));
 		assertThat(preferredConditions.get(0).getCondition().getNonCoded(), is("Live condition"));
@@ -2671,7 +2685,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// the allergy should now belong to the preferred patient and the move should be audited
+		// the allergy should now belong to the preferred patient and the move should be
+		// audited
 		Allergies preferredAllergies = patientService.getAllergies(preferred);
 		assertThat(preferredAllergies.size(), is(1));
 		assertThat(preferredAllergies.get(0).getUuid(), is(allergyUuid));
@@ -2688,8 +2703,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 
-		// both patients are allergic to the same coded allergen (the same canonical concept, so the
-		// allergens compare equal by uuid the way two separately-loaded allergies would in production)
+		// both patients are allergic to the same coded allergen (the same canonical
+		// concept, so the
+		// allergens compare equal by uuid the way two separately-loaded allergies would
+		// in production)
 		Concept allergen = Context.getConceptService().getConcept(3);
 		Allergy preferredAllergy = new Allergy(preferred, new Allergen(AllergenType.DRUG, allergen, null), new Concept(4),
 		        "preferred comment", new ArrayList<>());
@@ -2702,7 +2719,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// the duplicate allergen must not be moved, otherwise getAllergies(preferred) would fail to load
+		// the duplicate allergen must not be moved, otherwise getAllergies(preferred)
+		// would fail to load
 		Allergies preferredAllergies = patientService.getAllergies(preferred);
 		assertThat(preferredAllergies.size(), is(1));
 		assertThat(preferredAllergies.get(0).getUuid(), is(preferredAllergyUuid));
@@ -2719,8 +2737,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 
-		// preferred and notPreferred share one allergen; notPreferred also has a second, unique one.
-		// The shared allergen must be skipped and the unique one moved, both in the same merge.
+		// preferred and notPreferred share one allergen; notPreferred also has a
+		// second, unique one.
+		// The shared allergen must be skipped and the unique one moved, both in the
+		// same merge.
 		Concept sharedAllergen = Context.getConceptService().getConcept(3);
 		patientService.saveAllergy(new Allergy(preferred, new Allergen(AllergenType.DRUG, sharedAllergen, null),
 		        new Concept(4), "shared - preferred", new ArrayList<>()));
@@ -2733,7 +2753,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// preferred keeps its shared allergen and gains only the unique one (no duplicate that would break loading)
+		// preferred keeps its shared allergen and gains only the unique one (no
+		// duplicate that would break loading)
 		Allergies preferredAllergies = patientService.getAllergies(preferred);
 		assertThat(preferredAllergies.size(), is(2));
 		List<String> movedAllergies = audit.getPersonMergeLogData().getMovedAllergies();
@@ -2751,7 +2772,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 
-		// notPreferred has one live allergy and one voided allergy (different allergens)
+		// notPreferred has one live allergy and one voided allergy (different
+		// allergens)
 		Allergy live = new Allergy(notPreferred, new Allergen(AllergenType.DRUG, new Concept(3), null), new Concept(4),
 		        "live allergy", new ArrayList<>());
 		patientService.saveAllergy(live);
@@ -2764,7 +2786,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// only the live allergy moves; the voided one stays behind on the loser and is not audited
+		// only the live allergy moves; the voided one stays behind on the loser and is
+		// not audited
 		Allergies preferredAllergies = patientService.getAllergies(preferred);
 		assertThat(preferredAllergies.size(), is(1));
 		assertThat(preferredAllergies.get(0).getUuid(), is(liveUuid));
@@ -2783,7 +2806,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 
-		// the non-preferred patient has two medication dispenses, the preferred patient has none
+		// the non-preferred patient has two medication dispenses, the preferred patient
+		// has none
 		List<MedicationDispense> notPreferredDispenses = medicationDispenseService
 		        .getMedicationDispenseByCriteria(new MedicationDispenseCriteriaBuilder().setPatient(notPreferred).build());
 		assertThat(notPreferredDispenses.size(), is(2));
@@ -2794,7 +2818,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// the medication dispenses should now belong to the preferred patient and the moves should be audited
+		// the medication dispenses should now belong to the preferred patient and the
+		// moves should be audited
 		assertThat(medicationDispenseService.getMedicationDispenseByCriteria(preferredCriteria).size(), is(2));
 		assertThat(audit.getPersonMergeLogData().getMovedMedicationDispenses(), containsInAnyOrder(movedUuids.toArray()));
 	}
@@ -2819,7 +2844,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
-		// only the non-voided dispense is moved and audited; the voided one stays behind on the loser
+		// only the non-voided dispense is moved and audited; the voided one stays
+		// behind on the loser
 		MedicationDispenseCriteria preferredCriteria = new MedicationDispenseCriteriaBuilder().setPatient(preferred).build();
 		List<MedicationDispense> preferredDispenses = medicationDispenseService
 		        .getMedicationDispenseByCriteria(preferredCriteria);
@@ -2834,7 +2860,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditMovedUsers() throws Exception {
-		//retrieve patients
+		// retrieve patients
 		Patient preferred = patientService.getPatient(999);
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
@@ -2843,7 +2869,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		user.setPerson(notPreferred);
 		Context.getUserService().saveUser(user);
 
-		//merge the two patients and retrieve the audit object
+		// merge the two patients and retrieve the audit object
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
 
 		assertTrue(
@@ -2856,14 +2882,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorCauseOfDeath() throws Exception {
-		//retrieve preferred patient and set a cause of death
+		// retrieve preferred patient and set a cause of death
 		Patient preferred = patientService.getPatient(999);
 		preferred.setCauseOfDeath(Context.getConceptService().getConcept(3));
 		preferred.setDeathDate(new Date());
 		preferred.setDead(true);
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
-		//merge with not preferred
+		// merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2876,10 +2902,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorDateOfBirth() throws Exception {
-		//retrieve preferred patient and set a date of birth
+		// retrieve preferred patient and set a date of birth
 		GregorianCalendar cDate = new GregorianCalendar();
 		cDate.setTime(new Date());
-		//milliseconds are not serialized into the database. they will be ignored in the test
+		// milliseconds are not serialized into the database. they will be ignored in
+		// the test
 		cDate.set(Calendar.MILLISECOND, 0);
 		cDate.set(Calendar.YEAR, 2000);
 		Patient preferred = patientService.getPatient(999);
@@ -2898,7 +2925,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorDateOfBirthEstimated() throws Exception {
-		//retrieve preferred patient and set a date of birth
+		// retrieve preferred patient and set a date of birth
 		GregorianCalendar cDate = new GregorianCalendar();
 		cDate.setTime(new Date());
 		cDate.set(Calendar.YEAR, 2000);
@@ -2919,10 +2946,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorDateOfDeath() throws Exception {
-		//retrieve preferred patient and set a date of birth
+		// retrieve preferred patient and set a date of birth
 		GregorianCalendar cDate = new GregorianCalendar();
 		cDate.setTime(new Date());
-		//milliseconds are not serialized into the database. they will be ignored in the test
+		// milliseconds are not serialized into the database. they will be ignored in
+		// the test
 		cDate.set(Calendar.MILLISECOND, 0);
 		Patient preferred = patientService.getPatient(999);
 		preferred.setDeathDate(cDate.getTime());
@@ -2943,7 +2971,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorDateOfDeathEstimated() throws Exception {
-		//retrieve preferred patient and set a date of death
+		// retrieve preferred patient and set a date of death
 		GregorianCalendar cDate = new GregorianCalendar();
 		cDate.setTime(new Date());
 		Patient preferred = patientService.getPatient(999);
@@ -2964,12 +2992,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void mergePatients_shouldAuditPriorGender() throws Exception {
-		//retrieve preferred patient and set gender
+		// retrieve preferred patient and set gender
 		Patient preferred = patientService.getPatient(999);
 		preferred.setGender("M");
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
-		//merge with not preferred
+		// merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 		PersonMergeLog audit = mergeAndRetrieveAudit(preferred, notPreferred);
@@ -2986,7 +3014,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// check if we have patient identifiers already
 		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierType(5);
 		assertNotNull(patientIdentifierType);
-		//retrieve preferred patient and set gender
+		// retrieve preferred patient and set gender
 		Patient preferred = patientService.getPatient(999);
 		// create new identifier for the preferred patient
 		PatientIdentifier preferredIdentifier = new PatientIdentifier();
@@ -2996,7 +3024,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		preferred.addIdentifier(preferredIdentifier);
 		preferred.addName(new PersonName("givenName", "middleName", "familyName"));
 		patientService.savePatient(preferred);
-		//merge with not preferred
+		// merge with not preferred
 		Patient notPreferred = patientService.getPatient(7);
 		voidOrders(Collections.singleton(notPreferred));
 		// create identifier with the same values for the non preferred patient
@@ -3057,7 +3085,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			for (String privilege : MERGE_PRIVILEGES) {
 				Context.removeProxyPrivilege(privilege);
 			}
-			// restore the super user; the tests run their setup and verification with full privileges
+			// restore the super user; the tests run their setup and verification with full
+			// privileges
 			authenticate();
 		}
 	}
@@ -3154,13 +3183,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidPatient_shouldVoidPerson() throws Exception {
-		//given
+		// given
 		Patient patient = patientService.getPatient(2);
 
-		//when
+		// when
 		patientService.voidPatient(patient, "reason");
 
-		//then
+		// then
 		assertTrue(patient.getPersonVoided());
 	}
 
@@ -3169,16 +3198,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void voidPatient_shouldRetireUsers() throws Exception {
-		//given
+		// given
 		Patient patient = patientService.getPatient(2);
 		User user = new User(patient);
 		Context.getUserService().createUser(user, "Admin123");
 		assertFalse(Context.getUserService().getUsersByPerson(patient, false).isEmpty());
 
-		//when
+		// when
 		patientService.voidPatient(patient, "reason");
 
-		//then
+		// then
 		assertThat(getUserService().getUsersByPerson(patient, false), is(empty()));
 	}
 
@@ -3187,15 +3216,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void unvoidPatient_shouldUnvoidPerson() throws Exception {
-		//given
+		// given
 		Patient patient = patientService.getPatient(2);
 		patientService.voidPatient(patient, "reason");
 		assertTrue(patient.getPersonVoided());
 
-		//when
+		// when
 		patientService.unvoidPatient(patient);
 
-		//then
+		// then
 		assertFalse(patient.getPersonVoided());
 	}
 
@@ -3210,16 +3239,16 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void unvoidPatient_shouldNotUnretireUsers() throws Exception {
-		//given
+		// given
 		Patient patient = patientService.getPatient(2);
 		User user = new User(patient);
 		Context.getUserService().createUser(user, "Admin123");
 		patientService.voidPatient(patient, "reason");
 
-		//when
+		// when
 		patientService.unvoidPatient(patient);
 
-		//then
+		// then
 		assertThat(getUserService().getUsersByPerson(patient, false), is(empty()));
 	}
 
@@ -3228,12 +3257,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getPatients_shouldReturnEmptyListIfNameAndIdentifierIsEmpty() throws Exception {
-		//given
+		// given
 
-		//when
+		// when
 		List<Patient> patients = patientService.getPatients("", "", null, false);
 
-		//then
+		// then
 		assertThat(patients, is(empty()));
 	}
 
@@ -3300,7 +3329,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatientIdentifierType(idType);
 
 		Location idLocation = locationService.getLocation(2);
-		assertNotSame(idLocation, duplicateId.getLocation());//sanity check
+		assertNotSame(idLocation, duplicateId.getLocation());// sanity check
 		PatientIdentifier pi = new PatientIdentifier(duplicateId.getIdentifier(), idType, idLocation);
 		assertFalse(patientService.isIdentifierInUseByAnotherPatient(pi));
 	}
@@ -3773,8 +3802,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Allergen allergen = new Allergen(AllergenType.DRUG, new Concept(3), null);
 		Allergy allergy = new Allergy(patient, allergen, new Concept(4), "some comment", new ArrayList<>());
 
-		// become a user whose role grants no privileges, then grant only Add Allergies; the caller
-		// deliberately lacks Get Allergies, so a regression in the validator's duplicate check surfaces
+		// become a user whose role grants no privileges, then grant only Add Allergies;
+		// the caller
+		// deliberately lacks Get Allergies, so a regression in the validator's
+		// duplicate check surfaces
 		User user = Context.getUserService().getUserByUsername("butch");
 		assertNotNull(user);
 		Context.becomeUser(user.getSystemId());
@@ -3785,6 +3816,43 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			Context.removeProxyPrivilege(PrivilegeConstants.ADD_ALLERGIES);
 		}
 		assertNotNull(allergy.getAllergyId());
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRejectNegativeMinimumAge() {
+		assertThrows(APIException.class, () -> patientService.getPatientsByAgeRange(-1, 25));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRejectNegativeMaximumAge() {
+		assertThrows(APIException.class, () -> patientService.getPatientsByAgeRange(0, -5));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRejectReversedAgeRange() {
+		assertThrows(APIException.class, () -> patientService.getPatientsByAgeRange(40, 20));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldRequireGetPatientsPrivilege() {
+		Context.logout();
+
+		assertThrows(AccessDeniedException.class, () -> patientService.getPatientsByAgeRange(18, 25));
+	}
+
+	@Test
+	public void getPatientsByAgeRange_shouldReturnPatientsForAuthorizedUser() {
+
+		Patient patient = patientService.getPatient(2);
+
+		assertNotNull(patient);
+		assertNotNull(patient.getBirthdate());
+
+		int age = patient.getAge();
+
+		List<Patient> patients = patientService.getPatientsByAgeRange(age, age);
+
+		assertTrue(patients.contains(patient));
 	}
 
 }
