@@ -24,10 +24,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.Cacheable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.AssociationInverseSide;
@@ -42,6 +58,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator;
 import org.openmrs.api.db.hibernate.search.bridge.OpenmrsObjectValueBridge;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
@@ -76,6 +93,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @see ConceptMap
  * @see ConceptService
  */
+@Entity
+@Table(name = "concept")
+@Inheritance(strategy = InheritanceType.JOINED)
+@BatchSize(size = 25)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Audited
@@ -88,57 +109,94 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	private static final String CONCEPT_NAME_LOCALE_NULL = "Concept.name.locale.null";
 
 	// Fields
+	@Id
 	@DocumentId
+	@GeneratedValue(generator = "conceptIdGenerator")
+	@GenericGenerator(name = "conceptIdGenerator", type = NativeIfNotAssignedIdentityGenerator.class)
+	@Column(name = "concept_id")
 	private Integer conceptId;
 
 	@GenericField
+	@Column(name = "retired", nullable = false)
 	private Boolean retired = false;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "retired_by")
 	private User retiredBy;
 
+	@Column(name = "date_retired")
 	private Date dateRetired;
 
+	@Column(name = "retire_reason", length = 255)
 	private String retireReason;
 
 	@KeywordField(valueBridge = @ValueBridgeRef(type = OpenmrsObjectValueBridge.class))
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "datatype_id", nullable = false)
 	private ConceptDatatype datatype;
 
 	@KeywordField(valueBridge = @ValueBridgeRef(type = OpenmrsObjectValueBridge.class))
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "class_id", nullable = false)
 	private ConceptClass conceptClass;
 
+	@Column(name = "is_set", nullable = false)
 	private Boolean set = false;
 
+	@Column(name = "version", length = 50)
 	private String version;
 
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "creator", nullable = false)
 	private User creator;
 
+	@Column(name = "date_created", nullable = false)
 	private Date dateCreated;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "changed_by")
 	private User changedBy;
 
+	@Column(name = "date_changed")
 	private Date dateChanged;
 
 	@AllowDirectAccess
-	@AssociationInverseSide(inversePath = @ObjectPath({ @PropertyValue(propertyName = "concept") }))
-	private Collection<ConceptName> names;
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 25)
+	private Set<ConceptName> names;
 
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("sortWeight ASC, conceptAnswerId ASC")
+	@BatchSize(size = 25)
 	@AllowDirectAccess
-	private Collection<ConceptAnswer> answers;
+	private Set<ConceptAnswer> answers;
 
-	private Collection<ConceptSet> conceptSets;
+	@OneToMany(mappedBy = "conceptSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("sortWeight ASC")
+	@BatchSize(size = 25)
+	private Set<ConceptSet> conceptSets;
 
-	private Collection<ConceptDescription> descriptions;
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("conceptDescriptionId ASC")
+	@BatchSize(size = 25)
+	private Set<ConceptDescription> descriptions;
 
+	@OneToMany(mappedBy = "concept", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 25)
 	@IndexedEmbedded
 	@AssociationInverseSide(inversePath = @ObjectPath({ @PropertyValue(propertyName = "concept") }))
-	private Collection<ConceptMap> conceptMappings;
+	private Set<ConceptMap> conceptMappings;
 
 	/**
 	 * A cache of locales to names which have compatible locales. Built on-the-fly by
 	 * getCompatibleNames().
 	 */
+	@Transient
 	private Map<Locale, List<ConceptName>> compatibleCache;
 
+	@OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("voided ASC")
+	@BatchSize(size = 100)
 	private Set<ConceptAttribute> attributes = new LinkedHashSet<>();
 
 	/** default constructor */
