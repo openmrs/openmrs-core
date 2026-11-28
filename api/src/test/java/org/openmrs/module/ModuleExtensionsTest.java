@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 
 /**
- * Tests for {@link Module#getExtensions()}. Look at {@link ModuleFileParser#parse()} for how a
+ * Tests for {@link Module#getExtensions()}. Look at {@link ModuleFileParser#parse(File)} for how a
  * Module is constructed and initialized. At first the extension tags found in config.xml are parsed
  * and set in {@link Module#setExtensionNames(Map)}.
  */
