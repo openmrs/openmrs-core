@@ -223,7 +223,10 @@ public interface ContextDAO {
 	 * Updates the search index if necessary.
 	 * <p>
 	 * The update is triggered if {@link OpenmrsConstants#GP_SEARCH_INDEX_VERSION} is blank or the value
-	 * does not match {@link OpenmrsConstants#SEARCH_INDEX_VERSION}.
+	 * does not match the current version. On the Lucene backend that version includes Lucene's codec,
+	 * since an index written with another codec cannot be read without lucene-backward-codecs. If the
+	 * version differs, the index will be rebuilt (dropped and recreated) to ensure compatibility with
+	 * the current Lucene version.
 	 */
 	public void setupSearchIndex();
 
