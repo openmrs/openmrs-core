@@ -9,9 +9,14 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.Statement;
+
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.jdbc.Work;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
@@ -24,11 +29,19 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 
@@ -219,5 +232,58 @@ public class HibernateAdministrationDAOTest extends BaseContextSensitiveTest {
 	@Test
 	public void getStoredGlobalPropertyName_shouldReturnNullIfNoPropertyMatches() {
 		assertNull(dao.getStoredGlobalPropertyName("no.such.property"));
+	}
+
+	/**
+	 * @see HibernateAdministrationDAO#updatePostgresSequence()
+	 */
+	@Test
+	public void updatePostgresSequence_shouldNotFailWhenNotPostgreSQL() {
+		assertDoesNotThrow(() -> dao.updatePostgresSequence());
+	}
+
+	@Test
+	public void postgresSequences_shouldContainSingleStatementsWithoutTrailingSemicolons() {
+		assertFalse(HibernateAdministrationDAO.POSTGRES_SEQUENCES.isEmpty());
+		for (String sql : HibernateAdministrationDAO.POSTGRES_SEQUENCES) {
+			assertTrue(sql.startsWith("SELECT setval("), "Should start with SELECT setval: " + sql);
+			assertFalse(sql.endsWith(";"), "Should not contain trailing semicolon: " + sql);
+			assertFalse(sql.contains(";"), "Should be a single statement: " + sql);
+		}
+	}
+
+	@Test
+	public void updatePostgresSequence_shouldAddEachStatementToBatchAndCloseStatement() throws Exception {
+		Field field = HibernateUtil.class.getDeclaredField("isPostgreSQLDialect");
+		field.setAccessible(true);
+		Boolean originalDialectValue = (Boolean) field.get(null);
+
+		try {
+			field.set(null, true);
+
+			SessionFactory mockSessionFactory = mock(SessionFactory.class);
+			Session mockSession = mock(Session.class);
+			Connection mockConnection = mock(Connection.class);
+			Statement mockStatement = mock(Statement.class);
+
+			when(mockSessionFactory.getCurrentSession()).thenReturn(mockSession);
+			when(mockConnection.createStatement()).thenReturn(mockStatement);
+
+			doAnswer(invocation -> {
+				Work work = invocation.getArgument(0);
+				work.execute(mockConnection);
+				return null;
+			}).when(mockSession).doWork(any(Work.class));
+
+			HibernateAdministrationDAO testDao = new HibernateAdministrationDAO(mockSessionFactory);
+			testDao.updatePostgresSequence();
+
+			verify(mockSession).doWork(any(Work.class));
+			verify(mockStatement, times(HibernateAdministrationDAO.POSTGRES_SEQUENCES.size())).addBatch(anyString());
+			verify(mockStatement).executeBatch();
+			verify(mockStatement).close();
+		} finally {
+			field.set(null, originalDialectValue);
+		}
 	}
 }
