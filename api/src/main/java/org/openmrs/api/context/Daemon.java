@@ -10,6 +10,7 @@
 package org.openmrs.api.context;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -17,6 +18,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.logging.log4j.ThreadContext;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
@@ -362,8 +364,11 @@ public final class Daemon {
 	}
 
 	private static <T> Future<T> runInDaemonThreadInternal(Callable<T> callable) {
+		// the task runs with the thread context of its caller, such as the tag an install puts on the lines it logs
+		Map<String, String> threadContext = ThreadContext.getImmutableContext();
 		return OpenmrsThreadPoolHolder.threadExecutor.submit(() -> {
 			isDaemonThread.set(true);
+			ThreadContext.putAll(threadContext);
 			try {
 				Context.openSession();
 				return callable.call();
@@ -373,6 +378,7 @@ public final class Daemon {
 				} finally {
 					isDaemonThread.remove();
 					daemonThreadUser.remove();
+					ThreadContext.removeAll(threadContext.keySet());
 				}
 			}
 		});
@@ -384,8 +390,11 @@ public final class Daemon {
 		// to emulate this behaviour when the user submits a Thread. Other runnables are unaffected.
 		CountDownLatch countDownLatch = getCountDownLatch(runnable instanceof Thread);
 
+		// the task runs with the thread context of its caller, such as the tag an install puts on the lines it logs
+		Map<String, String> threadContext = ThreadContext.getImmutableContext();
 		Future<?> result = OpenmrsThreadPoolHolder.threadExecutor.submit(() -> {
 			isDaemonThread.set(true);
+			ThreadContext.putAll(threadContext);
 			try {
 				Context.openSession();
 				countDownLatch.countDown();
@@ -396,6 +405,7 @@ public final class Daemon {
 				} finally {
 					isDaemonThread.remove();
 					daemonThreadUser.remove();
+					ThreadContext.removeAll(threadContext.keySet());
 				}
 			}
 		});

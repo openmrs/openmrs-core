@@ -13,13 +13,16 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -36,6 +39,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -271,5 +275,51 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		User user = new User();
 		user.setUuid("any other value");
 		assertThat(Daemon.isDaemonUser(user), is(false));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunTheTaskAndTheTasksItStartsWithTheThreadContextOfItsCaller() throws Exception {
+		Map<String, String> seen = new ConcurrentHashMap<>();
+		ThreadContext.put("daemonTest", "caller");
+		try {
+			Daemon.runNewDaemonTask(() -> {
+				seen.put("task", String.valueOf(ThreadContext.get("daemonTest")));
+				try {
+					// as the start of OpenMRS starts modules and services
+					Daemon.runNewDaemonTask(() -> seen.put("runnable", String.valueOf(ThreadContext.get("daemonTest"))))
+					        .get();
+					seen.put("callable",
+					    String.valueOf(Daemon.runInNewDaemonThread(() -> ThreadContext.get("daemonTest")).get()));
+				} catch (InterruptedException | ExecutionException e) {
+					throw new IllegalStateException(e);
+				}
+			}, Daemon.callerKey()).get();
+		} finally {
+			ThreadContext.remove("daemonTest");
+		}
+
+		assertThat(seen.get("task"), is("caller"));
+		assertThat(seen.get("runnable"), is("caller"));
+		assertThat(seen.get("callable"), is("caller"));
+		// and leaves it behind: the pool gives the next task to the thread that last became idle
+		Daemon.runNewDaemonTask(() -> seen.put("after", String.valueOf(ThreadContext.get("daemonTest"))), Daemon.callerKey())
+		        .get();
+		assertThat(seen.get("after"), is("null"));
+	}
+
+	@Test
+	public void runNewDaemonTask_shouldRunACallableWithTheThreadContextOfItsCaller() throws Exception {
+		ThreadContext.put("daemonTest", "caller");
+		String seen;
+		try {
+			seen = Daemon.runNewDaemonTask(() -> ThreadContext.get("daemonTest"), Daemon.callerKey()).get();
+		} finally {
+			ThreadContext.remove("daemonTest");
+		}
+
+		assertThat(seen, is("caller"));
+		// and leaves it behind: the pool gives the next task to the thread that last became idle
+		assertThat(Daemon.runNewDaemonTask(() -> ThreadContext.get("daemonTest"), Daemon.callerKey()).get(),
+		    is(nullValue()));
 	}
 }

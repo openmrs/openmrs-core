@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
@@ -55,6 +56,23 @@ class MemoryAppenderTest {
 
 		memoryAppender = null;
 		logger = null;
+	}
+
+	@Test
+	void getLogLines_shouldGiveOnlyTheLinesOfTheEventsTheFilterAccepts() {
+		logger.warn("before");
+		ThreadContext.put("memoryAppenderTest", "tagged");
+		try {
+			logger.warn("tagged");
+		} finally {
+			ThreadContext.remove("memoryAppenderTest");
+		}
+		logger.warn("after");
+
+		List<String> logLines = memoryAppender
+		        .getLogLines(event -> "tagged".equals(event.getContextData().getValue("memoryAppenderTest")));
+
+		assertThat(logLines, contains("tagged"));
 	}
 
 	@Test

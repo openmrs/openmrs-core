@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.core.Appender;
@@ -101,6 +102,18 @@ public class MemoryAppender extends AbstractAppender {
 	}
 
 	public List<String> getLogLines() {
+		return getLogLines(event -> true);
+	}
+
+	/**
+	 * Returns the lines of the buffered events the given filter accepts, such as the events of one task
+	 * that put a value of its own into its thread context
+	 *
+	 * @param filter which events to give the lines of
+	 * @return the lines of the buffered events the filter accepts, oldest first
+	 * @since 2.7.10, 2.8.11, 2.9.0, 3.0.0
+	 */
+	public List<String> getLogLines(Predicate<LogEvent> filter) {
 		LogEvent[] events = bufferRef.get().toArray(new LogEvent[0]);
 		if (events.length == 0) {
 			return Collections.emptyList();
@@ -113,7 +126,7 @@ public class MemoryAppender extends AbstractAppender {
 			layout = PatternLayout.newBuilder().setPattern(OpenmrsConstants.DEFAULT_LOG_LAYOUT_PATTERN).build();
 		}
 
-		return Arrays.stream(events).filter(Objects::nonNull).map(((StringLayout) layout)::toSerializable)
+		return Arrays.stream(events).filter(Objects::nonNull).filter(filter).map(((StringLayout) layout)::toSerializable)
 		        .collect(Collectors.toList());
 	}
 
