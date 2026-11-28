@@ -9,12 +9,16 @@
  */
 package org.openmrs.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DateUtilTest {
 
@@ -24,5 +28,32 @@ public class DateUtilTest {
 		Date withoutMilliseconds = new Date(0L);
 		assertThat(DateUtil.truncateToSeconds(withMilliseconds), is(withoutMilliseconds));
 		assertThat(DateUtil.truncateToSeconds(withoutMilliseconds), is(withoutMilliseconds));
+	}
+
+	@Test
+	public void parseDatetimeString_shouldKeepSecondsInLegacyFormat() throws Exception {
+		Date parsed = DateUtil.parseDatetimeString("2023-06-15 10:30:45");
+		assertThat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(parsed), is("2023-06-15 10:30:45"));
+	}
+
+	@Test
+	public void parseDatetimeString_shouldParseLegacyFormatWithoutSeconds() throws Exception {
+		Date parsed = DateUtil.parseDatetimeString("2023-06-15 10:30");
+		assertThat(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(parsed), is("2023-06-15 10:30"));
+	}
+
+	@Test
+	public void parseDatetimeString_shouldThrowParseExceptionForInvalidLegacyDate() {
+		assertThrows(ParseException.class, () -> DateUtil.parseDatetimeString("2023-02-30 10:00"));
+	}
+
+	@Test
+	public void parseDatetimeString_shouldThrowParseExceptionForTrailingCharactersInLegacyFormat() {
+		assertThrows(ParseException.class, () -> DateUtil.parseDatetimeString("2023-06-15 10:30XYZ"));
+	}
+
+	@Test
+	public void parseDatetimeString_shouldThrowForInvalidIsoDate() {
+		assertThrows(DateTimeParseException.class, () -> DateUtil.parseDatetimeString("2023-02-30T10:00:00"));
 	}
 }
